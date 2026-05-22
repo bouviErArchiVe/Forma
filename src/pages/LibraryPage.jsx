@@ -40,11 +40,6 @@ const TEMPLATES = [
 ]
 
 const MOCK_FALLBACK = []
-  {id:"1",title:"Maison Unifamiliale — Projet 1",subject:"arch",   template:"plan",   pages_count:18,starred:true, updated_at:new Date().toISOString()},
-  {id:"2",title:"Calcul des Charges",             subject:"struct", template:"grid10", pages_count:12,starred:false,updated_at:new Date().toISOString()},
-  {id:"3",title:"Technical English B2",           subject:"english",template:"lined",  pages_count:8, starred:false,updated_at:new Date().toISOString()},
-  {id:"4",title:"Mathématiques Avancées",         subject:"math",   template:"math",   pages_count:22,starred:true, updated_at:new Date().toISOString()},
-]
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime()
