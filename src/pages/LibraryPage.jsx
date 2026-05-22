@@ -39,16 +39,14 @@ const TEMPLATES = [
   {id:"mindmap",   l:"Carte mentale",  i:"🧠"},
 ]
 
-const MOCK_FALLBACK = []
-
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime()
-  const mins = Math.floor(diff/60000)
+  const mins = Math.floor(diff / 60000)
   if (mins < 1) return "À l'instant"
   if (mins < 60) return `Il y a ${mins}min`
-  const hours = Math.floor(mins/60)
+  const hours = Math.floor(mins / 60)
   if (hours < 24) return `Il y a ${hours}h`
-  const days = Math.floor(hours/24)
+  const days = Math.floor(hours / 24)
   if (days === 1) return "Hier"
   return new Date(dateStr).toLocaleDateString("fr-FR")
 }
@@ -67,6 +65,7 @@ export default function LibraryPage() {
   const [newTmpl, setNewTmpl] = useState("plan")
   const [saving, setSaving] = useState(false)
   const [userId, setUserId] = useState(null)
+  const [userName, setUserName] = useState("")
 
   useEffect(() => {
     const init = async () => {
@@ -74,13 +73,14 @@ export default function LibraryPage() {
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.user) {
           setUserId(session.user.id)
+          setUserName(session.user.user_metadata?.full_name || session.user.email || "")
           loadNotebooks(session.user.id)
         } else {
-          setNotebooks(MOCK_FALLBACK)
+          setNotebooks([])
           setLoading(false)
         }
       } catch {
-        setNotebooks(MOCK_FALLBACK)
+        setNotebooks([])
         setLoading(false)
       }
     }
@@ -95,20 +95,9 @@ export default function LibraryPage() {
         .eq("user_id", uid)
         .order("updated_at", { ascending: false })
       if (error) throw error
-      if (data.length === 0) {
-        const demos = MOCK_FALLBACK.map(n => ({
-          title: n.title, subject: n.subject, template: n.template,
-          pages_count: n.pages_count, starred: n.starred,
-          color: SUBJECTS.find(s => s.id === n.subject)?.c || "#c8622a",
-          user_id: uid
-        }))
-        const { data: inserted } = await supabase.from("notebooks").insert(demos).select()
-        setNotebooks(inserted || demos)
-      } else {
-        setNotebooks(data)
-      }
+      setNotebooks(data || [])
     } catch {
-      setNotebooks(MOCK_FALLBACK)
+      setNotebooks([])
     } finally {
       setLoading(false)
     }
@@ -133,36 +122,49 @@ export default function LibraryPage() {
     if (!newTitle.trim()) return
     setSaving(true)
     const subj = SUBJECTS.find(s => s.id === newSubj)
-    const newNB = { title: newTitle, subject: newSubj, template: newTmpl, pages_count: 1, starred: false, color: subj?.c || "#c8622a" }
+    const newNB = {
+      title: newTitle, subject: newSubj, template: newTmpl,
+      pages_count: 1, starred: false, color: subj?.c || "#c8622a"
+    }
     try {
       if (userId) {
-        const { data, error } = await supabase.from("notebooks").insert([{ ...newNB, user_id: userId }]).select().single()
+        const { data, error } = await supabase
+          .from("notebooks")
+          .insert([{ ...newNB, user_id: userId }])
+          .select().single()
         if (error) throw error
         setNotebooks(p => [data, ...p])
         setShowNew(false); setNewTitle(""); open(data)
       } else {
-        const local = { ...newNB, id: Date.now().toString(), updated_at: new Date().toISOString() }
-        setNotebooks(p => [local, ...p])
-        setShowNew(false); setNewTitle(""); open(local)
+        navigate("/auth")
       }
     } catch {
-      const local = { ...newNB, id: Date.now().toString(), updated_at: new Date().toISOString() }
-      setNotebooks(p => [local, ...p])
-      setShowNew(false); setNewTitle(""); open(local)
-    } finally { setSaving(false) }
+      alert("Erreur lors de la création. Vérifie ta connexion.")
+    } finally {
+      setSaving(false)
+    }
   }
 
   const deleteNotebook = async (id, e) => {
     e.stopPropagation()
-    if (!confirm("Supprimer ce carnet ?")) return
+    if (!confirm("Supprimer ce carnet définitivement ?")) return
     setNotebooks(ns => ns.filter(n => n.id !== id))
     if (userId) await supabase.from("notebooks").delete().eq("id", id)
+  }
+
+  const logout = async () => {
+    await supabase.auth.signOut()
+    setUserId(null)
+    setUserName("")
+    setNotebooks([])
   }
 
   const usedSubjects = SUBJECTS.filter(s => notebooks.some(n => n.subject === s.id))
 
   return (
     <div style={{ minHeight: "100vh", background: T.bg, fontFamily: "'Nunito',sans-serif", color: T.ink }}>
+
+      {/* MODAL NOUVEAU CARNET */}
       {showNew && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.55)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
           <div style={{ background: T.surface, borderRadius: 20, padding: 28, width: 520, maxWidth: "94vw", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,.25)" }}>
@@ -172,7 +174,8 @@ export default function LibraryPage() {
             </div>
             <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: T.muted, marginBottom: 6 }}>TITRE</div>
-              <input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="Ex: Projet École Primaire 2026…"
+              <input value={newTitle} onChange={e => setNewTitle(e.target.value)}
+                placeholder="Ex: Projet École Primaire 2026…"
                 onKeyDown={e => e.key === "Enter" && create()} autoFocus
                 style={{ width: "100%", padding: "11px 13px", borderRadius: 10, border: `1px solid ${T.border}`, fontSize: 14, outline: "none", color: T.ink, background: T.bg, boxSizing: "border-box" }} />
             </div>
@@ -208,23 +211,31 @@ export default function LibraryPage() {
         </div>
       )}
 
+      {/* HEADER */}
       <div style={{ background: T.surface, borderBottom: `1px solid ${T.border}`, padding: "0 24px", position: "sticky", top: 0, zIndex: 20, boxShadow: "0 1px 12px rgba(0,0,0,.06)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 60 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: 11, background: T.accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, boxShadow: `0 4px 14px ${T.accent}44` }}>🏛</div>
             <div>
               <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 21, color: T.ink }}>ArchNote</div>
-              <div style={{ fontSize: 10, color: T.muted }}>{userId ? "✓ Sauvegarde cloud active" : "Mode local — connectez-vous pour sauvegarder"}</div>
+              <div style={{ fontSize: 10, color: T.muted }}>
+                {userId ? `✓ Connecté — ${userName}` : "Non connecté — mode local"}
+              </div>
             </div>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            {!userId && (
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {userId ? (
+              <button onClick={logout}
+                style={{ padding: "7px 14px", borderRadius: 9, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, fontWeight: 600, fontSize: 12, cursor: "pointer" }}>
+                Déconnexion
+              </button>
+            ) : (
               <button onClick={() => navigate("/auth")}
                 style={{ padding: "7px 14px", borderRadius: 9, background: "transparent", border: `1px solid ${T.accent}`, color: T.accent, fontWeight: 600, fontSize: 12, cursor: "pointer" }}>
                 Se connecter
               </button>
             )}
-            <button onClick={() => setShowNew(true)}
+            <button onClick={() => userId ? setShowNew(true) : navigate("/auth")}
               style={{ padding: "8px 16px", borderRadius: 9, background: T.accent, border: "none", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer", boxShadow: `0 3px 12px ${T.accent}44` }}>
               + Nouveau carnet
             </button>
@@ -233,79 +244,114 @@ export default function LibraryPage() {
       </div>
 
       <div style={{ padding: "20px 24px", maxWidth: 1400, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 22 }}>
-          {[
-            { l: "Carnets",  v: notebooks.length,                        c: T.accent,  e: "📓" },
-            { l: "Matières", v: usedSubjects.length,                     c: T.a2,      e: "📚" },
-            { l: "Favoris",  v: notebooks.filter(n => n.starred).length, c: "#f5a623", e: "⭐" },
-            { l: "Pages",    v: notebooks.reduce((a,n) => a+(n.pages_count||1), 0), c: T.a3, e: "📄" },
-          ].map(s => (
-            <div key={s.l} style={{ padding: "16px 20px", borderRadius: 14, background: T.surface, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", gap: 14, cursor: "default" }}>
-              <div style={{ fontSize: 26 }}>{s.e}</div>
-              <div>
-                <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: s.c, lineHeight: 1 }}>{s.v}</div>
-                <div style={{ fontSize: 11, color: T.muted, marginTop: 2 }}>{s.l}</div>
-              </div>
+
+        {/* PAS CONNECTÉ */}
+        {!userId && !loading && (
+          <div style={{ textAlign: "center", padding: "80px 0" }}>
+            <div style={{ fontSize: 50, marginBottom: 16 }}>🏛</div>
+            <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, color: T.ink, marginBottom: 8 }}>Bienvenue sur ArchNote</div>
+            <div style={{ fontSize: 14, color: T.muted, marginBottom: 28, maxWidth: 400, margin: "0 auto 28px" }}>
+              Connecte-toi pour accéder à tes carnets sauvegardés dans le cloud, depuis n'importe quel appareil.
             </div>
-          ))}
-        </div>
-
-        <div style={{ display: "flex", gap: 7, marginBottom: 14, flexWrap: "wrap" }}>
-          <button onClick={() => setFilt("all")} style={{ padding: "6px 13px", borderRadius: 20, border: `1px solid ${filt === "all" ? T.accent : T.border}`, background: filt === "all" ? `${T.accent}15` : T.bg, color: filt === "all" ? T.accent : T.muted, fontSize: 12, cursor: "pointer" }}>
-            Tous ({notebooks.length})
-          </button>
-          {usedSubjects.map(s => (
-            <button key={s.id} onClick={() => setFilt(s.id)} style={{ padding: "6px 13px", borderRadius: 20, border: `1px solid ${filt === s.id ? s.c : T.border}`, background: filt === s.id ? s.c + "18" : T.bg, color: filt === s.id ? s.c : T.muted, fontSize: 12, cursor: "pointer" }}>
-              {s.e} {s.l}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ position: "relative", marginBottom: 22 }}>
-          <span style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: T.muted }}>🔍</span>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher…"
-            style={{ width: "100%", padding: "11px 13px 11px 40px", borderRadius: 11, border: `1px solid ${T.border}`, background: T.surface, fontSize: 14, outline: "none", color: T.ink, boxSizing: "border-box" }} />
-        </div>
-
-        {loading ? (
-          <div style={{ textAlign: "center", padding: "60px 0", color: T.muted }}>
-            <div style={{ fontSize: 30, marginBottom: 10 }}>⏳</div>
-            <div>Chargement…</div>
-          </div>
-        ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 14 }}>
-            {filtered.map(nb => {
-              const s = SUBJECTS.find(s => s.id === nb.subject) || SUBJECTS[0]
-              const t = TEMPLATES.find(t => t.id === nb.template) || TEMPLATES[0]
-              return (
-                <div key={nb.id} onClick={() => open(nb)}
-                  style={{ borderRadius: 15, background: T.surface, border: `1px solid ${T.border}`, overflow: "hidden", cursor: "pointer", transition: "all .22s" }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = s.c + "66"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = `0 8px 28px ${s.c}18` }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none" }}>
-                  <div style={{ height: 96, background: `linear-gradient(135deg,${s.c}22,${s.c}06)`, display: "flex", alignItems: "center", justifyContent: "center", borderBottom: `1px solid ${T.border}`, position: "relative" }}>
-                    <div style={{ fontSize: 34 }}>{s.e}</div>
-                    <div style={{ position: "absolute", top: 7, left: 7, width: 5, height: 5, borderRadius: 1, background: s.c }} />
-                    <div style={{ position: "absolute", top: 7, right: 7, fontSize: 10, color: s.c + "88" }}>{t.i}</div>
-                  </div>
-                  <div style={{ padding: "11px 14px" }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 5 }}>
-                      <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 12, color: T.ink, lineHeight: 1.3, flex: 1 }}>{nb.title}</div>
-                      <button onClick={e => toggleStar(nb.id, e)} style={{ background: "none", border: "none", color: nb.starred ? "#f5a623" : T.border, cursor: "pointer", fontSize: 14 }}>★</button>
-                    </div>
-                    <div style={{ display: "flex", gap: 5, alignItems: "center", justifyContent: "space-between" }}>
-                      <div style={{ display: "flex", gap: 5 }}>
-                        <div style={{ padding: "2px 7px", borderRadius: 20, background: s.c + "18", color: s.c, fontSize: 9, fontWeight: 700 }}>{s.l}</div>
-                        <div style={{ fontSize: 9, color: T.muted }}>{nb.pages_count || 1}p</div>
-                      </div>
-                      <button onClick={e => deleteNotebook(nb.id, e)} style={{ background: "none", border: "none", color: T.muted, cursor: "pointer", fontSize: 11, opacity: .5 }}>🗑</button>
-                    </div>
-                    <div style={{ fontSize: 9, color: T.muted, marginTop: 4 }}>{timeAgo(nb.updated_at)}</div>
-                  </div>
-                </div>
-              )
-            })}
+            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+              <button onClick={() => navigate("/auth")}
+                style={{ padding: "12px 24px", borderRadius: 11, background: T.accent, border: "none", color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: `0 4px 14px ${T.accent}44` }}>
+                Se connecter / Créer un compte
+              </button>
+            </div>
           </div>
         )}
+
+        {/* CONNECTÉ */}
+        {userId && <>
+          {/* Stats */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 22 }}>
+            {[
+              { l: "Carnets",  v: notebooks.length,                        c: T.accent,  e: "📓" },
+              { l: "Matières", v: usedSubjects.length,                     c: T.a2,      e: "📚" },
+              { l: "Favoris",  v: notebooks.filter(n => n.starred).length, c: "#f5a623", e: "⭐" },
+              { l: "Pages",    v: notebooks.reduce((a,n) => a+(n.pages_count||1), 0), c: T.a3, e: "📄" },
+            ].map(s => (
+              <div key={s.l} style={{ padding: "16px 20px", borderRadius: 14, background: T.surface, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{ fontSize: 26 }}>{s.e}</div>
+                <div>
+                  <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: s.c, lineHeight: 1 }}>{s.v}</div>
+                  <div style={{ fontSize: 11, color: T.muted, marginTop: 2 }}>{s.l}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Filtres */}
+          <div style={{ display: "flex", gap: 7, marginBottom: 14, flexWrap: "wrap" }}>
+            <button onClick={() => setFilt("all")} style={{ padding: "6px 13px", borderRadius: 20, border: `1px solid ${filt === "all" ? T.accent : T.border}`, background: filt === "all" ? `${T.accent}15` : T.bg, color: filt === "all" ? T.accent : T.muted, fontSize: 12, cursor: "pointer" }}>
+              Tous ({notebooks.length})
+            </button>
+            {usedSubjects.map(s => (
+              <button key={s.id} onClick={() => setFilt(s.id)} style={{ padding: "6px 13px", borderRadius: 20, border: `1px solid ${filt === s.id ? s.c : T.border}`, background: filt === s.id ? s.c + "18" : T.bg, color: filt === s.id ? s.c : T.muted, fontSize: 12, cursor: "pointer" }}>
+                {s.e} {s.l}
+              </button>
+            ))}
+          </div>
+
+          {/* Recherche */}
+          <div style={{ position: "relative", marginBottom: 22 }}>
+            <span style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: T.muted }}>🔍</span>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher…"
+              style={{ width: "100%", padding: "11px 13px 11px 40px", borderRadius: 11, border: `1px solid ${T.border}`, background: T.surface, fontSize: 14, outline: "none", color: T.ink, boxSizing: "border-box" }} />
+          </div>
+
+          {/* Chargement */}
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "60px 0", color: T.muted }}>
+              <div style={{ fontSize: 30, marginBottom: 10 }}>⏳</div>
+              <div>Chargement de vos carnets…</div>
+            </div>
+          ) : notebooks.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "60px 0", color: T.muted }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>📓</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: T.ink, marginBottom: 8 }}>Aucun carnet pour l'instant</div>
+              <div style={{ fontSize: 13, marginBottom: 20 }}>Crée ton premier carnet pour commencer !</div>
+              <button onClick={() => setShowNew(true)}
+                style={{ padding: "11px 24px", borderRadius: 11, background: T.accent, border: "none", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                + Créer mon premier carnet
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 14 }}>
+              {filtered.map(nb => {
+                const s = SUBJECTS.find(s => s.id === nb.subject) || SUBJECTS[0]
+                const t = TEMPLATES.find(t => t.id === nb.template) || TEMPLATES[0]
+                return (
+                  <div key={nb.id} onClick={() => open(nb)}
+                    style={{ borderRadius: 15, background: T.surface, border: `1px solid ${T.border}`, overflow: "hidden", cursor: "pointer", transition: "all .22s" }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = s.c + "66"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = `0 8px 28px ${s.c}18` }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none" }}>
+                    <div style={{ height: 96, background: `linear-gradient(135deg,${s.c}22,${s.c}06)`, display: "flex", alignItems: "center", justifyContent: "center", borderBottom: `1px solid ${T.border}`, position: "relative" }}>
+                      <div style={{ fontSize: 34 }}>{s.e}</div>
+                      <div style={{ position: "absolute", top: 7, left: 7, width: 5, height: 5, borderRadius: 1, background: s.c }} />
+                      <div style={{ position: "absolute", top: 7, right: 7, fontSize: 10, color: s.c + "88" }}>{t.i}</div>
+                    </div>
+                    <div style={{ padding: "11px 14px" }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 5 }}>
+                        <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 12, color: T.ink, lineHeight: 1.3, flex: 1 }}>{nb.title}</div>
+                        <button onClick={e => toggleStar(nb.id, e)} style={{ background: "none", border: "none", color: nb.starred ? "#f5a623" : T.border, cursor: "pointer", fontSize: 14 }}>★</button>
+                      </div>
+                      <div style={{ display: "flex", gap: 5, alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{ display: "flex", gap: 5 }}>
+                          <div style={{ padding: "2px 7px", borderRadius: 20, background: s.c + "18", color: s.c, fontSize: 9, fontWeight: 700 }}>{s.l}</div>
+                          <div style={{ fontSize: 9, color: T.muted }}>{nb.pages_count || 1}p</div>
+                        </div>
+                        <button onClick={e => deleteNotebook(nb.id, e)} style={{ background: "none", border: "none", color: T.muted, cursor: "pointer", fontSize: 11, opacity: .5 }}>🗑</button>
+                      </div>
+                      <div style={{ fontSize: 9, color: T.muted, marginTop: 4 }}>{timeAgo(nb.updated_at)}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </>}
       </div>
     </div>
   )
