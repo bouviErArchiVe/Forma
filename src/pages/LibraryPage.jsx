@@ -39,7 +39,7 @@ const TEMPLATES = [
   {id:"mindmap",   l:"Carte mentale",  i:"🧠"},
 ]
 
-const MOCK_FALLBACK = [
+const MOCK_FALLBACK = []
   {id:"1",title:"Maison Unifamiliale — Projet 1",subject:"arch",   template:"plan",   pages_count:18,starred:true, updated_at:new Date().toISOString()},
   {id:"2",title:"Calcul des Charges",             subject:"struct", template:"grid10", pages_count:12,starred:false,updated_at:new Date().toISOString()},
   {id:"3",title:"Technical English B2",           subject:"english",template:"lined",  pages_count:8, starred:false,updated_at:new Date().toISOString()},
