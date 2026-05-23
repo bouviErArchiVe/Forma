@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom"
 import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
 
-/* ══ PALETTES ═══════════════════════════════════════════════ */
 const CPAL = {
   "⬛ Basique":   ["#000","#222","#444","#666","#888","#aaa","#ccc","#fff"],
   "🔴 Rouges":   ["#ff0000","#e53935","#c62828","#b71c1c","#ff5252","#ff8a80","#ff1744","#d50000"],
@@ -26,15 +25,15 @@ const CPAL = {
   "🌙 Nuit":     ["#0d1117","#161b22","#58a6ff","#3fb950","#f78166","#d2a8ff","#ffa657","#79c0ff"],
   "🌈 Néon":     ["#00ffcc","#ff00ff","#ffff00","#00ff00","#ff6600","#ff0066","#0066ff","#cc00ff"],
   "🎭 Pop Art":  ["#ff3366","#ff6600","#ffcc00","#33cc33","#3399ff","#cc33ff","#ff0099","#00cccc"],
-  "🏯 Japonais": ["#c62828","#880e4f","#4a148c","#1a237e","#006064","#1b5e20","#f57f17","#bf360c"],
-  "🌻 Champs":   ["#ffd700","#ffa500","#ff8c00","#228b22","#90ee90","#adff2f","#7fff00","#3cb371"],
   "🔥 Feu":      ["#ff0000","#ff3300","#ff6600","#ff9900","#ffcc00","#ffff00","#ff4500","#dc143c"],
   "💎 Gemmes":   ["#1a0a2e","#4a148c","#7b1fa2","#0d47a1","#1565c0","#006064","#004d40","#1b5e20"],
   "📐 Plans":    ["#1a1a1a","#c8622a","#3d6b8c","#e94560","#4a7c59","#ff6b35","#7c3aed","#2196f3"],
   "🏗 Structure":["#37474f","#455a64","#546e7a","#607d8b","#78909c","#90a4ae","#b0bec5","#cfd8dc"],
   "🇸🇪 Nordique": ["#2c3e50","#3498db","#ecf0f1","#95a5a6","#1abc9c","#16a085","#2980b9","#8e44ad"],
-  "🎹 Piano":    ["#000","#1a1a1a","#333","#666","#999","#ccc","#e0e0e0","#fff"],
   "🌺 Tropical": ["#ff6b6b","#feca57","#48dbfb","#ff9ff3","#54a0ff","#5f27cd","#01aaa4","#ff9f43"],
+  "🌻 Champs":   ["#ffd700","#ffa500","#ff8c00","#228b22","#90ee90","#adff2f","#7fff00","#3cb371"],
+  "🎹 Piano":    ["#000","#1a1a1a","#333","#666","#999","#ccc","#e0e0e0","#fff"],
+  "🏯 Japonais": ["#c62828","#880e4f","#4a148c","#1a237e","#006064","#1b5e20","#f57f17","#bf360c"],
 }
 const HPAL = {
   "Standards": ["#ffff00","#ff9f1c","#00ff88","#00cfff","#ff00ff","#ff3366"],
@@ -44,81 +43,133 @@ const HPAL = {
   "Archi":     ["#ffe066","#ffd6b0","#b3f0d9","#b3d9ff","#f0b3ff","#ffb3c1"],
 }
 const SIZES_MM = [0.05,0.1,0.18,0.25,0.35,0.5,0.7,1.0,1.4,2.0,3.0,5.0,7.0,10.0]
+const ERASER_SIZES_MM = [0.5,1.0,2.0,3.0,5.0,8.0,12.0,20.0,30.0]
 const mm2px = mm => mm * 3.78
 
-/* ══ STRUCTURAL LIBRARY ════════════════════════════════════ */
+/* ══ MASSIVE STRUCTURAL LIBRARY (from Acier Ouellette catalogue) ════ */
 const LIB_METRIC = {
   "🪵 Bois Montants": [
-    {id:"mw2x4", l:"38×89mm (2×4)",    w:38,  h:89,  type:"wood"},
-    {id:"mw2x6", l:"38×140mm (2×6)",   w:38,  h:140, type:"wood"},
-    {id:"mw2x8", l:"38×184mm (2×8)",   w:38,  h:184, type:"wood"},
-    {id:"mw2x10",l:"38×235mm (2×10)",  w:38,  h:235, type:"wood"},
-    {id:"mw2x12",l:"38×286mm (2×12)",  w:38,  h:286, type:"wood"},
-    {id:"mw4x4", l:"89×89mm (4×4)",    w:89,  h:89,  type:"wood"},
-    {id:"mw6x6", l:"140×140mm (6×6)",  w:140, h:140, type:"wood"},
-    {id:"mw8x8", l:"184×184mm (8×8)",  w:184, h:184, type:"wood"},
+    {id:"mw2x4", l:"38×89mm (2×4)",   w:38, h:89, type:"wood"},
+    {id:"mw2x6", l:"38×140mm (2×6)",  w:38, h:140,type:"wood"},
+    {id:"mw2x8", l:"38×184mm (2×8)",  w:38, h:184,type:"wood"},
+    {id:"mw2x10",l:"38×235mm (2×10)", w:38, h:235,type:"wood"},
+    {id:"mw2x12",l:"38×286mm (2×12)", w:38, h:286,type:"wood"},
+    {id:"mw4x4", l:"89×89mm (4×4)",   w:89, h:89, type:"wood"},
+    {id:"mw6x6", l:"140×140mm (6×6)", w:140,h:140,type:"wood"},
+    {id:"mw8x8", l:"184×184mm (8×8)", w:184,h:184,type:"wood"},
   ],
   "🪵 Bois Ingénierie": [
-    {id:"mglb1",l:"GLB 80×200",  w:80,  h:200, type:"glulam"},
-    {id:"mglb2",l:"GLB 130×300", w:130, h:300, type:"glulam"},
-    {id:"mglb3",l:"GLB 175×380", w:175, h:380, type:"glulam"},
-    {id:"mlvl1",l:"LVL 45×240",  w:45,  h:240, type:"glulam"},
-    {id:"mclt1",l:"CLT 120mm",   w:120, h:400, type:"clt"},
-    {id:"mclt2",l:"CLT 160mm",   w:160, h:400, type:"clt"},
-    {id:"mclt3",l:"CLT 200mm",   w:200, h:400, type:"clt"},
+    {id:"mglb1",l:"GLB 80×200",  w:80, h:200,type:"glulam"},
+    {id:"mglb2",l:"GLB 130×300", w:130,h:300,type:"glulam"},
+    {id:"mglb3",l:"GLB 175×380", w:175,h:380,type:"glulam"},
+    {id:"mlvl1",l:"LVL 45×240",  w:45, h:240,type:"glulam"},
+    {id:"mclt1",l:"CLT 120mm",   w:120,h:400,type:"clt"},
+    {id:"mclt2",l:"CLT 160mm",   w:160,h:400,type:"clt"},
+    {id:"mclt3",l:"CLT 200mm",   w:200,h:400,type:"clt"},
+  ],
+  "⚙️ Cornières L (acier)": [
+    {id:"ml12", l:"L 1/2×1/2×1/8",  w:12, h:12, t:3, type:"angle"},
+    {id:"ml19", l:"L 3/4×3/4×1/8",  w:19, h:19, t:3, type:"angle"},
+    {id:"ml25", l:"L 1×1×1/8",      w:25, h:25, t:3, type:"angle"},
+    {id:"ml25b",l:"L 1×1×1/4",      w:25, h:25, t:6, type:"angle"},
+    {id:"ml32", l:"L 1-1/4×1-1/4",  w:32, h:32, t:3, type:"angle"},
+    {id:"ml38", l:"L 1-1/2×1-1/2",  w:38, h:38, t:3, type:"angle"},
+    {id:"ml51", l:"L 2×2×1/8",      w:51, h:51, t:3, type:"angle"},
+    {id:"ml51b",l:"L 2×2×3/16",     w:51, h:51, t:5, type:"angle"},
+    {id:"ml64", l:"L 2-1/2×2-1/2",  w:64, h:64, t:5, type:"angle"},
+    {id:"ml76", l:"L 3×3×3/16",     w:76, h:76, t:5, type:"angle"},
+    {id:"ml76b",l:"L 3×3×1/4",      w:76, h:76, t:6, type:"angle"},
+    {id:"ml89", l:"L 3-1/2×3-1/2",  w:89, h:89, t:6, type:"angle"},
+    {id:"ml102",l:"L 4×4×1/4",      w:102,h:102,t:6, type:"angle"},
+    {id:"ml127",l:"L 5×5×5/16",     w:127,h:127,t:8, type:"angle"},
+    {id:"ml152",l:"L 6×6×3/8",      w:152,h:152,t:10,type:"angle"},
+    {id:"ml203",l:"L 8×8×1/2",      w:203,h:203,t:13,type:"angle"},
   ],
   "⚙️ HSS Carré": [
-    {id:"mhss1",l:"HSS 50×50×3",   w:50,  h:50,  t:3,  type:"hss"},
-    {id:"mhss2",l:"HSS 75×75×5",   w:75,  h:75,  t:5,  type:"hss"},
-    {id:"mhss3",l:"HSS 100×100×5", w:100, h:100, t:5,  type:"hss"},
-    {id:"mhss4",l:"HSS 125×125×6", w:125, h:125, t:6,  type:"hss"},
-    {id:"mhss5",l:"HSS 150×150×6", w:150, h:150, t:6,  type:"hss"},
-    {id:"mhss6",l:"HSS 200×200×8", w:200, h:200, t:8,  type:"hss"},
-    {id:"mhss7",l:"HSS 250×250×10",w:250, h:250, t:10, type:"hss"},
-    {id:"mhss8",l:"HSS 300×300×12",w:300, h:300, t:12, type:"hss"},
+    {id:"mhss19", l:"HSS 3/4×3/4",     w:19, h:19, t:2, type:"hss"},
+    {id:"mhss25", l:"HSS 1×1×0.065",   w:25, h:25, t:2, type:"hss"},
+    {id:"mhss25b",l:"HSS 1×1×1/8",     w:25, h:25, t:3, type:"hss"},
+    {id:"mhss32", l:"HSS 1-1/4×1-1/4", w:32, h:32, t:3, type:"hss"},
+    {id:"mhss38", l:"HSS 1-1/2×1-1/2", w:38, h:38, t:3, type:"hss"},
+    {id:"mhss51", l:"HSS 2×2×0.125",   w:51, h:51, t:3, type:"hss"},
+    {id:"mhss51b",l:"HSS 2×2×1/4",     w:51, h:51, t:6, type:"hss"},
+    {id:"mhss64", l:"HSS 2-1/2×2-1/2", w:64, h:64, t:6, type:"hss"},
+    {id:"mhss76", l:"HSS 3×3×0.125",   w:76, h:76, t:3, type:"hss"},
+    {id:"mhss76b",l:"HSS 3×3×1/4",     w:76, h:76, t:6, type:"hss"},
+    {id:"mhss89", l:"HSS 3-1/2×3-1/2", w:89, h:89, t:5, type:"hss"},
+    {id:"mhss102",l:"HSS 4×4×1/4",     w:102,h:102,t:6, type:"hss"},
+    {id:"mhss127",l:"HSS 5×5×1/4",     w:127,h:127,t:6, type:"hss"},
+    {id:"mhss152",l:"HSS 6×6×1/4",     w:152,h:152,t:6, type:"hss"},
+    {id:"mhss203",l:"HSS 8×8×1/4",     w:203,h:203,t:6, type:"hss"},
+    {id:"mhss254",l:"HSS 10×10×1/4",   w:254,h:254,t:6, type:"hss"},
+    {id:"mhss305",l:"HSS 12×12×1/4",   w:305,h:305,t:6, type:"hss"},
   ],
   "⚙️ HSS Rect.": [
-    {id:"mhssr1",l:"HSS 100×50×4",  w:100, h:50,  t:4, type:"hss"},
-    {id:"mhssr2",l:"HSS 150×75×5",  w:150, h:75,  t:5, type:"hss"},
-    {id:"mhssr3",l:"HSS 200×100×6", w:200, h:100, t:6, type:"hss"},
-    {id:"mhssr4",l:"HSS 250×125×8", w:250, h:125, t:8, type:"hss"},
-    {id:"mhssr5",l:"HSS 300×150×8", w:300, h:150, t:8, type:"hss"},
+    {id:"mhssr1",l:"HSS 2×1",     w:51, h:25, t:3, type:"hss"},
+    {id:"mhssr2",l:"HSS 2×1-1/2", w:51, h:38, t:3, type:"hss"},
+    {id:"mhssr3",l:"HSS 3×2",     w:76, h:51, t:3, type:"hss"},
+    {id:"mhssr4",l:"HSS 4×2",     w:102,h:51, t:3, type:"hss"},
+    {id:"mhssr5",l:"HSS 4×3",     w:102,h:76, t:5, type:"hss"},
+    {id:"mhssr6",l:"HSS 5×2",     w:127,h:51, t:3, type:"hss"},
+    {id:"mhssr7",l:"HSS 5×3",     w:127,h:76, t:5, type:"hss"},
+    {id:"mhssr8",l:"HSS 6×3",     w:152,h:76, t:5, type:"hss"},
+    {id:"mhssr9",l:"HSS 6×4",     w:152,h:102,t:5, type:"hss"},
+    {id:"mhsra",l:"HSS 8×4",      w:203,h:102,t:5, type:"hss"},
+    {id:"mhsrb",l:"HSS 8×6",      w:203,h:152,t:5, type:"hss"},
+    {id:"mhsrc",l:"HSS 10×4",     w:254,h:102,t:5, type:"hss"},
+    {id:"mhsrd",l:"HSS 10×6",     w:254,h:152,t:5, type:"hss"},
+    {id:"mhsre",l:"HSS 12×4",     w:305,h:102,t:5, type:"hss"},
+    {id:"mhsrf",l:"HSS 12×6",     w:305,h:152,t:5, type:"hss"},
   ],
-  "⚙️ Profilés W": [
-    {id:"mw150",l:"W150×24",  w:102,h:160,fw:102,ft:10,wt:6,  type:"Ibeam"},
-    {id:"mw200",l:"W200×36",  w:165,h:203,fw:165,ft:12,wt:7,  type:"Ibeam"},
-    {id:"mw250",l:"W250×49",  w:202,h:257,fw:202,ft:14,wt:9,  type:"Ibeam"},
-    {id:"mw310",l:"W310×60",  w:203,h:303,fw:203,ft:15,wt:8,  type:"Ibeam"},
-    {id:"mw360",l:"W360×79",  w:205,h:354,fw:205,ft:17,wt:9,  type:"Ibeam"},
-    {id:"mw460",l:"W460×97",  w:193,h:465,fw:193,ft:19,wt:11, type:"Ibeam"},
+  "⚙️ Poutres W": [
+    {id:"mw4x13",l:"W4×13",   w:103,h:106,fw:103,ft:9, wt:6,  type:"Ibeam"},
+    {id:"mw5x16",l:"W5×16",   w:127,h:127,fw:127,ft:9, wt:6,  type:"Ibeam"},
+    {id:"mw6x9",l:"W6×9",     w:100,h:150,fw:100,ft:5, wt:4,  type:"Ibeam"},
+    {id:"mw6x15",l:"W6×15",   w:152,h:152,fw:152,ft:7, wt:6,  type:"Ibeam"},
+    {id:"mw8x10",l:"W8×10",   w:100,h:200,fw:100,ft:5, wt:4,  type:"Ibeam"},
+    {id:"mw8x18",l:"W8×18",   w:133,h:207,fw:133,ft:8, wt:6,  type:"Ibeam"},
+    {id:"mw8x31",l:"W8×31",   w:203,h:203,fw:203,ft:11,wt:7,  type:"Ibeam"},
+    {id:"mw10x12",l:"W10×12", w:101,h:251,fw:101,ft:5, wt:5,  type:"Ibeam"},
+    {id:"mw10x22",l:"W10×22", w:146,h:258,fw:146,ft:9, wt:6,  type:"Ibeam"},
+    {id:"mw10x49",l:"W10×49", w:254,h:254,fw:254,ft:14,wt:9,  type:"Ibeam"},
+    {id:"mw12x14",l:"W12×14", w:101,h:302,fw:101,ft:6, wt:5,  type:"Ibeam"},
+    {id:"mw12x26",l:"W12×26", w:165,h:310,fw:165,ft:9, wt:6,  type:"Ibeam"},
+    {id:"mw12x53",l:"W12×53", w:254,h:305,fw:254,ft:15,wt:9,  type:"Ibeam"},
+    {id:"mw14x22",l:"W14×22", w:127,h:349,fw:127,ft:9, wt:6,  type:"Ibeam"},
+    {id:"mw14x43",l:"W14×43", w:203,h:347,fw:203,ft:13,wt:8,  type:"Ibeam"},
+    {id:"mw16x26",l:"W16×26", w:140,h:398,fw:140,ft:9, wt:6,  type:"Ibeam"},
+    {id:"mw18x35",l:"W18×35", w:152,h:450,fw:152,ft:11,wt:8,  type:"Ibeam"},
+    {id:"mw21x44",l:"W21×44", w:165,h:525,fw:165,ft:11,wt:9,  type:"Ibeam"},
+    {id:"mw24x55",l:"W24×55", w:178,h:599,fw:178,ft:13,wt:10, type:"Ibeam"},
+    {id:"mw27x84",l:"W27×84", w:253,h:679,fw:253,ft:16,wt:12, type:"Ibeam"},
   ],
-  "⚙️ IPE / HEA": [
-    {id:"mipe120",l:"IPE 120",w:64, h:120,fw:64, ft:8, wt:4, type:"Ibeam"},
-    {id:"mipe160",l:"IPE 160",w:82, h:160,fw:82, ft:9, wt:5, type:"Ibeam"},
-    {id:"mipe200",l:"IPE 200",w:100,h:200,fw:100,ft:10,wt:6, type:"Ibeam"},
-    {id:"mipe240",l:"IPE 240",w:120,h:240,fw:120,ft:10,wt:6, type:"Ibeam"},
-    {id:"mipe300",l:"IPE 300",w:150,h:300,fw:150,ft:11,wt:7, type:"Ibeam"},
-    {id:"mhea200",l:"HEA 200",w:200,h:190,fw:200,ft:10,wt:7, type:"Ibeam"},
-    {id:"mhea260",l:"HEA 260",w:260,h:250,fw:260,ft:13,wt:8, type:"Ibeam"},
-    {id:"mheb200",l:"HEB 200",w:200,h:200,fw:200,ft:15,wt:9, type:"Ibeam"},
+  "⚙️ Poutres S (I)": [
+    {id:"ms3", l:"S3×5.7",   w:59, h:76, fw:59, ft:7, wt:4, type:"Ibeam"},
+    {id:"ms4", l:"S4×7.7",   w:68, h:102,fw:68, ft:7, wt:5, type:"Ibeam"},
+    {id:"ms5", l:"S5×10",    w:76, h:127,fw:76, ft:8, wt:5, type:"Ibeam"},
+    {id:"ms6", l:"S6×12.5",  w:85, h:152,fw:85, ft:9, wt:6, type:"Ibeam"},
+    {id:"ms8", l:"S8×18.4",  w:102,h:203,fw:102,ft:11,wt:7, type:"Ibeam"},
+    {id:"ms10",l:"S10×25.4", w:118,h:254,fw:118,ft:12,wt:8, type:"Ibeam"},
+    {id:"ms12",l:"S12×31.8", w:127,h:305,fw:127,ft:14,wt:9, type:"Ibeam"},
+    {id:"ms15",l:"S15×42.9", w:140,h:381,fw:140,ft:16,wt:10,type:"Ibeam"},
+    {id:"ms18",l:"S18×54.7", w:152,h:457,fw:152,ft:18,wt:12,type:"Ibeam"},
+    {id:"ms20",l:"S20×65.4", w:159,h:508,fw:159,ft:20,wt:13,type:"Ibeam"},
+    {id:"ms24",l:"S24×79.9", w:178,h:610,fw:178,ft:22,wt:13,type:"Ibeam"},
   ],
-  "⚙️ UPN / UPE": [
-    {id:"mupn80", l:"UPN 80", w:45, h:80, fw:45, ft:8, wt:6, type:"channel"},
-    {id:"mupn100",l:"UPN 100",w:50, h:100,fw:50, ft:9, wt:6, type:"channel"},
-    {id:"mupn120",l:"UPN 120",w:55, h:120,fw:55, ft:9, wt:7, type:"channel"},
-    {id:"mupn160",l:"UPN 160",w:65, h:160,fw:65, ft:11,wt:8, type:"channel"},
-    {id:"mupn200",l:"UPN 200",w:75, h:200,fw:75, ft:12,wt:9, type:"channel"},
-    {id:"mupn240",l:"UPN 240",w:85, h:240,fw:85, ft:13,wt:9, type:"channel"},
-  ],
-  "⚙️ Cornières L": [
-    {id:"ml50",  l:"L 50×50×5",   w:50, h:50, t:5,  type:"angle"},
-    {id:"ml65",  l:"L 65×65×6",   w:65, h:65, t:6,  type:"angle"},
-    {id:"ml80",  l:"L 80×80×8",   w:80, h:80, t:8,  type:"angle"},
-    {id:"ml100", l:"L 100×100×8", w:100,h:100,t:8,  type:"angle"},
-    {id:"ml120", l:"L 120×120×10",w:120,h:120,t:10, type:"angle"},
-    {id:"ml150", l:"L 150×90×10", w:150,h:90, t:10, type:"angle"},
+  "⚙️ Profilés U/C": [
+    {id:"mc3",  l:"C3×4.1",   w:36, h:76, fw:36, ft:7, wt:4, type:"channel"},
+    {id:"mc4",  l:"C4×5.4",   w:40, h:102,fw:40, ft:8, wt:5, type:"channel"},
+    {id:"mc5",  l:"C5×6.7",   w:44, h:127,fw:44, ft:8, wt:5, type:"channel"},
+    {id:"mc6",  l:"C6×8.2",   w:49, h:152,fw:49, ft:9, wt:5, type:"channel"},
+    {id:"mc7",  l:"C7×9.8",   w:53, h:178,fw:53, ft:9, wt:5, type:"channel"},
+    {id:"mc8",  l:"C8×11.5",  w:57, h:203,fw:57, ft:10,wt:6, type:"channel"},
+    {id:"mc9",  l:"C9×13.4",  w:62, h:229,fw:62, ft:10,wt:6, type:"channel"},
+    {id:"mc10", l:"C10×15.3", w:66, h:254,fw:66, ft:11,wt:6, type:"channel"},
+    {id:"mc12", l:"C12×20.7", w:76, h:305,fw:76, ft:13,wt:7, type:"channel"},
+    {id:"mc15", l:"C15×33.9", w:86, h:381,fw:86, ft:17,wt:10,type:"channel"},
   ],
   "🧱 Béton Poteaux": [
+    {id:"mc150",l:"Poteau 150×150",w:150,h:150,type:"conc"},
     {id:"mc200",l:"Poteau 200×200",w:200,h:200,type:"conc"},
     {id:"mc250",l:"Poteau 250×250",w:250,h:250,type:"conc"},
     {id:"mc300",l:"Poteau 300×300",w:300,h:300,type:"conc"},
@@ -127,30 +178,28 @@ const LIB_METRIC = {
     {id:"mcr400",l:"Rond Ø400",    w:400,h:400,type:"concR"},
   ],
   "🧱 Béton Murs": [
-    {id:"mm150",l:"Mur 150mm",     w:150,h:600,type:"conc"},
-    {id:"mm200",l:"Mur 200mm",     w:200,h:600,type:"conc"},
-    {id:"mm250",l:"Mur 250mm",     w:250,h:600,type:"conc"},
-    {id:"mm300",l:"Mur 300mm",     w:300,h:600,type:"conc"},
+    {id:"mm150",l:"Mur 150mm",    w:150,h:600,type:"conc"},
+    {id:"mm200",l:"Mur 200mm",    w:200,h:600,type:"conc"},
+    {id:"mm250",l:"Mur 250mm",    w:250,h:600,type:"conc"},
+    {id:"mm300",l:"Mur 300mm",    w:300,h:600,type:"conc"},
     {id:"mb300",l:"Poutre 300×600",w:300,h:600,type:"concB"},
     {id:"mb400",l:"Poutre 400×700",w:400,h:700,type:"concB"},
   ],
   "🧱 Fondations": [
-    {id:"mf400",l:"Semelle 400",  w:400,h:400,type:"ftg"},
-    {id:"mf600",l:"Semelle 600",  w:600,h:600,type:"ftg"},
-    {id:"mf900",l:"Semelle 900",  w:900,h:900,type:"ftg"},
-    {id:"mp250",l:"Pieu Ø250",    w:250,h:250,type:"concR"},
-    {id:"mp350",l:"Pieu Ø350",    w:350,h:350,type:"concR"},
+    {id:"mf400",l:"Semelle 400",w:400,h:400,type:"ftg"},
+    {id:"mf600",l:"Semelle 600",w:600,h:600,type:"ftg"},
+    {id:"mf900",l:"Semelle 900",w:900,h:900,type:"ftg"},
+    {id:"mp250",l:"Pieu Ø250",  w:250,h:250,type:"concR"},
+    {id:"mp350",l:"Pieu Ø350",  w:350,h:350,type:"concR"},
   ],
-  "🚪 Portes": [
-    {id:"md900", l:"900×2030",  w:900, h:2030,type:"door"},
-    {id:"md1000",l:"1000×2100", w:1000,h:2100,type:"door"},
-    {id:"md1200",l:"1200×2100", w:1200,h:2100,type:"door"},
-    {id:"mdd",   l:"Double 1800",w:1800,h:2100,type:"doorD"},
-  ],
-  "🪟 Fenêtres": [
-    {id:"mw900",l:"900×1200",  w:900, h:1200,type:"win"},
-    {id:"mw1200",l:"1200×1500",w:1200,h:1500,type:"win"},
-    {id:"mw1500",l:"1500×1800",w:1500,h:1800,type:"win"},
+  "🚪 Portes / Fenêtres": [
+    {id:"md900", l:"Porte 900×2030",  w:900, h:2030,type:"door"},
+    {id:"md1000",l:"Porte 1000×2100", w:1000,h:2100,type:"door"},
+    {id:"md1200",l:"Porte 1200×2100", w:1200,h:2100,type:"door"},
+    {id:"mdd",   l:"Dble 1800×2100",  w:1800,h:2100,type:"doorD"},
+    {id:"mw900", l:"Fen. 900×1200",   w:900, h:1200,type:"win"},
+    {id:"mw1200",l:"Fen. 1200×1500",  w:1200,h:1500,type:"win"},
+    {id:"mw1500",l:"Fen. 1500×1800",  w:1500,h:1800,type:"win"},
   ],
 }
 
@@ -160,101 +209,145 @@ const LIB_IMPERIAL = {
     {id:"iw2x6", l:"2×6 (1.5\"×5.5\")",  w:38, h:140,type:"wood"},
     {id:"iw2x8", l:"2×8 (1.5\"×7.25\")", w:38, h:184,type:"wood"},
     {id:"iw2x10",l:"2×10 (1.5\"×9.25\")",w:38, h:235,type:"wood"},
+    {id:"iw2x12",l:"2×12 (1.5\"×11.25\")",w:38,h:286,type:"wood"},
     {id:"iw4x4", l:"4×4 (3.5\"×3.5\")",  w:89, h:89, type:"wood"},
     {id:"iw6x6", l:"6×6 (5.5\"×5.5\")",  w:140,h:140,type:"wood"},
   ],
+  "⚙️ Angles (steel)": [
+    {id:"ia12",l:"1/2×1/2×1/8",   w:12, h:12, t:3, type:"angle"},
+    {id:"ia19",l:"3/4×3/4×1/8",   w:19, h:19, t:3, type:"angle"},
+    {id:"ia25",l:"1×1×1/8",       w:25, h:25, t:3, type:"angle"},
+    {id:"ia32",l:"1-1/4×1-1/4",   w:32, h:32, t:3, type:"angle"},
+    {id:"ia38",l:"1-1/2×1-1/2",   w:38, h:38, t:3, type:"angle"},
+    {id:"ia51",l:"2×2×1/8",       w:51, h:51, t:3, type:"angle"},
+    {id:"ia64",l:"2-1/2×2-1/2",   w:64, h:64, t:5, type:"angle"},
+    {id:"ia76",l:"3×3×3/16",      w:76, h:76, t:5, type:"angle"},
+    {id:"ia89",l:"3-1/2×3-1/2",   w:89, h:89, t:6, type:"angle"},
+    {id:"ia102",l:"4×4×1/4",      w:102,h:102,t:6, type:"angle"},
+    {id:"ia127",l:"5×5×3/8",      w:127,h:127,t:10,type:"angle"},
+    {id:"ia152",l:"6×6×3/8",      w:152,h:152,t:10,type:"angle"},
+    {id:"ia203",l:"8×8×1/2",      w:203,h:203,t:13,type:"angle"},
+  ],
   "⚙️ HSS Square": [
-    {id:"ihss2",l:"HSS 2×2×3/16",w:51, h:51, t:5,  type:"hss"},
-    {id:"ihss3",l:"HSS 3×3×1/4", w:76, h:76, t:6,  type:"hss"},
-    {id:"ihss4",l:"HSS 4×4×1/4", w:102,h:102,t:6,  type:"hss"},
-    {id:"ihss5",l:"HSS 5×5×5/16",w:127,h:127,t:8,  type:"hss"},
-    {id:"ihss6",l:"HSS 6×6×3/8", w:152,h:152,t:10, type:"hss"},
-    {id:"ihss8",l:"HSS 8×8×1/2", w:203,h:203,t:13, type:"hss"},
-    {id:"ihss10",l:"HSS 10×10×5/8",w:254,h:254,t:16,type:"hss"},
+    {id:"ihss19",l:"HSS 3/4×3/4",  w:19, h:19, t:2, type:"hss"},
+    {id:"ihss25",l:"HSS 1×1×0.065",w:25, h:25, t:2, type:"hss"},
+    {id:"ihss32",l:"HSS 1-1/4",    w:32, h:32, t:3, type:"hss"},
+    {id:"ihss38",l:"HSS 1-1/2",    w:38, h:38, t:3, type:"hss"},
+    {id:"ihss51",l:"HSS 2×2×0.125",w:51, h:51, t:3, type:"hss"},
+    {id:"ihss51b",l:"HSS 2×2×1/4", w:51, h:51, t:6, type:"hss"},
+    {id:"ihss64",l:"HSS 2-1/2",    w:64, h:64, t:5, type:"hss"},
+    {id:"ihss76",l:"HSS 3×3×1/4",  w:76, h:76, t:6, type:"hss"},
+    {id:"ihss102",l:"HSS 4×4×1/4", w:102,h:102,t:6, type:"hss"},
+    {id:"ihss127",l:"HSS 5×5×1/4", w:127,h:127,t:6, type:"hss"},
+    {id:"ihss152",l:"HSS 6×6×3/8", w:152,h:152,t:10,type:"hss"},
+    {id:"ihss203",l:"HSS 8×8×1/2", w:203,h:203,t:13,type:"hss"},
+    {id:"ihss254",l:"HSS 10×10×5/8",w:254,h:254,t:16,type:"hss"},
+  ],
+  "⚙️ HSS Rect.": [
+    {id:"isr1",l:"HSS 2×1",    w:51, h:25, t:3, type:"hss"},
+    {id:"isr2",l:"HSS 3×2",    w:76, h:51, t:3, type:"hss"},
+    {id:"isr3",l:"HSS 4×2",    w:102,h:51, t:3, type:"hss"},
+    {id:"isr4",l:"HSS 4×3",    w:102,h:76, t:5, type:"hss"},
+    {id:"isr5",l:"HSS 6×4",    w:152,h:102,t:5, type:"hss"},
+    {id:"isr6",l:"HSS 8×4",    w:203,h:102,t:5, type:"hss"},
+    {id:"isr7",l:"HSS 10×6",   w:254,h:152,t:5, type:"hss"},
+    {id:"isr8",l:"HSS 12×6",   w:305,h:152,t:5, type:"hss"},
   ],
   "⚙️ W Shapes": [
-    {id:"iw6",  l:"W6×15",   w:152,h:152,fw:152,ft:11,wt:6, type:"Ibeam"},
-    {id:"iw8",  l:"W8×24",   w:165,h:203,fw:165,ft:12,wt:7, type:"Ibeam"},
-    {id:"iw10", l:"W10×49",  w:202,h:257,fw:202,ft:14,wt:9, type:"Ibeam"},
-    {id:"iw12", l:"W12×53",  w:254,h:305,fw:254,ft:15,wt:9, type:"Ibeam"},
-    {id:"iw14", l:"W14×82",  w:254,h:356,fw:254,ft:18,wt:11,type:"Ibeam"},
-    {id:"iw16", l:"W16×100", w:267,h:406,fw:267,ft:19,wt:12,type:"Ibeam"},
-    {id:"iw18", l:"W18×97",  w:214,h:457,fw:214,ft:19,wt:11,type:"Ibeam"},
+    {id:"iw4x13",l:"W4×13",   w:103,h:106,fw:103,ft:9, wt:6,  type:"Ibeam"},
+    {id:"iw6x9",l:"W6×9",     w:100,h:150,fw:100,ft:5, wt:4,  type:"Ibeam"},
+    {id:"iw6x15",l:"W6×15",   w:152,h:152,fw:152,ft:7, wt:6,  type:"Ibeam"},
+    {id:"iw8x10",l:"W8×10",   w:100,h:203,fw:100,ft:5, wt:4,  type:"Ibeam"},
+    {id:"iw8x31",l:"W8×31",   w:203,h:203,fw:203,ft:11,wt:7,  type:"Ibeam"},
+    {id:"iw10x22",l:"W10×22", w:146,h:258,fw:146,ft:9, wt:6,  type:"Ibeam"},
+    {id:"iw10x49",l:"W10×49", w:254,h:254,fw:254,ft:14,wt:9,  type:"Ibeam"},
+    {id:"iw12x26",l:"W12×26", w:165,h:310,fw:165,ft:9, wt:6,  type:"Ibeam"},
+    {id:"iw12x53",l:"W12×53", w:254,h:305,fw:254,ft:15,wt:9,  type:"Ibeam"},
+    {id:"iw14x43",l:"W14×43", w:203,h:347,fw:203,ft:13,wt:8,  type:"Ibeam"},
+    {id:"iw16x26",l:"W16×26", w:140,h:398,fw:140,ft:9, wt:6,  type:"Ibeam"},
+    {id:"iw18x35",l:"W18×35", w:152,h:450,fw:152,ft:11,wt:8,  type:"Ibeam"},
+    {id:"iw21x44",l:"W21×44", w:165,h:525,fw:165,ft:11,wt:9,  type:"Ibeam"},
+    {id:"iw24x55",l:"W24×55", w:178,h:599,fw:178,ft:13,wt:10, type:"Ibeam"},
+  ],
+  "⚙️ S Beams (I)": [
+    {id:"is3", l:"S3×5.7",  w:59, h:76, fw:59, ft:7, wt:4, type:"Ibeam"},
+    {id:"is4", l:"S4×7.7",  w:68, h:102,fw:68, ft:7, wt:5, type:"Ibeam"},
+    {id:"is6", l:"S6×12.5", w:85, h:152,fw:85, ft:9, wt:6, type:"Ibeam"},
+    {id:"is8", l:"S8×18.4", w:102,h:203,fw:102,ft:11,wt:7, type:"Ibeam"},
+    {id:"is10",l:"S10×25.4",w:118,h:254,fw:118,ft:12,wt:8, type:"Ibeam"},
+    {id:"is12",l:"S12×31.8",w:127,h:305,fw:127,ft:14,wt:9, type:"Ibeam"},
+    {id:"is15",l:"S15×42.9",w:140,h:381,fw:140,ft:16,wt:10,type:"Ibeam"},
+    {id:"is18",l:"S18×54.7",w:152,h:457,fw:152,ft:18,wt:12,type:"Ibeam"},
+    {id:"is24",l:"S24×79.9",w:178,h:610,fw:178,ft:22,wt:13,type:"Ibeam"},
+  ],
+  "⚙️ Channels (C)": [
+    {id:"ic3", l:"C3×4.1",  w:36,h:76, fw:36,ft:7,wt:4, type:"channel"},
+    {id:"ic4", l:"C4×5.4",  w:40,h:102,fw:40,ft:8,wt:5, type:"channel"},
+    {id:"ic6", l:"C6×8.2",  w:49,h:152,fw:49,ft:9,wt:5, type:"channel"},
+    {id:"ic8", l:"C8×11.5", w:57,h:203,fw:57,ft:10,wt:6,type:"channel"},
+    {id:"ic10",l:"C10×15.3",w:66,h:254,fw:66,ft:11,wt:6,type:"channel"},
+    {id:"ic12",l:"C12×20.7",w:76,h:305,fw:76,ft:13,wt:7,type:"channel"},
+    {id:"ic15",l:"C15×33.9",w:86,h:381,fw:86,ft:17,wt:10,type:"channel"},
   ],
   "🧱 Concrete": [
-    {id:"ic8",  l:"Col 8\"×8\"",   w:203,h:203,type:"conc"},
-    {id:"ic10", l:"Col 10\"×10\"", w:254,h:254,type:"conc"},
-    {id:"ic12", l:"Col 12\"×12\"", w:305,h:305,type:"conc"},
+    {id:"ic200",l:"Col 8\"×8\"",   w:203,h:203,type:"conc"},
+    {id:"ic254",l:"Col 10\"×10\"", w:254,h:254,type:"conc"},
+    {id:"ic305",l:"Col 12\"×12\"", w:305,h:305,type:"conc"},
     {id:"icr12",l:"Rnd Ø12\"",     w:305,h:305,type:"concR"},
     {id:"iw6",  l:"Wall 6\"",      w:152,h:600,type:"conc"},
     {id:"iw8",  l:"Wall 8\"",      w:203,h:600,type:"conc"},
     {id:"iw12", l:"Wall 12\"",     w:305,h:600,type:"conc"},
   ],
-  "🚪 Doors (in)": [
-    {id:"id32",l:"Door 32\"×80\"",w:813, h:2032,type:"door"},
-    {id:"id36",l:"Door 36\"×80\"",w:914, h:2032,type:"door"},
-    {id:"id48",l:"Door 48\"×84\"",w:1219,h:2134,type:"door"},
-    {id:"idd", l:"Dbl 72\"×84\"", w:1829,h:2134,type:"doorD"},
-  ],
-  "🪟 Windows (in)": [
-    {id:"iw24",l:"24\"×36\"",w:610, h:914, type:"win"},
-    {id:"iw36",l:"36\"×48\"",w:914, h:1219,type:"win"},
-    {id:"iw48",l:"48\"×60\"",w:1219,h:1524,type:"win"},
-    {id:"iw60",l:"60\"×60\"",w:1524,h:1524,type:"win"},
+  "🚪 Doors / Windows": [
+    {id:"id32",l:"Door 32\"×80\"", w:813, h:2032,type:"door"},
+    {id:"id36",l:"Door 36\"×80\"", w:914, h:2032,type:"door"},
+    {id:"id48",l:"Door 48\"×84\"", w:1219,h:2134,type:"door"},
+    {id:"idd", l:"Dbl 72\"×84\"",  w:1829,h:2134,type:"doorD"},
+    {id:"iw24",l:"Win 24\"×36\"",  w:610, h:914, type:"win"},
+    {id:"iw36",l:"Win 36\"×48\"",  w:914, h:1219,type:"win"},
+    {id:"iw48",l:"Win 48\"×60\"",  w:1219,h:1524,type:"win"},
   ],
 }
 
-const THEMES = [
-  {id:"classic",  n:"Classic",   e:"📐",bg:"#f5f2ec",surface:"#fff",panel:"#1c1c24",accent:"#c8622a",a2:"#3d6b8c",a3:"#4a7c59",ink:"#1c1c24",muted:"#8a8a96",border:"#ddd8ce",paper:"#fafaf7",grid:"rgba(0,0,0,.07)",pline:"rgba(61,107,140,.1)"},
-  {id:"dark",     n:"Dark Pro",  e:"🌑",bg:"#0e0e14",surface:"#16161f",panel:"#0a0a10",accent:"#e94560",a2:"#60a5fa",a3:"#4ade80",ink:"#e8e8f0",muted:"#4a4a60",border:"#1e1e2e",paper:"#12121a",grid:"rgba(255,255,255,.04)",pline:"rgba(96,165,250,.08)"},
-  {id:"neon",     n:"Neon",      e:"🌈",bg:"#05050f",surface:"#0a0a1a",panel:"#03030a",accent:"#00ffcc",a2:"#ff00ff",a3:"#ffff00",ink:"#e0e0ff",muted:"#3a3a5a",border:"#1a1a3a",paper:"#080814",grid:"rgba(0,255,204,.06)",pline:"rgba(0,255,204,.07)"},
-  {id:"arctic",   n:"Arctic",    e:"❄️",bg:"#eef4fb",surface:"#fff",panel:"#1a2a3a",accent:"#2196f3",a2:"#00bcd4",a3:"#26a69a",ink:"#1a2a3a",muted:"#7a9ab8",border:"#c8ddef",paper:"#f8fbff",grid:"rgba(33,150,243,.08)",pline:"rgba(33,150,243,.1)"},
-  {id:"sepia",    n:"Sépia",     e:"📜",bg:"#f4ede0",surface:"#fdf6ed",panel:"#3d2b1a",accent:"#8b4513",a2:"#6b5a3d",a3:"#5a7a3d",ink:"#3d2b1a",muted:"#9a856a",border:"#d4c4a8",paper:"#fdf6ed",grid:"rgba(139,69,19,.08)",pline:"rgba(139,69,19,.1)"},
-  {id:"midnight", n:"Midnight",  e:"🌙",bg:"#0d1117",surface:"#161b22",panel:"#0d1117",accent:"#58a6ff",a2:"#3fb950",a3:"#f78166",ink:"#c9d1d9",muted:"#484f58",border:"#21262d",paper:"#1c2128",grid:"rgba(88,166,255,.05)",pline:"rgba(88,166,255,.07)"},
-  {id:"sunset",   n:"Sunset",    e:"🌅",bg:"#fff8f0",surface:"#fff",panel:"#2d1a0e",accent:"#ff6b35",a2:"#ff9f1c",a3:"#c73e1d",ink:"#2d1a0e",muted:"#b08070",border:"#f0d8c8",paper:"#fffaf6",grid:"rgba(255,107,53,.07)",pline:"rgba(255,107,53,.09)"},
-  {id:"forest",   n:"Forest",    e:"🌲",bg:"#f0f5f0",surface:"#fff",panel:"#1a2a1a",accent:"#2d6a4f",a2:"#52b788",a3:"#95d5b2",ink:"#1a2a1a",muted:"#6a8a6a",border:"#c8ddc8",paper:"#f8faf8",grid:"rgba(45,106,79,.08)",pline:"rgba(45,106,79,.09)"},
-  {id:"violet",   n:"Violet",    e:"💜",bg:"#f5f0ff",surface:"#fff",panel:"#1a0a2e",accent:"#7c3aed",a2:"#a855f7",a3:"#ec4899",ink:"#1a0a2e",muted:"#8a6aaa",border:"#d8c8f0",paper:"#fdf8ff",grid:"rgba(124,58,237,.07)",pline:"rgba(124,58,237,.09)"},
-  {id:"steel",    n:"Steel",     e:"⚙️",bg:"#e8ecef",surface:"#f4f6f8",panel:"#1c2833",accent:"#546e7a",a2:"#78909c",a3:"#b0bec5",ink:"#1c2833",muted:"#7a8a94",border:"#cfd8dc",paper:"#f4f6f8",grid:"rgba(84,110,122,.08)",pline:"rgba(84,110,122,.1)"},
-  {id:"cherry",   n:"Cherry",    e:"🍒",bg:"#fff0f3",surface:"#fff",panel:"#2a0a10",accent:"#e01e5a",a2:"#ff6b9d",a3:"#c92842",ink:"#2a0a10",muted:"#b07080",border:"#f0c8d0",paper:"#fff8fa",grid:"rgba(224,30,90,.07)",pline:"rgba(224,30,90,.09)"},
-  {id:"blueprint",n:"Blueprint", e:"🗺️",bg:"#003366",surface:"#004080",panel:"#001f3f",accent:"#ffffff",a2:"#80c0ff",a3:"#40ff80",ink:"#ffffff",muted:"#80a0c0",border:"#005599",paper:"#003d7a",grid:"rgba(255,255,255,.1)",pline:"rgba(255,255,255,.12)"},
-  {id:"lemon",    n:"Lemon",     e:"🍋",bg:"#fffff0",surface:"#fff",panel:"#2a2a0a",accent:"#d4af00",a2:"#a0c000",a3:"#008080",ink:"#2a2a0a",muted:"#9a9a6a",border:"#e8e8c0",paper:"#fffff8",grid:"rgba(212,175,0,.08)",pline:"rgba(212,175,0,.1)"},
-  {id:"sand",     n:"Sand",      e:"🏜️",bg:"#f5f0e8",surface:"#fff",panel:"#2a2010",accent:"#c9a84c",a2:"#8b7355",a3:"#6b8c3d",ink:"#2a2010",muted:"#9a8a6a",border:"#e0d4b8",paper:"#faf7f0",grid:"rgba(201,168,76,.08)",pline:"rgba(201,168,76,.1)"},
-  {id:"slate",    n:"Slate Dark",e:"🪨",bg:"#1e2025",surface:"#252830",panel:"#16181c",accent:"#a8b2c4",a2:"#7a8fa8",a3:"#5a9a7a",ink:"#d8dce4",muted:"#5a6070",border:"#30343c",paper:"#2a2d35",grid:"rgba(168,178,196,.05)",pline:"rgba(168,178,196,.07)"},
+const THEMES=[
+  {id:"classic",n:"Classic",e:"📐",bg:"#f5f2ec",surface:"#fff",panel:"#1c1c24",accent:"#c8622a",a2:"#3d6b8c",a3:"#4a7c59",ink:"#1c1c24",muted:"#8a8a96",border:"#ddd8ce",paper:"#fafaf7",grid:"rgba(0,0,0,.07)",pline:"rgba(61,107,140,.1)"},
+  {id:"dark",n:"Dark Pro",e:"🌑",bg:"#0e0e14",surface:"#16161f",panel:"#0a0a10",accent:"#e94560",a2:"#60a5fa",a3:"#4ade80",ink:"#e8e8f0",muted:"#4a4a60",border:"#1e1e2e",paper:"#12121a",grid:"rgba(255,255,255,.04)",pline:"rgba(96,165,250,.08)"},
+  {id:"neon",n:"Neon",e:"🌈",bg:"#05050f",surface:"#0a0a1a",panel:"#03030a",accent:"#00ffcc",a2:"#ff00ff",a3:"#ffff00",ink:"#e0e0ff",muted:"#3a3a5a",border:"#1a1a3a",paper:"#080814",grid:"rgba(0,255,204,.06)",pline:"rgba(0,255,204,.07)"},
+  {id:"arctic",n:"Arctic",e:"❄️",bg:"#eef4fb",surface:"#fff",panel:"#1a2a3a",accent:"#2196f3",a2:"#00bcd4",a3:"#26a69a",ink:"#1a2a3a",muted:"#7a9ab8",border:"#c8ddef",paper:"#f8fbff",grid:"rgba(33,150,243,.08)",pline:"rgba(33,150,243,.1)"},
+  {id:"sepia",n:"Sépia",e:"📜",bg:"#f4ede0",surface:"#fdf6ed",panel:"#3d2b1a",accent:"#8b4513",a2:"#6b5a3d",a3:"#5a7a3d",ink:"#3d2b1a",muted:"#9a856a",border:"#d4c4a8",paper:"#fdf6ed",grid:"rgba(139,69,19,.08)",pline:"rgba(139,69,19,.1)"},
+  {id:"midnight",n:"Midnight",e:"🌙",bg:"#0d1117",surface:"#161b22",panel:"#0d1117",accent:"#58a6ff",a2:"#3fb950",a3:"#f78166",ink:"#c9d1d9",muted:"#484f58",border:"#21262d",paper:"#1c2128",grid:"rgba(88,166,255,.05)",pline:"rgba(88,166,255,.07)"},
+  {id:"sunset",n:"Sunset",e:"🌅",bg:"#fff8f0",surface:"#fff",panel:"#2d1a0e",accent:"#ff6b35",a2:"#ff9f1c",a3:"#c73e1d",ink:"#2d1a0e",muted:"#b08070",border:"#f0d8c8",paper:"#fffaf6",grid:"rgba(255,107,53,.07)",pline:"rgba(255,107,53,.09)"},
+  {id:"forest",n:"Forest",e:"🌲",bg:"#f0f5f0",surface:"#fff",panel:"#1a2a1a",accent:"#2d6a4f",a2:"#52b788",a3:"#95d5b2",ink:"#1a2a1a",muted:"#6a8a6a",border:"#c8ddc8",paper:"#f8faf8",grid:"rgba(45,106,79,.08)",pline:"rgba(45,106,79,.09)"},
+  {id:"violet",n:"Violet",e:"💜",bg:"#f5f0ff",surface:"#fff",panel:"#1a0a2e",accent:"#7c3aed",a2:"#a855f7",a3:"#ec4899",ink:"#1a0a2e",muted:"#8a6aaa",border:"#d8c8f0",paper:"#fdf8ff",grid:"rgba(124,58,237,.07)",pline:"rgba(124,58,237,.09)"},
+  {id:"steel",n:"Steel",e:"⚙️",bg:"#e8ecef",surface:"#f4f6f8",panel:"#1c2833",accent:"#546e7a",a2:"#78909c",a3:"#b0bec5",ink:"#1c2833",muted:"#7a8a94",border:"#cfd8dc",paper:"#f4f6f8",grid:"rgba(84,110,122,.08)",pline:"rgba(84,110,122,.1)"},
+  {id:"cherry",n:"Cherry",e:"🍒",bg:"#fff0f3",surface:"#fff",panel:"#2a0a10",accent:"#e01e5a",a2:"#ff6b9d",a3:"#c92842",ink:"#2a0a10",muted:"#b07080",border:"#f0c8d0",paper:"#fff8fa",grid:"rgba(224,30,90,.07)",pline:"rgba(224,30,90,.09)"},
+  {id:"blueprint",n:"Blueprint",e:"🗺️",bg:"#003366",surface:"#004080",panel:"#001f3f",accent:"#ffffff",a2:"#80c0ff",a3:"#40ff80",ink:"#ffffff",muted:"#80a0c0",border:"#005599",paper:"#003d7a",grid:"rgba(255,255,255,.1)",pline:"rgba(255,255,255,.12)"},
+  {id:"lemon",n:"Lemon",e:"🍋",bg:"#fffff0",surface:"#fff",panel:"#2a2a0a",accent:"#d4af00",a2:"#a0c000",a3:"#008080",ink:"#2a2a0a",muted:"#9a9a6a",border:"#e8e8c0",paper:"#fffff8",grid:"rgba(212,175,0,.08)",pline:"rgba(212,175,0,.1)"},
+  {id:"sand",n:"Sand",e:"🏜️",bg:"#f5f0e8",surface:"#fff",panel:"#2a2010",accent:"#c9a84c",a2:"#8b7355",a3:"#6b8c3d",ink:"#2a2010",muted:"#9a8a6a",border:"#e0d4b8",paper:"#faf7f0",grid:"rgba(201,168,76,.08)",pline:"rgba(201,168,76,.1)"},
+  {id:"slate",n:"Slate Dark",e:"🪨",bg:"#1e2025",surface:"#252830",panel:"#16181c",accent:"#a8b2c4",a2:"#7a8fa8",a3:"#5a9a7a",ink:"#d8dce4",muted:"#5a6070",border:"#30343c",paper:"#2a2d35",grid:"rgba(168,178,196,.05)",pline:"rgba(168,178,196,.07)"},
 ]
 
-const PAGE_COLORS = [
-  {id:"white",c:"#ffffff",l:"Blanc"},
-  {id:"cream",c:"#fdf6ed",l:"Crème"},
-  {id:"yellow",c:"#fffff0",l:"Jaune"},
-  {id:"blue",c:"#f0f8ff",l:"Bleu ciel"},
-  {id:"green",c:"#f0fff4",l:"Menthe"},
-  {id:"pink",c:"#fff0f5",l:"Rose"},
-  {id:"gray",c:"#f5f5f5",l:"Gris"},
-  {id:"dark",c:"#1c2128",l:"Ardoise"},
-  {id:"kraft",c:"#f4ede0",l:"Kraft"},
-  {id:"navy",c:"#0d1b2a",l:"Marine"},
+const PAGE_COLORS=[
+  {id:"white",c:"#ffffff",l:"Blanc"},{id:"cream",c:"#fdf6ed",l:"Crème"},
+  {id:"yellow",c:"#fffff0",l:"Jaune"},{id:"blue",c:"#f0f8ff",l:"Bleu ciel"},
+  {id:"green",c:"#f0fff4",l:"Menthe"},{id:"pink",c:"#fff0f5",l:"Rose"},
+  {id:"gray",c:"#f5f5f5",l:"Gris"},{id:"dark",c:"#1c2128",l:"Ardoise"},
+  {id:"kraft",c:"#f4ede0",l:"Kraft"},{id:"navy",c:"#0d1b2a",l:"Marine"},
+]
+const GRID_COLORS=[
+  {id:"blue",c:"rgba(61,107,140,.12)",l:"Bleu"},{id:"gray",c:"rgba(0,0,0,.08)",l:"Gris"},
+  {id:"red",c:"rgba(200,50,50,.1)",l:"Rouge"},{id:"green",c:"rgba(50,150,50,.1)",l:"Vert"},
+  {id:"orange",c:"rgba(200,98,42,.1)",l:"Orange"},{id:"purple",c:"rgba(124,58,237,.1)",l:"Violet"},
+  {id:"white",c:"rgba(255,255,255,.15)",l:"Blanc"},
 ]
 
-const GRID_COLORS = [
-  {id:"blue",  c:"rgba(61,107,140,.12)",l:"Bleu"},
-  {id:"gray",  c:"rgba(0,0,0,.08)",     l:"Gris"},
-  {id:"red",   c:"rgba(200,50,50,.1)",  l:"Rouge"},
-  {id:"green", c:"rgba(50,150,50,.1)",  l:"Vert"},
-  {id:"orange",c:"rgba(200,98,42,.1)",  l:"Orange"},
-  {id:"purple",c:"rgba(124,58,237,.1)", l:"Violet"},
-  {id:"white", c:"rgba(255,255,255,.15)",l:"Blanc"},
-]
-
-/* ══ RENDER ELEMENT ════════════════════════════════════════ */
+/* ══ RENDER ════════════════════════════════════════════════ */
 function renderEl(el,sc=1/50){
-  const px=sc*3.78, W=Math.max(el.w*px,4), H=Math.max(el.h*px,4), t=(el.t||6)*px
-  if(["wood","glulam","clt","tji"].includes(el.type)){
-    const c=el.type==="wood"?"#c8a96a":el.type==="glulam"?"#b8904a":el.type==="clt"?"#d4b896":"#e8d4b0"
-    return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill={c}stroke="#8B6914"strokeWidth={.8}/>{[.25,.5,.75].map(r=><line key={r}x1={W*r}y1={0}x2={W*r}y2={H}stroke="#a07820"strokeWidth={.4}strokeDasharray="3,4"/>)}</svg>
-  }
+  const px=sc*3.78,W=Math.max(el.w*px,4),H=Math.max(el.h*px,4),t=(el.t||6)*px
+  if(["wood","glulam","clt"].includes(el.type)){const c=el.type==="wood"?"#c8a96a":el.type==="glulam"?"#b8904a":"#d4b896";return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill={c}stroke="#8B6914"strokeWidth={.8}/>{[.25,.5,.75].map(r=><line key={r}x1={W*r}y1={0}x2={W*r}y2={H}stroke="#a07820"strokeWidth={.4}strokeDasharray="3,4"/>)}</svg>}
   if(el.type==="hss")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="#607d8b"stroke="#37474f"strokeWidth={1}/><rect x={t}y={t}width={Math.max(W-2*t,1)}height={Math.max(H-2*t,1)}fill="white"stroke="#546e7a"strokeWidth={.5}/></svg>
-  if(el.type==="Ibeam"){const fw=el.fw?el.fw*px:W,ft2=el.ft?el.ft*px:W*.12,wt2=el.wt?el.wt*px:W*.06;return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={(fw-wt2)/2}y={ft2}width={wt2}height={Math.max(H-2*ft2,1)}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
-  if(el.type==="channel"){const fw=el.fw?el.fw*px:W,ft2=el.ft?el.ft*px:W*.15,wt2=el.wt?el.wt*px:W*.12;return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={ft2}width={wt2}height={H-2*ft2}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
+  if(el.type==="Ibeam"){const fw=(el.fw||el.w)*px,ft2=(el.ft||el.w*.12)*px,wt2=(el.wt||el.w*.06)*px;return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={(fw-wt2)/2}y={ft2}width={wt2}height={Math.max(H-2*ft2,1)}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
+  if(el.type==="channel"){const fw=(el.fw||el.w)*px,ft2=(el.ft||el.w*.15)*px,wt2=(el.wt||el.w*.12)*px;return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={ft2}width={wt2}height={H-2*ft2}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
   if(el.type==="angle"){const t2=t*.8;return<svg width={W}height={H}style={{display:"block"}}><polygon points={`0,0 ${t2},0 ${t2},${H-t2} ${W},${H-t2} ${W},${H} 0,${H}`}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/></svg>}
   if(["conc","concB"].includes(el.type))return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="#c0c0c0"stroke="#888"strokeWidth={1}/><line x1={0}y1={0}x2={W}y2={H}stroke="#aaa"strokeWidth={.6}/><line x1={W}y1={0}x2={0}y2={H}stroke="#aaa"strokeWidth={.6}/></svg>
   if(el.type==="concR")return<svg width={W}height={H}style={{display:"block"}}><circle cx={W/2}cy={H/2}r={Math.min(W,H)/2-1}fill="#c0c0c0"stroke="#888"strokeWidth={1}/><line x1={W*.2}y1={H*.2}x2={W*.8}y2={H*.8}stroke="#aaa"strokeWidth={.6}/><line x1={W*.8}y1={H*.2}x2={W*.2}y2={H*.8}stroke="#aaa"strokeWidth={.6}/></svg>
@@ -262,7 +355,7 @@ function renderEl(el,sc=1/50){
   if(el.type==="door")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(200,160,80,.12)"stroke="#8b6f47"strokeWidth={1.5}/><path d={`M ${W*.05},${H*.97} A ${W*.9},${H*.9} 0 0 1 ${W*.95},${H*.97}`}fill="none"stroke="#8b6f47"strokeWidth={.8}strokeDasharray="3,2"/></svg>
   if(el.type==="doorD")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(200,160,80,.12)"stroke="#8b6f47"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#8b6f47"strokeWidth={.8}/></svg>
   if(el.type==="win")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(122,181,212,.25)"stroke="#4a90b8"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#4a90b8"strokeWidth={.8}/><line x1={0}y1={H/2}x2={W}y2={H/2}stroke="#4a90b8"strokeWidth={.8}/></svg>
-  return<div style={{width:Math.max(W,4),height:Math.max(H,4),background:"#ccc",border:"1px solid #999",fontSize:8}}>{el.l}</div>
+  return<div style={{width:W,height:H,background:"#ccc",border:"1px solid #999",fontSize:8,overflow:"hidden"}}>{el.l}</div>
 }
 
 /* ══ PAPER ════════════════════════════════════════════════ */
@@ -281,11 +374,11 @@ function Paper({tmpl,T,pageColor,gridColor}){
   return<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={W}height={H}><rect width={W}height={H}fill={bg}/>{L}</svg>
 }
 
-/* ══ CANVAS — full drawing tools ═════════════════════════ */
-function DrawCanvas({tool,color,size,cRef,onStroke,onPickColor}){
+/* ══ DRAW CANVAS ══════════════════════════════════════════ */
+function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,onSelect}){
   const drawing=useRef(false),strokes=useRef([]),cur=useRef([])
-  const shape=useRef(null) // for line/rect/circle
-  const textItems=useRef([])
+  const shape=useRef(null)
+  const selBox=useRef(null)
 
   const redraw=useCallback(()=>{
     const c=cRef.current;if(!c)return
@@ -296,18 +389,11 @@ function DrawCanvas({tool,color,size,cRef,onStroke,onPickColor}){
       ctx.lineCap="round";ctx.lineJoin="round"
       ctx.globalAlpha=s.tool==="highlight"?.4:1
       ctx.globalCompositeOperation=s.tool==="eraser"?"destination-out":"source-over"
-      if(s.shapeType==="line"){ctx.moveTo(s.pts[0].x,s.pts[0].y);ctx.lineTo(s.pts[1].x,s.pts[1].y)}
-      else if(s.shapeType==="rect"){const dx=s.pts[1].x-s.pts[0].x,dy=s.pts[1].y-s.pts[0].y;ctx.strokeRect(s.pts[0].x,s.pts[0].y,dx,dy)}
-      else if(s.shapeType==="circle"){const rx=Math.abs(s.pts[1].x-s.pts[0].x)/2,ry=Math.abs(s.pts[1].y-s.pts[0].y)/2,cx=(s.pts[0].x+s.pts[1].x)/2,cy=(s.pts[0].y+s.pts[1].y)/2;ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.stroke()}
-      else if(s.shapeType==="arrow"){const ax=s.pts[0].x,ay=s.pts[0].y,bx=s.pts[1].x,by=s.pts[1].y,angle=Math.atan2(by-ay,bx-ax),hs=Math.min(20,size*5+8);ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.stroke();ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx-hs*Math.cos(angle-Math.PI/6),by-hs*Math.sin(angle-Math.PI/6));ctx.lineTo(bx-hs*Math.cos(angle+Math.PI/6),by-hs*Math.sin(angle+Math.PI/6));ctx.closePath();ctx.fillStyle=s.color;ctx.fill()}
+      if(s.shapeType==="line"){ctx.moveTo(s.pts[0].x,s.pts[0].y);ctx.lineTo(s.pts[1].x,s.pts[1].y);ctx.stroke()}
+      else if(s.shapeType==="rect"){ctx.strokeRect(s.pts[0].x,s.pts[0].y,s.pts[1].x-s.pts[0].x,s.pts[1].y-s.pts[0].y)}
+      else if(s.shapeType==="circle"){const rx=Math.abs(s.pts[1].x-s.pts[0].x)/2,ry=Math.abs(s.pts[1].y-s.pts[0].y)/2,cx=(s.pts[0].x+s.pts[1].x)/2,cy=(s.pts[0].y+s.pts[1].y)/2;ctx.ellipse(cx,cy,Math.max(rx,1),Math.max(ry,1),0,0,Math.PI*2);ctx.stroke()}
+      else if(s.shapeType==="arrow"){const[a,b]=[s.pts[0],s.pts[1]],angle=Math.atan2(b.y-a.y,b.x-a.x),hs=Math.min(20,s.size*5+10);ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-hs*Math.cos(angle-Math.PI/6),b.y-hs*Math.sin(angle-Math.PI/6));ctx.lineTo(b.x-hs*Math.cos(angle+Math.PI/6),b.y-hs*Math.sin(angle+Math.PI/6));ctx.closePath();ctx.fillStyle=s.color;ctx.fill()}
       else{ctx.moveTo(s.pts[0].x,s.pts[0].y);s.pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke()}
-    })
-    // Draw text items
-    textItems.current.forEach(ti=>{
-      ctx.font=`${ti.size||16}px Nunito, sans-serif`
-      ctx.fillStyle=ti.color||"#000"
-      ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over"
-      ctx.fillText(ti.text,ti.x,ti.y)
     })
     ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1
   },[cRef])
@@ -316,43 +402,57 @@ function DrawCanvas({tool,color,size,cRef,onStroke,onPickColor}){
 
   const dn=e=>{
     const p=gP(e)
-    if(tool==="eyedropper"){const ctx=cRef.current.getContext("2d");const px2=ctx.getImageData(p.x,p.y,1,1).data;if(px2[3]>0){const hex=`#${[px2[0],px2[1],px2[2]].map(v=>v.toString(16).padStart(2,"0")).join("")}`;if(onPickColor)onPickColor(hex)};return}
-    if(tool==="text"){const txt=prompt("Texte :");if(txt){textItems.current.push({text:txt,x:p.x,y:p.y,color,size:mm2px(2)});redraw();if(onStroke)onStroke(strokes.current)};return}
+    if(tool==="eyedropper"){const ctx=cRef.current.getContext("2d");const px2=ctx.getImageData(Math.round(p.x),Math.round(p.y),1,1).data;if(px2[3]>0){const hex=`#${[px2[0],px2[1],px2[2]].map(v=>v.toString(16).padStart(2,"0")).join("")}`;if(onPickColor)onPickColor(hex)};return}
+    if(tool==="text"){const txt=prompt("Texte :");if(txt){strokes.current.push({pts:[p],color,size,tool:"text",text:txt,shapeType:"text"});redraw();if(onStroke)onStroke(strokes.current)};return}
+    if(tool==="select"){selBox.current={start:p};drawing.current=true;return}
     e.preventDefault();drawing.current=true;cur.current=[p]
     if(["line","rect","circle","arrow"].includes(tool)){shape.current={start:p};return}
   }
   const mv=e=>{
-    if(!drawing.current)return;e.preventDefault()
+    if(!drawing.current)return
     const p=gP(e)
-    // Shape preview
-    if(["line","rect","circle","arrow"].includes(tool)&&shape.current){
-      const ctx=cRef.current.getContext("2d")
+    if(tool==="select"&&selBox.current){
+      // Show selection box
       redraw()
+      const ctx=cRef.current.getContext("2d")
+      const s=selBox.current.start
+      ctx.strokeStyle="#2196f3";ctx.lineWidth=1;ctx.setLineDash([4,4])
+      ctx.strokeRect(s.x,s.y,p.x-s.x,p.y-s.y)
+      ctx.setLineDash([])
+      return
+    }
+    e.preventDefault()
+    const ctx=cRef.current.getContext("2d")
+    if(["line","rect","circle","arrow"].includes(tool)&&shape.current){
+      redraw()
+      const s=shape.current.start
       ctx.strokeStyle=color;ctx.lineWidth=size;ctx.lineCap="round"
       ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over"
-      const s=shape.current.start
       if(tool==="line"){ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(p.x,p.y);ctx.stroke()}
       else if(tool==="rect"){ctx.strokeRect(s.x,s.y,p.x-s.x,p.y-s.y)}
-      else if(tool==="circle"){const rx=Math.abs(p.x-s.x)/2,ry=Math.abs(p.y-s.y)/2,cx=(s.x+p.x)/2,cy=(s.y+p.y)/2;ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.stroke()}
-      else if(tool==="arrow"){const angle=Math.atan2(p.y-s.y,p.x-s.x),hs=Math.min(20,size*5+8);ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-hs*Math.cos(angle-Math.PI/6),p.y-hs*Math.sin(angle-Math.PI/6));ctx.lineTo(p.x-hs*Math.cos(angle+Math.PI/6),p.y-hs*Math.sin(angle+Math.PI/6));ctx.closePath();ctx.fillStyle=color;ctx.fill()}
+      else if(tool==="circle"){const rx=Math.abs(p.x-s.x)/2,ry=Math.abs(p.y-s.y)/2;ctx.beginPath();ctx.ellipse((s.x+p.x)/2,(s.y+p.y)/2,Math.max(rx,1),Math.max(ry,1),0,0,Math.PI*2);ctx.stroke()}
+      else if(tool==="arrow"){const angle=Math.atan2(p.y-s.y,p.x-s.x),hs=Math.min(20,size*5+10);ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-hs*Math.cos(angle-Math.PI/6),p.y-hs*Math.sin(angle-Math.PI/6));ctx.lineTo(p.x-hs*Math.cos(angle+Math.PI/6),p.y-hs*Math.sin(angle+Math.PI/6));ctx.closePath();ctx.fillStyle=color;ctx.fill()}
       return
     }
     cur.current.push(p)
-    const c=cRef.current;const ctx=c.getContext("2d");const pts=cur.current
-    if(pts.length<2)return
-    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=size;ctx.lineCap="round";ctx.lineJoin="round"
-    ctx.globalAlpha=tool==="highlight"?.4:1;ctx.globalCompositeOperation=tool==="eraser"?"destination-out":"source-over"
+    if(cur.current.length<2)return
+    const pts=cur.current
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=tool==="eraser"?eraserSize:size
+    ctx.lineCap="round";ctx.lineJoin="round"
+    ctx.globalAlpha=tool==="highlight"?.4:1
+    ctx.globalCompositeOperation=tool==="eraser"?"destination-out":"source-over"
     ctx.moveTo(pts[pts.length-2].x,pts[pts.length-2].y);ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);ctx.stroke()
     ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1
   }
   const up=e=>{
     if(!drawing.current)return;drawing.current=false
+    if(tool==="select"){selBox.current=null;redraw();return}
     const p=gP(e)
     if(["line","rect","circle","arrow"].includes(tool)&&shape.current){
       strokes.current.push({pts:[shape.current.start,p],color,size,tool,shapeType:tool})
       shape.current=null;redraw()
     } else {
-      strokes.current.push({pts:[...cur.current],color,size,tool})
+      strokes.current.push({pts:[...cur.current],color,size:tool==="eraser"?eraserSize:size,tool})
     }
     cur.current=[]
     if(onStroke)onStroke(strokes.current)
@@ -360,20 +460,25 @@ function DrawCanvas({tool,color,size,cRef,onStroke,onPickColor}){
 
   useEffect(()=>{
     window.__undo=()=>{strokes.current.pop();redraw();if(onStroke)onStroke(strokes.current)}
-    window.__clear=()=>{strokes.current=[];textItems.current=[];redraw();if(onStroke)onStroke(strokes.current)}
-    window.__loadStrokes=(data)=>{try{const p=typeof data==="string"?JSON.parse(data):data;strokes.current=p||[];redraw()}catch{}}
+    window.__clear=()=>{strokes.current=[];redraw();if(onStroke)onStroke(strokes.current)}
+    window.__loadStrokes=data=>{try{const p=typeof data==="string"?JSON.parse(data):data;strokes.current=p||[];redraw()}catch{}}
   },[redraw])
 
-  const cursor = tool==="eyedropper"?"crosshair":tool==="eraser"?"cell":tool==="select"?"default":"crosshair"
+  // Draw text items
+  useEffect(()=>{
+    const origRedraw=window.__redraw
+    window.__redraw=()=>{redraw()}
+  },[redraw])
 
+  const cursor=tool==="eyedropper"?"crosshair":tool==="eraser"?"cell":tool==="select"?"crosshair":"crosshair"
   return<canvas ref={cRef}width={794}height={1123}
     style={{position:"absolute",inset:0,width:"100%",height:"100%",cursor,touchAction:"none",zIndex:5}}
     onMouseDown={dn}onMouseMove={mv}onMouseUp={up}onMouseLeave={up}
     onTouchStart={dn}onTouchMove={mv}onTouchEnd={up}/>
 }
 
-/* ══ FLOATING PANEL ═══════════════════════════════════════ */
-function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,favorites,setFavorites}){
+/* ══ FLOATING PANEL ══════════════════════════════════════ */
+function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites}){
   const [pos,setPos]=useState({x:16,y:180})
   const [drag,setDrag]=useState(false)
   const [offset,setOffset]=useState({x:0,y:0})
@@ -404,11 +509,12 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,favorites
   const saveFav=i=>{const f=[...favorites];f[i]={color,sizeMm,tool};setFavorites(f)}
   const loadFav=f=>{if(!f)return;setColor(f.color);setSizeMm(f.sizeMm);if(f.tool)setTool(f.tool)}
 
+  const isEraser=tool==="eraser"
+
   if(collapsed)return(
     <div style={{position:"fixed",left:pos.x,top:pos.y,zIndex:100,cursor:"grab"}}onMouseDown={startDrag}>
       <div onClick={e=>{e.stopPropagation();setCollapsed(false)}}
-        style={{width:32,height:32,borderRadius:"50%",background:color,border:`3px solid ${T.surface}`,
-                boxShadow:"0 2px 12px rgba(0,0,0,.4)",cursor:"pointer",outline:`2px solid ${T.accent}`}}/>
+        style={{width:32,height:32,borderRadius:"50%",background:color,border:`3px solid ${T.surface}`,boxShadow:"0 2px 12px rgba(0,0,0,.4)",cursor:"pointer",outline:`2px solid ${T.accent}`}}/>
     </div>
   )
 
@@ -417,74 +523,78 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,favorites
       <div onMouseDown={startDrag} style={{cursor:"grab",padding:"7px 11px 5px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.border}`}}>
         <div style={{fontSize:9,color:T.muted,letterSpacing:.5}}>⠿ OUTILS</div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          <div style={{width:12,height:12,borderRadius:"50%",background:color,border:`1px solid ${T.border}`}}/>
-          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{sizeMm}mm</span>
+          <div style={{width:12,height:12,borderRadius:"50%",background:isEraser?"#fff":color,border:`1px solid ${T.border}`}}/>
+          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{isEraser?eraserMm:sizeMm}mm</span>
           <button onClick={()=>setCollapsed(true)} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:14,lineHeight:1,padding:0}}>−</button>
         </div>
       </div>
       <div style={{padding:"9px 11px",display:"flex",flexDirection:"column",gap:9,maxHeight:"70vh",overflowY:"auto"}}>
-        {/* Palette selector */}
+        {/* Palette */}
         <div>
-          <div style={{fontSize:8,color:T.muted,marginBottom:3,letterSpacing:.5}}>PALETTE ENCRE</div>
+          <div style={{fontSize:8,color:T.muted,marginBottom:3}}>PALETTE</div>
           <select value={cPal} onChange={e=>setCPal(e.target.value)} style={{width:"100%",padding:"3px 5px",borderRadius:7,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:10,outline:"none",cursor:"pointer"}}>
             {Object.keys(CPAL).map(p=><option key={p} value={p}>{p}</option>)}
           </select>
         </div>
-        {/* Color swatches */}
         <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
           {CPAL[cPal].map(c=>(
             <button key={c} onClick={()=>{setColor(c);setCustomHex(c)}}
               style={{width:c===color?22:17,height:c===color?22:17,borderRadius:"50%",background:c,border:`2px solid ${c===color?T.accent:"transparent"}`,cursor:"pointer",outline:c==="#ffffff"?`1px solid ${T.border}`:"none",flexShrink:0,transition:"all .1s"}}/>
           ))}
         </div>
-        {/* Color wheel */}
-        <button onClick={()=>setShowWheel(v=>!v)} style={{padding:"4px 8px",borderRadius:8,border:`1px solid ${showWheel?T.accent:T.border}`,background:showWheel?`${T.accent}15`:T.bg,color:showWheel?T.accent:T.muted,cursor:"pointer",fontSize:10,textAlign:"left"}}>
-          🎡 Roue chromatique
-        </button>
+        {/* Roue */}
+        <button onClick={()=>setShowWheel(v=>!v)} style={{padding:"4px 8px",borderRadius:8,border:`1px solid ${showWheel?T.accent:T.border}`,background:showWheel?`${T.accent}15`:T.bg,color:showWheel?T.accent:T.muted,cursor:"pointer",fontSize:10,textAlign:"left"}}>🎡 Roue chromatique</button>
         {showWheel&&<div>
-          <canvas ref={wheelRef} width={150} height={150} style={{borderRadius:"50%",cursor:"crosshair",display:"block",margin:"0 auto"}} onClick={pickWheel}/>
+          <canvas ref={wheelRef}width={150}height={150}style={{borderRadius:"50%",cursor:"crosshair",display:"block",margin:"0 auto"}}onClick={pickWheel}/>
           <div style={{marginTop:5,display:"flex",gap:5,alignItems:"center"}}>
             <input type="color" value={customHex} onChange={e=>{setCustomHex(e.target.value);setColor(e.target.value)}} style={{width:26,height:26,padding:0,border:`1px solid ${T.border}`,borderRadius:5,cursor:"pointer"}}/>
             <input value={customHex} onChange={e=>{setCustomHex(e.target.value);if(/^#[0-9a-f]{6}$/i.test(e.target.value))setColor(e.target.value)}} style={{flex:1,padding:"3px 5px",borderRadius:7,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:10,outline:"none",fontFamily:"monospace"}}/>
           </div>
         </div>}
-        {/* Highlighter */}
+        {/* Surligneur */}
         <div>
-          <div style={{fontSize:8,color:T.muted,marginBottom:3,letterSpacing:.5}}>SURLIGNEUR</div>
+          <div style={{fontSize:8,color:T.muted,marginBottom:3}}>SURLIGNEUR</div>
           <select value={hPal} onChange={e=>setHPal(e.target.value)} style={{width:"100%",padding:"3px 5px",borderRadius:7,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:10,outline:"none",cursor:"pointer",marginBottom:4}}>
             {Object.keys(HPAL).map(p=><option key={p} value={p}>{p}</option>)}
           </select>
           <div style={{display:"flex",gap:3}}>
             {HPAL[hPal].map(c=>(
-              <button key={c} onClick={()=>{setColor(c);setTool("highlight")}} style={{width:17,height:17,borderRadius:3,background:c+"aa",border:`2px solid ${color===c?T.accent:"transparent"}`,cursor:"pointer",flexShrink:0}}/>
+              <button key={c} onClick={()=>{setColor(c);setTool("highlight")}} style={{width:17,height:17,borderRadius:3,background:c+"aa",border:`2px solid ${color===c&&tool==="highlight"?T.accent:"transparent"}`,cursor:"pointer",flexShrink:0}}/>
             ))}
           </div>
         </div>
-        {/* Size mm */}
+        {/* Taille crayon */}
         <div>
-          <div style={{fontSize:8,color:T.muted,marginBottom:3,letterSpacing:.5}}>TAILLE</div>
+          <div style={{fontSize:8,color:T.muted,marginBottom:3}}>TAILLE CRAYON</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
             {SIZES_MM.map(s=>(
-              <button key={s} onClick={()=>setSizeMm(s)} style={{padding:"2px 5px",borderRadius:5,border:`1px solid ${sizeMm===s?T.accent:T.border}`,background:sizeMm===s?`${T.accent}18`:T.bg,color:sizeMm===s?T.accent:T.muted,cursor:"pointer",fontSize:8,fontFamily:"monospace"}}>
-                {s}mm
+              <button key={s} onClick={()=>setSizeMm(s)} style={{padding:"2px 5px",borderRadius:5,border:`1px solid ${sizeMm===s&&!isEraser?T.accent:T.border}`,background:sizeMm===s&&!isEraser?`${T.accent}18`:T.bg,color:sizeMm===s&&!isEraser?T.accent:T.muted,cursor:"pointer",fontSize:8,fontFamily:"monospace"}}>
+                {s}
               </button>
             ))}
           </div>
         </div>
-        {/* Favorites */}
+        {/* Taille gomme */}
         <div>
-          <div style={{fontSize:8,color:T.muted,marginBottom:3,letterSpacing:.5}}>FAVORIS — clic: charger · dbl: sauvegarder</div>
+          <div style={{fontSize:8,color:T.muted,marginBottom:3}}>TAILLE GOMME</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
+            {ERASER_SIZES_MM.map(s=>(
+              <button key={s} onClick={()=>{setEraserMm(s);setTool("eraser")}} style={{padding:"2px 5px",borderRadius:5,border:`1px solid ${eraserMm===s&&isEraser?T.accent:T.border}`,background:eraserMm===s&&isEraser?`${T.accent}18`:T.bg,color:eraserMm===s&&isEraser?T.accent:T.muted,cursor:"pointer",fontSize:8,fontFamily:"monospace"}}>
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Favoris */}
+        <div>
+          <div style={{fontSize:8,color:T.muted,marginBottom:3}}>FAVORIS — clic: charger · dbl: sauvegarder</div>
           <div style={{display:"flex",gap:4}}>
-            {Array.from({length:6},(_,i)=>{
-              const fav=favorites[i]
-              return(
-                <button key={i} onClick={()=>loadFav(fav)} onDoubleClick={()=>saveFav(i)}
-                  title={fav?`${fav.color} ${fav.sizeMm}mm – dbl-clic sauvegarder`:"Dbl-clic pour sauvegarder"}
-                  style={{width:28,height:28,borderRadius:7,background:fav?fav.color:T.bg,border:`1px solid ${fav?T.accent:T.border}`,cursor:"pointer",fontSize:fav?"0":"13",color:T.muted,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {!fav&&"+"}
-                </button>
-              )
-            })}
+            {Array.from({length:6},(_,i)=>{const fav=favorites[i];return(
+              <button key={i} onClick={()=>loadFav(fav)} onDoubleClick={()=>saveFav(i)}
+                style={{width:28,height:28,borderRadius:7,background:fav?fav.color:T.bg,border:`1px solid ${fav?T.accent:T.border}`,cursor:"pointer",fontSize:fav?"0":"13",color:T.muted,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                {!fav&&"+"}
+              </button>
+            )})}
           </div>
         </div>
       </div>
@@ -492,13 +602,13 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,favorites
   )
 }
 
-/* ══ THEME PICKER ═════════════════════════════════════════ */
+/* ══ MODALS ═══════════════════════════════════════════════ */
 function ThemePicker({current,onChange,onClose}){
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",backdropFilter:"blur(6px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
       <div style={{background:"#fff",borderRadius:20,padding:22,width:560,maxWidth:"94vw",maxHeight:"82vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:18}}>🎨 Thèmes ({THEMES.length})</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:18}}>🎨 Thèmes</div>
           <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,color:"#888"}}>×</button>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
@@ -509,9 +619,7 @@ function ThemePicker({current,onChange,onClose}){
                 <span style={{fontSize:15}}>{th.e}</span>
                 {[th.accent,th.a2,th.a3].map((c,i)=><div key={i}style={{width:9-i*2,height:9-i*2,borderRadius:2,background:c}}/>)}
               </div>
-              <div style={{padding:"5px 9px",background:th.bg}}>
-                <div style={{fontSize:10,fontWeight:700,color:th.ink,fontFamily:"'Syne',sans-serif"}}>{th.n}</div>
-              </div>
+              <div style={{padding:"5px 9px",background:th.bg}}><div style={{fontSize:10,fontWeight:700,color:th.ink,fontFamily:"'Syne',sans-serif"}}>{th.n}</div></div>
             </button>
           ))}
         </div>
@@ -520,33 +628,26 @@ function ThemePicker({current,onChange,onClose}){
   )
 }
 
-/* ══ PAGE SETTINGS ════════════════════════════════════════ */
 function PageSettings({T,pageColor,setPageColor,gridColor,setGridColor,onClose}){
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",backdropFilter:"blur(6px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
       <div style={{background:T.surface,borderRadius:16,padding:22,width:360,maxWidth:"94vw",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,color:T.ink}}>🎨 Style de la page</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,color:T.ink}}>🎨 Style de page</div>
           <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:20}}>×</button>
         </div>
         <div style={{marginBottom:14}}>
-          <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>COULEUR DE FOND</div>
+          <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>FOND</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
-            {PAGE_COLORS.map(pc=>(
-              <button key={pc.id} onClick={()=>setPageColor(pc.c)} title={pc.l}
-                style={{width:34,height:34,borderRadius:8,background:pc.c,border:`2px solid ${pageColor===pc.c?T.accent:T.border}`,cursor:"pointer",outline:pc.c==="#ffffff"?`1px solid ${T.border}`:"none"}}/>
-            ))}
+            {PAGE_COLORS.map(pc=><button key={pc.id} onClick={()=>setPageColor(pc.c)} title={pc.l} style={{width:34,height:34,borderRadius:8,background:pc.c,border:`2px solid ${pageColor===pc.c?T.accent:T.border}`,cursor:"pointer",outline:pc.c==="#ffffff"?`1px solid ${T.border}`:"none"}}/>)}
           </div>
         </div>
         <div style={{marginBottom:16}}>
-          <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>COULEUR DU QUADRILLAGE</div>
+          <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>QUADRILLAGE</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
-            {GRID_COLORS.map(gc=>(
-              <button key={gc.id} onClick={()=>setGridColor(gc.c)} title={gc.l}
-                style={{width:34,height:34,borderRadius:8,background:"#fff",border:`2px solid ${gridColor===gc.c?T.accent:T.border}`,cursor:"pointer",position:"relative",overflow:"hidden"}}>
-                <svg width={34} height={34} style={{position:"absolute",inset:0}}>{[6,14,22,30].map(x=><line key={`v${x}`}x1={x}y1={0}x2={x}y2={34}stroke={gc.c}strokeWidth={1}/>)}{[6,14,22,30].map(y=><line key={`h${y}`}x1={0}y1={y}x2={34}y2={y}stroke={gc.c}strokeWidth={1}/>)}</svg>
-              </button>
-            ))}
+            {GRID_COLORS.map(gc=><button key={gc.id} onClick={()=>setGridColor(gc.c)} title={gc.l} style={{width:34,height:34,borderRadius:8,background:"#fff",border:`2px solid ${gridColor===gc.c?T.accent:T.border}`,cursor:"pointer",position:"relative",overflow:"hidden"}}>
+              <svg width={34}height={34}style={{position:"absolute",inset:0}}>{[6,14,22,30].map(x=><line key={`v${x}`}x1={x}y1={0}x2={x}y2={34}stroke={gc.c}strokeWidth={1}/>)}{[6,14,22,30].map(y=><line key={`h${y}`}x1={0}y1={y}x2={34}y2={y}stroke={gc.c}strokeWidth={1}/>)}</svg>
+            </button>)}
           </div>
         </div>
         <button onClick={onClose} style={{width:"100%",padding:11,borderRadius:10,background:T.accent,border:"none",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}}>Appliquer ✓</button>
@@ -555,7 +656,7 @@ function PageSettings({T,pageColor,setPageColor,gridColor,setGridColor,onClose})
   )
 }
 
-/* ══ MAIN EDITOR ══════════════════════════════════════════ */
+/* ══ MAIN ═════════════════════════════════════════════════ */
 export default function EditorPage(){
   const navigate=useNavigate()
   const {activeNotebook,getTheme,setTheme}=useAppStore()
@@ -567,13 +668,14 @@ export default function EditorPage(){
   const [tool,setTool]=useState("pen")
   const [color,setColor]=useState("#1c1c24")
   const [sizeMm,setSizeMm]=useState(0.5)
+  const [eraserMm,setEraserMm]=useState(5.0)
   const [favorites,setFavorites]=useState(Array(6).fill(null))
   const [unitSys,setUnitSys]=useState("metric")
   const [scale,setScale]=useState("1:50")
   const [zoom,setZoom]=useState(.85)
   const [panX,setPanX]=useState(0)
   const [panY,setPanY]=useState(0)
-  const [panning,setPanning]=useState(false)
+  const isPanning=useRef(false)
   const panStart=useRef(null)
   const [showLib,setShowLib]=useState(false)
   const [libMode,setLibMode]=useState("metric")
@@ -597,61 +699,29 @@ export default function EditorPage(){
   const saveTimer=useRef(null)
 
   const sizePx=mm2px(sizeMm)
+  const eraserPx=mm2px(eraserMm)
   const curLib=libMode==="metric"?LIB_METRIC:LIB_IMPERIAL
   const libCats=Object.keys(curLib)
-  const libItems=useMemo(()=>{
-    const items=curLib[libCat]||[]
-    return libSearch?items.filter(e=>e.l.toLowerCase().includes(libSearch.toLowerCase())):items
-  },[libCat,libSearch,curLib,libMode])
+  const libItems=useMemo(()=>{const items=curLib[libCat]||[];return libSearch?items.filter(e=>e.l.toLowerCase().includes(libSearch.toLowerCase())):items},[libCat,libSearch,curLib,libMode])
 
   useEffect(()=>{const cats=Object.keys(libMode==="metric"?LIB_METRIC:LIB_IMPERIAL);if(!cats.includes(libCat))setLibCat(cats[0])},[libMode])
 
-  // Load page
   useEffect(()=>{
-    const load=async()=>{
-      try{
-        const {data:{session}}=await supabase.auth.getSession()
-        if(!session?.user)return
-        const {data:pg}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).eq("page_number",1).single()
-        if(pg){setPageId(pg.id);if(pg.canvas_data&&window.__loadStrokes)window.__loadStrokes(pg.canvas_data);if(pg.elements)setPlaced(typeof pg.elements==="string"?JSON.parse(pg.elements):pg.elements||[])}
-        else{const {data:np}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:1,user_id:session.user.id}]).select().single();if(np)setPageId(np.id)}
-      }catch{}
-    }
+    const load=async()=>{try{const{data:{session}}=await supabase.auth.getSession();if(!session?.user)return;const{data:pg}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).eq("page_number",1).single();if(pg){setPageId(pg.id);if(pg.canvas_data&&window.__loadStrokes)window.__loadStrokes(pg.canvas_data);if(pg.elements)setPlaced(typeof pg.elements==="string"?JSON.parse(pg.elements):pg.elements||[])}else{const{data:np}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:1,user_id:session.user.id}]).select().single();if(np)setPageId(np.id)}}catch{}}
     load()
   },[nb.id])
 
-  const save=useCallback(async(strokes)=>{
-    if(!pageId)return
-    try{
-      const {data:{session}}=await supabase.auth.getSession()
-      if(!session?.user)return
-      setSaveStatus("saving")
-      await supabase.from("pages").update({canvas_data:JSON.stringify(strokes),elements:JSON.stringify(placed),updated_at:new Date().toISOString()}).eq("id",pageId)
-      await supabase.from("notebooks").update({updated_at:new Date().toISOString()}).eq("id",nb.id)
-      setSaveStatus("saved");setTimeout(()=>setSaveStatus("idle"),2000)
-    }catch{setSaveStatus("error");setTimeout(()=>setSaveStatus("idle"),3000)}
-  },[pageId,placed,nb.id])
+  const save=useCallback(async strokes=>{if(!pageId)return;try{const{data:{session}}=await supabase.auth.getSession();if(!session?.user)return;setSaveStatus("saving");await supabase.from("pages").update({canvas_data:JSON.stringify(strokes),elements:JSON.stringify(placed),updated_at:new Date().toISOString()}).eq("id",pageId);await supabase.from("notebooks").update({updated_at:new Date().toISOString()}).eq("id",nb.id);setSaveStatus("saved");setTimeout(()=>setSaveStatus("idle"),2000)}catch{setSaveStatus("error");setTimeout(()=>setSaveStatus("idle"),3000)}},[pageId,placed,nb.id])
+  const onStroke=useCallback(s=>{if(saveTimer.current)clearTimeout(saveTimer.current);saveTimer.current=setTimeout(()=>save(s),1500)},[save])
 
-  const onStroke=useCallback((s)=>{if(saveTimer.current)clearTimeout(saveTimer.current);saveTimer.current=setTimeout(()=>save(s),1500)},[save])
-
-  // Pan
-  const startPan=e=>{
-    if(tool!=="select")return
-    setPanning(true);panStart.current={x:e.clientX-panX,y:e.clientY-panY}
-  }
-  const movePan=e=>{
-    if(!panning)return
-    setPanX(e.clientX-panStart.current.x);setPanY(e.clientY-panStart.current.y)
-    if(libPending)setMousePos({x:e.clientX,y:e.clientY})
-  }
-  const endPan=()=>setPanning(false)
-
-  // Click to place element
-  const handleCanvasClick=e=>{
+  // Place element precisely centered under click
+  const handleCanvasAreaClick=e=>{
     if(!libPending)return
     const r=document.getElementById("canvas-area")?.getBoundingClientRect()
     if(!r)return
-    const elW=libPending.w*3.78/50, elH=libPending.h*3.78/50
+    const sc=3.78/50
+    const elW=(libPending.fw||libPending.w)*sc
+    const elH=libPending.h*sc
     const x=(e.clientX-r.left-panX)/zoom - elW/2
     const y=(e.clientY-r.top-panY)/zoom - elH/2
     setPlaced(p=>[...p,{id:Date.now(),el:libPending,x:Math.max(0,x),y:Math.max(0,y)}])
@@ -662,21 +732,23 @@ export default function EditorPage(){
   const SCALES_I=['1/4"=1\'','3/16"=1\'','1/8"=1\'','3/32"=1\'','1"=10\'','1"=20\'','1"=40\'','1"=100\'']
 
   const TOOLS_LIST=[
-    {g:"Sélect.",items:[{id:"select",l:"Déplacer",i:"✋"},{id:"lasso",l:"Lasso",i:"⬡"}]},
-    {g:"Dessin", items:[{id:"pen",l:"Crayon",i:"✏"},{id:"highlight",l:"Surlig.",i:"▌"},{id:"eraser",l:"Gomme",i:"◻"}]},
-    {g:"Formes", items:[{id:"line",l:"Ligne",i:"/"},{id:"rect",l:"Rect.",i:"□"},{id:"circle",l:"Cercle",i:"○"},{id:"arrow",l:"Flèche",i:"→"}]},
-    {g:"Annot.", items:[{id:"text",l:"Texte",i:"T"},{id:"eyedropper",l:"Pipette",i:"💉"}]},
+    {g:"Navigation",items:[{id:"select",l:"Déplacer",i:"✋"}]},
+    {g:"Dessin",items:[{id:"pen",l:"Crayon",i:"✏"},{id:"highlight",l:"Surlig.",i:"▌"},{id:"eraser",l:"Gomme",i:"◻"}]},
+    {g:"Formes",items:[{id:"line",l:"Ligne",i:"/"},{id:"rect",l:"Rect.",i:"□"},{id:"circle",l:"Cercle",i:"○"},{id:"arrow",l:"Flèche",i:"→"}]},
+    {g:"Annot.",items:[{id:"text",l:"Texte",i:"T"},{id:"eyedropper",l:"Pipette",i:"💉"}]},
   ]
+
+  const isPanMode=tool==="select"
 
   return(
     <div style={{display:"flex",flexDirection:"column",height:"100vh",background:T.bg,fontFamily:"'Nunito',sans-serif",overflow:"hidden",color:T.ink}}>
       {showPageSettings&&<PageSettings T={T} pageColor={pageColor} setPageColor={setPageColor} gridColor={gridColor} setGridColor={setGridColor} onClose={()=>setShowPageSettings(false)}/>}
       {showTheme&&<ThemePicker current={T} onChange={th=>{setLocalTheme(th);setTheme(th.id)}} onClose={()=>setShowTheme(false)}/>}
 
-      <FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} favorites={favorites} setFavorites={setFavorites}/>
+      <FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites}/>
 
       {libPending&&<div style={{position:"fixed",bottom:56,left:"50%",transform:"translateX(-50%)",zIndex:50,background:T.panel,color:"#fff",padding:"7px 14px",borderRadius:20,fontSize:11,pointerEvents:"none",boxShadow:"0 4px 16px rgba(0,0,0,.3)"}}>
-        📍 Clic sur la feuille pour placer <strong>{libPending.l}</strong> — Échap pour annuler
+        📍 Clic sur la feuille → <strong>{libPending.l}</strong> — Échap pour annuler
       </div>}
 
       {/* TOP BAR */}
@@ -686,7 +758,7 @@ export default function EditorPage(){
         <div style={{flex:1,fontFamily:"'Syne',sans-serif",fontWeight:600,fontSize:12,color:"#ddd",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nb.title}</div>
         <div style={{display:"flex",gap:4,alignItems:"center",flexWrap:"nowrap"}}>
           {saveStatus==="saving"&&<span style={{fontSize:9,color:"#f5a623"}}>⏳</span>}
-          {saveStatus==="saved"&&<span style={{fontSize:9,color:"#4ade80"}}>✓ Sauvegardé</span>}
+          {saveStatus==="saved"&&<span style={{fontSize:9,color:"#4ade80"}}>✓</span>}
           <div style={{display:"flex",borderRadius:6,overflow:"hidden",border:"1px solid #ffffff14"}}>
             <button onClick={()=>{setUnitSys("metric");setScale("1:50")}} style={{padding:"3px 7px",background:unitSys==="metric"?"rgba(200,98,42,.4)":"transparent",border:"none",color:unitSys==="metric"?"#fff":"#777",cursor:"pointer",fontSize:9}}>mm</button>
             <button onClick={()=>{setUnitSys("imperial");setScale('1/4"=1\'')}} style={{padding:"3px 7px",background:unitSys==="imperial"?"rgba(200,98,42,.4)":"transparent",border:"none",color:unitSys==="imperial"?"#fff":"#777",cursor:"pointer",fontSize:9}}>in</button>
@@ -699,14 +771,7 @@ export default function EditorPage(){
             <span style={{color:"#666",fontSize:9,minWidth:26,textAlign:"center"}}>{Math.round(zoom*100)}%</span>
             <button onClick={()=>setZoom(z=>Math.min(3,z+.1))} style={{background:"none",border:"none",color:"#aaa",cursor:"pointer",fontSize:13}}>+</button>
           </div>
-          {[
-            [()=>setShowLib(v=>!v),"🏗",showLib],
-            [()=>setShowPageSettings(true),"🎨 Page",false],
-            [()=>setShowTheme(true),"🎨 Thème",false],
-            [()=>setShowLayers(v=>!v),"⊞",showLayers],
-            [()=>setShowRuler(v=>!v),"📏",showRuler],
-            [()=>setShowProt(v=>!v),"📐",showProt],
-          ].map(([fn,label,active],i)=>(
+          {[[()=>setShowLib(v=>!v),"🏗",showLib],[()=>setShowPageSettings(true),"🎨 Page",false],[()=>setShowTheme(true),"🎨 Thème",false],[()=>setShowLayers(v=>!v),"⊞",showLayers],[()=>setShowRuler(v=>!v),"📏",showRuler],[()=>setShowProt(v=>!v),"📐",showProt]].map(([fn,label,active],i)=>(
             <button key={i} onClick={fn} style={{padding:"3px 8px",borderRadius:6,border:`1px solid ${active?T.accent:"#ffffff14"}`,background:active?`${T.accent}22`:"#ffffff0a",color:active?T.accent:"#888",cursor:"pointer",fontSize:9,whiteSpace:"nowrap"}}>{label}</button>
           ))}
           <button onClick={()=>window.__undo?.()} style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#aaa",cursor:"pointer",fontSize:11}}>↩</button>
@@ -727,40 +792,51 @@ export default function EditorPage(){
           </div>
         ))}
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:5,flexShrink:0}}>
-          <div style={{width:14,height:14,borderRadius:"50%",background:color,border:`1px solid ${T.border}`}}/>
-          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{sizeMm}mm · {tool}</span>
+          <div style={{width:14,height:14,borderRadius:"50%",background:tool==="eraser"?"#eee":color,border:`1px solid ${T.border}`}}/>
+          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool==="eraser"?eraserMm:sizeMm}mm · {tool}</span>
         </div>
       </div>
 
       <div style={{display:"flex",flex:1,overflow:"hidden"}}>
-        {/* CANVAS */}
-        <div style={{flex:1,overflow:"hidden",background:T.bg,position:"relative",cursor:libPending?"crosshair":tool==="select"?"grab":"default"}}
+        {/* CANVAS AREA */}
+        <div style={{flex:1,overflow:"hidden",background:T.bg,position:"relative",
+              cursor:libPending?"crosshair":isPanMode?"grab":"default"}}
           id="canvas-area"
-          onMouseMove={e=>{if(libPending)setMousePos({x:e.clientX,y:e.clientY});if(panning&&panStart.current){setPanX(e.clientX-panStart.current.x);setPanY(e.clientY-panStart.current.y)}}}
-          onMouseDown={e=>{if(libPending){handleCanvasClick(e);return};if(tool==="select"){setPanning(true);panStart.current={x:e.clientX-panX,y:e.clientY-panY}}}}
-          onMouseUp={()=>setPanning(false)}
+          onMouseMove={e=>{
+            if(libPending)setMousePos({x:e.clientX,y:e.clientY})
+            if(isPanMode&&isPanning.current&&panStart.current){
+              setPanX(e.clientX-panStart.current.x)
+              setPanY(e.clientY-panStart.current.y)
+            }
+          }}
+          onMouseDown={e=>{
+            if(libPending){handleCanvasAreaClick(e);return}
+            if(isPanMode){isPanning.current=true;panStart.current={x:e.clientX-panX,y:e.clientY-panY}}
+          }}
+          onMouseUp={()=>{isPanning.current=false}}
           onKeyDown={e=>{if(e.key==="Escape")setLibPending(null)}}
           tabIndex={0}>
 
-          {/* Preview ghost of pending element */}
+          {/* Ghost preview under mouse */}
           {libPending&&(()=>{
             const r=document.getElementById("canvas-area")?.getBoundingClientRect()
             if(!r)return null
-            const elW=libPending.w*3.78/50*zoom, elH=libPending.h*3.78/50*zoom
-            const gx=mousePos.x-r.left-elW/2, gy=mousePos.y-r.top-elH/2
-            return<div style={{position:"absolute",left:gx,top:gy,zIndex:50,opacity:.6,pointerEvents:"none",transform:`scale(${zoom})`,transformOrigin:"top left"}}>
+            const sc=3.78/50
+            const elW=(libPending.fw||libPending.w)*sc*zoom
+            const elH=libPending.h*sc*zoom
+            return<div style={{position:"absolute",left:mousePos.x-r.left-elW/2,top:mousePos.y-r.top-elH/2,zIndex:50,opacity:.55,pointerEvents:"none",transform:`scale(${zoom})`,transformOrigin:"top left"}}>
               {renderEl(libPending,1/50)}
             </div>
           })()}
 
-          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",transition:"transform .05s",position:"absolute",top:"50%",left:"50%",marginLeft:-397,marginTop:-562}}>
+          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:-397,marginTop:-562}}>
             <div style={{width:794,height:1123,position:"relative",boxShadow:"0 4px 40px rgba(0,0,0,.2)"}}>
               <Paper tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor}/>
 
               {placed.map(item=>{
                 const sel=selected===item.id
-                return<div key={item.id} style={{position:"absolute",left:item.x,top:item.y,cursor:"move",pointerEvents:"all",userSelect:"none",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,zIndex:sel?12:10}}
-                  onMouseDown={e=>{e.stopPropagation();setSelected(item.id);const ox=e.clientX-item.x*zoom,oy=e.clientY-item.y*zoom;const mm=ev=>setPlaced(p=>p.map(e=>e.id===item.id?{...e,x:(ev.clientX-ox)/zoom,y:(ev.clientY-oy)/zoom}:e));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
+                return<div key={item.id} style={{position:"absolute",left:item.x,top:item.y,cursor:isPanMode?"default":"move",pointerEvents:"all",userSelect:"none",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,zIndex:sel?12:10}}
+                  onMouseDown={e=>{if(isPanMode)return;e.stopPropagation();setSelected(item.id);const ox=e.clientX/zoom-item.x,oy=e.clientY/zoom-item.y;const mm=ev=>setPlaced(p=>p.map(e=>e.id===item.id?{...e,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:e));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
                   {renderEl(item.el,1/50)}
                   {sel&&<button onClick={()=>{setPlaced(p=>p.filter(e=>e.id!==item.id));setSelected(null)}} style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,zIndex:20}}>×</button>}
                 </div>
@@ -789,7 +865,9 @@ export default function EditorPage(){
                 </div>
               )}
 
-              <DrawCanvas tool={tool} color={color} size={sizePx} cRef={cRef} onStroke={onStroke} onPickColor={c=>setColor(c)}/>
+              {/* Only show canvas when NOT in pan mode */}
+              {!isPanMode&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} onStroke={onStroke} onPickColor={c=>setColor(c)}/>}
+              {isPanMode&&<canvas ref={cRef} width={794} height={1123} style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:1,pointerEvents:"none",zIndex:5}}/>}
             </div>
           </div>
         </div>
@@ -812,7 +890,7 @@ export default function EditorPage(){
         </div>}
 
         {/* BIBLIOTHÈQUE */}
-        {showLib&&<div style={{width:255,background:T.surface,borderLeft:`1px solid ${T.border}`,display:"flex",flexDirection:"column",flexShrink:0}}>
+        {showLib&&<div style={{width:260,background:T.surface,borderLeft:`1px solid ${T.border}`,display:"flex",flexDirection:"column",flexShrink:0}}>
           <div style={{padding:"9px 11px 7px",borderBottom:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:11,color:T.accent}}>Bibliothèque</div>
             <button onClick={()=>setShowLib(false)} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:15}}>×</button>
@@ -830,7 +908,7 @@ export default function EditorPage(){
             </div>
           </div>
           <div style={{padding:"4px 7px",borderBottom:`1px solid ${T.border}`,background:`${T.accent}05`,flexShrink:0}}>
-            <div style={{fontSize:8,color:T.muted,textAlign:"center"}}>{libPending?`📍 Clic sur la feuille → "${libPending.l}"`:("Clic = placer · glisser aussi")}</div>
+            <div style={{fontSize:8,color:T.muted,textAlign:"center"}}>{libPending?`📍 Clic sur la feuille → "${libPending.l}"`:"Clic = sélectionner → clic feuille = placer · ou glisser"}</div>
           </div>
           <div style={{flex:1,overflowY:"auto",padding:5,display:"flex",flexDirection:"column",gap:3}}>
             {libItems.map(el=>(
@@ -840,7 +918,8 @@ export default function EditorPage(){
                 onDragEnd={e=>{
                   const r=document.getElementById("canvas-area")?.getBoundingClientRect()
                   if(!r)return
-                  const elW=el.w*3.78/50,elH=el.h*3.78/50
+                  const sc=3.78/50
+                  const elW=(el.fw||el.w)*sc,elH=el.h*sc
                   const x=(e.clientX-r.left-panX)/zoom-elW/2
                   const y=(e.clientY-r.top-panY)/zoom-elH/2
                   setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,x),y:Math.max(0,y)}])
@@ -849,7 +928,7 @@ export default function EditorPage(){
                 style={{padding:"6px 8px",borderRadius:8,border:`1px solid ${libPending?.id===el.id?T.accent:T.border}`,background:libPending?.id===el.id?`${T.accent}10`:T.bg,cursor:"pointer",display:"flex",alignItems:"center",gap:7,transition:"all .12s"}}
                 onMouseEnter={e=>{if(libPending?.id!==el.id)e.currentTarget.style.borderColor=T.accent}}
                 onMouseLeave={e=>{if(libPending?.id!==el.id)e.currentTarget.style.borderColor=T.border}}>
-                <div style={{width:28,height:28,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>{renderEl(el,1/300)}</div>
+                <div style={{width:30,height:30,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>{renderEl(el,1/300)}</div>
                 <div>
                   <div style={{fontSize:9,fontWeight:700,color:T.ink,lineHeight:1.2}}>{el.l}</div>
                   <div style={{fontSize:7,color:T.muted,fontFamily:"monospace",marginTop:1}}>{el.w}×{el.h}mm</div>
@@ -864,20 +943,19 @@ export default function EditorPage(){
       <div style={{height:34,background:T.surface,borderTop:`1px solid ${T.border}`,display:"flex",alignItems:"center",padding:"0 12px",gap:10,zIndex:20}}>
         <div style={{display:"flex",alignItems:"center",gap:5}}>
           <button onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page===1} style={{background:"none",border:"none",color:page===1?T.border:T.muted,cursor:page===1?"default":"pointer",fontSize:12}}>‹</button>
-          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{page.toString().padStart(2,"0")} / {(nb.pages_count||1).toString().padStart(2,"0")}</span>
+          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{page.toString().padStart(2,"0")}/{(nb.pages_count||1).toString().padStart(2,"0")}</span>
           <button onClick={()=>setPage(p=>p+1)} style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:12}}>›</button>
         </div>
         <div style={{width:1,height:14,background:T.border}}/>
-        {/* Pan controls */}
-        <div style={{display:"flex",gap:3}}>
-          <button onClick={()=>setPanY(p=>p+80)} style={{width:22,height:22,borderRadius:5,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:10}}>↑</button>
-          <button onClick={()=>setPanY(p=>p-80)} style={{width:22,height:22,borderRadius:5,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:10}}>↓</button>
-          <button onClick={()=>setPanX(p=>p+80)} style={{width:22,height:22,borderRadius:5,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:10}}>←</button>
-          <button onClick={()=>setPanX(p=>p-80)} style={{width:22,height:22,borderRadius:5,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:10}}>→</button>
-          <button onClick={()=>{setPanX(0);setPanY(0)}} style={{width:22,height:22,borderRadius:5,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:9}}>⊙</button>
+        {/* Nav buttons — separate from drawing */}
+        <div style={{display:"flex",gap:3,alignItems:"center"}}>
+          <span style={{fontSize:8,color:T.muted}}>Nav:</span>
+          {[["↑",()=>setPanY(p=>p+80)],["↓",()=>setPanY(p=>p-80)],["←",()=>setPanX(p=>p+80)],["→",()=>setPanX(p=>p-80)],["⊙",()=>{setPanX(0);setPanY(0)}]].map(([l,fn])=>(
+            <button key={l} onClick={fn} style={{width:22,height:22,borderRadius:5,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:10}}>{l}</button>
+          ))}
         </div>
         <div style={{width:1,height:14,background:T.border}}/>
-        <div style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool} · {sizeMm}mm · {scale} · {Math.round(zoom*100)}%</div>
+        <div style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool} · {tool==="eraser"?eraserMm:sizeMm}mm · {scale} · {Math.round(zoom*100)}%</div>
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:4}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="saved"?"#4ade80":saveStatus==="saving"?"#f5a623":"#4ade80"}}/>
           <span style={{fontSize:8,color:T.muted}}>{saveStatus==="saving"?"Sauvegarde...":saveStatus==="saved"?"Sauvegardé ✓":"Auto-save"}</span>
