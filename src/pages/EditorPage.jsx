@@ -649,11 +649,17 @@ function ThemePicker({current,onChange,onClose}){
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
           {THEMES.map(th=><button key={th.id}onClick={()=>{onChange(th);onClose()}}style={{padding:0,border:`2px solid ${current?.id===th.id?"#c8622a":"#eee"}`,borderRadius:13,overflow:"hidden",cursor:"pointer",background:"none"}}>
-            <div style={{height:44,background:`linear-gradient(135deg,${th.panel},${th.surface})`,display:"flex",alignItems:"center",gap:7,padding:"0 11px"}}>
-              <span style={{fontSize:15}}>{th.e}</span>
-              {[th.accent,th.a2,th.a3].map((c,i)=><div key={i}style={{width:9-i*2,height:9-i*2,borderRadius:2,background:c}}/>)}
+            <div style={{height:80,background:`linear-gradient(135deg,${th.panel},${th.surface})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+              {th.img
+                ? <img src={th.img} alt={th.n} style={{width:60,height:60,borderRadius:9,objectFit:"cover",boxShadow:"0 2px 8px rgba(0,0,0,.3)"}}/>
+                : <span style={{fontSize:24}}>{th.e}</span>
+              }
+              <div style={{position:"absolute",bottom:4,right:6,fontSize:9,color:th.surface+"cc",fontFamily:"'Syne',sans-serif",fontWeight:700}}>{th.n}</div>
             </div>
-            <div style={{padding:"5px 9px",background:th.bg}}><div style={{fontSize:10,fontWeight:700,color:th.ink,fontFamily:"'Syne',sans-serif"}}>{th.n}</div></div>
+            <div style={{padding:"5px 9px",background:th.bg,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div style={{display:"flex",gap:3}}>{[th.accent,th.a2,th.a3].map((c,i)=><div key={i}style={{width:9,height:9,borderRadius:3,background:c}}/>)}</div>
+              {current?.id===th.id&&<div style={{fontSize:9,color:th.accent,fontWeight:700}}>✓</div>}
+            </div>
           </button>)}
         </div>
       </div>

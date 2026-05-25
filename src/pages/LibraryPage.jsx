@@ -142,13 +142,15 @@ function ThemePicker({current, onChange, onClose}) {
               style={{padding:0,border:`2px solid ${current?.id===th.id?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:13,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
               onMouseEnter={e => e.currentTarget.style.transform="scale(1.02)"}
               onMouseLeave={e => e.currentTarget.style.transform="none"}>
-              <div style={{height:52,background:`linear-gradient(135deg,${th.panel},${th.surface})`,display:"flex",alignItems:"center",gap:8,padding:"0 12px"}}>
-                <span style={{fontSize:16}}>{th.e}</span>
-                {[th.accent,th.a2,th.a3].map((c,i) => <div key={i} style={{width:9-i*2,height:9-i*2,borderRadius:2,background:c}}/>)}
-                <div style={{marginLeft:"auto",fontSize:11,color:th.surface+"aa",fontFamily:"'Syne',sans-serif",fontWeight:700}}>{th.n}</div>
+              <div style={{height:80,background:`linear-gradient(135deg,${th.panel},${th.surface})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+                {th.img
+                  ? <img src={th.img} alt={th.n} style={{width:64,height:64,borderRadius:10,objectFit:"cover",boxShadow:"0 2px 10px rgba(0,0,0,.3)"}}/>
+                  : <span style={{fontSize:28}}>{th.e}</span>
+                }
+                <div style={{position:"absolute",bottom:4,right:6,fontSize:9,color:th.surface+"cc",fontFamily:"'Syne',sans-serif",fontWeight:700}}>{th.n}</div>
               </div>
-              <div style={{padding:"6px 10px",background:th.bg,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <div style={{fontSize:9,color:th.muted}}>bg · surface · panel</div>
+              <div style={{padding:"5px 10px",background:th.bg,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={{display:"flex",gap:3}}>{[th.accent,th.a2,th.a3].map((c,i)=><div key={i} style={{width:10,height:10,borderRadius:3,background:c}}/>)}</div>
                 {current?.id===th.id&&<div style={{fontSize:9,color:th.accent,fontWeight:700}}>✓ Actif</div>}
               </div>
             </button>
