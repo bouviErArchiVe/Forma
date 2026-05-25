@@ -44,10 +44,10 @@ export default function AuthPage() {
 
         {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: T.accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, boxShadow: `0 4px 14px ${T.accent}44` }}>🏛</div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: T.accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "'Syne',sans-serif", fontWeight: 800, color: "#fff", letterSpacing: -1, boxShadow: `0 4px 14px ${T.accent}44` }}>F</div>
           <div>
-            <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: T.ink }}>ArchNote</div>
-            <div style={{ fontSize: 11, color: T.muted }}>Smart Notebook · Architecture & Plus</div>
+            <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: T.ink }}>Forma</div>
+            <div style={{ fontSize: 11, color: T.muted }}>Carnet de conception · Architecture & Design</div>
           </div>
         </div>
 

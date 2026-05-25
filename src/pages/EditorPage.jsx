@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
+import { THEMES } from "@/lib/themes"
 
 /* ══ PALETTES ═══════════════════════════════════════════ */
 const CPAL={
@@ -250,28 +251,6 @@ function renderSym(el,sc=1/50){
   if(s==="parking")return<svg width={W}height={H}style={{display:"block"}}viewBox="0 0 100 200"><rect x={3}y={3}width={94}height={194}rx={4}fill="none"stroke="#bbb"strokeWidth={2}strokeDasharray="7,5"/><text x={50}y={110}textAnchor="middle"fontSize={50}fill="#ccc"fontWeight="bold"fontFamily="sans-serif">P</text></svg>
   return<div style={{width:W,height:H,background:"#f0f0f0",border:"1px solid #ccc",fontSize:8,display:"flex",alignItems:"center",justifyContent:"center"}}>{el.l}</div>
 }
-
-const THEMES=[
-  {id:"classic",n:"Classic",e:"📐",bg:"#f5f2ec",surface:"#fff",panel:"#1c1c24",accent:"#c8622a",a2:"#3d6b8c",a3:"#4a7c59",ink:"#1c1c24",muted:"#8a8a96",border:"#ddd8ce",paper:"#fafaf7",grid:"rgba(0,0,0,.07)",pline:"rgba(61,107,140,.1)"},
-  {id:"dark",n:"Dark Pro",e:"🌑",bg:"#0e0e14",surface:"#16161f",panel:"#0a0a10",accent:"#e94560",a2:"#60a5fa",a3:"#4ade80",ink:"#e8e8f0",muted:"#4a4a60",border:"#1e1e2e",paper:"#12121a",grid:"rgba(255,255,255,.04)",pline:"rgba(96,165,250,.08)"},
-  {id:"neon",n:"Neon",e:"🌈",bg:"#05050f",surface:"#0a0a1a",panel:"#03030a",accent:"#00ffcc",a2:"#ff00ff",a3:"#ffff00",ink:"#e0e0ff",muted:"#3a3a5a",border:"#1a1a3a",paper:"#080814",grid:"rgba(0,255,204,.06)",pline:"rgba(0,255,204,.07)"},
-  {id:"arctic",n:"Arctic",e:"❄️",bg:"#eef4fb",surface:"#fff",panel:"#1a2a3a",accent:"#2196f3",a2:"#00bcd4",a3:"#26a69a",ink:"#1a2a3a",muted:"#7a9ab8",border:"#c8ddef",paper:"#f8fbff",grid:"rgba(33,150,243,.08)",pline:"rgba(33,150,243,.1)"},
-  {id:"sepia",n:"Sépia",e:"📜",bg:"#f4ede0",surface:"#fdf6ed",panel:"#3d2b1a",accent:"#8b4513",a2:"#6b5a3d",a3:"#5a7a3d",ink:"#3d2b1a",muted:"#9a856a",border:"#d4c4a8",paper:"#fdf6ed",grid:"rgba(139,69,19,.08)",pline:"rgba(139,69,19,.1)"},
-  {id:"midnight",n:"Midnight",e:"🌙",bg:"#0d1117",surface:"#161b22",panel:"#0d1117",accent:"#58a6ff",a2:"#3fb950",a3:"#f78166",ink:"#c9d1d9",muted:"#484f58",border:"#21262d",paper:"#1c2128",grid:"rgba(88,166,255,.05)",pline:"rgba(88,166,255,.07)"},
-  {id:"sunset",n:"Sunset",e:"🌅",bg:"#fff8f0",surface:"#fff",panel:"#2d1a0e",accent:"#ff6b35",a2:"#ff9f1c",a3:"#c73e1d",ink:"#2d1a0e",muted:"#b08070",border:"#f0d8c8",paper:"#fffaf6",grid:"rgba(255,107,53,.07)",pline:"rgba(255,107,53,.09)"},
-  {id:"forest",n:"Forest",e:"🌲",bg:"#f0f5f0",surface:"#fff",panel:"#1a2a1a",accent:"#2d6a4f",a2:"#52b788",a3:"#95d5b2",ink:"#1a2a1a",muted:"#6a8a6a",border:"#c8ddc8",paper:"#f8faf8",grid:"rgba(45,106,79,.08)",pline:"rgba(45,106,79,.09)"},
-  {id:"violet",n:"Violet",e:"💜",bg:"#f5f0ff",surface:"#fff",panel:"#1a0a2e",accent:"#7c3aed",a2:"#a855f7",a3:"#ec4899",ink:"#1a0a2e",muted:"#8a6aaa",border:"#d8c8f0",paper:"#fdf8ff",grid:"rgba(124,58,237,.07)",pline:"rgba(124,58,237,.09)"},
-  {id:"steel",n:"Steel",e:"⚙️",bg:"#e8ecef",surface:"#f4f6f8",panel:"#1c2833",accent:"#546e7a",a2:"#78909c",a3:"#b0bec5",ink:"#1c2833",muted:"#7a8a94",border:"#cfd8dc",paper:"#f4f6f8",grid:"rgba(84,110,122,.08)",pline:"rgba(84,110,122,.1)"},
-  {id:"cherry",n:"Cherry",e:"🍒",bg:"#fff0f3",surface:"#fff",panel:"#2a0a10",accent:"#e01e5a",a2:"#ff6b9d",a3:"#c92842",ink:"#2a0a10",muted:"#b07080",border:"#f0c8d0",paper:"#fff8fa",grid:"rgba(224,30,90,.07)",pline:"rgba(224,30,90,.09)"},
-  {id:"blueprint",n:"Blueprint",e:"🗺️",bg:"#003366",surface:"#004080",panel:"#001f3f",accent:"#ffffff",a2:"#80c0ff",a3:"#40ff80",ink:"#ffffff",muted:"#80a0c0",border:"#005599",paper:"#003d7a",grid:"rgba(255,255,255,.1)",pline:"rgba(255,255,255,.12)"},
-  {id:"lemon",n:"Lemon",e:"🍋",bg:"#fffff0",surface:"#fff",panel:"#2a2a0a",accent:"#d4af00",a2:"#a0c000",a3:"#008080",ink:"#2a2a0a",muted:"#9a9a6a",border:"#e8e8c0",paper:"#fffff8",grid:"rgba(212,175,0,.08)",pline:"rgba(212,175,0,.1)"},
-  {id:"sand",n:"Sand",e:"🏜️",bg:"#f5f0e8",surface:"#fff",panel:"#2a2010",accent:"#c9a84c",a2:"#8b7355",a3:"#6b8c3d",ink:"#2a2010",muted:"#9a8a6a",border:"#e0d4b8",paper:"#faf7f0",grid:"rgba(201,168,76,.08)",pline:"rgba(201,168,76,.1)"},
-  {id:"slate",n:"Slate Dark",e:"🪨",bg:"#1e2025",surface:"#252830",panel:"#16181c",accent:"#a8b2c4",a2:"#7a8fa8",a3:"#5a9a7a",ink:"#d8dce4",muted:"#5a6070",border:"#30343c",paper:"#2a2d35",grid:"rgba(168,178,196,.05)",pline:"rgba(168,178,196,.07)"},
-  {id:"blueprintpro",n:"Blueprint Pro",e:"📘",bg:"#001830",surface:"#002244",panel:"#000d1a",accent:"#4db8ff",a2:"#00ff88",a3:"#ffcc00",ink:"#e0f0ff",muted:"#5a8ab0",border:"#003366",paper:"#001830",grid:"rgba(77,184,255,.12)",pline:"rgba(77,184,255,.15)"},
-  {id:"kraft",n:"Kraft",e:"📦",bg:"#c4a06a",surface:"#d0ac76",panel:"#4a2e10",accent:"#8b3a0f",a2:"#5a7a2d",a3:"#3d6b8c",ink:"#2a1a08",muted:"#7a5a30",border:"#b09060",paper:"#c8a96e",grid:"rgba(0,0,0,.07)",pline:"rgba(0,0,0,.1)"},
-  {id:"oled",n:"OLED Pure",e:"⬛",bg:"#000000",surface:"#080808",panel:"#000000",accent:"#00ffcc",a2:"#ff6b35",a3:"#a855f7",ink:"#ffffff",muted:"#2a2a2a",border:"#111111",paper:"#030303",grid:"rgba(255,255,255,.04)",pline:"rgba(0,255,204,.06)"},
-  {id:"concrete",n:"Béton Brut",e:"🏗",bg:"#e2ddd6",surface:"#ece8e2",panel:"#242420",accent:"#d4501a",a2:"#4a8ab0",a3:"#6a9a54",ink:"#1a1a16",muted:"#80807a",border:"#ccc8c0",paper:"#e8e4de",grid:"rgba(0,0,0,.06)",pline:"rgba(212,80,26,.08)"},
-]
 
 const PAGE_COLORS=[
   {id:"white",c:"#ffffff",l:"Blanc"},{id:"cream",c:"#fdf6ed",l:"Crème"},
@@ -665,7 +644,7 @@ function ThemePicker({current,onChange,onClose}){
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",backdropFilter:"blur(6px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
       <div style={{background:"#fff",borderRadius:20,padding:22,width:560,maxWidth:"94vw",maxHeight:"82vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:18}}>🎨 Thèmes ({THEMES.length})</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:18}}>Thèmes ({THEMES.length})</div>
           <button onClick={onClose}style={{background:"none",border:"none",cursor:"pointer",fontSize:22,color:"#888"}}>×</button>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
@@ -926,9 +905,9 @@ export default function EditorPage(){
 
   // Flashcards — persist per notebook
   useEffect(()=>{
-    try{const saved=localStorage.getItem(`archnote_flash_${nb.id}`);if(saved)setFlashCards(JSON.parse(saved))}catch{}
+    try{const saved=localStorage.getItem(`forma_flash_${nb.id}`);if(saved)setFlashCards(JSON.parse(saved))}catch{}
   },[nb.id])
-  const saveFlash=cards=>{setFlashCards(cards);try{localStorage.setItem(`archnote_flash_${nb.id}`,JSON.stringify(cards))}catch{}}
+  const saveFlash=cards=>{setFlashCards(cards);try{localStorage.setItem(`forma_flash_${nb.id}`,JSON.stringify(cards))}catch{}}
   const addFlashCard=()=>{
     if(!flashQ.trim()||!flashA.trim())return
     saveFlash([...flashCards,{id:Date.now(),q:flashQ.trim(),a:flashA.trim()}])
@@ -952,7 +931,7 @@ export default function EditorPage(){
   const onStroke=useCallback(s=>{if(saveTimer.current)clearTimeout(saveTimer.current);saveTimer.current=setTimeout(()=>save(s),1500)},[save])
 
   // Page versioning (localStorage, 20 versions max per page)
-  const HIST_KEY=`archnote_hist_${nb.id}_${page}`
+  const HIST_KEY=`forma_hist_${nb.id}_${page}`
   const saveVersion=label=>{
     const canvas=cRef.current;if(!canvas)return
     const snap=canvas.toDataURL("image/jpeg",.4)

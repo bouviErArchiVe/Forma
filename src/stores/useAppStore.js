@@ -11,7 +11,7 @@ const useAppStore = create(
       setUser: (user) => set({ user }),
 
       // ── Theme ────────────────────────────────────────────
-      themeId: 'classic',
+      themeId: 'horizon',
       setTheme: (themeId) => set({ themeId }),
       getTheme: () => THEMES.find(t => t.id === get().themeId) || THEMES[0],
 
@@ -127,7 +127,7 @@ const useAppStore = create(
       },
     }),
     {
-      name: 'archnote-store',
+      name: 'forma-store',
       partialize: (state) => ({
         themeId: state.themeId,
         unitSystem: state.unitSystem,

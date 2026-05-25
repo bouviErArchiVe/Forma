@@ -1,8 +1,8 @@
 {
-  "name": "archnote",
+  "name": "forma",
   "version": "1.0.0",
   "private": true,
-  "description": "Smart architecture notebook for students — free & open source",
+  "description": "Le carnet de conception pour architectes & designers — free & open source",
   "type": "module",
   "scripts": {
     "dev": "vite",

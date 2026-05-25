@@ -38,6 +38,7 @@ export default function App() {
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
       html, body { height: 100%; overflow: hidden; }
       body { font-family: 'Nunito', sans-serif; -webkit-font-smoothing: antialiased; background: ${T.bg}; color: ${T.ink}; }
+      :root { --accent: ${T.accent}; }
       #root { height: 100%; }
       button, input, select, textarea { font-family: 'Nunito', sans-serif; }
       ::-webkit-scrollbar { width: 5px; height: 5px; }
