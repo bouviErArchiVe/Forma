@@ -297,7 +297,18 @@ function Paper({tmpl,T,pageColor,gridColor}){
   if(tmpl==="isometric"){const s=37.8;for(let i=-H;i<W+H;i+=s){L.push(<line key={`a${i}`}x1={i}y1={0}x2={i+H}y2={H}stroke={gc}strokeWidth={.5}/>);L.push(<line key={`b${i}`}x1={i}y1={0}x2={i-H}y2={H}stroke={gc}strokeWidth={.5}/>)}}
   if(["plan","elevation","section","detail"].includes(tmpl)){grid(37.8,gc,.5);grid(189,pl,.9);L.push(<rect key="tb"x={20}y={H-92}width={W-40}height={82}fill="none"stroke={pl}strokeWidth={1}/>);L.push(<rect key="b1"x={12}y={12}width={W-24}height={H-24}fill="none"stroke={pl}strokeWidth={1.5}/>)}
   if(tmpl==="music"){for(let y=80;y<H-60;y+=70)for(let s=0;s<5;s++)L.push(<line key={`ms${y}${s}`}x1={40}y1={y+s*9}x2={W-40}y2={y+s*9}stroke={gc}strokeWidth={.9}/>)}
-  return<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={W}height={H}><rect width={W}height={H}fill={bg}/>{L}</svg>
+  const gradId=`pg-${T.id}`
+  return<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={W}height={H}>
+    <defs>
+      <radialGradient id={gradId} cx="90%" cy="8%" r="65%">
+        <stop offset="0%" stopColor={T.a3} stopOpacity={pageColor?0:0.2}/>
+        <stop offset="100%" stopColor={T.a3} stopOpacity={0}/>
+      </radialGradient>
+    </defs>
+    <rect width={W}height={H}fill={bg}/>
+    <rect width={W}height={H}fill={`url(#${gradId})`}/>
+    {L}
+  </svg>
 }
 
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */

@@ -483,7 +483,7 @@ export default function LibraryPage() {
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",height:62,maxWidth:1400,margin:"0 auto"}}>
           {/* Logo + title */}
           <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <div style={{width:38,height:38,borderRadius:10,background:`linear-gradient(135deg,${T.accent},${T.a2})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontFamily:"'Syne',sans-serif",fontWeight:800,color:"#fff",letterSpacing:-1,boxShadow:`0 4px 16px ${T.accent}44`,flexShrink:0}}>F</div>
+            <img src={T.img} alt={T.n} style={{width:38,height:38,borderRadius:10,objectFit:"cover",boxShadow:`0 4px 16px ${T.accent}44`,flexShrink:0}}/>
             <div>
               <div style={{display:"flex",alignItems:"center",gap:7}}>
                 <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:20,color:T.ink,lineHeight:1}}>Forma</div>
@@ -523,7 +523,7 @@ export default function LibraryPage() {
       {/* NOT LOGGED IN */}
       {!userId && !loading && (
         <div style={{textAlign:"center",padding:"90px 0"}}>
-          <div style={{width:72,height:72,borderRadius:20,background:`linear-gradient(135deg,${T.accent},${T.a2})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,fontFamily:"'Syne',sans-serif",fontWeight:800,color:"#fff",letterSpacing:-2,margin:"0 auto 14px",boxShadow:`0 8px 28px ${T.accent}44`}}>F</div>
+          <img src={T.img} alt={T.n} style={{width:72,height:72,borderRadius:20,objectFit:"cover",margin:"0 auto 14px",display:"block",boxShadow:`0 8px 28px ${T.accent}44`}}/>
           <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:24,color:T.ink,marginBottom:8}}>Bienvenue sur Forma</div>
           <div style={{fontSize:14,color:T.muted,marginBottom:28}}>Le carnet de conception pour architectes & designers</div>
           <button onClick={() => navigate("/auth")} style={{padding:"12px 26px",borderRadius:12,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:`0 4px 14px ${T.accent}44`}}>
