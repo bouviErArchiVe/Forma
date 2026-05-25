@@ -81,7 +81,7 @@ export default function AuthPage() {
         {mode === "signup" && (
           <div style={{ marginBottom: 14 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: T.muted, marginBottom: 5 }}>PRÉNOM ET NOM</div>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="Erwan Bouvier"
+            <input value={name} onChange={e => setName(e.target.value)} placeholder="Prénom Nom"
               style={{ width: "100%", padding: "11px 13px", borderRadius: 10, border: `1px solid ${T.border}`, fontSize: 14, outline: "none", color: T.ink, background: T.bg, boxSizing: "border-box" }}
               onFocus={e => e.target.style.borderColor = T.accent}
               onBlur={e => e.target.style.borderColor = T.border} />

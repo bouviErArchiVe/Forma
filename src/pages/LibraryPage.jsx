@@ -258,15 +258,27 @@ export default function LibraryPage() {
   const create = async () => {
     if (!newTitle.trim()) return; setSaving(true)
     const subj = subjects.find(s => s.id === newSubj)
-    const nb = {title:newTitle, subject:newSubj, template:newTmpl, pages_count:1, starred:false, color:subj?.c||"#c8622a", folder_id:newFolder==="none"?null:newFolder}
+    const now = new Date().toISOString()
+    const localNb = {
+      id: `local-${Date.now()}`,
+      title: newTitle, subject: newSubj, template: newTmpl,
+      pages_count: 1, starred: false, color: subj?.c || "#c8622a",
+      folder_id: newFolder === "none" ? null : newFolder,
+      created_at: now, updated_at: now
+    }
     try {
       if (userId) {
-        const {data, error} = await supabase.from("notebooks").insert([{...nb, user_id:userId}]).select().single()
+        const {id:_, ...nbPayload} = localNb
+        const {data, error} = await supabase.from("notebooks").insert([{...nbPayload, user_id:userId}]).select().single()
         if (error) throw error
         setNotebooks(p => [data, ...p]); setShowNew(false); setNewTitle(""); open(data)
+      } else {
+        setNotebooks(p => [localNb, ...p]); setShowNew(false); setNewTitle(""); open(localNb)
       }
-    } catch {
-      alert("Erreur lors de la création.")
+    } catch (err) {
+      console.error("Notebook creation error:", err)
+      // Fallback: create locally even if Supabase failed
+      setNotebooks(p => [localNb, ...p]); setShowNew(false); setNewTitle(""); open(localNb)
     } finally {
       setSaving(false)
     }
