@@ -48,40 +48,20 @@ const SIZES_MM=[0.05,0.1,0.18,0.25,0.35,0.5,0.7,1.0,1.4,2.0,3.0,5.0,7.0,10.0]
 const ERASER_SIZES_MM=[0.5,1.0,2.0,3.0,5.0,8.0,12.0,20.0,30.0]
 const mm2px=mm=>mm*3.78
 
-/* ══ FORMA UX / FIX HELPERS ═════════════════════════════════════ */
-
-const formatDimension = (mmValue, unitSystem = "metric") => {
-  if (unitSystem === "imperial") {
-    const inches = mmValue / 25.4
-    return `${inches.toFixed(2)}\"`
+function formatDimension(mm, unitSystem) {
+  if (unitSystem === 'imperial') {
+    const inches = mm / 25.4
+    if (inches >= 12) {
+      const feet = Math.floor(inches / 12)
+      const remIn = Math.round((inches % 12) * 100) / 100
+      return remIn > 0 ? `${feet}'-${remIn}"` : `${feet}'`
+    }
+    return `${Math.round(inches * 1000) / 1000}"`
   }
-
-  return `${mmValue.toFixed(0)} mm`
+  if (mm >= 1000) return `${Math.round(mm / 10) / 100}m`
+  if (mm >= 10) return `${Math.round(mm) / 10}cm`
+  return `${mm}mm`
 }
-
-const DEFAULT_SHAPE_STYLE = {
-  strokeColor: "#000000",
-  fillColor: "transparent",
-  opacity: 1,
-  strokeWidth: 2,
-}
-
-const getFloatingToolbarPosition = (bounds) => {
-  if (!bounds) return { x: 0, y: 0 }
-
-  return {
-    x: bounds.x + bounds.width / 2,
-    y: bounds.y - 60,
-  }
-}
-
-/* TODO:
-- Add inline text editing with textarea autofocus
-- Add lasso group movement
-- Add contextual toolbar like GoodNotes
-- Add advanced bubbles system
-*/
-
 const PAGE_FORMATS=[
   {id:"a4p",  l:"A4 Portrait",    w:794,  h:1123,desc:"210×297mm"},
   {id:"a4l",  l:"A4 Paysage",     w:1123, h:794, desc:"297×210mm"},
@@ -400,11 +380,9 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
           })
           // Distance label
           const distMm=Math.sqrt(Math.pow(s.pts[1].x-s.pts[0].x,2)+Math.pow(s.pts[1].y-s.pts[0].y,2))/3.78
-          const dist=unitSys==="imperial"?Math.round(distMm/25.4*1000)/1000:Math.round(distMm*10)/10
-          const unit=unitSys==="imperial"?'"':'mm'
           const mx=(s.pts[0].x+s.pts[1].x)/2,my=(s.pts[0].y+s.pts[1].y)/2
           ctx.font=`${Math.max(s.size*3,10)}px monospace`;ctx.fillStyle=s.color;ctx.globalAlpha=1
-          ctx.fillText(`${dist}${unit}`,mx+4,my-4)
+          ctx.fillText(formatDimension(distMm,unitSys),mx+4,my-4)
         }
       }
       else if(s.shapeType==="rect"){ctx.strokeRect(s.pts[0].x,s.pts[0].y,s.pts[1].x-s.pts[0].x,s.pts[1].y-s.pts[0].y)}
@@ -647,7 +625,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 }
 
 /* ══ FLOATING PANEL ══════════════════════════════════ */
-function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites}){
+function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys}){
   const[pos,setPos]=useState({x:16,y:120})
   const[drag,setDrag]=useState(false)
   const[offset,setOffset]=useState({x:0,y:0})
@@ -692,7 +670,7 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
         <div style={{fontSize:9,color:T.muted}}>⠿ OUTILS</div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
           <div style={{width:12,height:12,borderRadius:"50%",background:isEraser?"#eee":color,border:`1px solid ${T.border}`}}/>
-          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{isEraser?eraserMm:sizeMm}mm</span>
+          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{formatDimension(isEraser?eraserMm:sizeMm,unitSys)}</span>
           <button onClick={()=>setCollapsed(true)}style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:14,lineHeight:1,padding:0}}>−</button>
         </div>
       </div>
@@ -731,7 +709,7 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
         </div>
         <div>
           <div style={{fontSize:8,color:T.muted,marginBottom:3}}>FAVORIS — clic: charger · dbl: sauvegarder</div>
-          <div style={{display:"flex",gap:4}}>{Array.from({length:6},(_,i)=>{const fav=favorites[i];return<button key={i}onClick={()=>loadFav(fav)}onDoubleClick={()=>saveFav(i)}title={fav?`${fav.color} ${fav.sizeMm}mm`:"Dbl-clic sauvegarder"}style={{width:28,height:28,borderRadius:7,background:fav?fav.color:T.bg,border:`1px solid ${fav?T.accent:T.border}`,cursor:"pointer",fontSize:fav?"0":"13",color:T.muted,display:"flex",alignItems:"center",justifyContent:"center"}}>{!fav&&"+"}</button>})}</div>
+          <div style={{display:"flex",gap:4}}>{Array.from({length:6},(_,i)=>{const fav=favorites[i];return<button key={i}onClick={()=>loadFav(fav)}onDoubleClick={()=>saveFav(i)}title={fav?`${fav.color} ${formatDimension(fav.sizeMm,unitSys)}`:"Dbl-clic sauvegarder"}style={{width:28,height:28,borderRadius:7,background:fav?fav.color:T.bg,border:`1px solid ${fav?T.accent:T.border}`,cursor:"pointer",fontSize:fav?"0":"13",color:T.muted,display:"flex",alignItems:"center",justifyContent:"center"}}>{!fav&&"+"}</button>})}</div>
         </div>
       </div>
     </div>
@@ -1434,7 +1412,7 @@ export default function EditorPage(){
         </div>
       </div>}
 
-      <FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites}/>
+      <FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys}/>
 
       {libPending&&<div style={{position:"fixed",bottom:52,left:"50%",transform:"translateX(-50%)",zIndex:50,background:T.panel,color:"#fff",padding:"7px 14px",borderRadius:20,fontSize:11,pointerEvents:"none",boxShadow:"0 4px 16px rgba(0,0,0,.3)"}}>
         📍 Clic sur la feuille → <strong>{libPending.l}</strong> — Échap pour annuler
@@ -1522,7 +1500,7 @@ export default function EditorPage(){
         ))}
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:5,flexShrink:0}}>
           <div style={{width:12,height:12,borderRadius:"50%",background:tool==="eraser"?"#eee":color,border:`1px solid ${T.border}`}}/>
-          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool==="eraser"?eraserMm:sizeMm}mm · {tool}</span>
+          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{formatDimension(tool==="eraser"?eraserMm:sizeMm,unitSys)} · {tool}</span>
         </div>
       </div>
 
@@ -1730,7 +1708,7 @@ export default function EditorPage(){
           ))}
         </div>
         <div style={{width:1,height:12,background:T.border}}/>
-        <div style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool} · {tool==="eraser"?eraserMm:sizeMm}mm · {scale} · {Math.round(zoom*100)}%</div>
+        <div style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool} · {formatDimension(tool==="eraser"?eraserMm:sizeMm,unitSys)} · {scale} · {Math.round(zoom*100)}%</div>
         {collabCursors.length>0&&<div style={{fontSize:9,color:"#4ade80"}}>🟢 {collabCursors.length}</div>}
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:4}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="saved"?"#4ade80":saveStatus==="saving"?"#f5a623":"#4ade80"}}/>
@@ -1750,19 +1728,3 @@ export default function EditorPage(){
     setLibPending(null)
   }
 }
-
-
-/* ══ ERASER SYSTEM PATCH ════════════════════════════════════════
-The eraser should remove:
-- freehand strokes
-- text
-- shapes
-- dimensions
-- bubbles
-- images
-- lasso groups
-
-Recommended approach:
-const hit = elements.find(el => isPointInsideElement(pointer, el))
-removeElement(hit.id)
-================================================================ */
