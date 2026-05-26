@@ -4,6 +4,7 @@ import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
 import { THEMES } from "@/lib/themes"
 import FocusPanel from "@/components/FocusPanel"
+import { BACKGROUNDS } from '@/lib/backgrounds'
 
 const DEFAULT_SUBJECTS=[
   {id:"arch",    l:"Architecture",    c:"#c8622a",e:"🏛",custom:false},
@@ -125,10 +126,28 @@ function StatChip({e, v, l, tab, activeTab, setActiveTab, T}) {
   )
 }
 
-const ANIM_LABELS = {fireflies:"✨ Lucioles",leaves:"🍃 Feuilles",sparkles:"⭐ Éclats",geometry:"⬡ Géométrie",waves:"〰 Vagues",drops:"💧 Gouttes",pulses:"◎ Pulsations"}
+const ANIM_TYPES = [
+  {id:'',          emoji:'🎭', label:'Défaut thème'},
+  {id:'fireflies', emoji:'✨', label:'Lucioles'},
+  {id:'leaves',    emoji:'🍃', label:'Feuilles'},
+  {id:'sparkles',  emoji:'⭐', label:'Éclats'},
+  {id:'geometry',  emoji:'⬡', label:'Géométrie'},
+  {id:'waves',     emoji:'〰', label:'Vagues'},
+  {id:'drops',     emoji:'💧', label:'Gouttes'},
+  {id:'pulses',    emoji:'◎', label:'Pulsations'},
+  {id:'pencil',    emoji:'✏', label:'Crayon'},
+]
+
+const SPEED_OPTIONS = [
+  {v:0.3, l:'Lente'},
+  {v:0.6, l:'Douce'},
+  {v:1,   l:'Normale'},
+  {v:1.8, l:'Rapide'},
+  {v:3,   l:'Frénétique'},
+]
 
 function ThemePicker({current, onChange, onClose}) {
-  const {animationsEnabled,setAnimationsEnabled,bgEnabled,setBgEnabled} = useAppStore()
+  const {animationsEnabled,setAnimationsEnabled,animType,setAnimType,animSpeed,setAnimSpeed,bgId,setBgId} = useAppStore()
   const [tab, setTab] = useState("theme")
   const modalBg="#fff", modalInk="#1c1c24", modalMuted="#888"
   const TABS=[["theme","🎨 Thème"],["animation","✨ Animation"],["fond","🖼 Fond"]]
@@ -139,7 +158,6 @@ function ThemePicker({current, onChange, onClose}) {
           <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:19,color:modalInk}}>Ambiance</div>
           <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,color:modalMuted}}>×</button>
         </div>
-        {/* Tabs */}
         <div style={{display:"flex",gap:4,marginBottom:18,background:"#f4f4f4",borderRadius:12,padding:4}}>
           {TABS.map(([id,l])=>(
             <button key={id} onClick={()=>setTab(id)}
@@ -149,7 +167,6 @@ function ThemePicker({current, onChange, onClose}) {
           ))}
         </div>
 
-        {/* Thème tab */}
         {tab==="theme"&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
             {THEMES.map(th=>(
@@ -170,57 +187,83 @@ function ThemePicker({current, onChange, onClose}) {
           </div>
         )}
 
-        {/* Animation tab */}
         {tab==="animation"&&(
-          <div>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",background:"#f8f8f8",borderRadius:13,marginBottom:14}}>
+          <div style={{display:"flex",flexDirection:"column",gap:16}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 16px",background:"#f8f8f8",borderRadius:13}}>
               <div>
-                <div style={{fontWeight:700,fontSize:14,color:modalInk}}>Animations de fond</div>
-                <div style={{fontSize:11,color:modalMuted,marginTop:2}}>Particules animées selon le thème actif</div>
+                <div style={{fontWeight:700,fontSize:13,color:modalInk}}>Animations de fond</div>
+                <div style={{fontSize:11,color:modalMuted,marginTop:2}}>Particules animées en arrière-plan</div>
               </div>
               <button onClick={()=>setAnimationsEnabled(!animationsEnabled)}
                 style={{width:44,height:24,borderRadius:12,background:animationsEnabled?"#c8622a":"#ddd",border:"none",cursor:"pointer",position:"relative",transition:"background .2s"}}>
                 <div style={{position:"absolute",top:2,left:animationsEnabled?22:2,width:20,height:20,borderRadius:"50%",background:"#fff",transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/>
               </button>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8}}>
-              {THEMES.map(th=>(
-                <div key={th.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:10,background:current?.id===th.id?"#f4f0e8":"#f8f8f8",border:`1px solid ${current?.id===th.id?"#c8622a22":"transparent"}`}}>
-                  <img src={th.img} alt={th.n} style={{width:28,height:28,borderRadius:6,objectFit:"cover",flexShrink:0}}/>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:11,fontWeight:600,color:modalInk}}>{th.n}</div>
-                    <div style={{fontSize:10,color:modalMuted}}>{ANIM_LABELS[th.anim]||th.anim}</div>
-                  </div>
-                  {current?.id===th.id&&<div style={{fontSize:9,color:"#c8622a",fontWeight:700}}>✓</div>}
-                </div>
-              ))}
+
+            <div>
+              <div style={{fontSize:10,fontWeight:700,color:modalMuted,marginBottom:8,letterSpacing:.8}}>TYPE D'ANIMATION</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>
+                {ANIM_TYPES.map(({id,emoji,label})=>{
+                  const active = animType===id
+                  return (
+                    <button key={id||'none'} onClick={()=>setAnimType(id)}
+                      style={{padding:"10px 6px",borderRadius:10,border:`1px solid ${active?"#c8622a":"#e8e8e8"}`,background:active?"#c8622a18":"#f8f8f8",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s"}}>
+                      <div style={{fontSize:18}}>{emoji}</div>
+                      <div style={{fontSize:9,fontWeight:active?700:400,color:active?"#c8622a":modalMuted,textAlign:"center",lineHeight:1.2}}>{label}</div>
+                    </button>
+                  )
+                })}
+              </div>
+              <div style={{fontSize:10,color:modalMuted,marginTop:8}}>
+                {animType===''
+                  ? `Suit le thème actif · ${ANIM_TYPES.find(a=>a.id===(current?.anim||'fireflies'))?.label||'Lucioles'}`
+                  : <span>Animation indépendante du thème · <button onClick={()=>setAnimType('')} style={{background:"none",border:"none",color:"#c8622a",cursor:"pointer",fontSize:10,padding:0,fontFamily:"inherit"}}>Revenir au défaut</button></span>
+                }
+              </div>
+            </div>
+
+            <div>
+              <div style={{fontSize:10,fontWeight:700,color:modalMuted,marginBottom:8,letterSpacing:.8}}>VITESSE</div>
+              <div style={{display:"flex",gap:6}}>
+                {SPEED_OPTIONS.map(({v,l})=>(
+                  <button key={v} onClick={()=>setAnimSpeed(v)}
+                    style={{flex:1,padding:"8px 4px",borderRadius:9,border:`1px solid ${animSpeed===v?"#c8622a":"#e8e8e8"}`,background:animSpeed===v?"#c8622a18":"#f8f8f8",cursor:"pointer",fontSize:10,fontWeight:animSpeed===v?700:400,color:animSpeed===v?"#c8622a":modalMuted,transition:"all .15s"}}>
+                    {l}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Fond tab */}
         {tab==="fond"&&(
-          <div style={{display:"flex",flexDirection:"column",gap:14}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",background:"#f8f8f8",borderRadius:13}}>
-              <div>
-                <div style={{fontWeight:700,fontSize:14,color:modalInk}}>Fond coloré (bêta)</div>
-                <div style={{fontSize:11,color:modalMuted,marginTop:2}}>Applique la couleur de fond du thème à toute l'interface</div>
-              </div>
-              <button onClick={()=>setBgEnabled(!bgEnabled)}
-                style={{width:44,height:24,borderRadius:12,background:bgEnabled?"#c8622a":"#ddd",border:"none",cursor:"pointer",position:"relative",transition:"background .2s"}}>
-                <div style={{position:"absolute",top:2,left:bgEnabled?22:2,width:20,height:20,borderRadius:"50%",background:"#fff",transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/>
+          <div style={{display:"flex",flexDirection:"column",gap:12}}>
+            <div style={{fontSize:11,color:modalMuted}}>Fond architectural en filigrane (très basse opacité) derrière l'interface.</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
+              <button onClick={()=>setBgId('')}
+                style={{padding:0,border:`2px solid ${bgId===''?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
+                onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"}
+                onMouseLeave={e=>e.currentTarget.style.transform="none"}>
+                <div style={{height:70,background:"#f4f4f4",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  <div style={{fontSize:22,color:"#ccc"}}>✕</div>
+                </div>
+                <div style={{padding:"5px 8px",background:"#f8f8f8",textAlign:"center"}}>
+                  <div style={{fontSize:10,fontWeight:bgId===''?700:400,color:bgId===''?"#c8622a":"#666"}}>Aucun fond</div>
+                </div>
               </button>
-            </div>
-            <div style={{padding:14,background:"#f8f8f8",borderRadius:13}}>
-              <div style={{fontWeight:600,fontSize:13,color:modalInk,marginBottom:10}}>Aperçu des couleurs</div>
-              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {["bg","surface","paper","border","accent","a2","a3","ink","muted"].map(k=>(
-                  <div key={k} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-                    <div style={{width:36,height:36,borderRadius:8,background:current?.[k],border:"1px solid rgba(0,0,0,.1)"}}/>
-                    <div style={{fontSize:8,color:modalMuted}}>{k}</div>
+              {BACKGROUNDS.map(b=>(
+                <button key={b.id} onClick={()=>setBgId(b.id)}
+                  style={{padding:0,border:`2px solid ${bgId===b.id?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
+                  onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"}
+                  onMouseLeave={e=>e.currentTarget.style.transform="none"}>
+                  <div style={{height:70,overflow:"hidden",position:"relative",background:"#f0f0f0",color:"#999"}}
+                    dangerouslySetInnerHTML={{__html:b.svg.replace('<svg ','<svg style="width:100%;height:100%;position:absolute;top:0;left:0;" preserveAspectRatio="xMidYMid slice" ')}}/>
+                  <div style={{padding:"5px 8px",background:"#f8f8f8"}}>
+                    <div style={{fontSize:10,fontWeight:bgId===b.id?700:400,color:bgId===b.id?"#c8622a":"#444",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.n}</div>
+                    <div style={{fontSize:8,color:"#888",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.sub}</div>
                   </div>
-                ))}
-              </div>
+                </button>
+              ))}
             </div>
           </div>
         )}
@@ -634,6 +677,10 @@ export default function LibraryPage() {
 
           {/* Right actions */}
           <div style={{display:"flex",gap:7,alignItems:"center"}}>
+            <button onClick={() => navigate("/moodboard")}
+              style={{padding:"6px 13px",borderRadius:8,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",gap:5}}>
+              🎭 Moodboard
+            </button>
             <button onClick={() => setShowTheme(true)}
               style={{padding:"6px 13px",borderRadius:8,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",gap:5}}>
               {T.e || "🎨"} Thème
