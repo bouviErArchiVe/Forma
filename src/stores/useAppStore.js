@@ -118,6 +118,14 @@ const useAppStore = create(
       remoteCursors: [],
       setRemoteCursors: (cursors) => set({ remoteCursors: cursors }),
 
+      // ── Ambiance ─────────────────────────────────────────
+      animationsEnabled: true,
+      setAnimationsEnabled: (v) => set({ animationsEnabled: v }),
+      bgEnabled: false,
+      setBgEnabled: (v) => set({ bgEnabled: v }),
+      spotifyUrl: '',
+      setSpotifyUrl: (v) => set({ spotifyUrl: v }),
+
       // ── Notifications ─────────────────────────────────────
       notifications: [],
       addNotification: (msg, type = 'info') => {
@@ -138,6 +146,9 @@ const useAppStore = create(
         color: state.color,
         hlColor: state.hlColor,
         zoom: state.zoom,
+        animationsEnabled: state.animationsEnabled,
+        bgEnabled: state.bgEnabled,
+        spotifyUrl: state.spotifyUrl,
       }),
     }
   )

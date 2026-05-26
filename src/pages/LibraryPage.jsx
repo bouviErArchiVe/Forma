@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
 import { THEMES } from "@/lib/themes"
+import FocusPanel from "@/components/FocusPanel"
 
 const DEFAULT_SUBJECTS=[
   {id:"arch",    l:"Architecture",    c:"#c8622a",e:"🏛",custom:false},
@@ -124,38 +125,105 @@ function StatChip({e, v, l, tab, activeTab, setActiveTab, T}) {
   )
 }
 
+const ANIM_LABELS = {fireflies:"✨ Lucioles",leaves:"🍃 Feuilles",sparkles:"⭐ Éclats",geometry:"⬡ Géométrie",waves:"〰 Vagues",drops:"💧 Gouttes",pulses:"◎ Pulsations"}
+
 function ThemePicker({current, onChange, onClose}) {
-  const isDark = current && (current.bg < "#888")
-  const modalBg = isDark ? "#111" : "#fff"
-  const modalInk = isDark ? "#e8e8f0" : "#1c1c24"
-  const modalMuted = isDark ? "#666" : "#888"
+  const {animationsEnabled,setAnimationsEnabled,bgEnabled,setBgEnabled} = useAppStore()
+  const [tab, setTab] = useState("theme")
+  const modalBg="#fff", modalInk="#1c1c24", modalMuted="#888"
+  const TABS=[["theme","🎨 Thème"],["animation","✨ Animation"],["fond","🖼 Fond"]]
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
-      <div style={{background:modalBg,borderRadius:20,padding:22,width:580,maxWidth:"94vw",maxHeight:"84vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.4)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:19,color:modalInk}}>Thèmes ({THEMES.length})</div>
+      <div style={{background:modalBg,borderRadius:20,padding:22,width:600,maxWidth:"95vw",maxHeight:"88vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.4)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:19,color:modalInk}}>Ambiance</div>
           <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,color:modalMuted}}>×</button>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
-          {THEMES.map(th => (
-            <button key={th.id} onClick={() => {onChange(th); onClose()}}
-              style={{padding:0,border:`2px solid ${current?.id===th.id?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:13,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
-              onMouseEnter={e => e.currentTarget.style.transform="scale(1.02)"}
-              onMouseLeave={e => e.currentTarget.style.transform="none"}>
-              <div style={{height:80,background:`linear-gradient(135deg,${th.panel},${th.surface})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
-                {th.img
-                  ? <img src={th.img} alt={th.n} style={{width:64,height:64,borderRadius:10,objectFit:"cover",boxShadow:"0 2px 10px rgba(0,0,0,.3)"}}/>
-                  : <span style={{fontSize:28}}>{th.e}</span>
-                }
-                <div style={{position:"absolute",bottom:4,right:6,fontSize:9,color:th.surface+"cc",fontFamily:"'Syne',sans-serif",fontWeight:700}}>{th.n}</div>
-              </div>
-              <div style={{padding:"5px 10px",background:th.bg,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <div style={{display:"flex",gap:3}}>{[th.accent,th.a2,th.a3].map((c,i)=><div key={i} style={{width:10,height:10,borderRadius:3,background:c}}/>)}</div>
-                {current?.id===th.id&&<div style={{fontSize:9,color:th.accent,fontWeight:700}}>✓ Actif</div>}
-              </div>
+        {/* Tabs */}
+        <div style={{display:"flex",gap:4,marginBottom:18,background:"#f4f4f4",borderRadius:12,padding:4}}>
+          {TABS.map(([id,l])=>(
+            <button key={id} onClick={()=>setTab(id)}
+              style={{flex:1,padding:"7px 0",borderRadius:9,border:"none",background:tab===id?"#fff":"transparent",color:tab===id?"#1c1c24":"#888",fontWeight:tab===id?700:400,fontSize:12,cursor:"pointer",boxShadow:tab===id?"0 1px 4px rgba(0,0,0,.1)":"none",transition:"all .15s"}}>
+              {l}
             </button>
           ))}
         </div>
+
+        {/* Thème tab */}
+        {tab==="theme"&&(
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
+            {THEMES.map(th=>(
+              <button key={th.id} onClick={()=>{onChange(th);onClose()}}
+                style={{padding:0,border:`2px solid ${current?.id===th.id?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:13,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
+                onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"}
+                onMouseLeave={e=>e.currentTarget.style.transform="none"}>
+                <div style={{height:80,background:`linear-gradient(135deg,${th.panel},${th.surface})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+                  {th.img?<img src={th.img} alt={th.n} style={{width:64,height:64,borderRadius:10,objectFit:"cover",boxShadow:"0 2px 10px rgba(0,0,0,.3)"}}/>:<span style={{fontSize:28}}>{th.e}</span>}
+                  <div style={{position:"absolute",bottom:4,right:6,fontSize:9,color:th.surface+"cc",fontFamily:"'Syne',sans-serif",fontWeight:700}}>{th.n}</div>
+                </div>
+                <div style={{padding:"5px 10px",background:th.bg,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                  <div style={{display:"flex",gap:3}}>{[th.accent,th.a2,th.a3].map((c,i)=><div key={i}style={{width:10,height:10,borderRadius:3,background:c}}/>)}</div>
+                  {current?.id===th.id&&<div style={{fontSize:9,color:th.accent,fontWeight:700}}>✓ Actif</div>}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Animation tab */}
+        {tab==="animation"&&(
+          <div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",background:"#f8f8f8",borderRadius:13,marginBottom:14}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:14,color:modalInk}}>Animations de fond</div>
+                <div style={{fontSize:11,color:modalMuted,marginTop:2}}>Particules animées selon le thème actif</div>
+              </div>
+              <button onClick={()=>setAnimationsEnabled(!animationsEnabled)}
+                style={{width:44,height:24,borderRadius:12,background:animationsEnabled?"#c8622a":"#ddd",border:"none",cursor:"pointer",position:"relative",transition:"background .2s"}}>
+                <div style={{position:"absolute",top:2,left:animationsEnabled?22:2,width:20,height:20,borderRadius:"50%",background:"#fff",transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/>
+              </button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8}}>
+              {THEMES.map(th=>(
+                <div key={th.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:10,background:current?.id===th.id?"#f4f0e8":"#f8f8f8",border:`1px solid ${current?.id===th.id?"#c8622a22":"transparent"}`}}>
+                  <img src={th.img} alt={th.n} style={{width:28,height:28,borderRadius:6,objectFit:"cover",flexShrink:0}}/>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:11,fontWeight:600,color:modalInk}}>{th.n}</div>
+                    <div style={{fontSize:10,color:modalMuted}}>{ANIM_LABELS[th.anim]||th.anim}</div>
+                  </div>
+                  {current?.id===th.id&&<div style={{fontSize:9,color:"#c8622a",fontWeight:700}}>✓</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Fond tab */}
+        {tab==="fond"&&(
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",background:"#f8f8f8",borderRadius:13}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:14,color:modalInk}}>Fond coloré (bêta)</div>
+                <div style={{fontSize:11,color:modalMuted,marginTop:2}}>Applique la couleur de fond du thème à toute l'interface</div>
+              </div>
+              <button onClick={()=>setBgEnabled(!bgEnabled)}
+                style={{width:44,height:24,borderRadius:12,background:bgEnabled?"#c8622a":"#ddd",border:"none",cursor:"pointer",position:"relative",transition:"background .2s"}}>
+                <div style={{position:"absolute",top:2,left:bgEnabled?22:2,width:20,height:20,borderRadius:"50%",background:"#fff",transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/>
+              </button>
+            </div>
+            <div style={{padding:14,background:"#f8f8f8",borderRadius:13}}>
+              <div style={{fontWeight:600,fontSize:13,color:modalInk,marginBottom:10}}>Aperçu des couleurs</div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                {["bg","surface","paper","border","accent","a2","a3","ink","muted"].map(k=>(
+                  <div key={k} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+                    <div style={{width:36,height:36,borderRadius:8,background:current?.[k],border:"1px solid rgba(0,0,0,.1)"}}/>
+                    <div style={{fontSize:8,color:modalMuted}}>{k}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -163,9 +231,13 @@ function ThemePicker({current, onChange, onClose}) {
 
 export default function LibraryPage() {
   const navigate = useNavigate()
-  const {getTheme, setTheme, setActiveNotebook} = useAppStore()
+  const {getTheme, setTheme, setActiveNotebook, spotifyUrl, setSpotifyUrl} = useAppStore()
   const [localTheme, setLocalTheme] = useState(null)
   const T = localTheme || getTheme()
+  const [showFocus, setShowFocus] = useState(false)
+  const [showSpotify, setShowSpotify] = useState(false)
+  const [spotifyInput, setSpotifyInput] = useState(spotifyUrl||"")
+  const spotifyIframeRef = useRef(null)
 
   const [notebooks, setNotebooks] = useState([])
   const [folders, setFolders] = useState([])
@@ -334,6 +406,59 @@ export default function LibraryPage() {
       `}</style>
 
       {showTheme && <ThemePicker current={T} onChange={changeTheme} onClose={() => setShowTheme(false)}/>}
+
+      {/* FOCUS PANEL */}
+      {showFocus && <FocusPanel T={T} onClose={() => setShowFocus(false)} spotifyIframeRef={spotifyIframeRef}/>}
+
+      {/* SPOTIFY WIDGET */}
+      {showSpotify && (
+        <div style={{position:"fixed",bottom:72,left:24,zIndex:190,background:T.surface,borderRadius:18,boxShadow:`0 12px 40px rgba(0,0,0,.22)`,border:`1px solid ${T.border}`,overflow:"hidden",width:320}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",borderBottom:`1px solid ${T.border}`}}>
+            <div style={{display:"flex",alignItems:"center",gap:7}}>
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="#1db954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              <span style={{fontSize:12,fontWeight:700,color:T.ink}}>Spotify</span>
+            </div>
+            <button onClick={() => setShowSpotify(false)} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:16}}>×</button>
+          </div>
+          {spotifyUrl ? (
+            <iframe ref={spotifyIframeRef}
+              src={spotifyUrl.replace("open.spotify.com/","open.spotify.com/embed/").replace(/[?#].*/,"")+"?utm_source=generator&theme=0"}
+              width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy" style={{display:"block"}}/>
+          ) : (
+            <div style={{padding:16}}>
+              <div style={{fontSize:11,color:T.muted,marginBottom:8}}>Colle un lien Spotify (playlist, album, morceau)</div>
+              <div style={{display:"flex",gap:6}}>
+                <input value={spotifyInput} onChange={e=>setSpotifyInput(e.target.value)}
+                  placeholder="https://open.spotify.com/playlist/..."
+                  style={{flex:1,padding:"7px 10px",borderRadius:8,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:11,outline:"none"}}
+                  onKeyDown={e=>{if(e.key==="Enter"&&spotifyInput.trim()){setSpotifyUrl(spotifyInput.trim())}}}/>
+                <button onClick={()=>{if(spotifyInput.trim())setSpotifyUrl(spotifyInput.trim())}}
+                  style={{padding:"7px 12px",borderRadius:8,background:"#1db954",border:"none",color:"#fff",fontWeight:700,fontSize:11,cursor:"pointer"}}>
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
+          {spotifyUrl && (
+            <div style={{padding:"6px 12px",display:"flex",justifyContent:"flex-end"}}>
+              <button onClick={()=>{setSpotifyUrl("");setSpotifyInput("")}} style={{fontSize:10,color:T.muted,background:"none",border:"none",cursor:"pointer"}}>Changer de lien</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* FLOATING BUTTONS — Spotify + Focus */}
+      <div style={{position:"fixed",bottom:24,left:24,zIndex:180,display:"flex",gap:8}}>
+        <button onClick={()=>setShowSpotify(v=>!v)} title="Spotify"
+          style={{width:44,height:44,borderRadius:"50%",background:showSpotify?"#1db954":T.surface,border:`1px solid ${showSpotify?"#1db954":T.border}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 3px 14px rgba(0,0,0,.15)",transition:"all .2s"}}>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill={showSpotify?"#fff":"#1db954"}><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        </button>
+        <button onClick={()=>setShowFocus(v=>!v)} title="Mode Focus"
+          style={{width:44,height:44,borderRadius:"50%",background:showFocus?T.accent:T.surface,border:`1px solid ${showFocus?T.accent:T.border}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 3px 14px rgba(0,0,0,.15)",transition:"all .2s",fontSize:18}}>
+          ⚡
+        </button>
+      </div>
 
       {/* NEW NOTEBOOK */}
       {showNew && (
