@@ -515,3 +515,21 @@ export const BACKGROUNDS = [
     </svg>`
   },
 ]
+
+
+/* ══ CUSTOM BACKGROUND FIX ══════════════════════════════════════
+Ensure every background object includes:
+{
+  id,
+  name,
+  preview,
+  url
+}
+
+And apply with:
+style={{
+  backgroundImage: `url(${selectedBackground.url})`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+}}
+================================================================ */

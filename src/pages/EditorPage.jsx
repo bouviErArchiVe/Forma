@@ -47,6 +47,41 @@ const HPAL={
 const SIZES_MM=[0.05,0.1,0.18,0.25,0.35,0.5,0.7,1.0,1.4,2.0,3.0,5.0,7.0,10.0]
 const ERASER_SIZES_MM=[0.5,1.0,2.0,3.0,5.0,8.0,12.0,20.0,30.0]
 const mm2px=mm=>mm*3.78
+
+/* ══ FORMA UX / FIX HELPERS ═════════════════════════════════════ */
+
+const formatDimension = (mmValue, unitSystem = "metric") => {
+  if (unitSystem === "imperial") {
+    const inches = mmValue / 25.4
+    return `${inches.toFixed(2)}\"`
+  }
+
+  return `${mmValue.toFixed(0)} mm`
+}
+
+const DEFAULT_SHAPE_STYLE = {
+  strokeColor: "#000000",
+  fillColor: "transparent",
+  opacity: 1,
+  strokeWidth: 2,
+}
+
+const getFloatingToolbarPosition = (bounds) => {
+  if (!bounds) return { x: 0, y: 0 }
+
+  return {
+    x: bounds.x + bounds.width / 2,
+    y: bounds.y - 60,
+  }
+}
+
+/* TODO:
+- Add inline text editing with textarea autofocus
+- Add lasso group movement
+- Add contextual toolbar like GoodNotes
+- Add advanced bubbles system
+*/
+
 const PAGE_FORMATS=[
   {id:"a4p",  l:"A4 Portrait",    w:794,  h:1123,desc:"210×297mm"},
   {id:"a4l",  l:"A4 Paysage",     w:1123, h:794, desc:"297×210mm"},
@@ -1715,3 +1750,19 @@ export default function EditorPage(){
     setLibPending(null)
   }
 }
+
+
+/* ══ ERASER SYSTEM PATCH ════════════════════════════════════════
+The eraser should remove:
+- freehand strokes
+- text
+- shapes
+- dimensions
+- bubbles
+- images
+- lasso groups
+
+Recommended approach:
+const hit = elements.find(el => isPointInsideElement(pointer, el))
+removeElement(hit.id)
+================================================================ */

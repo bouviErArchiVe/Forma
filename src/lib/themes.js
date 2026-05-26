@@ -20,3 +20,17 @@ export const THEMES = [
   { id:"elevation",   n:"Élévation",   img:"/themes/Elevation.png",   font:"Spectral",            fontUrl:"Spectral:wght@400;500;600;700",           anim:"fireflies", e:"▲",  bg:"#faeee0", surface:"#fef6ec", panel:"#280e04", accent:"#c85010", a2:"#e07020", a3:"#f0a050", ink:"#280e04", muted:"#a07048", border:"#e8d0b0", paper:"#fcf0e0", grid:"rgba(200,80,16,.07)",   pline:"rgba(200,80,16,.1)"   },
   { id:"harmonie",    n:"Harmonie",    img:"/themes/Harmonie.png",    font:"Source Serif 4",      fontUrl:"Source+Serif+4:wght@400;500;600;700",    anim:"leaves",    e:"🌸", bg:"#f0f2ec", surface:"#fafaf6", panel:"#182018", accent:"#386040", a2:"#d07070", a3:"#6a9060", ink:"#182018", muted:"#7a8870", border:"#d4dac8", paper:"#f6f8f2", grid:"rgba(56,96,64,.07)",    pline:"rgba(56,96,64,.09)"   },
 ]
+
+
+/* ══ GLOBAL FONT SUPPORT ════════════════════════════════════════ */
+
+export const GLOBAL_FONTS = [
+  "Inter",
+  "Poppins",
+  "Roboto",
+  "Helvetica Neue",
+  "SF Pro Display",
+  "IBM Plex Sans",
+  "JetBrains Mono",
+]
+
