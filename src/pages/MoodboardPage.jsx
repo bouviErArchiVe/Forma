@@ -226,7 +226,7 @@ export default function MoodboardPage() {
   const cols = [0, 1, 2].map(col => displayImages.filter((_, i) => i % 3 === col))
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: T.bg, color: T.ink, fontFamily: `'${getTheme().font}',sans-serif` }}>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: T.bg, color: T.ink, fontFamily: `'${getTheme().font}',sans-serif`, position: 'relative', zIndex: 2 }}>
 
       {/* SIDEBAR */}
       <div style={SB}>

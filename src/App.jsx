@@ -222,7 +222,7 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
-  const { getTheme, animationsEnabled, animType, animSpeed, bgId } = useAppStore()
+  const { getTheme, animationsEnabled, animType, animSpeed, bgId, customBg } = useAppStore()
   const T = getTheme()
   const bg = bgId ? BACKGROUNDS.find(b => b.id === bgId) : null
 
@@ -265,12 +265,16 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {bg && (
+      {customBg ? (
+        <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0, opacity:.1, overflow:'hidden' }}>
+          <img src={customBg} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+        </div>
+      ) : bg ? (
         <div
           style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0, opacity:.1, color:T.accent, overflow:'hidden' }}
           dangerouslySetInnerHTML={{ __html: bg.svg.replace('<svg ', '<svg style="width:100%;height:100%;position:absolute;top:0;left:0;" preserveAspectRatio="xMidYMid slice" ') }}
         />
-      )}
+      ) : null}
       {animationsEnabled && <ThemeAnimation T={T} animType={animType} animSpeed={animSpeed} />}
       <Notifications />
       <Routes>

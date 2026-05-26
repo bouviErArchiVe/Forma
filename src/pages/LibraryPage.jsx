@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react"
+import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
@@ -48,6 +48,16 @@ const TEMPLATES=[
 
 const EMOJI_LIST=["🏛","⚙","🏙","📜","🇬🇧","📖","📐","⚡","🧪","💻","🎨","🎵","📊","⚖","🌱","✏","🪨","🌡","🔊","🏗","🚀","⭐","🔥","💎","🌊","🌲","🎯","📌","🗺","🔬","🎭","🏆","💡","🎸","🏋","🌍","🔭","📚","🎓","🏠","🌺","🦋","🐉","🌈","☁","🌙","🎪"]
 const COLOR_LIST=["#c8622a","#3d6b8c","#4a7c59","#7c5c3d","#8c3d6b","#3d5c8c","#5c3d8c","#3d8c5c","#8c3d3d","#6b3d8c","#6b8c3d","#8c6b3d","#2d6a4f","#e65100","#0277bd","#4527a0","#880e4f","#1a237e","#006064","#33691e","#bf360c","#4a148c","#01579b","#1b5e20","#b71c1c","#f57f17"]
+
+const CONV_UNITS = [
+  {id:"mm", l:"mm", factor:0.001},
+  {id:"cm", l:"cm", factor:0.01},
+  {id:"m",  l:"m",  factor:1},
+  {id:"km", l:"km", factor:1000},
+  {id:"in", l:"po", factor:0.0254},
+  {id:"ft", l:"pi", factor:0.3048},
+  {id:"yd", l:"yd", factor:0.9144},
+]
 
 const RECENT_KEY = "archnote_recent"
 const saveRecent = (id) => {
@@ -101,23 +111,24 @@ function CoverPattern({tmpl, color}) {
   )
 }
 
-function StatChip({e, v, l, tab, activeTab, setActiveTab, T}) {
+function StatChip({e, v, l, tab, activeTab, setActiveTab, T, action}) {
   const isActive = tab && activeTab === tab
+  const clickable = !!(tab || action)
   return (
     <div
-      onClick={() => tab && setActiveTab(tab)}
+      onClick={() => action ? action() : (tab && setActiveTab(tab))}
       style={{
         padding:"6px 14px",
         borderRadius:20,
         background: isActive ? `${T.accent}18` : T.surface,
         border:`1px solid ${isActive ? T.accent : T.border}`,
         display:"flex",alignItems:"center",gap:6,
-        cursor: tab ? "pointer" : "default",
+        cursor: clickable ? "pointer" : "default",
         transition:"all .15s",
         userSelect:"none"
       }}
-      onMouseEnter={e2 => { if (tab) e2.currentTarget.style.borderColor = T.accent + "66" }}
-      onMouseLeave={e2 => { if (tab) e2.currentTarget.style.borderColor = isActive ? T.accent : T.border }}
+      onMouseEnter={e2 => { if (clickable) e2.currentTarget.style.borderColor = T.accent + "66" }}
+      onMouseLeave={e2 => { if (clickable) e2.currentTarget.style.borderColor = isActive ? T.accent : T.border }}
     >
       <span style={{fontSize:13}}>{e}</span>
       <span style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:14,color:isActive?T.accent:T.ink,lineHeight:1}}>{v}</span>
@@ -147,20 +158,28 @@ const SPEED_OPTIONS = [
 ]
 
 function ThemePicker({current, onChange, onClose}) {
-  const {animationsEnabled,setAnimationsEnabled,animType,setAnimType,animSpeed,setAnimSpeed,bgId,setBgId} = useAppStore()
+  const {animationsEnabled,setAnimationsEnabled,animType,setAnimType,animSpeed,setAnimSpeed,bgId,setBgId,customBg,setCustomBg} = useAppStore()
   const [tab, setTab] = useState("theme")
+  const modalRef = useRef()
   const modalBg="#fff", modalInk="#1c1c24", modalMuted="#888"
   const TABS=[["theme","🎨 Thème"],["animation","✨ Animation"],["fond","🖼 Fond"]]
+  const switchTab = (id) => { setTab(id); setTimeout(() => modalRef.current?.scrollTo({top:0, behavior:'auto'}), 0) }
+  const handleCustomBg = (e) => {
+    const f = e.target.files?.[0]; if (!f) return
+    const r = new FileReader()
+    r.onload = ev => { setCustomBg(ev.target.result); setBgId('') }
+    r.readAsDataURL(f)
+  }
   return (
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
-      <div style={{background:modalBg,borderRadius:20,padding:22,width:600,maxWidth:"95vw",maxHeight:"88vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.4)"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9000}}>
+      <div ref={modalRef} style={{background:modalBg,borderRadius:20,padding:22,width:600,maxWidth:"95vw",maxHeight:"88vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.4)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
           <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:19,color:modalInk}}>Ambiance</div>
           <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",fontSize:22,color:modalMuted}}>×</button>
         </div>
         <div style={{display:"flex",gap:4,marginBottom:18,background:"#f4f4f4",borderRadius:12,padding:4}}>
           {TABS.map(([id,l])=>(
-            <button key={id} onClick={()=>setTab(id)}
+            <button key={id} onClick={()=>switchTab(id)}
               style={{flex:1,padding:"7px 0",borderRadius:9,border:"none",background:tab===id?"#fff":"transparent",color:tab===id?"#1c1c24":"#888",fontWeight:tab===id?700:400,fontSize:12,cursor:"pointer",boxShadow:tab===id?"0 1px 4px rgba(0,0,0,.1)":"none",transition:"all .15s"}}>
               {l}
             </button>
@@ -238,19 +257,32 @@ function ThemePicker({current, onChange, onClose}) {
 
         {tab==="fond"&&(
           <div style={{display:"flex",flexDirection:"column",gap:12}}>
-            <div style={{fontSize:11,color:modalMuted}}>Fond architectural en filigrane (très basse opacité) derrière l'interface.</div>
+            <div style={{fontSize:11,color:modalMuted}}>Fond en filigrane (très basse opacité) derrière l'interface.</div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
-              <button onClick={()=>setBgId('')}
-                style={{padding:0,border:`2px solid ${bgId===''?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
+              <button onClick={()=>{setBgId('');setCustomBg('')}}
+                style={{padding:0,border:`2px solid ${bgId===''&&!customBg?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
                 onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"}
                 onMouseLeave={e=>e.currentTarget.style.transform="none"}>
                 <div style={{height:70,background:"#f4f4f4",display:"flex",alignItems:"center",justifyContent:"center"}}>
                   <div style={{fontSize:22,color:"#ccc"}}>✕</div>
                 </div>
                 <div style={{padding:"5px 8px",background:"#f8f8f8",textAlign:"center"}}>
-                  <div style={{fontSize:10,fontWeight:bgId===''?700:400,color:bgId===''?"#c8622a":"#666"}}>Aucun fond</div>
+                  <div style={{fontSize:10,fontWeight:bgId===''&&!customBg?700:400,color:bgId===''&&!customBg?"#c8622a":"#666"}}>Aucun fond</div>
                 </div>
               </button>
+              <label style={{padding:0,border:`2px solid ${customBg?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s",display:"block"}}
+                onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"}
+                onMouseLeave={e=>e.currentTarget.style.transform="none"}>
+                <div style={{height:70,background:customBg?"#f0f0f0":"#f4f4f4",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+                  {customBg
+                    ?<img src={customBg} alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.7}}/>
+                    :<div style={{fontSize:22,color:"#bbb"}}>📷</div>}
+                </div>
+                <div style={{padding:"5px 8px",background:"#f8f8f8",textAlign:"center"}}>
+                  <div style={{fontSize:10,fontWeight:customBg?700:400,color:customBg?"#c8622a":"#666"}}>{customBg?"Ma photo ✓":"Ma photo"}</div>
+                </div>
+                <input type="file" accept="image/*" style={{display:"none"}} onChange={handleCustomBg}/>
+              </label>
               {BACKGROUNDS.map(b=>(
                 <button key={b.id} onClick={()=>setBgId(b.id)}
                   style={{padding:0,border:`2px solid ${bgId===b.id?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
@@ -295,6 +327,17 @@ export default function LibraryPage() {
   const [showTheme, setShowTheme] = useState(false)
   const [recentIds, setRecentIds] = useState([])
 
+  const [showCalc, setShowCalc] = useState(false)
+  const [showConverter, setShowConverter] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
+  const [editName, setEditName] = useState("")
+  const [calcDisplay, setCalcDisplay] = useState("0")
+  const [calcHistory, setCalcHistory] = useState([])
+  const calcStateRef = useRef({expr:"", hasResult:false})
+  const [convValue, setConvValue] = useState("")
+  const [convFrom, setConvFrom] = useState("m")
+  const [convTo, setConvTo] = useState("cm")
+
   // Modals
   const [showNew, setShowNew] = useState(false)
   const [showNewFolder, setShowNewFolder] = useState(false)
@@ -323,7 +366,8 @@ export default function LibraryPage() {
         const {data:{session}} = await supabase.auth.getSession()
         if (session?.user) {
           setUserId(session.user.id)
-          setUserName(session.user.user_metadata?.full_name || session.user.email || "")
+          const uname = session.user.user_metadata?.full_name || session.user.email || ""
+          setUserName(uname); setEditName(uname)
           loadNotebooks(session.user.id)
         } else {
           setLoading(false)
@@ -427,6 +471,58 @@ export default function LibraryPage() {
   const changeTheme = th => { setLocalTheme(th); setTheme(th.id) }
   const logout = async () => { await supabase.auth.signOut(); setUserId(null); setUserName(""); setNotebooks([]) }
 
+  const calcPress = (k) => {
+    const s = calcStateRef.current
+    if (k === "C") { s.expr=""; s.hasResult=false; setCalcDisplay("0"); return }
+    if (k === "⌫") {
+      if (s.hasResult) { s.expr=""; s.hasResult=false; setCalcDisplay("0"); return }
+      s.expr = s.expr.slice(0,-1)
+      setCalcDisplay(s.expr||"0"); return
+    }
+    if (k === "=") {
+      try {
+        // eslint-disable-next-line no-new-func
+        const r = Function(`"use strict";return(${s.expr.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-")})`)()
+        const rs = String(+r.toFixed(10))
+        setCalcHistory(h => [`${s.expr} = ${rs}`, ...h].slice(0,4))
+        s.expr = rs; s.hasResult = true; setCalcDisplay(rs)
+      } catch { s.expr=""; s.hasResult=false; setCalcDisplay("Erreur") }
+      return
+    }
+    if (k === "±") {
+      try {
+        // eslint-disable-next-line no-new-func
+        const r = Function(`"use strict";return-(${s.expr.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-")})`)()
+        const rs = String(+r.toFixed(10)); s.expr=rs; s.hasResult=false; setCalcDisplay(rs)
+      } catch {} return
+    }
+    if (k === "%") {
+      try {
+        // eslint-disable-next-line no-new-func
+        const r = Function(`"use strict";return(${s.expr.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-")})/100`)()
+        const rs = String(+r.toFixed(10)); s.expr=rs; s.hasResult=true; setCalcDisplay(rs)
+      } catch {} return
+    }
+    const isOp = /[+−×÷]/.test(k)
+    if (s.hasResult && !isOp) { s.expr=k; s.hasResult=false }
+    else { if (s.hasResult) s.hasResult=false; s.expr+=k }
+    setCalcDisplay(s.expr)
+  }
+
+  const convResult = (() => {
+    const v = parseFloat(convValue)
+    if (!convValue || isNaN(v)) return ""
+    const fu = CONV_UNITS.find(u=>u.id===convFrom)
+    const tu = CONV_UNITS.find(u=>u.id===convTo)
+    if (!fu||!tu) return ""
+    return +((v*fu.factor/tu.factor).toFixed(8))
+  })()
+
+  const saveProfile = async () => {
+    if (userId) { try { await supabase.auth.updateUser({data:{full_name:editName}}) } catch {} }
+    setUserName(editName); setShowProfile(false)
+  }
+
   const usedSubjects = subjects.filter(s => notebooks.some(n => n.subject === s.id))
   const starredCount = notebooks.filter(n => n.starred).length
 
@@ -435,7 +531,7 @@ export default function LibraryPage() {
   const avatarLetter = userName ? userName.charAt(0).toUpperCase() : "?"
 
   return (
-    <div style={{minHeight:"100vh", background:T.bg, fontFamily:"'Nunito',sans-serif", color:T.ink}}>
+    <div style={{minHeight:"100vh", background:T.bg, fontFamily:"'Nunito',sans-serif", color:T.ink, position:"relative", zIndex:2}}>
       <style>{`
         @keyframes cardIn { from { opacity:0; transform:translateY(14px) scale(.97); } to { opacity:1; transform:none; } }
         @keyframes shimmer { from { background-position: -200% center; } to { background-position: 200% center; } }
@@ -488,6 +584,111 @@ export default function LibraryPage() {
               <button onClick={()=>{setSpotifyUrl("");setSpotifyInput("")}} style={{fontSize:10,color:T.muted,background:"none",border:"none",cursor:"pointer"}}>Changer de lien</button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* CALCULATOR PANEL */}
+      {showCalc && (
+        <div style={{position:"fixed",top:70,left:22,zIndex:190,background:T.surface,borderRadius:18,boxShadow:`0 12px 40px rgba(0,0,0,.2)`,border:`1px solid ${T.border}`,overflow:"hidden",width:236}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",borderBottom:`1px solid ${T.border}`}}>
+            <div style={{fontWeight:700,fontSize:12,color:T.ink}}>🧮 Calculatrice</div>
+            <button onClick={()=>setShowCalc(false)} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:18,lineHeight:1}}>×</button>
+          </div>
+          <div style={{padding:"10px 14px 6px",background:T.bg}}>
+            <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:26,color:T.ink,textAlign:"right",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minHeight:34}}>{calcDisplay}</div>
+          </div>
+          {calcHistory.length>0&&(
+            <div style={{padding:"0 14px 8px",borderBottom:`1px solid ${T.border}`}}>
+              {calcHistory.map((h,i)=><div key={i} style={{fontSize:9,color:T.muted,textAlign:"right",lineHeight:1.8}}>{h}</div>)}
+            </div>
+          )}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:4,padding:10}}>
+            {[["C","⌫","%","÷"],["7","8","9","×"],["4","5","6","−"],["1","2","3","+"],[" ","0",".","="]].flat().map((k,i)=>(
+              <button key={i} onClick={()=>k.trim()&&calcPress(k)}
+                style={{padding:"11px 0",borderRadius:9,border:"none",cursor:k.trim()?"pointer":"default",fontSize:13,fontWeight:["=","÷","×","−","+"].includes(k)?700:500,
+                  background:k==="="?T.accent:["C","⌫"].includes(k)?"#e9456018":["÷","×","−","+","%"].includes(k)?`${T.accent}18`:T.bg,
+                  color:k==="="?"#fff":["C","⌫"].includes(k)?"#e94560":["÷","×","−","+","%"].includes(k)?T.accent:T.ink,transition:"all .1s"}}>
+                {k}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* CONVERTER PANEL */}
+      {showConverter && (
+        <div style={{position:"fixed",top:70,left:268,zIndex:190,background:T.surface,borderRadius:18,boxShadow:`0 12px 40px rgba(0,0,0,.2)`,border:`1px solid ${T.border}`,overflow:"hidden",width:240,padding:16}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+            <div style={{fontWeight:700,fontSize:12,color:T.ink}}>📐 Convertisseur</div>
+            <button onClick={()=>setShowConverter(false)} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:18,lineHeight:1}}>×</button>
+          </div>
+          <div style={{marginBottom:10}}>
+            <div style={{fontSize:9,fontWeight:700,color:T.muted,marginBottom:5,letterSpacing:.8}}>VALEUR</div>
+            <input type="number" value={convValue} onChange={e=>setConvValue(e.target.value)}
+              placeholder="0"
+              style={{width:"100%",padding:"9px 11px",borderRadius:9,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:15,fontWeight:700,outline:"none",boxSizing:"border-box"}}
+              onFocus={e=>e.target.style.borderColor=T.accent} onBlur={e=>e.target.style.borderColor=T.border}/>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+            <div style={{flex:1}}>
+              <div style={{fontSize:9,fontWeight:700,color:T.muted,marginBottom:4}}>DE</div>
+              <select value={convFrom} onChange={e=>setConvFrom(e.target.value)}
+                style={{width:"100%",padding:"7px 8px",borderRadius:8,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:12,outline:"none",cursor:"pointer"}}>
+                {CONV_UNITS.map(u=><option key={u.id} value={u.id}>{u.l}</option>)}
+              </select>
+            </div>
+            <button onClick={()=>{const t=convFrom;setConvFrom(convTo);setConvTo(t)}}
+              style={{width:30,height:30,borderRadius:8,background:`${T.accent}18`,border:`1px solid ${T.accent}33`,cursor:"pointer",fontSize:14,color:T.accent,marginTop:14,flexShrink:0}}>
+              ⇄
+            </button>
+            <div style={{flex:1}}>
+              <div style={{fontSize:9,fontWeight:700,color:T.muted,marginBottom:4}}>VERS</div>
+              <select value={convTo} onChange={e=>setConvTo(e.target.value)}
+                style={{width:"100%",padding:"7px 8px",borderRadius:8,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:12,outline:"none",cursor:"pointer"}}>
+                {CONV_UNITS.map(u=><option key={u.id} value={u.id}>{u.l}</option>)}
+              </select>
+            </div>
+          </div>
+          {convResult !== "" && (
+            <div style={{padding:"12px 14px",borderRadius:12,background:`${T.accent}10`,border:`1px solid ${T.accent}33`,textAlign:"center"}}>
+              <div style={{fontSize:10,color:T.muted,marginBottom:4}}>{convValue} {convFrom} =</div>
+              <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:22,color:T.accent}}>{convResult} <span style={{fontSize:14}}>{convTo}</span></div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* PROFILE PANEL */}
+      {showProfile && userId && (
+        <div style={{position:"fixed",top:68,right:16,zIndex:5000,background:T.surface,borderRadius:16,boxShadow:`0 12px 40px rgba(0,0,0,.2)`,border:`1px solid ${T.border}`,padding:16,width:260}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+            <div style={{fontWeight:700,fontSize:13,color:T.ink}}>Mon profil</div>
+            <button onClick={()=>setShowProfile(false)} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:18,lineHeight:1}}>×</button>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14,padding:"10px 12px",background:T.bg,borderRadius:12,border:`1px solid ${T.border}`}}>
+            <div style={{width:42,height:42,borderRadius:"50%",background:`linear-gradient(135deg,${T.accent},${T.a2})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,fontWeight:800,color:"#fff",flexShrink:0}}>
+              {avatarLetter}
+            </div>
+            <div style={{overflow:"hidden"}}>
+              <div style={{fontWeight:700,fontSize:12,color:T.ink,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{editName||"—"}</div>
+              <div style={{fontSize:10,color:T.muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{userName}</div>
+            </div>
+          </div>
+          <div style={{marginBottom:12}}>
+            <div style={{fontSize:9,fontWeight:700,color:T.muted,marginBottom:4,letterSpacing:.8}}>PSEUDO</div>
+            <input value={editName} onChange={e=>setEditName(e.target.value)} placeholder="Ton prénom ou pseudo"
+              style={{width:"100%",padding:"9px 11px",borderRadius:9,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:12,outline:"none",boxSizing:"border-box"}}
+              onFocus={e=>e.target.style.borderColor=T.accent} onBlur={e=>e.target.style.borderColor=T.border}
+              onKeyDown={e=>e.key==="Enter"&&saveProfile()}/>
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={saveProfile} style={{flex:1,padding:"9px 0",borderRadius:9,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer"}}>
+              Sauvegarder
+            </button>
+            <button onClick={()=>{logout();setShowProfile(false)}} style={{padding:"9px 12px",borderRadius:9,background:"none",border:`1px solid ${T.border}`,color:T.muted,fontSize:11,cursor:"pointer"}}>
+              Déco.
+            </button>
+          </div>
         </div>
       )}
 
@@ -661,7 +862,7 @@ export default function LibraryPage() {
       {/* HEADER */}
       <div style={{background:T.surface,borderBottom:`1px solid ${T.border}`,padding:"0 22px",position:"sticky",top:0,zIndex:20,boxShadow:"0 1px 14px rgba(0,0,0,.07)"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",height:62,maxWidth:1400,margin:"0 auto"}}>
-          {/* Logo + title */}
+          {/* Logo + title + tools */}
           <div style={{display:"flex",alignItems:"center",gap:12}}>
             <img src={T.img} alt={T.n} style={{width:38,height:38,borderRadius:10,objectFit:"cover",boxShadow:`0 4px 16px ${T.accent}44`,flexShrink:0}}/>
             <div>
@@ -673,6 +874,14 @@ export default function LibraryPage() {
               </div>
               <div style={{fontSize:9,color:T.muted,marginTop:1}}>{userId ? `✓ ${userName}` : "Non connecté"}</div>
             </div>
+            <button onClick={()=>setShowCalc(v=>!v)} title="Calculatrice"
+              style={{width:34,height:34,borderRadius:9,background:showCalc?`${T.accent}18`:T.bg,border:`1px solid ${showCalc?T.accent:T.border}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,transition:"all .2s",flexShrink:0}}>
+              🧮
+            </button>
+            <button onClick={()=>setShowConverter(v=>!v)} title="Convertisseur"
+              style={{width:34,height:34,borderRadius:9,background:showConverter?`${T.accent}18`:T.bg,border:`1px solid ${showConverter?T.accent:T.border}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,transition:"all .2s",flexShrink:0}}>
+              📐
+            </button>
           </div>
 
           {/* Right actions */}
@@ -690,9 +899,11 @@ export default function LibraryPage() {
             ) : (
               <button onClick={() => navigate("/auth")} style={{padding:"6px 12px",borderRadius:8,background:"transparent",border:`1px solid ${T.accent}`,color:T.accent,fontWeight:600,fontSize:11,cursor:"pointer"}}>Se connecter</button>
             )}
-            {/* User avatar */}
+            {/* User avatar — opens profile panel */}
             {userId && (
-              <div style={{width:32,height:32,borderRadius:"50%",background:`linear-gradient(135deg,${T.accent},${T.a2})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,color:"#fff",flexShrink:0,boxShadow:`0 2px 8px ${T.accent}44`}}>
+              <div onClick={()=>setShowProfile(v=>!v)} style={{width:32,height:32,borderRadius:"50%",background:`linear-gradient(135deg,${T.accent},${T.a2})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,color:"#fff",flexShrink:0,boxShadow:`0 2px 8px ${T.accent}44`,cursor:"pointer",transition:"transform .15s"}}
+                onMouseEnter={e=>e.currentTarget.style.transform="scale(1.1)"}
+                onMouseLeave={e=>e.currentTarget.style.transform="none"}>
                 {avatarLetter}
               </div>
             )}
@@ -722,14 +933,14 @@ export default function LibraryPage() {
           {/* COMPACT STATS BAR */}
           <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
             {[
-              {e:"📓", v:notebooks.length,  l:"carnets",     tab:"notebooks"},
-              {e:"⭐", v:starredCount,       l:"favoris",     tab:"favorites"},
-              {e:"📁", v:folders.length,     l:"dossiers",    tab:"folders"},
-              {e:"✏",  v:subjects.length,    l:"matières",    tab:"subjects"},
-              {e:"📄", v:notebooks.reduce((s,n) => s + (n.pages_count || 1), 0), l:"pages total", tab:null},
-              {e:"📊", v:"",                 l:"tableau",     tab:"dashboard"},
+              {e:"📓", v:notebooks.length, l:"carnets",   tab:"notebooks"},
+              {e:"⭐", v:starredCount,      l:"favoris",   tab:"favorites"},
+              {e:"📁", v:folders.length,   l:"dossiers",  tab:"folders"},
+              {e:"📊", v:"",               l:"tableau",   tab:"dashboard"},
+              {e:"🎭", v:"",               l:"moodboard", tab:null, action:()=>navigate("/moodboard")},
+              {e:"🎨", v:"",               l:"thèmes",    tab:null, action:()=>setShowTheme(true)},
             ].map(s => (
-              <StatChip key={s.l} e={s.e} v={s.v} l={s.l} tab={s.tab} activeTab={activeTab} setActiveTab={setActiveTab} T={T}/>
+              <StatChip key={s.l} e={s.e} v={s.v} l={s.l} tab={s.tab} activeTab={activeTab} setActiveTab={setActiveTab} T={T} action={s.action}/>
             ))}
           </div>
 
