@@ -1424,6 +1424,9 @@ export default function EditorPage(){
   const eraserPx=mm2px(eraserMm)
   const placedRef=useRef(placed)
   const importedRef=useRef(importedImages)
+  const skipPageLoadRef=useRef(false)
+  const addingPageRef=useRef(false)
+  const saveNowRef=useRef(()=>{})
   useEffect(()=>{ placedRef.current = placed }, [placed])
   useEffect(()=>{ importedRef.current = importedImages }, [importedImages])
   useEffect(()=>{
@@ -1519,6 +1522,7 @@ export default function EditorPage(){
     onPagesUpdate:setPages,
     onNotebookTouch:()=>({title:nb.title,subject:nb.subject,pages_count:pagesCount}),
   })
+  saveNowRef.current=saveNow
 
   const saveLabel=useMemo(()=>{
     if(saveStatus==="dirty")return "Modifications en attente…"
@@ -1546,6 +1550,10 @@ export default function EditorPage(){
 
   // Load page + all pages for thumbnails
   useEffect(()=>{
+    if(skipPageLoadRef.current){
+      skipPageLoadRef.current=false
+      return
+    }
     const load=async()=>{
       try{
         const{data:{session}}=await supabase.auth.getSession()
@@ -1608,17 +1616,19 @@ export default function EditorPage(){
 
   // Add new page
   const addPage=async()=>{
-    await saveNow()
-    const newNum=(pages.reduce((m,p)=>Math.max(m,p.page_number||0),0)||0)+1
-    const newMeta=serializePageElements({
-      format:nextPageFmt,
-      rotation:0,
-      customMm:customPageMm,
-      items:[],
-      gridStyle:pageGridStyle||defaultGridStyle(nb.template),
-    })
-    const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
+    if(addingPageRef.current)return
+    addingPageRef.current=true
     try{
+      if(pageId)await saveNow()
+      const newNum=(pages.reduce((m,p)=>Math.max(m,p.page_number||0),0)||0)+1
+      const newMeta=serializePageElements({
+        format:nextPageFmt,
+        rotation:0,
+        customMm:customPageMm,
+        items:[],
+        gridStyle:pageGridStyle||defaultGridStyle(nb.template),
+      })
+      const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
       const{data:{session}}=await supabase.auth.getSession()
       const useLocal=!session?.user||isLocalNotebookId(nb.id)
       if(useLocal){
@@ -1632,15 +1642,18 @@ export default function EditorPage(){
         }
         const all=saveLocalPage(nb.id,np,pages)
         setPages(all)
-        updateNotebook(nb.id,{pages_count:newNum})
-        upsertLocalNotebook({...nb,pages_count:newNum,updated_at:np.updated_at})
+        const nextCount=Math.max(newNum,all.length)
+        updateNotebook(nb.id,{pages_count:nextCount})
+        setActiveNotebook({...nb,pages_count:nextCount,updated_at:np.updated_at})
+        upsertLocalNotebook({...nb,pages_count:nextCount,updated_at:np.updated_at})
+        skipPageLoadRef.current=true
         setPageId(np.id)
         const norm=normalizeCanvasData(emptyCanvas)
         setLayers(norm.layers)
         setActiveLayerId(norm.activeLayerId)
         if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
-        setPage(newNum)
         applyPageMetaToState(parsePageElements(newMeta,nb.template))
+        setPage(newNum)
         scheduleSave()
         addNotification(`Page ${newNum} créée`,"success")
         pushAction({type:"page_bg",detail:`Page ${newNum} créée`})
@@ -1650,6 +1663,8 @@ export default function EditorPage(){
       if(error||!np)throw error||new Error("insert failed")
       await supabase.from("notebooks").update({pages_count:newNum}).eq("id",nb.id)
       updateNotebook(nb.id,{pages_count:newNum})
+      setActiveNotebook({...nb,pages_count:newNum})
+      skipPageLoadRef.current=true
       setPages(p=>[...p,np].sort((a,b)=>a.page_number-b.page_number))
       setPageId(np.id)
       const norm=normalizeCanvasData(emptyCanvas)
@@ -1664,6 +1679,8 @@ export default function EditorPage(){
     }catch(e){
       console.error(e)
       addNotification("Impossible d'ajouter la page","error")
+    }finally{
+      addingPageRef.current=false
     }
   }
 
@@ -2004,7 +2021,7 @@ export default function EditorPage(){
     return()=>window.removeEventListener("pointerdown",handleDblTap)
   },[])
 
-  useEffect(()=>()=>{saveNow()},[nb.id,saveNow])
+  useEffect(()=>()=>{saveNowRef.current?.()},[])
 
   // Keyboard shortcuts for lasso selection + mode focus
   const closeSidePanels=useCallback(()=>{
@@ -2106,7 +2123,7 @@ export default function EditorPage(){
         </div>
         <div style={{transform:"scale(0.9)",transformOrigin:"center",boxShadow:"0 20px 80px rgba(0,0,0,.8)"}}>
           <div style={{width:displayW,height:displayH,position:"relative"}}>
-            <div style={{width:PW,height:PH,position:"absolute",left:rotLayout.offsetX,top:rotLayout.offsetY,transform:pageRotation?`rotate(${pageRotation}deg)`:"none",transformOrigin:"center center",background:"#fff"}}>
+            <div style={{width:PW,height:PH,position:"absolute",left:rotLayout.offsetX,top:rotLayout.offsetY,transform:pageRotation?`rotate(${pageRotation}deg)`:"none",transformOrigin:`${PW/2}px ${PH/2}px`,background:"#fff",boxShadow:"0 20px 80px rgba(0,0,0,.8)"}}>
               <Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={PW} PH={PH}/>
               <canvas ref={cRef}width={PW}height={PH}style={{position:"absolute",inset:0,width:"100%",height:"100%"}}/>
             </div>
@@ -2134,15 +2151,17 @@ export default function EditorPage(){
       )}
       {pageMenu&&pageMenuMeta&&<PageContextMenu T={T} pageNum={pageMenu.pageNum} x={pageMenu.x} y={pageMenu.y} meta={pageMenuMeta} onClose={()=>setPageMenu(null)} onApply={partial=>applyPageSettings(pageMenu.pageNum,partial)} onDuplicate={()=>duplicatePageByNum(pageMenu.pageNum)} onDelete={()=>deletePage(pageMenu.pageNum)} canDelete={pagesCount>1}/>}
 
-      {!focusMode&&(
-        <CalculatorDrawer
-          T={T}
-          open={showCalc}
-          onClose={()=>setShowCalc(false)}
-          stackOffset={0}
-          scale={scale}
-          {...calc}
-        />
+      {!focusMode&&showCalc&&(
+        <DraggablePanel T={T} id="editor-calculator" title="Calculatrice" open onClose={()=>setShowCalc(false)} defaultSide="right" width={calc.calcMode==="scientific"?380:340}>
+          <CalculatorDrawer
+            T={T}
+            variant="embedded"
+            open
+            onClose={()=>setShowCalc(false)}
+            scale={scale}
+            {...calc}
+          />
+        </DraggablePanel>
       )}
       {!focusMode&&showConv&&(
         <DraggablePanel T={T} id="editor-converter" title="Convertisseur" open onClose={()=>setShowConv(false)} defaultSide="right" width={300}>
@@ -2437,8 +2456,8 @@ export default function EditorPage(){
             </div>
           })}
 
-          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:infiniteMode?-1500:-(displayW/2),marginTop:infiniteMode?-1500:-(displayH/2),willChange:"transform"}}>
-            <div style={{width:displayW,height:displayH,position:"relative",boxShadow:infiniteMode?"none":"0 4px 40px rgba(0,0,0,.12)"}}>
+          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:infiniteMode?-1500:-(displayW/2),marginTop:infiniteMode?-1500:-(displayH/2),willChange:"transform",overflow:"visible"}}>
+            <div style={{width:displayW,height:displayH,position:"relative",overflow:"visible"}}>
               <div style={{
                 width:PW,
                 height:PH,
@@ -2446,8 +2465,9 @@ export default function EditorPage(){
                 left:rotLayout.offsetX,
                 top:rotLayout.offsetY,
                 transform:pageRotation?`rotate(${pageRotation}deg)`:"none",
-                transformOrigin:"center center",
-                background:infiniteMode?(pageColor||T.paper):"none",
+                transformOrigin:`${PW/2}px ${PH/2}px`,
+                background:infiniteMode?(pageColor||T.paper):"transparent",
+                boxShadow:infiniteMode?"none":"0 4px 40px rgba(0,0,0,.12)",
               }}>
               {infiniteMode&&<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={3000}height={3000}><defs><pattern id="inf-grid"width={37.8}height={37.8}patternUnits="userSpaceOnUse"><path d={`M 37.8 0 L 0 0 0 37.8`}fill="none"stroke={gridColor||T.grid}strokeWidth={.6}/></pattern></defs><rect width={3000}height={3000}fill={`url(#inf-grid)`}/></svg>}
               {!infiniteMode&&<Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={PW} PH={PH}/>}
@@ -2636,7 +2656,7 @@ export default function EditorPage(){
           <button onClick={()=>goToPage(Math.max(1,page-1))} disabled={page===1} style={{background:"none",border:"none",color:page===1?T.border:T.muted,cursor:page===1?"default":"pointer",fontSize:12}}>‹</button>
           <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{page}/{pagesCount}</span>
           <button onClick={()=>goToPage(Math.min(pagesCount,page+1))} style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:12}}>›</button>
-          <button onClick={addPage}title="Nouvelle page"style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:11}}>＋</button>
+          <button type="button" onClick={addPage} title="Nouvelle page" style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:11}}>＋</button>
         </div>
         <div style={{width:1,height:12,background:T.border}}/>
         <div style={{display:"flex",gap:3,alignItems:"center"}}>

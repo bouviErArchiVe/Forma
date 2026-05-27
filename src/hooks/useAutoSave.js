@@ -23,6 +23,9 @@ export function useAutoSave({
   const timer = useRef(null)
   const lastPayloadRef = useRef(null)
   const savingRef = useRef(false)
+  const lastSavedAtRef = useRef(null)
+  const buildPagePayloadRef = useRef(buildPagePayload)
+  buildPagePayloadRef.current = buildPagePayload
   const [status, setStatus] = useState('idle')
   const [lastSavedAt, setLastSavedAt] = useState(null)
 
@@ -32,12 +35,12 @@ export function useAutoSave({
 
   const saveNow = useCallback(async () => {
     if (!pageId || !notebookId || readOnly || savingRef.current) return false
-    const payload = buildPagePayload?.()
+    const payload = buildPagePayloadRef.current?.()
     if (!payload) return false
 
     const payloadKey = `${payload.elements}|${payload.canvas_data}`
     if (payloadKey === lastPayloadRef.current) {
-      setStatus(lastSavedAt ? 'saved' : 'idle')
+      setStatus(lastSavedAtRef.current ? 'saved' : 'idle')
       return true
     }
 
@@ -68,7 +71,6 @@ export function useAutoSave({
           .eq('id', pageId)
         if (error) throw error
         await supabase.from('notebooks').update({ updated_at: now }).eq('id', notebookId)
-        setStatus('saved')
       } else {
         const existing = loadLocalPages(notebookId)
         const all = saveLocalPage(notebookId, pageRecord, existing)
@@ -83,11 +85,12 @@ export function useAutoSave({
           pages_count: all.length || pageNum,
           ...(onNotebookTouch?.() || {}),
         })
-        setStatus('offline')
       }
 
       lastPayloadRef.current = payloadKey
-      setLastSavedAt(new Date())
+      const savedAt = new Date()
+      lastSavedAtRef.current = savedAt
+      setLastSavedAt(savedAt)
       setStatus('saved')
       savingRef.current = false
       return true
@@ -98,7 +101,9 @@ export function useAutoSave({
         onPagesUpdate?.(all)
         upsertLocalNotebook({ id: notebookId, updated_at: now })
         lastPayloadRef.current = payloadKey
-        setLastSavedAt(new Date())
+        const savedAt = new Date()
+        lastSavedAtRef.current = savedAt
+        setLastSavedAt(savedAt)
         setStatus('offline')
         savingRef.current = false
         return true
@@ -108,7 +113,7 @@ export function useAutoSave({
         return false
       }
     }
-  }, [pageId, notebookId, pageNum, readOnly, buildPagePayload, onPagesUpdate, onNotebookTouch, lastSavedAt])
+  }, [pageId, notebookId, pageNum, readOnly, onPagesUpdate, onNotebookTouch])
 
   const scheduleSave = useCallback(() => {
     markDirty()
@@ -118,7 +123,9 @@ export function useAutoSave({
 
   useEffect(() => {
     lastPayloadRef.current = null
+    lastSavedAtRef.current = null
     setStatus('idle')
+    setLastSavedAt(null)
   }, [pageId])
 
   useEffect(() => () => {

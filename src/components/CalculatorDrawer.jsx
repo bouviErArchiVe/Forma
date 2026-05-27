@@ -225,6 +225,7 @@ export default function CalculatorDrawer({
   onClose,
   stackOffset = 0,
   scale,
+  variant = 'drawer',
   display,
   setDisplay,
   calcMode,
@@ -282,34 +283,6 @@ export default function CalculatorDrawer({
     }
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', up)
-  }
-
-  if (!open) return null
-
-  if (minimized) {
-    return (
-      <button
-        type="button"
-        onClick={() => setMinimized(false)}
-        style={{
-          position: 'fixed',
-          bottom: 24,
-          right: layout === 'float' ? floatPos.x : 24 + stackOffset,
-          zIndex: TOKENS.zIndex.modal + 1,
-          padding: '12px 16px',
-          borderRadius: 999,
-          border: `1px solid ${T.accent}`,
-          background: T.accent,
-          color: '#fff',
-          fontWeight: 800,
-          fontSize: 13,
-          cursor: 'pointer',
-          boxShadow: TOKENS.shadow.panel,
-        }}
-      >
-        🧮 {display?.slice(0, 12)}
-      </button>
-    )
   }
 
   const shellStyle = layout === 'float'
@@ -391,6 +364,135 @@ export default function CalculatorDrawer({
   const keyGrid = calcMode === 'scientific' ? sciKeys : compactKeys
   const cols = calcMode === 'scientific' ? 6 : 4
 
+  const calculatorBody = (
+    <>
+      <div style={{ padding: variant === 'embedded' ? '8px 10px 6px' : '10px 14px 6px', background: rgbaFromHex(T.bg, 0.35) }}>
+        {calcMode === 'scientific' && (
+          <div style={{ fontSize: 9, color: T.muted, textAlign: 'right', marginBottom: 2 }}>
+            {angleMode === 'deg' ? 'DEG' : 'RAD'} {memory !== 0 && `· M=${formatResult(memory)}`}
+          </div>
+        )}
+        <div style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontWeight: 700,
+          fontSize: calcMode === 'scientific' ? (variant === 'embedded' ? 22 : 26) : (variant === 'embedded' ? 26 : 30),
+          color: T.ink,
+          textAlign: 'right',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          minHeight: variant === 'embedded' ? 32 : 36,
+        }}>
+          {display}
+        </div>
+      </div>
+
+      {calcMode !== 'arch' && (
+        <div style={{ padding: variant === 'embedded' ? '4px 10px 6px' : '6px 14px 8px', borderBottom: `1px solid ${rgbaFromHex(T.border, 0.35)}`, maxHeight: variant === 'embedded' ? 100 : 120, overflowY: 'auto' }}>
+          <div style={{ fontSize: 8, fontWeight: 800, color: T.muted, letterSpacing: 0.8, marginBottom: 4 }}>HISTORIQUE</div>
+          {history.length === 0 ? (
+            <div style={{ fontSize: 10, color: T.muted }}>Aucun calcul.</div>
+          ) : (
+            history.slice(0, variant === 'embedded' ? 6 : 8).map((h) => (
+              <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                <button type="button" onClick={() => reuseHistory(h)} style={{ flex: 1, textAlign: 'right', background: 'none', border: 'none', cursor: 'pointer', fontSize: 10, color: T.muted, padding: '2px 0' }}>
+                  {h.expr} = <strong style={{ color: T.ink }}>{h.result}</strong>
+                </button>
+                <button type="button" onClick={() => copyResult(h.result)} title="Copier" style={{ background: `${T.accent}18`, border: 'none', borderRadius: 6, padding: '2px 6px', fontSize: 9, color: T.accent, cursor: 'pointer' }}>⧉</button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      <div style={{ flex: 1, overflowY: 'auto', padding: variant === 'embedded' ? 8 : 12 }}>
+        {calcMode === 'arch' ? (
+          <ArchToolsPanel T={T} scale={scale} onResult={(val) => setDisplay(val)} />
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: variant === 'embedded' ? 6 : 8 }}>
+            {keyGrid.flatMap((row, ri) =>
+              row.map((k, ci) => {
+                if (calcMode === 'compact' && ri === 5 && ci === 1) return null
+                if (calcMode === 'scientific' && ri === 6 && (ci === 1 || ci >= 4)) return null
+                const wide = (calcMode === 'compact' && ri === 5 && ci === 0) || (calcMode === 'scientific' && ri === 6 && ci === 0)
+                const isEq = calcMode === 'scientific' && ri === 6 && ci === 3
+                return (
+                  <CalcBtn
+                    key={`${ri}-${ci}-${k}`}
+                    label={isEq ? '=' : k === 'DEG' ? angleMode.toUpperCase() : k}
+                    wide={wide}
+                    T={T}
+                    variant={['MC', 'MR', 'M+', 'M−'].includes(k) ? 'mem' : ['sin', 'cos', 'tan', 'log', 'ln', '√', 'π', 'e', 'mod', 'abs', 'x^y', '1/x', '±'].includes(k) ? 'fn' : ['C', '⌫'].includes(k) ? 'danger' : 'num'}
+                    active={k === 'DEG'}
+                    onClick={() => (calcMode === 'scientific' ? handleSci(isEq ? '=' : k) : handleCompact(k, ri, ci))}
+                  />
+                )
+              }),
+            )}
+          </div>
+        )}
+      </div>
+    </>
+  )
+
+  if (variant === 'embedded') {
+    if (!open) return null
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, height: '100%' }}>
+        <div style={{ padding: '0 10px 8px', borderBottom: `1px solid ${rgbaFromHex(T.border, 0.35)}`, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {['compact', 'scientific', 'arch'].map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setCalcMode(m)}
+              style={{
+                padding: '3px 7px',
+                borderRadius: 7,
+                border: `1px solid ${calcMode === m ? T.accent : T.border}`,
+                background: calcMode === m ? `${T.accent}18` : 'transparent',
+                color: calcMode === m ? T.accent : T.muted,
+                fontSize: 8,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              {m === 'compact' ? 'Simple' : m === 'scientific' ? 'Sci.' : 'Archi'}
+            </button>
+          ))}
+        </div>
+        {calculatorBody}
+      </div>
+    )
+  }
+
+  if (!open) return null
+
+  if (minimized) {
+    return (
+      <button
+        type="button"
+        onClick={() => setMinimized(false)}
+        style={{
+          position: 'fixed',
+          bottom: 24,
+          right: layout === 'float' ? floatPos.x : 24 + stackOffset,
+          zIndex: TOKENS.zIndex.modal + 1,
+          padding: '12px 16px',
+          borderRadius: 999,
+          border: `1px solid ${T.accent}`,
+          background: T.accent,
+          color: '#fff',
+          fontWeight: 800,
+          fontSize: 13,
+          cursor: 'pointer',
+          boxShadow: TOKENS.shadow.panel,
+        }}
+      >
+        🧮 {display?.slice(0, 12)}
+      </button>
+    )
+  }
+
   return (
     <div
       className="forma-animate-in"
@@ -443,72 +545,7 @@ export default function CalculatorDrawer({
         </div>
       </div>
 
-      <div style={{ padding: '10px 14px 6px', background: rgbaFromHex(T.bg, 0.35) }}>
-        {calcMode === 'scientific' && (
-          <div style={{ fontSize: 9, color: T.muted, textAlign: 'right', marginBottom: 2 }}>
-            {angleMode === 'deg' ? 'DEG' : 'RAD'} {memory !== 0 && `· M=${formatResult(memory)}`}
-          </div>
-        )}
-        <div style={{
-          fontFamily: "'JetBrains Mono', monospace",
-          fontWeight: 700,
-          fontSize: calcMode === 'scientific' ? 26 : 30,
-          color: T.ink,
-          textAlign: 'right',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          minHeight: 36,
-        }}>
-          {display}
-        </div>
-      </div>
-
-      {calcMode !== 'arch' && (
-        <div style={{ padding: '6px 14px 8px', borderBottom: `1px solid ${rgbaFromHex(T.border, 0.35)}`, maxHeight: 120, overflowY: 'auto' }}>
-          <div style={{ fontSize: 8, fontWeight: 800, color: T.muted, letterSpacing: 0.8, marginBottom: 4 }}>HISTORIQUE</div>
-          {history.length === 0 ? (
-            <div style={{ fontSize: 10, color: T.muted }}>Aucun calcul.</div>
-          ) : (
-            history.slice(0, 8).map((h) => (
-              <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                <button type="button" onClick={() => reuseHistory(h)} style={{ flex: 1, textAlign: 'right', background: 'none', border: 'none', cursor: 'pointer', fontSize: 10, color: T.muted, padding: '2px 0' }}>
-                  {h.expr} = <strong style={{ color: T.ink }}>{h.result}</strong>
-                </button>
-                <button type="button" onClick={() => copyResult(h.result)} title="Copier" style={{ background: `${T.accent}18`, border: 'none', borderRadius: 6, padding: '2px 6px', fontSize: 9, color: T.accent, cursor: 'pointer' }}>⧉</button>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
-      <div style={{ flex: 1, overflowY: 'auto', padding: 12 }}>
-        {calcMode === 'arch' ? (
-          <ArchToolsPanel T={T} scale={scale} onResult={(val) => setDisplay(val)} />
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 8 }}>
-            {keyGrid.flatMap((row, ri) =>
-              row.map((k, ci) => {
-                if (calcMode === 'compact' && ri === 5 && ci === 1) return null
-                if (calcMode === 'scientific' && ri === 6 && (ci === 1 || ci >= 4)) return null
-                const wide = (calcMode === 'compact' && ri === 5 && ci === 0) || (calcMode === 'scientific' && ri === 6 && ci === 0)
-                const isEq = calcMode === 'scientific' && ri === 6 && ci === 3
-                return (
-                  <CalcBtn
-                    key={`${ri}-${ci}-${k}`}
-                    label={isEq ? '=' : k === 'DEG' ? angleMode.toUpperCase() : k}
-                    wide={wide}
-                    T={T}
-                    variant={['MC', 'MR', 'M+', 'M−'].includes(k) ? 'mem' : ['sin', 'cos', 'tan', 'log', 'ln', '√', 'π', 'e', 'mod', 'abs', 'x^y', '1/x', '±'].includes(k) ? 'fn' : ['C', '⌫'].includes(k) ? 'danger' : 'num'}
-                    active={k === 'DEG'}
-                    onClick={() => (calcMode === 'scientific' ? handleSci(isEq ? '=' : k) : handleCompact(k, ri, ci))}
-                  />
-                )
-              }),
-            )}
-          </div>
-        )}
-      </div>
+      {calculatorBody}
     </div>
   )
 }

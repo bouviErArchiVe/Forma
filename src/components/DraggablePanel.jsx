@@ -4,7 +4,7 @@ import { TOKENS } from '@/theme/tokens'
 
 const TOP_BAR = 46
 const BOTTOM_BAR = 32
-const SNAP = 52
+const SNAP = 28
 const MIN_FLOAT_W = 180
 
 function loadLayout(id, defaultSide = 'right', width = 260) {
@@ -74,6 +74,7 @@ export default function DraggablePanel({
   collapsedPreview,
   resizable = true,
   zIndexOffset = 0,
+  dockOnRelease = false,
 }) {
   const [layout, setLayout] = useState(() => loadLayout(id, defaultSide, width))
   const [dragging, setDragging] = useState(false)
@@ -81,9 +82,10 @@ export default function DraggablePanel({
   const layoutRef = useRef(layout)
   layoutRef.current = layout
 
-  const persistLayout = useCallback((next) => {
+  const persistLayout = useCallback((next, { save = true } = {}) => {
     setLayout(next)
-    saveLayout(id, next)
+    layoutRef.current = next
+    if (save) saveLayout(id, next)
   }, [id])
 
   const startDrag = useCallback((e) => {
@@ -112,15 +114,19 @@ export default function DraggablePanel({
         mode: 'float',
         x: clamp(e.clientX - dragRef.current.ox, 4, vw - w - 4),
         y: clamp(e.clientY - dragRef.current.oy, TOP_BAR + 2, vh - BOTTOM_BAR - Math.min(h, 80) - 4),
-      })
+      }, { save: false })
     }
     const onUp = (e) => {
       setDragging(false)
       dragRef.current = null
-      const dock = detectDock(e.clientX, e.clientY)
       const cur = layoutRef.current
-      if (dock === 'float') persistLayout({ ...cur, mode: 'float' })
-      else persistLayout({ ...cur, mode: dock, w: width })
+      if (dockOnRelease) {
+        const dock = detectDock(e.clientX, e.clientY)
+        if (dock === 'float') persistLayout({ ...cur, mode: 'float' })
+        else persistLayout({ ...cur, mode: dock, w: width })
+      } else {
+        persistLayout({ ...cur, mode: 'float' })
+      }
     }
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
@@ -130,7 +136,7 @@ export default function DraggablePanel({
       window.removeEventListener('pointerup', onUp)
       window.removeEventListener('pointercancel', onUp)
     }
-  }, [dragging, width, height, persistLayout])
+  }, [dragging, width, height, persistLayout, dockOnRelease])
 
   const startResize = useCallback((e) => {
     e.preventDefault()
