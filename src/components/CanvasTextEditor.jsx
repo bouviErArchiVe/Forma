@@ -62,7 +62,7 @@ export default function CanvasTextEditor({ T, edit, onCommit, onCancel }) {
           background: rgbaFromHex(T.bg, 0.55),
           color: edit.color || T.ink,
           fontSize: fs,
-          fontFamily: 'var(--app-font, Nunito), sans-serif',
+          fontFamily: canvasFontCss(edit.fontFamily),
           lineHeight: 1.35,
           padding: '6px 8px',
           outline: 'none',

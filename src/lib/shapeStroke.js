@@ -1,3 +1,5 @@
+import { canvasFontCss } from '@/lib/fontUtils'
+
 export const SHAPE_TYPES = new Set(['line', 'rect', 'circle', 'arrow', 'cloud', 'dimline', 'text'])
 
 export function getShapeCenter(s) {
@@ -213,7 +215,7 @@ export function drawShapeStroke(ctx, s, layerOp, unitSys, formatDimension) {
 
   if (st === 'text') {
     const fs = Math.max((s.size || 4) * 3, 14)
-    ctx.font = `${fs}px var(--app-font, Nunito), sans-serif`
+    ctx.font = `${fs}px ${canvasFontCss(s.fontFamily)}`
     ctx.fillStyle = s.color
     ctx.globalAlpha = baseOp
     ctx.textBaseline = 'alphabetic'

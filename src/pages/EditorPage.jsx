@@ -7,6 +7,7 @@ import FloatingSelectionToolbar from "@/components/FloatingSelectionToolbar"
 import CanvasTextEditor from "@/components/CanvasTextEditor"
 import ShapeTransformHandles from "@/components/ShapeTransformHandles"
 import { drawShapeStroke, shapeStylePayload, getShapeBounds, isTransformableShape, resizeShapeBox, SHAPE_TYPES } from "@/lib/shapeStroke"
+import { CANVAS_TEXT_FONTS, canvasFontCss, ensureCanvasTextFontsLoaded } from "@/lib/fontUtils"
 import { glassStyle } from "@/theme/glass"
 import { TOKENS } from "@/theme/tokens"
 import { getToolCursor, getPlacementCursor, isDarkSurface } from "@/theme/cursors"
@@ -385,7 +386,7 @@ function Paper({gridStyle,tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
 }
 
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */
-function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest}){
+function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest,canvasTextFont}){
   const drawing=useRef(false)
   const strokes=useRef([])   // committed strokes
   const history=useRef([])   // for multi-level undo (copy of strokes at each commit)
@@ -470,7 +471,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     const b=getSelectionBounds()
     const shapeBounds=primary&&isTransformableShape(primary)?getShapeBounds(primary):null
     if(!active||!b)onSelRef.current({active:false,count:0,bounds:null,indices:[],shapeBounds:null,rotation:0,primaryIndex:null})
-    else onSelRef.current({active:true,count:selectedStrokes.current.size,bounds:b,indices,primaryIndex:indices.length===1?indices[0]:null,shapeBounds,rotation:primary?.rotation||0})
+    else onSelRef.current({active:true,count:selectedStrokes.current.size,bounds:b,indices,primaryIndex:indices.length===1?indices[0]:null,shapeBounds,rotation:primary?.rotation||0,primaryShapeType:primary?.shapeType||primary?.tool||null})
   },[])
 
   const tryStartGroupDrag=(p,e)=>{
@@ -723,11 +724,11 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       for(let i=strokes.current.length-1;i>=0;i--){
         const s=strokes.current[i]
         if(s.shapeType==="text"&&hitStroke(s,p,10)){
-          onTextEditRequest?.({index:i,x:s.pts[0].x,y:s.pts[0].y,text:s.text||"",color:s.color,size:s.size})
+          onTextEditRequest?.({index:i,x:s.pts[0].x,y:s.pts[0].y,text:s.text||"",color:s.color,size:s.size,fontFamily:s.fontFamily})
           return
         }
       }
-      onTextEditRequest?.({index:null,x:p.x,y:p.y,text:"",color,size})
+      onTextEditRequest?.({index:null,x:p.x,y:p.y,text:"",color,size,fontFamily:canvasTextFont})
       return
     }
     if(["pen","highlight","eraser","line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)&&!canUseActiveLayer())return
@@ -1013,6 +1014,15 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       redraw();notifySelection();if(onStroke)onStroke(strokes.current)
       logAction("selection_rotate",{count:selectedStrokes.current.size,detail:`${deg}°`})
     }
+    window.__setSelectionFont=font=>{
+      if(selectedStrokes.current.size===0)return
+      selectedStrokes.current.forEach(i=>{
+        const s=strokes.current[i]
+        if((s.shapeType||s.tool)==="text")strokes.current[i].fontFamily=font
+      })
+      redraw();if(onStroke)onStroke(strokes.current)
+      logAction("selection_font",{count:selectedStrokes.current.size,detail:font})
+    }
     window.__resizeSelectedShape=(x1,y1,x2,y2)=>{
       if(selectedStrokes.current.size!==1)return
       const i=[...selectedStrokes.current][0]
@@ -1029,7 +1039,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     }
     window.__addTextStroke=(payload)=>{
       history.current.push(JSON.stringify(strokes.current))
-      pushStroke({pts:[{x:payload.x,y:payload.y}],color:payload.color,size:payload.size,tool:"text",text:payload.text,shapeType:"text"})
+      pushStroke({pts:[{x:payload.x,y:payload.y}],color:payload.color,size:payload.size,tool:"text",text:payload.text,shapeType:"text",fontFamily:payload.fontFamily})
       redraw();if(onStroke)onStroke(strokes.current)
       logAction("stroke_text",{stroke:strokes.current[strokes.current.length-1]})
     }
@@ -1043,7 +1053,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 }
 
 /* ══ FLOATING PANEL ══════════════════════════════════ */
-function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle}){
+function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle,canvasTextFont,setCanvasTextFont}){
   const[pos,setPos]=useState({x:16,y:120})
   const[drag,setDrag]=useState(false)
   const[offset,setOffset]=useState({x:0,y:0})
@@ -1055,6 +1065,7 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
   const wheelRef=useRef()
   const isEraser=tool==="eraser"
   const isShapeTool=["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)
+  const isTextTool=tool==="text"
 
   const startDrag=e=>{setDrag(true);setOffset({x:e.clientX-pos.x,y:e.clientY-pos.y})}
   useEffect(()=>{
@@ -1145,6 +1156,21 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
                 ))}
               </div>
             )}
+          </div>
+        )}
+        {isTextTool&&setCanvasTextFont&&(
+          <div style={{borderTop:`1px solid ${T.border}`,paddingTop:8,display:"flex",flexDirection:"column",gap:6}}>
+            <div style={{fontSize:8,color:T.muted,fontWeight:700}}>POLICE TEXTE</div>
+            <select
+              value={canvasTextFont||"Patrick Hand"}
+              onChange={e=>setCanvasTextFont(e.target.value)}
+              style={{width:"100%",padding:"4px 6px",borderRadius:7,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:10,outline:"none",cursor:"pointer",fontFamily:canvasFontCss(canvasTextFont)}}
+            >
+              {CANVAS_TEXT_FONTS.map(f=>(
+                <option key={f.id}value={f.id}style={{fontFamily:canvasFontCss(f.id)}}>{f.label}</option>
+              ))}
+            </select>
+            <div style={{fontSize:11,color:T.ink,fontFamily:canvasFontCss(canvasTextFont),lineHeight:1.3,padding:"4px 0"}}>Aa — échantillon manuscrit</div>
           </div>
         )}
         <div>
@@ -1305,8 +1331,9 @@ function ShareModal({T,nbId,nbTitle,onClose}){
 /* ══ MAIN EDITOR ══════════════════════════════════════ */
 export default function EditorPage(){
   const navigate=useNavigate()
-  const{activeNotebook,updateNotebook,setTheme}=useAppStore()
+  const{activeNotebook,updateNotebook,setTheme,canvasTextFont,setCanvasTextFont}=useAppStore()
   const{ T }=useTheme()
+  useEffect(()=>{ensureCanvasTextFontsLoaded()},[])
   const nb=activeNotebook||{id:"1",title:"Carnet",subject:"arch",template:"plan",pages_count:1}
   const cRef=useRef()
 
@@ -1695,19 +1722,20 @@ export default function EditorPage(){
     return{x:r.left+(px/PW)*r.width,y:r.top+(py/PH)*r.height}
   },[PW,PH])
 
-  const handleTextEditRequest=useCallback(({index,x,y,text,color:textColor,size:textSize})=>{
-    setTextEdit({index,x,y,text,color:textColor||color,size:textSize||sizePx,key:Date.now(),screen:pagePointToScreen(x,y)})
-  },[pagePointToScreen,color,sizePx])
+  const handleTextEditRequest=useCallback(({index,x,y,text,color:textColor,size:textSize,fontFamily:textFont})=>{
+    setTextEdit({index,x,y,text,color:textColor||color,size:textSize||sizePx,fontFamily:textFont||canvasTextFont,key:Date.now(),screen:pagePointToScreen(x,y)})
+  },[pagePointToScreen,color,sizePx,canvasTextFont])
 
   const handleTextCommit=useCallback((payload)=>{
+    const fontFamily=payload.fontFamily||canvasTextFont
     if(payload.index!=null){
-      window.__updateTextStroke?.(payload.index,{text:payload.text,pts:[{x:payload.x,y:payload.y}],color:payload.color,size:payload.size})
+      window.__updateTextStroke?.(payload.index,{text:payload.text,pts:[{x:payload.x,y:payload.y}],color:payload.color,size:payload.size,fontFamily})
     }else{
-      window.__addTextStroke?.({x:payload.x,y:payload.y,text:payload.text,color:payload.color,size:payload.size})
+      window.__addTextStroke?.({x:payload.x,y:payload.y,text:payload.text,color:payload.color,size:payload.size,fontFamily})
     }
     setTextEdit(null)
     requestSave()
-  },[requestSave])
+  },[requestSave,canvasTextFont])
 
   const handleTextCancel=useCallback(()=>setTextEdit(null),[])
 
@@ -2085,7 +2113,7 @@ export default function EditorPage(){
         />
       )}
 
-      {!focusMode&&<FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle}/>}
+      {!focusMode&&<FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont}/>}
 
       {focusMode&&(
         <FocusToolbar
@@ -2290,7 +2318,7 @@ export default function EditorPage(){
                 </div>
               )}
 
-              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone}/>}
+              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone}/>}
               {canvasSelection?.shapeBounds&&canvasSelection.count===1&&!textEdit&&(
                 <ShapeTransformHandles
                   T={T}
@@ -2308,7 +2336,10 @@ export default function EditorPage(){
                   T={T}
                   bounds={canvasSelection.bounds}
                   count={canvasSelection.count}
-                  showShapeOpts={!!canvasSelection.shapeBounds}
+                  showShapeOpts={!!canvasSelection.shapeBounds&&canvasSelection.primaryShapeType!=="text"}
+                  showTextFont={canvasSelection.count===1&&canvasSelection.primaryShapeType==="text"}
+                  showRotation={canvasSelection.count===1&&!!canvasSelection.shapeBounds}
+                  textFont={canvasSelection.primaryIndex!=null?(window.__getStrokes?.()?.[canvasSelection.primaryIndex]?.fontFamily||canvasTextFont):canvasTextFont}
                   rotation={canvasSelection.rotation}
                   onDelete={()=>window.__deleteSelected?.()}
                   onDuplicate={()=>window.__duplicateSelected?.()}
@@ -2318,6 +2349,7 @@ export default function EditorPage(){
                   onFill={c=>window.__setSelectionFill?.(c)}
                   onFillOpacity={o=>window.__setSelectionFill?.(null,o)}
                   onRotation={deg=>window.__setSelectionRotation?.(deg)}
+                  onFont={f=>{window.__setSelectionFont?.(f);requestSave()}}
                   onClose={()=>{window.__clearSelection?.();setCanvasSelection(null)}}
                 />
               )}

@@ -25,6 +25,10 @@ const useAppStore = create(
       appFont: '',
       setAppFont: (appFont) => set({ appFont }),
 
+      // ── Canvas text font (outil Texte dans l'éditeur) ─────
+      canvasTextFont: 'Patrick Hand',
+      setCanvasTextFont: (canvasTextFont) => set({ canvasTextFont }),
+
       // ── Notebooks ────────────────────────────────────────
       notebooks: [],
       setNotebooks: (notebooks) => set({ notebooks }),
@@ -155,6 +159,7 @@ const useAppStore = create(
       partialize: (state) => ({
         themeId: state.themeId,
         appFont: state.appFont,
+        canvasTextFont: state.canvasTextFont,
         appearanceMode: state.appearanceMode,
         unitSystem: state.unitSystem,
         scale: state.scale,
