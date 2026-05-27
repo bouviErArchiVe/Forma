@@ -26,6 +26,7 @@ import CalculatorDrawer from "@/components/CalculatorDrawer"
 import ShareModal from "@/components/ShareModal"
 import UnitConverter from "@/components/UnitConverter"
 import TranslationWidget from "@/components/translation/TranslationWidget"
+import DictationWidget from "@/components/DictationWidget"
 import { useCalculator, calcDrawerWidth } from "@/hooks/useCalculator"
 import { useAuth } from "@/hooks/useAuth"
 import { useCollaboration } from "@/hooks/useCollaboration"
@@ -1396,6 +1397,7 @@ export default function EditorPage(){
   const[showTimer,setShowTimer]=useState(false)
   const[showConv,setShowConv]=useState(false)
   const[showTranslate,setShowTranslate]=useState(false)
+  const[showDictation,setShowDictation]=useState(false)
   const calc=useCalculator()
   const[convValue,setConvValue]=useState("")
   const[convCategory,setConvCategory]=useState("length")
@@ -1951,6 +1953,14 @@ export default function EditorPage(){
 
   const handleTextCancel=useCallback(()=>setTextEdit(null),[])
 
+  const insertDictationText=useCallback((text)=>{
+    const trimmed=(text||"").trim()
+    if(!trimmed||readOnly)return
+    const x=PW*0.12
+    const y=PH*0.2
+    handleTextEditRequest({index:null,x,y,text:trimmed,color,size:sizePx,fontFamily:canvasTextFont})
+  },[readOnly,PW,PH,handleTextEditRequest,color,sizePx,canvasTextFont])
+
   const ACTION_KEY=useMemo(()=>`forma_actions_${nb.id}_${page}`,[nb.id,page])
   useEffect(()=>{try{setActionLog(JSON.parse(localStorage.getItem(ACTION_KEY)||"[]"))}catch{setActionLog([])}},[ACTION_KEY])
   const pushAction=useCallback((payload)=>{
@@ -2096,6 +2106,7 @@ export default function EditorPage(){
     setShowTimer(false)
     setShowConv(false)
     setShowTranslate(false)
+    setShowDictation(false)
     setShowFlash(false)
   },[])
   const exitFocusMode=useCallback(()=>setFocusMode(false),[])
@@ -2259,6 +2270,11 @@ export default function EditorPage(){
             notebooks={notebooks}
             onOpenScan={() => { setShowTranslate(false); navigate('/translate') }}
           />
+        </DraggablePanel>
+      )}
+      {!focusMode&&showDictation&&(
+        <DraggablePanel T={T} id="editor-dictation" title="Dictée vocale" open onClose={()=>setShowDictation(false)} defaultSide="right" width={320}>
+          <DictationWidget T={T} variant="embedded" onInsert={insertDictationText} />
         </DraggablePanel>
       )}
 
@@ -2476,6 +2492,8 @@ export default function EditorPage(){
         setShowConv={setShowConv}
         showTranslate={showTranslate}
         setShowTranslate={setShowTranslate}
+        showDictation={showDictation}
+        setShowDictation={setShowDictation}
         showTimer={showTimer}
         setShowTimer={setShowTimer}
         timerRunning={timerRunning}

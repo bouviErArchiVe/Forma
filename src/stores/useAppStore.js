@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 import { THEMES } from '@/lib/themes'
 import { applyAppearanceToTheme } from '@/lib/appearance'
 import { normalizeCanvasTextFont } from '@/lib/fontUtils'
+import { normalizeDictationLang } from '@/lib/speechRecognition'
 
 const useAppStore = create(
   persist(
@@ -50,6 +51,9 @@ const useAppStore = create(
       setTranslationSourceLang: (translationSourceLang) => set({ translationSourceLang }),
       setTranslationTargetLang: (translationTargetLang) => set({ translationTargetLang }),
       setTranslationMode: (translationMode) => set({ translationMode }),
+
+      dictationLang: 'fr-FR',
+      setDictationLang: (dictationLang) => set({ dictationLang: normalizeDictationLang(dictationLang) }),
 
       // ── Notebooks ────────────────────────────────────────
       notebooks: [],
@@ -206,6 +210,7 @@ const useAppStore = create(
         translationSourceLang: state.translationSourceLang,
         translationTargetLang: state.translationTargetLang,
         translationMode: state.translationMode,
+        dictationLang: state.dictationLang,
       }),
     }
   )

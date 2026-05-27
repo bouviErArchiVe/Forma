@@ -114,6 +114,10 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    @keyframes formaDictationBar {
+      0%, 100% { height: 6px; opacity: .55; }
+      50% { height: 20px; opacity: 1; }
+    }
 
     .fade-up { animation: fadeUp .28s ease forwards; }
     .forma-animate-in { animation: formaFadeUp .24s var(--forma-transition-spring) forwards; }
@@ -242,6 +246,10 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     .forma-tap-target {
       min-width: 44px;
       min-height: 44px;
+    }
+
+    .forma-dictation-bar {
+      animation: formaDictationBar .85s ease-in-out infinite;
     }
 
     .forma-btn-glass {
