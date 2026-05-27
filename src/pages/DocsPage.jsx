@@ -149,7 +149,7 @@ export default function DocsPage() {
 
   if (view === 'editor' && doc) {
     return (
-      <div style={{ minHeight: '100vh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100dvh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
         <header style={{
           padding: '12px 18px', borderBottom: `1px solid ${T.border}`, background: T.surface,
           display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', position: 'sticky', top: 0, zIndex: 20,
@@ -170,7 +170,7 @@ export default function DocsPage() {
           <GlassButton T={T} size="sm" onClick={() => handleExport('png')}>PNG</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('pdf')}>PDF</GlassButton>
         </header>
-        <main style={{ flex: 1, minHeight: 0, padding: '8px 12px 20px', display: 'flex', flexDirection: 'column' }}>
+        <main style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '8px 12px max(20px, env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column' }}>
           <DocEditor doc={doc} onChange={handleChange} T={T} pageRefs={pageRefs} />
         </main>
 
@@ -204,7 +204,7 @@ export default function DocsPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: T.bg, color: T.ink }}>
+    <div style={{ minHeight: '100dvh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
       <FormaModuleHeader
         title="FormaDoc"
         subtitle={`Traitement de texte · ${listed.length} document${listed.length !== 1 ? 's' : ''}`}
@@ -228,7 +228,7 @@ export default function DocsPage() {
         <GlassButton T={T} size="md" onClick={() => setTemplateModal(true)}>+ Nouveau document</GlassButton>
       </FormaModuleHeader>
 
-      <main style={{ padding: '20px 24px 40px', maxWidth: 1200, margin: '0 auto' }}>
+      <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px 24px max(40px, env(safe-area-inset-bottom))', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
         {listed.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px', color: T.muted }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>📄</div>

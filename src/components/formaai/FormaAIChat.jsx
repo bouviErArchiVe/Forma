@@ -86,10 +86,10 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
   }, [input, busy, action, messages])
 
   const shellStyle = fullPage
-    ? { minHeight: '100vh', background: FAI_DARK.bg, color: FAI_DARK.ink, display: 'flex', flexDirection: 'column' }
+    ? { minHeight: '100dvh', background: FAI_DARK.bg, color: FAI_DARK.ink, display: 'flex', flexDirection: 'column' }
     : {
       position: 'fixed', bottom: 16, right: 16, width: 'min(380px, calc(100vw - 32px))',
-      maxHeight: 'min(520px, calc(100vh - 32px))', zIndex: 3500,
+      maxHeight: 'min(520px, calc(100dvh - 32px))', zIndex: 3500,
       background: FAI_DARK.panel, borderRadius: 14, border: `1px solid ${FAI_DARK.border}`,
       boxShadow: '0 12px 48px rgba(0,0,0,.5)', display: 'flex', flexDirection: 'column',
     }

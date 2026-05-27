@@ -515,6 +515,7 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     }
     .forma-page-shell {
       min-height: 100vh;
+      min-height: 100dvh;
       height: 100%;
       background: transparent;
       color: var(--forma-ink);
@@ -523,6 +524,7 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     }
     .forma-app-loading {
       height: 100vh;
+      height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;

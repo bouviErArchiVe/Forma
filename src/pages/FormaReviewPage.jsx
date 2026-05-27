@@ -140,10 +140,10 @@ export default function FormaReviewPage() {
 
   if (view === 'library') {
     return (
-      <div style={{ minHeight: '100vh', background: FRV_DARK.bg, color: FRV_DARK.ink }}>
+      <div style={{ minHeight: '100dvh', background: FRV_DARK.bg, color: FRV_DARK.ink, display: 'flex', flexDirection: 'column' }}>
         <FormaModuleHeader title="FormaReview" dark={FRV_DARK} />
 
-        <div style={{ padding: '24px 32px', maxWidth: 960, margin: '0 auto' }}>
+        <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '24px 32px max(24px, env(safe-area-inset-bottom))', maxWidth: 960, margin: '0 auto', width: '100%' }}>
           <p style={{ color: FRV_DARK.muted, fontSize: 14, marginBottom: 24 }}>
             Corrections collaboratives — commentaires, pins, surlignages, flèches et dessins sur vos plans.
           </p>
@@ -197,7 +197,7 @@ export default function FormaReviewPage() {
   }
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FRV_DARK.bg, color: FRV_DARK.ink }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: FRV_DARK.bg, color: FRV_DARK.ink }}>
       <FormaModuleHeader title={session?.title || 'FormaReview'} dark={FRV_DARK} style={headerStyle}>
         <Btn onClick={handleBack}>← Retour</Btn>
         <Btn onClick={() => fileRef.current?.click()} disabled={busy}>
@@ -222,13 +222,14 @@ export default function FormaReviewPage() {
           onSelectPage={setSelectedPageId}
           onAddPages={handleImportPages}
           onDeletePage={(id) => {
+            const nextPages = (session?.pages || []).filter((p) => p.id !== id)
+            if (selectedPageId === id) setSelectedPageId(nextPages[0]?.id || null)
             setSession((prev) => ({
               ...prev,
               pages: prev.pages.filter((p) => p.id !== id),
               pins: prev.pins.filter((p) => p.pageId !== id),
               markups: prev.markups.filter((m) => m.pageId !== id),
             }))
-            if (selectedPageId === id) setSelectedPageId(session.pages.find((p) => p.id !== id)?.id || null)
           }}
         />
 

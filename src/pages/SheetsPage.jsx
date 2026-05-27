@@ -144,7 +144,7 @@ export default function SheetsPage() {
 
   if (view === 'editor' && sheet) {
     return (
-      <div style={{ minHeight: '100vh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100dvh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
         <header style={{
           padding: '12px 18px', borderBottom: `1px solid ${T.border}`, background: T.surface,
           display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', position: 'sticky', top: 0, zIndex: 20,
@@ -172,7 +172,7 @@ export default function SheetsPage() {
             {sheet.locked ? '🔒' : '🔓'}
           </button>
         </header>
-        <main style={{ flex: 1, minHeight: 0, padding: '12px 16px 24px', display: 'flex', flexDirection: 'column' }}>
+        <main style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '12px 16px max(24px, env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column' }}>
           <SpreadsheetGrid sheet={sheet} onChange={handleChange} T={T} gridRef={gridRef} readOnly={!!sheet.locked} />
         </main>
 
@@ -206,7 +206,7 @@ export default function SheetsPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: T.bg, color: T.ink }}>
+    <div style={{ minHeight: '100dvh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
       <FormaModuleHeader
         title="FormaTab"
         subtitle={`${listed.length} tableau${listed.length !== 1 ? 'x' : ''}`}
@@ -230,7 +230,7 @@ export default function SheetsPage() {
         <GlassButton T={T} size="md" onClick={handleNew}>+ Nouveau tableau</GlassButton>
       </FormaModuleHeader>
 
-      <main style={{ padding: '20px 24px 40px', maxWidth: 1200, margin: '0 auto' }}>
+      <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px 24px max(40px, env(safe-area-inset-bottom))', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
         {listed.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px', color: T.muted }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>📊</div>

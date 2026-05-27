@@ -125,7 +125,7 @@ export default function FormatcalPage() {
   }
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FC_DARK.bg, color: FC_DARK.ink }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: FC_DARK.bg, color: FC_DARK.ink }}>
       <FormaModuleHeader title="FormatCal" dark={FC_DARK} style={{ height: 52, padding: '0 16px', background: FC_DARK.panel }} />
 
       <div style={{
@@ -171,7 +171,7 @@ export default function FormatcalPage() {
         />
 
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'auto' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
             {renderView()}
           </div>
         </main>

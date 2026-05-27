@@ -794,7 +794,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="forma-page-shell" style={{ display: 'flex', minHeight: '100vh' }}>
+    <div className="forma-page-shell" style={{ display: 'flex', minHeight: '100dvh' }}>
       <aside style={{ width: 240, borderRight: `1px solid ${T.border}`, background: T.surface, padding: '20px 12px', flexShrink: 0 }}>
         <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginBottom: 16 }}>
           <BrandLogo T={T} size="sm" showText={false} />
@@ -837,7 +837,7 @@ export default function AccountPage() {
         </button>
       </aside>
 
-      <main style={{ flex: 1, padding: '28px 32px', maxWidth: 720, overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '28px 32px max(28px, env(safe-area-inset-bottom))', maxWidth: 720, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
         {collab.error && (
           <div style={{ padding: 12, marginBottom: 16, borderRadius: 10, background: '#4a1a1a22', color: '#f87171', fontSize: 12 }}>
             {collab.error} — Exécutez la migration SQL Supabase si ce n'est pas déjà fait.

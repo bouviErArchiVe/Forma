@@ -42,7 +42,7 @@ export default function CombineImportModal({ open, onClose, onImportInternal }) 
             </button>
           ))}
         </div>
-        <div style={{ flex: 1, overflowY: 'auto', padding: 12 }}>
+        <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: 12 }}>
           {items.length === 0 && (
             <p style={{ color: FCMB_DARK.muted, fontSize: 13, textAlign: 'center', padding: 24 }}>
               Aucun élément disponible

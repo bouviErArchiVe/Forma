@@ -159,10 +159,10 @@ export default function FormaPresentPage() {
 
   if (view === 'library') {
     return (
-      <div style={{ minHeight: '100vh', background: FPR_DARK.bg, color: FPR_DARK.ink }}>
+      <div style={{ minHeight: '100dvh', background: FPR_DARK.bg, color: FPR_DARK.ink, display: 'flex', flexDirection: 'column' }}>
         <FormaModuleHeader title="FormaPresent" dark={FPR_DARK} />
 
-        <div style={{ padding: '24px 32px', maxWidth: 960, margin: '0 auto' }}>
+        <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '24px 32px max(24px, env(safe-area-inset-bottom))', maxWidth: 960, margin: '0 auto', width: '100%' }}>
           <p style={{ color: FPR_DARK.muted, fontSize: 14, marginBottom: 24 }}>
             Présentations intégrées — slides, texte, images, vidéos, Proforma, FormaTab, moodboards. Mode plein écran avec laser et notes.
           </p>
@@ -216,7 +216,7 @@ export default function FormaPresentPage() {
   }
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FPR_DARK.bg, color: FPR_DARK.ink }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: FPR_DARK.bg, color: FPR_DARK.ink }}>
       <FormaModuleHeader title={deck?.title || 'FormaPresent'} dark={FPR_DARK} style={headerStyle}>
         <Btn onClick={handleBack}>← Retour</Btn>
         <input

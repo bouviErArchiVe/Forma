@@ -54,7 +54,7 @@ export default function FormatcalSidebar({
         </button>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: 12 }}>
+      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: 12 }}>
         <Section title="Aujourd'hui">
           {today.length === 0 ? <Empty /> : today.map((ev) => (
             <MiniEvent key={ev.id} ev={ev} onClick={onEventClick} />

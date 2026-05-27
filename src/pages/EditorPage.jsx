@@ -2518,7 +2518,7 @@ export default function EditorPage(){
   }
 
   return(
-    <div className="forma-page-shell" style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
+    <div className="forma-page-shell" style={{ display: "flex", flexDirection: "column", height: "100dvh", overflow: "hidden" }}>
       {!focusMode&&showPageSettings&&(
         <DraggablePanel T={T} id="editor-page-settings" title="Style de page" open onClose={()=>setShowPageSettings(false)} defaultSide="left" width={320}>
           <PageSettingsBody T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} onClose={()=>setShowPageSettings(false)}/>

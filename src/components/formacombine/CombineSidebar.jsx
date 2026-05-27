@@ -20,7 +20,7 @@ export default function CombineSidebar({
       <div style={{ padding: '12px 14px', borderBottom: `1px solid ${FCMB_DARK.border}`, fontSize: 13, color: FCMB_DARK.muted }}>
         {pages.length} page{pages.length !== 1 ? 's' : ''}
       </div>
-      <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
+      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: 8 }}>
         {pages.length === 0 && (
           <p style={{ color: FCMB_DARK.muted, fontSize: 13, padding: 12, textAlign: 'center' }}>
             Importez des fichiers pour commencer

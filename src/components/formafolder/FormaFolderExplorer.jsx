@@ -233,7 +233,7 @@ export default function FormaFolderExplorer({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: showHeader ? '100vh' : 420, background: FF_DARK.bg, color: FF_DARK.ink }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: showHeader ? '100dvh' : 420, background: FF_DARK.bg, color: FF_DARK.ink }}>
       {showHeader && (
         <header style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderBottom: `1px solid ${FF_DARK.border}`, background: FF_DARK.surface }}>
           <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
@@ -246,7 +246,7 @@ export default function FormaFolderExplorer({
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {treeOpen && (
-          <aside style={{ width: 210, flexShrink: 0, borderRight: `1px solid ${FF_DARK.border}`, padding: 12, overflowY: 'auto' }}>
+          <aside style={{ width: 210, flexShrink: 0, borderRight: `1px solid ${FF_DARK.border}`, padding: 12, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: FF_DARK.muted, marginBottom: 8 }}>ARBRESCENCE</div>
             <button type="button" onClick={() => openFolder(null)} style={{ ...treeBtn, background: !currentFolderId ? `${FF_DARK.accent}18` : 'transparent' }}>📚 Racine</button>
             {tree.map((node) => <TreeNode key={node.id} node={node} depth={0} currentId={currentFolderId} onOpen={openFolder} onDrop={handleDropOnFolder} />)}
@@ -295,7 +295,7 @@ export default function FormaFolderExplorer({
           <input ref={fileRef} type="file" multiple hidden accept=".pdf,image/*,.txt,.md,.docx,.csv" onChange={(e) => { handleImportFiles(e.target.files); e.target.value = '' }} />
 
           <div style={{ flex: 1, display: 'flex', gap: 12, overflow: 'hidden' }}>
-            <div style={{ flex: 1, overflowY: 'auto' }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); handleImportFiles(e.dataTransfer?.files) }}>
+            <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); handleImportFiles(e.dataTransfer?.files) }}>
               {items.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: 48, color: FF_DARK.muted }}>
                   <div style={{ fontSize: 40, marginBottom: 8 }}>📁</div>
@@ -340,7 +340,7 @@ export default function FormaFolderExplorer({
             </div>
 
             {previewItem && (
-              <aside style={{ width: 280, flexShrink: 0, borderLeft: `1px solid ${FF_DARK.border}`, padding: 12, overflowY: 'auto' }}>
+              <aside style={{ width: 280, flexShrink: 0, borderLeft: `1px solid ${FF_DARK.border}`, padding: 12, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
                 <div style={{ fontWeight: 700, marginBottom: 8 }}>{previewItem.name}</div>
                 <div style={{ fontSize: 11, color: FF_DARK.muted, marginBottom: 12 }}>
                   {previewItem.kind === 'asset' ? assetTypeLabel(previewItem.assetType) : previewItem.kind}

@@ -35,7 +35,7 @@ export default class ErrorBoundary extends Component {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          minHeight: '100vh',
+          minHeight: '100dvh',
           padding: 24,
           background: 'var(--forma-bg, #faf4ee)',
         }}
