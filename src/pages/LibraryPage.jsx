@@ -1366,6 +1366,9 @@ export default function LibraryPage() {
             <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaReview.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               💬 {MODULES.formaReview.name}
             </GlassButton>
+            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaPresent.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              📽 {MODULES.formaPresent.name}
+            </GlassButton>
             <GlassButton T={T} size="md" onClick={() => navigate(MODULES.fMoodboard.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               🎭 {MODULES.fMoodboard.name}
             </GlassButton>
@@ -1475,6 +1478,7 @@ export default function LibraryPage() {
                 { e: '📅', l: MODULES.formatCal.name, action: () => navigate(MODULES.formatCal.route) },
                 { e: '📎', l: MODULES.formaCombine.name, action: () => navigate(MODULES.formaCombine.route) },
                 { e: '💬', l: MODULES.formaReview.name, action: () => navigate(MODULES.formaReview.route) },
+                { e: '📽', l: MODULES.formaPresent.name, action: () => navigate(MODULES.formaPresent.route) },
                 { e: '🌐', l: 'Traduction', action: () => navigate('/translate') },
                 { e: '🎮', l: MODULES.fPause.name, action: () => navigate(MODULES.fPause.route) },
                 { e: '🎨', l: MODULES.fTheme.name, action: () => setShowTheme(true) },

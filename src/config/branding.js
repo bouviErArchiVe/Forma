@@ -19,6 +19,7 @@ export const MODULES = {
   formaCombine: { name: 'FormaCombine', route: '/formacombine' },
   formaFolder: { name: 'FormaFolder', route: '/formafolder' },
   formaReview: { name: 'FormaReview', route: '/formareview' },
+  formaPresent: { name: 'FormaPresent', route: '/formapresent' },
   fTheme: { name: 'FTheme', route: null },
   fMoodboard: { name: 'FMoodboard', route: '/fmoodboard', legacyRoute: '/moodboard' },
   fPause: { name: 'FPause', route: '/fpause', legacyRoute: '/games' },
