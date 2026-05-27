@@ -2,6 +2,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { THEMES } from '@/lib/themes'
+import { applyAppearanceToTheme } from '@/lib/appearance'
 import { normalizeCanvasTextFont } from '@/lib/fontUtils'
 
 const useAppStore = create(
