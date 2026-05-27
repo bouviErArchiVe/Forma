@@ -46,12 +46,38 @@ export function convertValue(value, categoryId, fromUnitId, toUnitId) {
   if (!fu || !tu) return ""
   const base = fu.toBase(v)
   const out = tu.fromBase(base)
-  // keep it stable but not overly rounded
   const rounded = Math.abs(out) >= 1 ? +out.toFixed(8) : +out.toPrecision(10)
   return rounded
 }
 
-/** Mesure dessin → réalité selon l'échelle (ex. 1:50) */
+/** Parse une échelle (1:50, 1/4"=1', 1"=10') → facteur réel/dessin (mm réels par mm dessin). */
+export function parseScaleFactor(scaleStr) {
+  const s = String(scaleStr || "1:50").trim()
+  if (s.includes(":")) {
+    const parts = s.split(":").map((p) => parseFloat(String(p).trim()))
+    if (parts.length === 2 && parts[0] > 0 && isFinite(parts[1])) return parts[1] / parts[0]
+  }
+  const eq = /^(.+?)=(.+)$/.exec(s)
+  if (eq) {
+    const drawIn = parseImperialMeasure(eq[1])
+    const realIn = parseImperialMeasure(eq[2])
+    if (drawIn > 0 && realIn > 0) return realIn / drawIn
+  }
+  return 50
+}
+
+function parseImperialMeasure(str) {
+  const t = String(str || "").trim()
+  const ft = /^(\d+(?:\.\d+)?)\s*'$/.exec(t)
+  if (ft) return parseFloat(ft[1]) * 12
+  const fracIn = /^(\d+)\s*\/\s*(\d+)\s*"$/.exec(t)
+  if (fracIn) return parseInt(fracIn[1], 10) / parseInt(fracIn[2], 10)
+  const inch = /^(\d+(?:\.\d+)?)\s*"$/.exec(t)
+  if (inch) return parseFloat(inch[1])
+  return null
+}
+
+/** Mesure dessin → réalité selon l'échelle (ex. 1:50, 1/4"=1'). */
 export function convertDrawingScale(value, fromUnitId, scaleStr) {
   const v = parseFloat(String(value || ""))
   if (!isFinite(v)) return null
@@ -59,8 +85,7 @@ export function convertDrawingScale(value, fromUnitId, scaleStr) {
   const fu = lengthUnits.find((u) => u.id === fromUnitId)
   if (!fu) return null
   const drawingMm = fu.toBase(v) * 1000
-  const scParts = String(scaleStr || "1:50").split(":").map(Number)
-  const scFactor = scParts.length === 2 && scParts[0] > 0 ? scParts[1] / scParts[0] : 50
+  const scFactor = parseScaleFactor(scaleStr)
   const realMm = drawingMm * scFactor
   return {
     mm: Math.round(realMm * 100) / 100,
@@ -68,4 +93,3 @@ export function convertDrawingScale(value, fromUnitId, scaleStr) {
     m: Math.round(realMm / 1000 * 1000) / 1000,
   }
 }
-

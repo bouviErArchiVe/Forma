@@ -47,7 +47,7 @@ import { loadEraserSettings, saveEraserSettings, ERASER_MODES } from "@/lib/eras
 import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/lib/canvasHitTest"
 import { getPlacedSize, getPlacedLocalBounds, resizePlacedItem } from "@/lib/placedElements"
 import { renderSpreadsheetPlaced, SpreadsheetPlacedStatic } from "@/components/spreadsheet/SpreadsheetPlacedView"
-import { renderDocPlaced } from "@/components/docs/DocPlacedView"
+import { DocPlacedStatic } from "@/components/docs/DocPlacedView"
 import {
   euProfilesAsLibItems,
   customProfileToLibEntry,
@@ -58,6 +58,7 @@ import {
 import { screenToPage, pageToScreen } from "@/lib/viewport"
 import { useCanvasViewport } from "@/hooks/useCanvasViewport"
 import { PAGE_FORMATS, resolvePageDimensions } from "@/lib/pageFormats"
+import RulerSvg from "@/components/RulerSvg"
 import { computeRotatedBounds } from "@/lib/pageRotation"
 import {
   parsePageElements,
@@ -371,7 +372,7 @@ function renderEl(el,sc=1/50,sx=1,sy=1){
   if(el.type==="doorD")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(200,160,80,.12)"stroke="#8b6f47"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#8b6f47"strokeWidth={.8}/></svg>
   if(el.type==="win")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(122,181,212,.25)"stroke="#4a90b8"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#4a90b8"strokeWidth={.8}/><line x1={0}y1={H/2}x2={W}y2={H/2}stroke="#4a90b8"strokeWidth={.8}/></svg>
   if(el.type==="spreadsheet")return<SpreadsheetPlacedStatic el={el} sx={sx} sy={sy}/>
-  if(el.type==="document")return renderDocPlaced(el,sx,sy)
+  if(el.type==="document")return<DocPlacedStatic el={el} sx={sx} sy={sy}/>
   return<div style={{width:W,height:H,background:"#ccc",border:"1px solid #999",fontSize:8,overflow:"hidden"}}>{el.l}</div>
 }
 
@@ -2846,7 +2847,7 @@ export default function EditorPage(){
                   style={{position:"absolute",left:0,top:0,width:22,height:28,cursor:rulerLocked?"not-allowed":rulerDrag?"grabbing":"grab",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:T.muted,borderRight:`1px solid ${T.border}`,userSelect:"none",touchAction:"none"}}>⠿</div>
                 <button type="button" onClick={e=>{e.stopPropagation();setRulerRotation(r=>r+90);try{localStorage.setItem(`forma_ruler_${nb.id}`,JSON.stringify({...rulerPosRef.current,rotation:(rulerRotation+90)%360,locked:rulerLocked}))}catch{}}} title="Rotation 90°" style={{position:"absolute",right:26,top:4,background:T.bg,border:`1px solid ${T.border}`,borderRadius:4,cursor:"pointer",fontSize:9,color:T.muted,padding:"1px 4px",zIndex:2}}>↻</button>
                 <button type="button" onClick={e=>{e.stopPropagation();setRulerLocked(v=>!v);try{localStorage.setItem(`forma_ruler_${nb.id}`,JSON.stringify({...rulerPosRef.current,rotation:rulerRotation,locked:!rulerLocked}))}catch{}}} title={rulerLocked?"Déverrouiller":"Verrouiller"} style={{position:"absolute",right:4,top:4,background:rulerLocked?`${T.accent}22`:T.bg,border:`1px solid ${rulerLocked?T.accent:T.border}`,borderRadius:4,cursor:"pointer",fontSize:9,color:rulerLocked?T.accent:T.muted,padding:"1px 4px",zIndex:2}}>{rulerLocked?"🔒":"🔓"}</button>
-                <svg width={Math.min(PW,1158)}height={24}style={{marginLeft:22,display:"block",pointerEvents:"none"}}>{Array.from({length:Math.ceil(Math.min(PW,1158)/10)},(_,i)=>{const x=i*10,big=i%10===0,med=i%5===0;return<g key={i}><line x1={x}y1={24}x2={x}y2={big?5:med?10:17}stroke={T.muted}strokeWidth={big?1:.5}/>{big&&<text x={x+2}y={8}fontSize={6}fill={T.muted}fontFamily="monospace">{i*(unitSys==="metric"?10:1)}{unitSys==="metric"?"mm":"\""}</text>}</g>})}</svg>
+                <RulerSvg widthPx={Math.min(PW, 1158)} unitSys={unitSys} scale={scale} zoom={zoom} strokeColor={T.muted} />
               </div>}
 
               {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={eraserActive?15:5}/>}

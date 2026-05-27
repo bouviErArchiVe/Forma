@@ -1,4 +1,4 @@
-import { convertDrawingScale } from '@/lib/units'
+import { convertDrawingScale, parseScaleFactor } from '@/lib/units'
 import { fmt, parseNum } from '@/lib/formulas/units'
 
 function ok(rows, summary) {
@@ -26,10 +26,9 @@ export function scaleRealToDrawing(v) {
   const toUnit = v.toUnit || 'mm'
   const scale = v.scale || '1:50'
   if (real == null) return { error: 'Longueur réelle requise (m).' }
-  const parts = String(scale).split(':').map(Number)
-  const factor = parts.length === 2 && parts[0] > 0 ? parts[0] / parts[1] : 1 / 50
+  const factor = parseScaleFactor(scale)
   const realMm = real * 1000
-  const drawMm = realMm * factor
+  const drawMm = realMm / factor
   const draw = toUnit === 'cm' ? drawMm / 10 : toUnit === 'm' ? drawMm / 1000 : drawMm
   return ok([
     { label: 'Réel', value: `${fmt(real)} m` },
@@ -41,9 +40,7 @@ export function scaleRealToDrawing(v) {
 
 export function scaleFactor(v) {
   const scale = v.scale || '1:50'
-  const parts = String(scale).split(':').map(Number)
-  if (parts.length !== 2 || parts[0] <= 0) return { error: 'Échelle invalide (ex. 1:50).' }
-  const factor = parts[1] / parts[0]
+  const factor = parseScaleFactor(scale)
   return ok([
     { label: 'Échelle', value: scale },
     { label: '1 unité plan → réel', value: `${fmt(factor)} unités` },
