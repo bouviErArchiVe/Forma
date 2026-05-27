@@ -17,6 +17,8 @@ import GlassPanel from "@/components/ui/GlassPanel"
 import ModalOverlay from "@/components/ui/ModalOverlay"
 import { glassStyle, rgbaFromHex } from "@/theme/glass"
 import { TOKENS } from "@/theme/tokens"
+import { serializePageElements, defaultPageMeta } from "@/lib/pageSettings"
+import { serializeCanvasData, DEFAULT_LAYERS, defaultActiveLayerId } from "@/lib/layers"
 
 const DEFAULT_SUBJECTS=[
   {id:"arch",    l:"Architecture",    c:"#c8622a",e:"🏛",custom:false},
@@ -463,7 +465,7 @@ function ThemePicker({ onClose }) {
 
 export default function LibraryPage() {
   const navigate = useNavigate()
-  const { setActiveNotebook, spotifyUrl, setSpotifyUrl } = useAppStore()
+  const { setActiveNotebook, spotifyUrl, setSpotifyUrl, addNotification } = useAppStore()
   const { T } = useTheme()
   const [showFocus, setShowFocus] = useState(false)
   const [showSpotify, setShowSpotify] = useState(false)
@@ -572,29 +574,59 @@ export default function LibraryPage() {
   }
 
   const create = async () => {
-    if (!newTitle.trim()) return; setSaving(true)
+    if (!newTitle.trim()) return
+    setSaving(true)
     const subj = subjects.find(s => s.id === newSubj)
     const now = new Date().toISOString()
+    const pageMeta = serializePageElements(defaultPageMeta(newTmpl))
+    const emptyCanvas = serializeCanvasData([], DEFAULT_LAYERS, defaultActiveLayerId())
     const localNb = {
       id: `local-${Date.now()}`,
-      title: newTitle, subject: newSubj, template: newTmpl,
-      pages_count: 1, starred: false, color: subj?.c || "#c8622a",
+      title: newTitle.trim(),
+      subject: newSubj,
+      template: newTmpl,
+      pages_count: 1,
+      starred: false,
+      color: subj?.c || "#c8622a",
       folder_id: newFolder === "none" ? null : newFolder,
-      created_at: now, updated_at: now
+      created_at: now,
+      updated_at: now,
     }
+
+    const finishCreate = (notebook) => {
+      setNotebooks(p => [notebook, ...p])
+      setShowNew(false)
+      setNewTitle("")
+      setNewTmpl("plan")
+      setNewSubj("arch")
+      setNewFolder("none")
+      addNotification(`Carnet « ${notebook.title} » créé`, "success")
+      open(notebook)
+    }
+
     try {
       if (userId) {
-        const {id:_, ...nbPayload} = localNb
-        const {data, error} = await supabase.from("notebooks").insert([{...nbPayload, user_id:userId}]).select().single()
+        const { id: _, ...nbPayload } = localNb
+        const { data, error } = await supabase.from("notebooks").insert([{ ...nbPayload, user_id: userId }]).select().single()
         if (error) throw error
-        setNotebooks(p => [data, ...p]); setShowNew(false); setNewTitle(""); open(data)
+
+        const { error: pageError } = await supabase.from("pages").insert([{
+          notebook_id: data.id,
+          page_number: 1,
+          user_id: userId,
+          elements: JSON.stringify(pageMeta),
+          canvas_data: emptyCanvas,
+        }])
+        if (pageError) throw pageError
+
+        finishCreate(data)
       } else {
-        setNotebooks(p => [localNb, ...p]); setShowNew(false); setNewTitle(""); open(localNb)
+        finishCreate(localNb)
       }
     } catch (err) {
       console.error("Notebook creation error:", err)
-      // Fallback: create locally even if Supabase failed
-      setNotebooks(p => [localNb, ...p]); setShowNew(false); setNewTitle(""); open(localNb)
+      addNotification(err?.message || "Impossible de créer le carnet en ligne — mode local utilisé", "error")
+      finishCreate(localNb)
     } finally {
       setSaving(false)
     }

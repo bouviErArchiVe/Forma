@@ -1,6 +1,7 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import LibraryPage from '@/pages/LibraryPage'
 import EditorPage from '@/pages/EditorPage'
 import AuthPage from '@/pages/AuthPage'
@@ -25,9 +26,9 @@ export default function App() {
       <Notifications />
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/" element={<ProtectedRoute><LibraryPage /></ProtectedRoute>} />
-        <Route path="/editor/:id" element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />
-        <Route path="/moodboard" element={<ProtectedRoute><MoodboardPage /></ProtectedRoute>} />
+        <Route path="/" element={<ProtectedRoute><ErrorBoundary title="Erreur bibliothèque"><LibraryPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/editor/:id" element={<ProtectedRoute><ErrorBoundary title="Erreur éditeur"><EditorPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/moodboard" element={<ProtectedRoute><ErrorBoundary title="Erreur moodboard"><MoodboardPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

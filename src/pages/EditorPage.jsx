@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
 import { THEMES } from "@/lib/themes"
@@ -29,11 +29,13 @@ import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from
 import { loadEraserSettings, saveEraserSettings, ERASER_MODES } from "@/lib/eraserSettings"
 import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/lib/canvasHitTest"
 import { screenToPage } from "@/lib/viewport"
+import { useCanvasViewport } from "@/hooks/useCanvasViewport"
 import { PAGE_FORMATS, resolvePageDimensions } from "@/lib/pageFormats"
 import {
   parsePageElements,
   serializePageElements,
   defaultGridStyle,
+  defaultPageMeta,
   GRID_STYLES,
   PAGE_COLORS,
   GRID_COLORS,
@@ -1331,10 +1333,18 @@ function ShareModal({T,nbId,nbTitle,onClose}){
 /* ══ MAIN EDITOR ══════════════════════════════════════ */
 export default function EditorPage(){
   const navigate=useNavigate()
+  const { id: routeNotebookId } = useParams()
   const{activeNotebook,updateNotebook,setTheme,canvasTextFont,setCanvasTextFont}=useAppStore()
   const{ T }=useTheme()
   useEffect(()=>{ensureCanvasTextFontsLoaded()},[])
   const nb=activeNotebook||{id:"1",title:"Carnet",subject:"arch",template:"plan",pages_count:1}
+
+  useEffect(()=>{
+    if(!routeNotebookId)return
+    if(!activeNotebook||activeNotebook.id!==routeNotebookId){
+      navigate("/",{replace:true})
+    }
+  },[routeNotebookId,activeNotebook,navigate])
   const cRef=useRef()
 
   const[tool,setTool]=useState("pen")
@@ -1519,7 +1529,19 @@ export default function EditorPage(){
     const load=async()=>{
       try{
         const{data:{session}}=await supabase.auth.getSession()
-        if(!session?.user)return
+        if(!session?.user){
+          const meta=defaultPageMeta(nb.template)
+          applyPageMetaToState(meta)
+          const initialMeta=serializePageElements(meta)
+          const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
+          setPages([{id:`local-${nb.id}-p1`,page_number:1,elements:JSON.stringify(initialMeta),canvas_data:emptyCanvas}])
+          setPageId(`local-${nb.id}-p1`)
+          const norm=normalizeCanvasData(emptyCanvas)
+          setLayers(norm.layers)
+          setActiveLayerId(norm.activeLayerId)
+          if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
+          return
+        }
         // Load current page
         const{data:pg}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).eq("page_number",page).single()
         if(pg){
@@ -1531,22 +1553,28 @@ export default function EditorPage(){
           const meta=parsePageElements(pg.elements,nb.template)
           applyPageMetaToState(meta)
         }else{
-          const{data:np}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:page,user_id:session.user.id}]).select().single()
+          const initialMeta=serializePageElements(defaultPageMeta(nb.template))
+          const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
+          const{data:np,error:insertErr}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:page,user_id:session.user.id,elements:JSON.stringify(initialMeta),canvas_data:emptyCanvas}]).select().single()
+          if(insertErr)throw insertErr
           if(np){
             setPageId(np.id)
-            const norm=normalizeCanvasData([])
+            const norm=normalizeCanvasData(emptyCanvas)
             setLayers(norm.layers)
             setActiveLayerId(norm.activeLayerId)
-            if(window.__loadStrokes)window.__loadStrokes([])
+            if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
+            applyPageMetaToState(parsePageElements(initialMeta,nb.template))
           }
         }
         // Load all pages for thumbnails
         const{data:allPgs}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).order("page_number")
         setPages(allPgs||[])
-      }catch{}
+      }catch(err){
+        console.error("Editor page load error:",err)
+      }
     }
     load()
-  },[nb.id,page,applyPageMetaToState])
+  },[nb.id,nb.template,page,applyPageMetaToState])
 
   // Add new page
   const addPage=async()=>{
