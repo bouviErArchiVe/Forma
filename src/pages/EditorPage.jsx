@@ -23,6 +23,7 @@ import PageContextMenu from "@/components/PageContextMenu"
 import EditorTopBar from "@/components/EditorTopBar"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
 import UnitConverter from "@/components/UnitConverter"
+import { useCalculator, calcDrawerWidth } from "@/hooks/useCalculator"
 import BrandLogo, { ThemePreviewThumb } from "@/components/BrandLogo"
 import { useTheme } from "@/hooks/useAppearance"
 import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from "@/lib/favorites"
@@ -1404,9 +1405,7 @@ export default function EditorPage(){
   const[showCalc,setShowCalc]=useState(false)
   const[showTimer,setShowTimer]=useState(false)
   const[showConv,setShowConv]=useState(false)
-  const[calcDisplay,setCalcDisplay]=useState("0")
-  const[calcHistory,setCalcHistory]=useState([])
-  const[calcCompact,setCalcCompact]=useState(false)
+  const calc=useCalculator()
   const[convValue,setConvValue]=useState("")
   const[convCategory,setConvCategory]=useState("length")
   const[convFromUnit,setConvFromUnit]=useState("mm")
@@ -1948,7 +1947,7 @@ export default function EditorPage(){
   const SCALES_M=["1:1","1:2","1:5","1:10","1:20","1:50","1:100","1:200","1:500","1:1000"]
   const SCALES_I=['1/4"=1\'','3/16"=1\'','1/8"=1\'','3/32"=1\'','1"=10\'','1"=20\'','1"=40\'','1"=100\'']
   const COLLAB_COLORS=["#e94560","#2196f3","#4ade80","#f5a623","#a855f7","#00bcd4"]
-  const calcDrawerW=showCalc?(calcCompact?320:420):0
+  const calcDrawerW=calcDrawerWidth(calc.calcMode,calc.layout,showCalc)
   const toolbarPad=useMemo(()=>({
     paddingTop:!focusMode&&toolbarDock==="top"?36:0,
     paddingBottom:!focusMode&&toolbarDock==="bottom"?36:0,
@@ -1988,12 +1987,9 @@ export default function EditorPage(){
           T={T}
           open={showCalc}
           onClose={()=>setShowCalc(false)}
-          compact={calcCompact}
-          setCompact={setCalcCompact}
-          display={calcDisplay}
-          setDisplay={setCalcDisplay}
-          history={calcHistory}
-          setHistory={setCalcHistory}
+          stackOffset={0}
+          scale={scale}
+          {...calc}
         />
       )}
       {!focusMode&&(

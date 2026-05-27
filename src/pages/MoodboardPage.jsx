@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '@/hooks/useAppearance'
 import useMoodboardStore from '@/stores/useMoodboardStore'
+import CalculatorDrawer from '@/components/CalculatorDrawer'
+import { useCalculator } from '@/hooks/useCalculator'
 
 const EMOJIS = ['🌅','🎨','🏛','🌿','🌊','🔥','💎','🌙','⭐','🎭','🏙','🌸','🦋','🪨','🌈','🎯','📐','✏','🖼','🗺']
 const mkId = () => Date.now().toString() + Math.random().toString(36).slice(2,6)
@@ -143,6 +145,8 @@ export default function MoodboardPage() {
   const [showUrlInput, setShowUrlInput] = useState(false)
   const [urlVal, setUrlVal] = useState('')
   const [showAddMenu, setShowAddMenu] = useState(false)
+  const [showCalc, setShowCalc] = useState(false)
+  const calc = useCalculator()
   const fileInputRef = useRef()
   const addMenuRef = useRef()
   const sW = collapsed ? 52 : 240
@@ -227,6 +231,15 @@ export default function MoodboardPage() {
   return (
     <div className="forma-page-shell" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
 
+      <CalculatorDrawer
+        T={T}
+        open={showCalc}
+        onClose={() => setShowCalc(false)}
+        stackOffset={0}
+        scale="1:50"
+        {...calc}
+      />
+
       {/* SIDEBAR */}
       <div style={SB}>
         <div style={{ padding: collapsed ? '14px 10px' : '14px 12px', borderBottom: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
@@ -297,6 +310,10 @@ export default function MoodboardPage() {
                 style={{ padding: '6px 12px', border: 'none', background: mode === m ? `${T.accent}22` : 'transparent', color: mode === m ? T.accent : T.muted, cursor: 'pointer', fontSize: 11, fontWeight: mode === m ? 700 : 400, transition: 'all .15s' }}>{l}</button>
             ))}
           </div>
+          <button type="button" onClick={() => setShowCalc(v => !v)} title="Calculatrice"
+            style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${showCalc ? T.accent : T.border}`, background: showCalc ? `${T.accent}18` : 'transparent', color: showCalc ? T.accent : T.ink, cursor: 'pointer', fontSize: 14, flexShrink: 0 }}>
+            🧮
+          </button>
           {activeId && (
             <div ref={addMenuRef} style={{ position: 'relative', flexShrink: 0 }}>
               <button onClick={() => setShowAddMenu(v => !v)}

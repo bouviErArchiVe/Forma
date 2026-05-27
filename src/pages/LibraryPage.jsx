@@ -10,6 +10,7 @@ import { APPEARANCE_MODES, applyAppearanceToTheme } from "@/lib/appearance"
 import { optionCardStyle, optionChipStyle, optionPanelStyle } from "@/config/appearance"
 import UnitConverter from "@/components/UnitConverter"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
+import { useCalculator } from "@/hooks/useCalculator"
 import BrandLogo, { ThemePreviewThumb } from "@/components/BrandLogo"
 import { useTheme } from "@/hooks/useAppearance"
 import GlassButton from "@/components/ui/GlassButton"
@@ -487,11 +488,9 @@ export default function LibraryPage() {
 
   const [showCalc, setShowCalc] = useState(false)
   const [showConverter, setShowConverter] = useState(false)
-  const [calcCompact, setCalcCompact] = useState(true)
   const [showProfile, setShowProfile] = useState(false)
   const [editName, setEditName] = useState("")
-  const [calcDisplay, setCalcDisplay] = useState("0")
-  const [calcHistory, setCalcHistory] = useState([])
+  const calc = useCalculator()
   const [convValue, setConvValue] = useState("")
   const [convCategory, setConvCategory] = useState("length")
   const [convFrom, setConvFrom] = useState("m")
@@ -733,12 +732,9 @@ export default function LibraryPage() {
         T={T}
         open={showCalc}
         onClose={() => setShowCalc(false)}
-        compact={calcCompact}
-        setCompact={setCalcCompact}
-        display={calcDisplay}
-        setDisplay={setCalcDisplay}
-        history={calcHistory}
-        setHistory={setCalcHistory}
+        stackOffset={0}
+        scale="1:50"
+        {...calc}
       />
 
       {/* CONVERTER PANEL */}
