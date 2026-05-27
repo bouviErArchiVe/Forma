@@ -1,3 +1,5 @@
+import { estimateNotebookBytes } from '@/lib/folders/stats'
+
 export const LIBRARY_VIEWS = [
   { id: 'grid', label: 'Grille', icon: '⊞' },
   { id: 'list', label: 'Liste', icon: '☰' },
@@ -9,6 +11,7 @@ export const LIBRARY_SORTS = [
   { id: 'created', label: 'Date création' },
   { id: 'name', label: 'Nom A→Z' },
   { id: 'subject', label: 'Matière' },
+  { id: 'size', label: 'Taille' },
 ]
 
 export function sortNotebooks(notebooks, sortId, subjects = []) {
@@ -22,6 +25,8 @@ export function sortNotebooks(notebooks, sortId, subjects = []) {
       )
     case 'name':
       return list.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'fr', { sensitivity: 'base' }))
+    case 'size':
+      return list.sort((a, b) => estimateNotebookBytes(b) - estimateNotebookBytes(a))
     case 'subject':
       return list.sort((a, b) => {
         const cmp = subjectLabel(a.subject).localeCompare(subjectLabel(b.subject), 'fr', { sensitivity: 'base' })

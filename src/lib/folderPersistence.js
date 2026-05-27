@@ -1,6 +1,7 @@
 /** Persistance des dossiers bibliothèque — localStorage + Supabase (backup). */
 
 import { supabase } from '@/lib/supabase'
+import { deleteFolderBranch, duplicateFolderBranch, reparentOnDelete, getFolderDescendantIds, canMoveFolder } from '@/lib/folders/tree'
 
 const STORAGE_KEY = 'forma_library_folders_v1'
 
@@ -21,6 +22,9 @@ export function normalizeFolder(raw, ownerId = null) {
     n: name,
     e: icon,
     color: raw.color || '#3d6b8c',
+    parentId: raw.parentId ?? raw.parent_id ?? null,
+    sortOrder: typeof raw.sortOrder === 'number' ? raw.sortOrder : (raw.sort_order ?? 0),
+    lastOpenedAt: raw.lastOpenedAt ?? raw.last_opened_at ?? null,
     ownerId: raw.ownerId ?? raw.owner_id ?? ownerId ?? null,
     projectIds: Array.isArray(raw.projectIds) ? raw.projectIds : (Array.isArray(raw.project_ids) ? raw.project_ids : []),
     createdAt: raw.createdAt || raw.created_at || now,
@@ -34,6 +38,9 @@ function fromRow(row) {
     name: row.name,
     icon: row.icon,
     color: row.color,
+    parentId: row.parent_id,
+    sortOrder: row.sort_order,
+    lastOpenedAt: row.last_opened_at,
     ownerId: row.user_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -47,6 +54,9 @@ function toRow(folder, userId) {
     name: folder.name,
     icon: folder.icon,
     color: folder.color,
+    parent_id: folder.parentId || null,
+    sort_order: folder.sortOrder ?? 0,
+    last_opened_at: folder.lastOpenedAt || null,
     created_at: folder.createdAt,
     updated_at: folder.updatedAt,
   }
@@ -70,10 +80,13 @@ function writeStore(store) {
   }
 }
 
+function migrateFolderList(list, ownerId) {
+  return (Array.isArray(list) ? list : []).map((f) => normalizeFolder(f, ownerId)).filter(Boolean)
+}
+
 export function loadLocalFolders(userId) {
   const store = readStore()
-  const list = store[scopeKey(userId)] || []
-  return (Array.isArray(list) ? list : []).map((f) => normalizeFolder(f, userId)).filter(Boolean)
+  return migrateFolderList(store[scopeKey(userId)] || [], userId)
 }
 
 export function saveLocalFolders(userId, folders) {
@@ -82,7 +95,6 @@ export function saveLocalFolders(userId, folders) {
   return writeStore(store)
 }
 
-/** Charge immédiatement depuis localStorage (guest + user si connecté). */
 export function loadLocalFoldersForScope(userId) {
   const guest = loadLocalFolders(null)
   if (!userId) return guest
@@ -99,7 +111,6 @@ export async function resolveFolderUserId() {
   }
 }
 
-/** Fusionne les dossiers créés hors-ligne (_guest) vers le compte connecté. */
 export function migrateGuestFoldersToUser(userId) {
   if (!userId) return loadLocalFolders(userId)
   const guest = loadLocalFolders(null)
@@ -118,12 +129,32 @@ function mergeFolders(local, cloud, userId) {
     const prev = byId.get(f.id)
     if (!prev || new Date(f.updatedAt) >= new Date(prev.updatedAt)) byId.set(f.id, f)
   }
-  return [...byId.values()].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+  return [...byId.values()].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || new Date(b.updatedAt) - new Date(a.updatedAt))
 }
 
 function isMissingTableError(error) {
   const msg = `${error?.code || ''} ${error?.message || ''}`.toLowerCase()
-  return msg.includes('does not exist') || msg.includes('42p01') || msg.includes('library_folders')
+  return msg.includes('does not exist') || msg.includes('42p01') || msg.includes('library_folders') || msg.includes('column')
+}
+
+async function syncFoldersCloud(ownerId, folders) {
+  if (!ownerId) return { cloudOk: false }
+  try {
+    const { error } = await supabase.from('library_folders').upsert(folders.map((f) => toRow(f, ownerId)))
+    if (error) throw error
+    return { cloudOk: true }
+  } catch (err) {
+    if (isMissingTableError(err)) return { cloudOk: false, warning: 'Sync cloud partielle (schéma)' }
+    return { cloudOk: false, warning: err?.message }
+  }
+}
+
+async function persistAll(ownerId, folders) {
+  const normalized = folders.map((f) => normalizeFolder(f, ownerId))
+  const localOk = saveLocalFolders(ownerId, normalized)
+  if (!localOk) return { ok: false, folders: normalized, error: 'Impossible de sauvegarder localement' }
+  const cloud = await syncFoldersCloud(ownerId, normalized)
+  return { ok: true, folders: normalized, ...cloud }
 }
 
 export async function loadFolders(userId) {
@@ -135,6 +166,7 @@ export async function loadFolders(userId) {
       .from('library_folders')
       .select('*')
       .eq('user_id', userId)
+      .order('sort_order', { ascending: true })
       .order('updated_at', { ascending: false })
 
     if (error) {
@@ -156,7 +188,7 @@ export async function loadFolders(userId) {
   }
 }
 
-export async function persistFolderCreate(userId, { name, icon, color = '#3d6b8c' }) {
+export async function persistFolderCreate(userId, { name, icon, color = '#3d6b8c', parentId = null, sortOrder = 0 }) {
   const ownerId = userId ?? await resolveFolderUserId()
   const now = new Date().toISOString()
   const folder = normalizeFolder({
@@ -164,54 +196,41 @@ export async function persistFolderCreate(userId, { name, icon, color = '#3d6b8c
     name: name.trim(),
     icon: icon || '📁',
     color,
+    parentId: parentId || null,
+    sortOrder,
     ownerId,
     createdAt: now,
     updatedAt: now,
   }, ownerId)
 
   const folders = [folder, ...loadLocalFoldersForScope(ownerId).filter((f) => f.id !== folder.id)]
-  const localOk = saveLocalFolders(ownerId, folders)
-  if (!localOk) {
-    return { ok: false, folder: null, folders, error: 'Impossible de sauvegarder localement' }
-  }
-
-  if (!ownerId) {
-    return { ok: true, folder, folders, cloudOk: false }
-  }
-
-  try {
-    const { error } = await supabase.from('library_folders').upsert(toRow(folder, ownerId))
-    if (error) throw error
-    return { ok: true, folder, folders, cloudOk: true }
-  } catch (err) {
-    if (isMissingTableError(err)) {
-      return { ok: true, folder, folders, cloudOk: false, warning: 'Sauvegarde locale uniquement (table Supabase absente)' }
-    }
-    return { ok: true, folder, folders, cloudOk: false, warning: err?.message || 'Sync cloud échouée — copie locale conservée' }
-  }
+  const res = await persistAll(ownerId, folders)
+  return { ...res, folder }
 }
 
-export async function persistFolderDelete(userId, folderId) {
+export async function persistFolderDelete(userId, folderId, { reparentChildren = true } = {}) {
   const ownerId = userId ?? await resolveFolderUserId()
-  const folders = loadLocalFoldersForScope(ownerId).filter((f) => f.id !== folderId)
-  const localOk = saveLocalFolders(ownerId, folders)
-  if (!localOk) {
-    return { ok: false, folders, error: 'Impossible de sauvegarder localement' }
+  let folders = loadLocalFoldersForScope(ownerId)
+  const removeIds = reparentChildren
+    ? [folderId]
+    : [folderId, ...getFolderDescendantIds(folders, folderId)]
+
+  if (reparentChildren) {
+    folders = reparentOnDelete(folders, folderId)
+  } else {
+    folders = deleteFolderBranch(folders, folderId).remaining
   }
 
-  if (!ownerId) return { ok: true, folders, cloudOk: false }
-
-  try {
-    const { error } = await supabase.from('library_folders').delete().eq('id', folderId).eq('user_id', ownerId)
-    if (error) throw error
-    return { ok: true, folders, cloudOk: true }
-  } catch (err) {
-    if (isMissingTableError(err)) return { ok: true, folders, cloudOk: false }
-    return { ok: true, folders, cloudOk: false, warning: err?.message }
+  const res = await persistAll(ownerId, folders)
+  if (ownerId && res.ok) {
+    try {
+      await supabase.from('library_folders').delete().in('id', removeIds).eq('user_id', ownerId)
+    } catch { /* local ok */ }
   }
+  return res
 }
 
-export async function persistFolderUpdate(userId, folderId, { name, icon, color } = {}) {
+export async function persistFolderUpdate(userId, folderId, patch = {}) {
   const ownerId = userId ?? await resolveFolderUserId()
   const existing = loadLocalFoldersForScope(ownerId).find((f) => f.id === folderId)
   if (!existing) {
@@ -222,29 +241,59 @@ export async function persistFolderUpdate(userId, folderId, { name, icon, color 
     f.id === folderId
       ? normalizeFolder({
           ...f,
-          name: name != null ? name.trim() : f.name,
-          icon: icon != null ? icon : f.icon,
-          color: color != null ? color : f.color,
+          ...patch,
+          name: patch.name != null ? patch.name.trim() : f.name,
+          icon: patch.icon != null ? patch.icon : f.icon,
+          color: patch.color != null ? patch.color : f.color,
+          parentId: patch.parentId !== undefined ? patch.parentId : f.parentId,
+          sortOrder: patch.sortOrder !== undefined ? patch.sortOrder : f.sortOrder,
+          lastOpenedAt: patch.lastOpenedAt !== undefined ? patch.lastOpenedAt : f.lastOpenedAt,
           updatedAt: new Date().toISOString(),
         }, ownerId)
       : f
   ))
-  const localOk = saveLocalFolders(ownerId, folders)
-  if (!localOk) return { ok: false, folders, error: 'Impossible de sauvegarder localement' }
+  return persistAll(ownerId, folders)
+}
 
-  const folder = folders.find((f) => f.id === folderId)
-  if (!ownerId || !folder) return { ok: true, folders, cloudOk: false }
-
-  try {
-    const { error } = await supabase.from('library_folders').upsert(toRow(folder, ownerId))
-    if (error) throw error
-    return { ok: true, folders, cloudOk: true }
-  } catch (err) {
-    if (isMissingTableError(err)) {
-      return { ok: true, folders, cloudOk: false, warning: 'Sauvegarde locale uniquement (table Supabase absente)' }
-    }
-    return { ok: true, folders, cloudOk: false, warning: err?.message || 'Sync cloud échouée — copie locale conservée' }
+export async function persistFolderMove(userId, folderId, newParentId, sortOrder) {
+  const ownerId = userId ?? await resolveFolderUserId()
+  const folders = loadLocalFoldersForScope(ownerId)
+  if (!canMoveFolder(folders, folderId, newParentId)) {
+    return { ok: false, folders, error: 'Déplacement impossible (cycle ou dossier invalide)' }
   }
+  const next = folders.map((f) => {
+    if (f.id !== folderId) return f
+    return normalizeFolder({
+      ...f,
+      parentId: newParentId || null,
+      sortOrder: typeof sortOrder === 'number' ? sortOrder : f.sortOrder,
+      updatedAt: new Date().toISOString(),
+    }, ownerId)
+  })
+  return persistAll(ownerId, next)
+}
+
+export async function persistFolderDuplicate(userId, folderId) {
+  const ownerId = userId ?? await resolveFolderUserId()
+  const folders = loadLocalFoldersForScope(ownerId)
+  const { folders: next } = duplicateFolderBranch(folders, folderId)
+  return persistAll(ownerId, next)
+}
+
+export async function persistFolderOpen(userId, folderId) {
+  return persistFolderUpdate(userId, folderId, { lastOpenedAt: new Date().toISOString() })
+}
+
+export async function persistFoldersReorder(userId, orderedIds, parentId = null) {
+  const ownerId = userId ?? await resolveFolderUserId()
+  const folders = loadLocalFoldersForScope(ownerId)
+  const now = new Date().toISOString()
+  const orderMap = new Map(orderedIds.map((id, i) => [id, i]))
+  const next = folders.map((f) => {
+    if ((f.parentId || null) !== (parentId || null) || !orderMap.has(f.id)) return f
+    return { ...f, sortOrder: orderMap.get(f.id), updatedAt: now }
+  })
+  return persistAll(ownerId, next)
 }
 
 /** @deprecated use persistFolderUpdate */
@@ -264,9 +313,7 @@ export async function syncFoldersToCloud(userId) {
   }
 
   try {
-    const { error } = await supabase
-      .from('library_folders')
-      .upsert(folders.map((f) => toRow(f, ownerId)))
+    const { error } = await supabase.from('library_folders').upsert(folders.map((f) => toRow(f, ownerId)))
     if (error) throw error
     saveLocalFolders(ownerId, folders)
     return { ok: true, folders, cloudOk: true }

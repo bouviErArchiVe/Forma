@@ -48,6 +48,8 @@ import {
   syncFoldersToCloud,
   resolveFolderUserId,
 } from "@/lib/folderPersistence"
+import { getFolderDescendantIds } from "@/lib/folders/tree"
+import FolderExplorer from "@/components/folders/FolderExplorer"
 
 const FOLDER_EMOJIS = ["📁","📂","🏗","🏛","📐","⚙","🎨","📚","🌿","🔥","⭐","💡","🎯","🏆","🔬","🌍","🏠","🚀","💎","🗂"]
 
@@ -532,6 +534,7 @@ export default function LibraryPage() {
   const [folderName, setFolderName] = useState("")
   const [folderEmoji, setFolderEmoji] = useState("📁")
   const [folderColor, setFolderColor] = useState("#3d6b8c")
+  const [newFolderParentId, setNewFolderParentId] = useState(null)
 
   // Edit folder
   const [showEditFolder, setShowEditFolder] = useState(false)
@@ -620,10 +623,14 @@ export default function LibraryPage() {
   const filtered = useMemo(() => notebooks.filter(n => {
     const ms = n.title.toLowerCase().includes(search.toLowerCase())
     const msj = subjFilt === "all" || n.subject === subjFilt
-    const mf = folderFilt === "all" || (folderFilt === "none" ? !n.folder_id : n.folder_id === folderFilt)
+    const mf = folderFilt === "all"
+      || (folderFilt === "none" ? !n.folder_id : (
+        n.folder_id === folderFilt
+        || getFolderDescendantIds(folders, folderFilt).includes(n.folder_id)
+      ))
     const mstar = activeTab !== "favorites" || n.starred
     return ms && msj && mf && mstar
-  }), [notebooks, search, subjFilt, folderFilt, activeTab])
+  }), [notebooks, search, subjFilt, folderFilt, activeTab, folders])
 
   const sortedFiltered = useMemo(
     () => sortNotebooks(filtered, librarySort, subjects),
@@ -843,12 +850,18 @@ export default function LibraryPage() {
     if (!folderName.trim()) return
     const uid = userId || await resolveFolderUserId()
     if (uid && uid !== userId) setUserId(uid)
-    const res = await persistFolderCreate(uid, { name: folderName.trim(), icon: folderEmoji, color: folderColor })
+    const res = await persistFolderCreate(uid, {
+      name: folderName.trim(),
+      icon: folderEmoji,
+      color: folderColor,
+      parentId: newFolderParentId,
+    })
     if (!notifyFolderResult(res, "Dossier créé")) return
     setShowNewFolder(false)
     setFolderName("")
     setFolderEmoji("📁")
     setFolderColor("#3d6b8c")
+    setNewFolderParentId(null)
   }
 
   const openEditFolder = (folder) => {
@@ -895,6 +908,8 @@ export default function LibraryPage() {
   }
 
   const removeFolder = async (folderId) => {
+    const target = folders.find((f) => f.id === folderId)
+    const parentId = target?.parentId || null
     const res = await persistFolderDelete(userId, folderId)
     if (!res.ok) {
       addNotification(res.error || "Erreur de suppression du dossier", "error")
@@ -903,7 +918,7 @@ export default function LibraryPage() {
     setFolders(res.folders)
     const affected = notebooks.filter((n) => n.folder_id === folderId)
     const nextNotebooks = notebooks.map((n) => (
-      n.folder_id === folderId ? { ...n, folder_id: null, updated_at: new Date().toISOString() } : n
+      n.folder_id === folderId ? { ...n, folder_id: parentId, updated_at: new Date().toISOString() } : n
     ))
     setNotebooks(nextNotebooks)
     affected.forEach((nb) => {
@@ -1423,73 +1438,24 @@ export default function LibraryPage() {
 
           {/* DOSSIERS */}
           {activeTab === "folders" && (
-            <div>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
-                <div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:17,color:T.ink}}>📁 Dossiers de projets</div>
-                  <div style={{fontSize:10,color:T.muted,marginTop:4}}>
-                    {userId
-                      ? (foldersCloudOk ? "☁ Sync cloud active" : "💾 Sauvegarde locale — sync cloud indisponible")
-                      : "💾 Sauvegarde locale (connectez-vous pour le cloud)"}
-                  </div>
-                </div>
-                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  {userId && (
-                    <button onClick={syncFolders} disabled={syncingFolders}
-                      style={{padding:"7px 14px",borderRadius:8,background:T.surface,border:`1px solid ${T.border}`,color:T.ink,fontSize:12,fontWeight:600,cursor:syncingFolders?"wait":"pointer"}}>
-                      {syncingFolders ? "Sync…" : "☁ Synchroniser"}
-                    </button>
-                  )}
-                  <button onClick={() => setShowNewFolder(true)} style={{padding:"7px 14px",borderRadius:8,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer"}}>+ Nouveau dossier</button>
-                </div>
-              </div>
-              {folders.length === 0 && (
-                <div style={{textAlign:"center",padding:"40px 0",color:T.muted}}>
-                  <div style={{fontSize:40,marginBottom:10}}>📁</div>
-                  <div style={{fontSize:14,marginBottom:16}}>Aucun dossier pour l'instant</div>
-                  <button onClick={() => setShowNewFolder(true)} style={{padding:"10px 20px",borderRadius:10,background:T.accent,border:"none",color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}}>Créer mon premier dossier</button>
-                </div>
-              )}
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:11,marginBottom:24}}>
-                <div onClick={() => {setFolderFilt("all"); setActiveTab("notebooks")}}
-                  style={{padding:"16px 18px",borderRadius:13,background:T.surface,border:`1px solid ${T.border}`,cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"all .2s"}}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = T.accent + "66"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
-                  <div style={{fontSize:28}}>📚</div>
-                  <div>
-                    <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:T.ink}}>Tous les carnets</div>
-                    <div style={{fontSize:10,color:T.muted}}>{notebooks.length} carnets</div>
-                  </div>
-                </div>
-                <div onClick={() => {setFolderFilt("none"); setActiveTab("notebooks")}}
-                  style={{padding:"16px 18px",borderRadius:13,background:T.surface,border:`1px solid ${T.border}`,cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"all .2s"}}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = T.accent + "66"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
-                  <div style={{fontSize:28}}>📝</div>
-                  <div>
-                    <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:T.ink}}>Sans dossier</div>
-                    <div style={{fontSize:10,color:T.muted}}>{notebooks.filter(n => !n.folder_id).length} carnets</div>
-                  </div>
-                </div>
-                {folders.map(f => (
-                  <div key={f.id}
-                    onClick={() => {setFolderFilt(f.id); setActiveTab("notebooks")}}
-                    style={{padding:"16px 18px",borderRadius:13,background:`${f.color || "#3d6b8c"}10`,border:`1px solid ${folderFilt === f.id ? (f.color || T.accent) : T.border}`,cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"all .2s",position:"relative"}}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = (f.color || T.accent) + "88"}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = folderFilt === f.id ? (f.color || T.accent) : T.border}>
-                    <div style={{fontSize:28,width:36,height:36,borderRadius:10,background:`${f.color || "#3d6b8c"}22`,display:"flex",alignItems:"center",justifyContent:"center"}}>{f.e}</div>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:T.ink,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{f.n}</div>
-                      <div style={{fontSize:10,color:T.muted}}>{notebooks.filter(n => n.folder_id === f.id).length} carnets</div>
-                    </div>
-                    <button onClick={e => {e.stopPropagation(); openEditFolder(f)}} title="Modifier"
-                      style={{position:"absolute",top:6,right:28,background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,color:T.muted,cursor:"pointer",fontSize:10,padding:"2px 6px",opacity:.85}}>✏</button>
-                    <button onClick={e => {e.stopPropagation(); if (confirm(`Supprimer le dossier « ${f.n} » ? Les carnets ne seront pas supprimés.`)) removeFolder(f.id)}}
-                      style={{position:"absolute",top:6,right:6,background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:11,opacity:.5}}>×</button>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <FolderExplorer
+              T={T}
+              folders={folders}
+              setFolders={setFolders}
+              notebooks={notebooks}
+              setNotebooks={setNotebooks}
+              subjects={subjects}
+              userId={userId}
+              foldersCloudOk={foldersCloudOk}
+              syncingFolders={syncingFolders}
+              onSyncFolders={syncFolders}
+              onCreateFolder={(parentId) => { setNewFolderParentId(parentId || null); setShowNewFolder(true) }}
+              onEditFolder={openEditFolder}
+              onAssignNotebooks={assignFolderBatch}
+              onOpenNotebook={(nb) => { setActiveNotebook(nb); navigate(`/editor/${nb.id}`) }}
+              renderNotebook={renderNotebook}
+              addNotification={addNotification}
+            />
           )}
 
           {/* MATIÈRES */}

@@ -37,6 +37,15 @@ const useAppStore = create(
       librarySort: 'updated',
       setLibrarySort: (librarySort) => set({ librarySort }),
 
+      folderView: 'grid',
+      setFolderView: (folderView) => set({ folderView: ['grid', 'list', 'details'].includes(folderView) ? folderView : 'grid' }),
+      folderSort: 'updated',
+      setFolderSort: (folderSort) => set({ folderSort: ['updated', 'created', 'name', 'type', 'size', 'manual'].includes(folderSort) ? folderSort : 'updated' }),
+      folderIconSize: 64,
+      setFolderIconSize: (folderIconSize) => set({ folderIconSize: [48, 64, 80, 96].includes(folderIconSize) ? folderIconSize : 64 }),
+      folderContentFilter: 'all',
+      setFolderContentFilter: (folderContentFilter) => set({ folderContentFilter: ['all', 'folders', 'notebooks'].includes(folderContentFilter) ? folderContentFilter : 'all' }),
+
       pendingFormulaNote: null,
       setPendingFormulaNote: (pendingFormulaNote) => set({ pendingFormulaNote }),
 
@@ -244,6 +253,10 @@ const useAppStore = create(
         canvasTextFont: state.canvasTextFont,
         libraryView: state.libraryView,
         librarySort: state.librarySort,
+        folderView: state.folderView,
+        folderSort: state.folderSort,
+        folderIconSize: state.folderIconSize,
+        folderContentFilter: state.folderContentFilter,
         appearanceMode: state.appearanceMode,
         unitSystem: state.unitSystem,
         scale: state.scale,
