@@ -4,14 +4,15 @@ import { TOKENS } from '@/theme/tokens'
 
 const TOP_BAR = 46
 const BOTTOM_BAR = 32
-const SNAP = 48
+const SNAP = 52
+const MIN_FLOAT_W = 180
 
-function loadLayout(id, defaultSide = 'right') {
+function loadLayout(id, defaultSide = 'right', width = 260) {
   try {
     const raw = JSON.parse(localStorage.getItem(`forma_panel_${id}`) || 'null')
-    if (raw) return raw
+    if (raw) return { w: width, ...raw }
   } catch { /* ignore */ }
-  return { mode: defaultSide, x: 16, y: TOP_BAR + 8, w: 260 }
+  return { mode: defaultSide, x: 16, y: TOP_BAR + 8, w: width }
 }
 
 function saveLayout(id, layout) {
@@ -40,12 +41,23 @@ function dockStyle(mode, width, panelHeight) {
       return {
         position: 'fixed',
         width,
-        height: panelHeight || Math.min(h * 0.7, h - 16),
+        height: panelHeight || Math.min(h * 0.72, h - 24),
         zIndex: TOKENS.zIndex.float + 1,
       }
   }
 }
 
+function detectDock(clientX, clientY) {
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+  if (clientX < SNAP) return 'left'
+  if (clientX > vw - SNAP) return 'right'
+  if (clientY < TOP_BAR + SNAP) return 'top'
+  if (clientY > vh - BOTTOM_BAR - SNAP) return 'bottom'
+  return 'float'
+}
+
+/** Panneau dockable / flottant réutilisable (SketchUp-like). */
 export default function DraggablePanel({
   T,
   id,
@@ -57,65 +69,117 @@ export default function DraggablePanel({
   defaultSide = 'right',
   children,
   headerExtra,
+  collapsed,
+  onExpand,
+  collapsedPreview,
+  resizable = true,
+  zIndexOffset = 0,
 }) {
-  const [layout, setLayout] = useState(() => loadLayout(id, defaultSide))
+  const [layout, setLayout] = useState(() => loadLayout(id, defaultSide, width))
   const [dragging, setDragging] = useState(false)
   const dragRef = useRef(null)
+  const layoutRef = useRef(layout)
+  layoutRef.current = layout
 
-  useEffect(() => {
-    if (open) saveLayout(id, layout)
-  }, [id, layout, open])
+  const persistLayout = useCallback((next) => {
+    setLayout(next)
+    saveLayout(id, next)
+  }, [id])
 
   const startDrag = useCallback((e) => {
     e.preventDefault()
     e.stopPropagation()
-    const rect = e.currentTarget.closest('[data-forma-panel]')?.getBoundingClientRect()
+    const panel = e.currentTarget.closest('[data-forma-panel]')
+    const rect = panel?.getBoundingClientRect()
     if (!rect) return
+    e.currentTarget.setPointerCapture?.(e.pointerId)
     dragRef.current = { ox: e.clientX - rect.left, oy: e.clientY - rect.top }
-    setLayout((l) => ({ ...l, mode: 'float', x: rect.left, y: rect.top }))
+    if (layoutRef.current.mode !== 'float') {
+      persistLayout({ ...layoutRef.current, mode: 'float', x: rect.left, y: rect.top })
+    }
     setDragging(true)
-  }, [])
+  }, [persistLayout])
 
   useEffect(() => {
     if (!dragging) return
     const onMove = (e) => {
       const vw = window.innerWidth
       const vh = window.innerHeight
-      const w = layout.w || width
-      setLayout((cur) => ({
-        ...cur,
+      const w = layoutRef.current.w || width
+      const h = layoutRef.current.h || height || 320
+      persistLayout({
+        ...layoutRef.current,
         mode: 'float',
         x: clamp(e.clientX - dragRef.current.ox, 4, vw - w - 4),
-        y: clamp(e.clientY - dragRef.current.oy, TOP_BAR, vh - BOTTOM_BAR - 120),
-      }))
+        y: clamp(e.clientY - dragRef.current.oy, TOP_BAR + 2, vh - BOTTOM_BAR - Math.min(h, 80) - 4),
+      })
     }
     const onUp = (e) => {
       setDragging(false)
       dragRef.current = null
-      const vw = window.innerWidth
-      const vh = window.innerHeight
-      let mode = 'float'
-      if (e.clientX < SNAP) mode = 'left'
-      else if (e.clientX > vw - SNAP) mode = 'right'
-      else if (e.clientY < TOP_BAR + SNAP) mode = 'top'
-      else if (e.clientY > vh - BOTTOM_BAR - SNAP) mode = 'bottom'
-      setLayout((cur) => ({ ...cur, mode, w: width }))
+      const dock = detectDock(e.clientX, e.clientY)
+      const cur = layoutRef.current
+      if (dock === 'float') persistLayout({ ...cur, mode: 'float' })
+      else persistLayout({ ...cur, mode: dock, w: width })
     }
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
     return () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
     }
-  }, [dragging, width, layout.w])
+  }, [dragging, width, height, persistLayout])
+
+  const startResize = useCallback((e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const startW = layoutRef.current.w || width
+    const startX = e.clientX
+    const onMove = (ev) => {
+      const vw = window.innerWidth
+      const nextW = clamp(startW + (ev.clientX - startX), MIN_FLOAT_W, vw - 40)
+      persistLayout({ ...layoutRef.current, w: nextW, mode: layoutRef.current.mode === 'float' ? 'float' : layoutRef.current.mode })
+    }
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+  }, [width, persistLayout])
 
   if (!open) return null
 
+  if (collapsed) {
+    return (
+      <div
+        data-forma-panel
+        style={{
+          position: 'fixed',
+          left: layout.x ?? 16,
+          top: layout.y ?? TOP_BAR + 8,
+          zIndex: TOKENS.zIndex.float + zIndexOffset,
+          touchAction: 'none',
+        }}
+        onPointerDown={startDrag}
+      >
+        <div onClick={(e) => { e.stopPropagation(); onExpand?.() }} style={{ cursor: 'pointer' }}>
+          {collapsedPreview}
+        </div>
+      </div>
+    )
+  }
+
   const isFloat = layout.mode === 'float'
-  const shell = dockStyle(layout.mode, layout.w || width, height)
+  const panelW = layout.w || width
+  const shell = dockStyle(layout.mode, panelW, height)
+  shell.zIndex = (shell.zIndex || TOKENS.zIndex.float) + zIndexOffset
   if (isFloat) {
     shell.left = layout.x ?? 16
     shell.top = layout.y ?? TOP_BAR + 8
+    if (layout.h) shell.height = layout.h
   }
 
   const dockBtn = (mode, label) => (
@@ -123,7 +187,7 @@ export default function DraggablePanel({
       key={mode}
       type="button"
       title={`Ancrer ${label}`}
-      onClick={() => setLayout((l) => ({ ...l, mode, w: width }))}
+      onClick={() => persistLayout({ ...layout, mode, w: panelW })}
       style={{
         background: layout.mode === mode ? `${T.accent}22` : 'transparent',
         border: 'none',
@@ -173,12 +237,31 @@ export default function DraggablePanel({
         <div style={{ display: 'flex', gap: 2 }}>
           {dockBtn('left', '◧')}
           {dockBtn('right', '◨')}
+          {dockBtn('top', '▔')}
+          {dockBtn('bottom', '▁')}
           {dockBtn('float', '⧉')}
         </div>
         {headerExtra}
-        <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted, fontSize: 16, lineHeight: 1, padding: '0 2px' }}>×</button>
+        {onClose && (
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted, fontSize: 16, lineHeight: 1, padding: '0 2px' }}>×</button>
+        )}
       </div>
       <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>{children}</div>
+      {resizable && isFloat && (
+        <div
+          onPointerDown={startResize}
+          title="Redimensionner"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: 6,
+            cursor: 'ew-resize',
+            touchAction: 'none',
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -34,12 +34,13 @@ export default function HistoryPanel({
   onSaveVersion,
   onRestoreVersion,
   onClearActions,
+  embedded = false,
 }) {
   const [tab, setTab] = useState('journal')
 
-  return (
-    <div
-      style={{
+  const shellStyle = embedded
+    ? { display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }
+    : {
         position: 'fixed',
         top: 0,
         right: 0,
@@ -51,14 +52,18 @@ export default function HistoryPanel({
         display: 'flex',
         flexDirection: 'column',
         boxShadow: '-4px 0 24px rgba(0,0,0,.2)',
-      }}
-    >
+      }
+
+  return (
+    <div style={shellStyle}>
+      {!embedded && (
       <div style={{ background: T.panel, padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 13, color: '#fff' }}>🕐 Historique</span>
         <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: 20, lineHeight: 1 }}>
           ×
         </button>
       </div>
+      )}
 
       <div style={{ display: 'flex', borderBottom: `1px solid ${T.border}`, background: T.bg }}>
         {[['journal', `Journal (${actionLog.length})`], ['versions', `Versions (${pageHistory.length})`]].map(([id, lbl]) => (

@@ -217,6 +217,7 @@ export default function EditorTopBar({
       </Group>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', marginLeft: 'auto' }}>
+        {saveStatus === 'dirty' && <span style={{ fontSize: 9, color: '#f5a623' }}>●</span>}
         {saveStatus === 'saving' && <span style={{ fontSize: 9, color: '#f5a623' }}>⏳</span>}
         {saveStatus === 'saved' && <span style={{ fontSize: 9, color: '#4ade80' }}>✓</span>}
         {saveStatus === 'offline' && <span style={{ fontSize: 9, color: '#f5a623' }}>💾</span>}

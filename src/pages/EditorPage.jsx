@@ -45,6 +45,7 @@ import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/l
 import { screenToPage } from "@/lib/viewport"
 import { useCanvasViewport } from "@/hooks/useCanvasViewport"
 import { PAGE_FORMATS, resolvePageDimensions } from "@/lib/pageFormats"
+import { computeRotatedBounds } from "@/lib/pageRotation"
 import {
   parsePageElements,
   serializePageElements,
@@ -1069,10 +1070,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 }
 
 /* ══ FLOATING PANEL ══════════════════════════════════ */
-function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle,canvasTextFont,setCanvasTextFont}){
-  const[pos,setPos]=useState({x:16,y:120})
-  const[drag,setDrag]=useState(false)
-  const[offset,setOffset]=useState({x:0,y:0})
+function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle,canvasTextFont,setCanvasTextFont,focusMode}){
   const[collapsed,setCollapsed]=useState(true)
   const[cPal,setCPal]=useState("📐 Plans")
   const[hPal,setHPal]=useState("Standards")
@@ -1082,15 +1080,6 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
   const isEraser=tool==="eraser"
   const isShapeTool=["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)
   const isTextTool=tool==="text"
-
-  const startDrag=e=>{setDrag(true);setOffset({x:e.clientX-pos.x,y:e.clientY-pos.y})}
-  useEffect(()=>{
-    if(!drag)return
-    const mm=e=>setPos({x:e.clientX-offset.x,y:e.clientY-offset.y})
-    const mu=()=>setDrag(false)
-    window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)
-    return()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)}
-  },[drag,offset])
 
   useEffect(()=>{
     if(!showWheel||!wheelRef.current)return
@@ -1103,24 +1092,30 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
   const saveFav=i=>{const f=[...favorites];f[i]=favoriteFromEditor({color,sizeMm,tool,eraserMm,label:`F${i+1}`});setFavorites(f)}
   const loadFav=f=>{if(!f)return;setColor(f.color);setSizeMm(f.sizeMm);if(f.tool)setTool(f.tool);if(f.eraserMm!=null)setEraserMm(f.eraserMm)}
 
-  if(collapsed)return(
-    <div style={{position:"fixed",left:pos.x,top:pos.y,zIndex:TOKENS.zIndex.float,cursor:"grab"}}onMouseDown={startDrag}>
-      <div onClick={e=>{e.stopPropagation();setCollapsed(false)}}
-        className="forma-animate-scale"
-        style={{width:36,height:36,borderRadius:"50%",background:isEraser?"#eee":color,border:`2px solid rgba(255,255,255,.55)`,boxShadow:TOKENS.shadow.float,cursor:"pointer",outline:`2px solid ${T.accent}`,backdropFilter:"blur(8px)"}}/>
-    </div>
-  )
+  if(focusMode)return null
 
   return(
-    <div className="forma-animate-in" style={{position:"fixed",left:pos.x,top:pos.y,zIndex:TOKENS.zIndex.float,...glassStyle(T,{variant:"float"}),width:200,userSelect:"none"}}>
-      <div onMouseDown={startDrag}style={{cursor:"grab",padding:"7px 11px 5px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.border}`}}>
-        <div style={{fontSize:9,color:T.muted}}>⠿ OUTILS</div>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          <div style={{width:12,height:12,borderRadius:"50%",background:isEraser?"#eee":color,border:`1px solid ${T.border}`}}/>
-          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{formatDimension(isEraser?eraserMm:sizeMm,unitSys)}</span>
-          <button onClick={()=>setCollapsed(true)}style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:14,lineHeight:1,padding:0}}>−</button>
+    <DraggablePanel
+      T={T}
+      id="editor-properties"
+      title="Outils & couleurs"
+      open
+      collapsed={collapsed}
+      onExpand={()=>setCollapsed(false)}
+      onClose={()=>setCollapsed(true)}
+      defaultSide="left"
+      width={220}
+      zIndexOffset={2}
+      collapsedPreview={(
+        <div className="forma-animate-scale" style={{width:36,height:36,borderRadius:"50%",background:isEraser?"#eee":color,border:"2px solid rgba(255,255,255,.55)",boxShadow:TOKENS.shadow.float,cursor:"pointer",outline:`2px solid ${T.accent}`,backdropFilter:"blur(8px)"}}/>
+      )}
+      headerExtra={(
+        <div style={{display:"flex",gap:4,alignItems:"center"}}>
+          <div style={{width:10,height:10,borderRadius:"50%",background:isEraser?"#eee":color,border:`1px solid ${T.border}`}}/>
+          <span style={{fontSize:8,color:T.muted,fontFamily:"monospace"}}>{formatDimension(isEraser?eraserMm:sizeMm,unitSys)}</span>
         </div>
-      </div>
+      )}
+    >
       <div style={{padding:"9px 11px",display:"flex",flexDirection:"column",gap:9,maxHeight:"70vh",overflowY:"auto"}}>
         <div>
           <div style={{fontSize:8,color:T.muted,marginBottom:3}}>PALETTE</div>
@@ -1194,7 +1189,7 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
           <div style={{display:"flex",flexWrap:"wrap",gap:4}}>{Array.from({length:FAVORITE_SLOTS},(_,i)=>{const fav=favorites[i];return<button key={i}onClick={()=>loadFav(fav)}onDoubleClick={()=>saveFav(i)}title={fav?`${fav.label||""} ${fav.tool} ${fav.color} ${formatDimension(fav.sizeMm,unitSys)}`:"Dbl-clic sauvegarder"}style={{width:26,height:26,borderRadius:7,background:fav?fav.color:T.bg,border:`1px solid ${fav?T.accent:T.border}`,cursor:"pointer",fontSize:fav?"0":"11",color:T.muted,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{!fav&&"+"}</button>})}</div>
         </div>
       </div>
-    </div>
+    </DraggablePanel>
   )
 }
 
@@ -1238,7 +1233,7 @@ function EraserOptionsPanel({T,settings,setSettings,unitSys,formatDimension}){
   const sizeMm=settings.sizeMm
   const setSizeMm=v=>setSettings(s=>({...s,sizeMm:typeof v==="function"?v(s.sizeMm):v}))
   return(
-    <div style={{position:"fixed",left:16,bottom:52,zIndex:TOKENS.zIndex.float,...glassStyle(T,{variant:"panel"}),padding:"8px 10px",width:210,userSelect:"none"}}>
+    <div style={{padding:"8px 10px",userSelect:"none"}}>
       <div style={{fontSize:9,fontWeight:700,color:T.accent,marginBottom:6}}>GOMME</div>
       <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:8}}>
         {ERASER_MODES.map(m=>(
@@ -1473,9 +1468,17 @@ export default function EditorPage(){
       }
     }
   }, [selected])
-  const pageDims=resolvePageDimensions(pageFormat,customPageMm,pageRotation)
+  const pageDims=resolvePageDimensions(pageFormat,customPageMm,0)
   const PW=infiniteMode?3000:pageDims.w
   const PH=infiniteMode?3000:pageDims.h
+  const rotLayout=useMemo(()=>(
+    infiniteMode
+      ? { boxW: PW, boxH: PH, offsetX: 0, offsetY: 0, rotation: 0 }
+      : computeRotatedBounds(PW, PH, pageRotation)
+  ),[PW,PH,pageRotation,infiniteMode])
+  const displayW=infiniteMode?PW:rotLayout.boxW
+  const displayH=infiniteMode?PH:rotLayout.boxH
+  const pagesCount=useMemo(()=>Math.max(nb.pages_count||1,pages.length||1),[nb.pages_count,pages.length])
 
   const applyPageMetaToState=useCallback(meta=>{
     setPageFormat(meta.format||"a4")
@@ -1514,15 +1517,17 @@ export default function EditorPage(){
     readOnly,
     buildPagePayload,
     onPagesUpdate:setPages,
-    onNotebookTouch:()=>({title:nb.title,subject:nb.subject,pages_count:nb.pages_count}),
+    onNotebookTouch:()=>({title:nb.title,subject:nb.subject,pages_count:pagesCount}),
   })
 
   const saveLabel=useMemo(()=>{
+    if(saveStatus==="dirty")return "Modifications en attente…"
     if(saveStatus==="saving")return "Sauvegarde…"
     if(saveStatus==="error")return "Erreur sauvegarde"
     if(saveStatus==="offline")return lastSavedAt?`Local · ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`:"Sauvegarde locale"
     if(saveStatus==="saved"&&lastSavedAt)return `Sauvegardé · ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`
-    return lastSavedAt?`Dernière sauvegarde ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`:"Auto-save actif"
+    if(lastSavedAt)return `Dernière sauvegarde ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`
+    return "Prêt"
   },[saveStatus,lastSavedAt])
 
   const{
@@ -1604,7 +1609,7 @@ export default function EditorPage(){
   // Add new page
   const addPage=async()=>{
     await saveNow()
-    const newNum=(nb.pages_count||pages.length||1)+1
+    const newNum=(pages.reduce((m,p)=>Math.max(m,p.page_number||0),0)||0)+1
     const newMeta=serializePageElements({
       format:nextPageFmt,
       rotation:0,
@@ -1726,7 +1731,7 @@ export default function EditorPage(){
       await saveNow()
       const src=pages.find(p=>p.page_number===sourcePageNum)
       if(!src)return
-      const newNum=(nb.pages_count||pages.length||1)+1
+      const newNum=(pages.reduce((m,p)=>Math.max(m,p.page_number||0),0)||0)+1
       const{data:{session}}=await supabase.auth.getSession()
       const useLocal=!session?.user||isLocalNotebookId(nb.id)
       if(useLocal){
@@ -2070,7 +2075,7 @@ export default function EditorPage(){
   const isPanMode=tool==="hand"||spacePan
   const eraserAuto=tool==="eraser"&&eraserSettings.mode==="auto"
   const cursorDark=useMemo(()=>isDarkSurface(T),[T])
-  const showMinimap=useMemo(()=>!focusMode&&!showPresent&&shouldShowMinimap({pageW:PW,pageH:PH,viewW:viewSize.w,viewH:viewSize.h,zoom,panX,panY}),[focusMode,showPresent,PW,PH,viewSize,zoom,panX,panY])
+  const showMinimap=useMemo(()=>!focusMode&&!showPresent&&shouldShowMinimap({pageW:displayW,pageH:displayH,viewW:viewSize.w,viewH:viewSize.h,zoom,panX,panY}),[focusMode,showPresent,displayW,displayH,viewSize,zoom,panX,panY])
   const handleMinimapPan=useCallback((x,y)=>setPan(x,y),[setPan])
   const areaCursor=useMemo(()=>{
     if(spacePan)return panActive?"grabbing":"grab"
@@ -2095,14 +2100,16 @@ export default function EditorPage(){
       <div style={{position:"fixed",inset:0,background:"#000",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}}>
         <div style={{position:"absolute",top:16,right:16,display:"flex",gap:8,zIndex:10}}>
           <button onClick={()=>setPage(p=>Math.max(1,p-1))}style={{padding:"8px 16px",borderRadius:10,background:"rgba(255,255,255,.1)",border:"none",color:"#fff",cursor:"pointer",fontSize:18}}>‹</button>
-          <span style={{color:"#fff",fontSize:14,padding:"8px 12px"}}>{page}/{nb.pages_count||1}</span>
-          <button onClick={()=>setPage(p=>Math.min(nb.pages_count||1,p+1))}style={{padding:"8px 16px",borderRadius:10,background:"rgba(255,255,255,.1)",border:"none",color:"#fff",cursor:"pointer",fontSize:18}}>›</button>
+          <span style={{color:"#fff",fontSize:14,padding:"8px 12px"}}>{page}/{pagesCount}</span>
+          <button onClick={()=>setPage(p=>Math.min(pagesCount,p+1))}style={{padding:"8px 16px",borderRadius:10,background:"rgba(255,255,255,.1)",border:"none",color:"#fff",cursor:"pointer",fontSize:18}}>›</button>
           <button onClick={()=>setShowPresent(false)}style={{padding:"8px 16px",borderRadius:10,background:"rgba(233,69,96,.3)",border:"none",color:"#fff",cursor:"pointer",fontSize:13}}>✕ Quitter</button>
         </div>
         <div style={{transform:"scale(0.9)",transformOrigin:"center",boxShadow:"0 20px 80px rgba(0,0,0,.8)"}}>
-          <div style={{width:pageDims.w,height:pageDims.h,position:"relative",background:"#fff"}}>
-            <Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={pageDims.w} PH={pageDims.h}/>
-            <canvas ref={cRef}width={pageDims.w}height={pageDims.h}style={{position:"absolute",inset:0,width:"100%",height:"100%"}}/>
+          <div style={{width:displayW,height:displayH,position:"relative"}}>
+            <div style={{width:PW,height:PH,position:"absolute",left:rotLayout.offsetX,top:rotLayout.offsetY,transform:pageRotation?`rotate(${pageRotation}deg)`:"none",transformOrigin:"center center",background:"#fff"}}>
+              <Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={PW} PH={PH}/>
+              <canvas ref={cRef}width={PW}height={PH}style={{position:"absolute",inset:0,width:"100%",height:"100%"}}/>
+            </div>
           </div>
         </div>
       </div>
@@ -2125,7 +2132,7 @@ export default function EditorPage(){
           friends={collab.friends}
         />
       )}
-      {pageMenu&&pageMenuMeta&&<PageContextMenu T={T} pageNum={pageMenu.pageNum} x={pageMenu.x} y={pageMenu.y} meta={pageMenuMeta} onClose={()=>setPageMenu(null)} onApply={partial=>applyPageSettings(pageMenu.pageNum,partial)} onDuplicate={()=>duplicatePageByNum(pageMenu.pageNum)} onDelete={()=>deletePage(pageMenu.pageNum)} canDelete={(nb.pages_count||1)>1}/>}
+      {pageMenu&&pageMenuMeta&&<PageContextMenu T={T} pageNum={pageMenu.pageNum} x={pageMenu.x} y={pageMenu.y} meta={pageMenuMeta} onClose={()=>setPageMenu(null)} onApply={partial=>applyPageSettings(pageMenu.pageNum,partial)} onDuplicate={()=>duplicatePageByNum(pageMenu.pageNum)} onDelete={()=>deletePage(pageMenu.pageNum)} canDelete={pagesCount>1}/>}
 
       {!focusMode&&(
         <CalculatorDrawer
@@ -2137,23 +2144,24 @@ export default function EditorPage(){
           {...calc}
         />
       )}
-      {!focusMode&&(
-        <UnitConverter
-          T={T}
-          open={showConv}
-          onClose={()=>setShowConv(false)}
-          stackOffset={calcDrawerW}
-          value={convValue}
-          setValue={setConvValue}
-          category={convCategory}
-          setCategory={setConvCategory}
-          fromUnit={convFromUnit}
-          setFromUnit={setConvFromUnit}
-          toUnit={convToUnit}
-          setToUnit={setConvToUnit}
-          scale={scale}
-          setScale={setScale}
-        />
+      {!focusMode&&showConv&&(
+        <DraggablePanel T={T} id="editor-converter" title="Convertisseur" open onClose={()=>setShowConv(false)} defaultSide="right" width={300}>
+          <UnitConverter
+            T={T}
+            variant="embedded"
+            open
+            value={convValue}
+            setValue={setConvValue}
+            category={convCategory}
+            setCategory={setConvCategory}
+            fromUnit={convFromUnit}
+            setFromUnit={setConvFromUnit}
+            toUnit={convToUnit}
+            setToUnit={setConvToUnit}
+            scale={scale}
+            setScale={setScale}
+          />
+        </DraggablePanel>
       )}
 
       {textEdit&&(
@@ -2271,18 +2279,26 @@ export default function EditorPage(){
 
       {/* ── HISTORIQUE ────────────────────── */}
       {!focusMode&&showHistory&&(
-        <HistoryPanel
-          T={T}
-          actionLog={actionLog}
-          pageHistory={pageHistory}
-          onClose={()=>setShowHistory(false)}
-          onSaveVersion={()=>saveVersion()}
-          onRestoreVersion={restoreVersion}
-          onClearActions={clearActionLog}
-        />
+        <DraggablePanel T={T} id="editor-history" title="Historique" open onClose={()=>setShowHistory(false)} defaultSide="right" width={300}>
+          <HistoryPanel
+            embedded
+            T={T}
+            actionLog={actionLog}
+            pageHistory={pageHistory}
+            onSaveVersion={()=>saveVersion()}
+            onRestoreVersion={restoreVersion}
+            onClearActions={clearActionLog}
+          />
+        </DraggablePanel>
       )}
 
-      {!focusMode&&<FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont}/>}
+      {!focusMode&&<FloatingPanel T={T} focusMode={focusMode} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont}/>}
+
+      {!focusMode&&tool==="eraser"&&(
+        <DraggablePanel T={T} id="editor-eraser" title="Gomme" open defaultSide="left" width={220} zIndexOffset={1}>
+          <EraserOptionsPanel T={T} settings={eraserSettings} setSettings={setEraserSettings} unitSys={unitSys} formatDimension={formatDimension}/>
+        </DraggablePanel>
+      )}
 
       {focusMode&&(
         <FocusToolbar
@@ -2373,8 +2389,6 @@ export default function EditorPage(){
         exporting={exporting}
       />
 
-      {!focusMode&&tool==="eraser"&&<EraserOptionsPanel T={T} settings={eraserSettings} setSettings={setEraserSettings} unitSys={unitSys} formatDimension={formatDimension}/>}
-
       {!focusMode&&<FloatingToolsToolbar T={T} tool={tool} setTool={setTool} color={color} sizeMm={sizeMm} eraserMm={eraserMm} unitSys={unitSys} formatDimension={formatDimension} toolsList={EDITOR_TOOLS_LIST} onLayoutChange={setToolbarDock}/>}
 
       <div style={{display:"flex",flex:1,overflow:"hidden",transition:"padding .25s ease",...toolbarPad}}>
@@ -2423,10 +2437,20 @@ export default function EditorPage(){
             </div>
           })}
 
-          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:infiniteMode?-1500:-(pageDims.w/2),marginTop:infiniteMode?-1500:-(pageDims.h/2),willChange:"transform"}}>
-            <div style={{width:PW,height:PH,position:"relative",boxShadow:infiniteMode?"none":"0 4px 40px rgba(0,0,0,.2)",background:infiniteMode?(pageColor||T.paper):"none"}}>
+          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:infiniteMode?-1500:-(displayW/2),marginTop:infiniteMode?-1500:-(displayH/2),willChange:"transform"}}>
+            <div style={{width:displayW,height:displayH,position:"relative",boxShadow:infiniteMode?"none":"0 4px 40px rgba(0,0,0,.12)"}}>
+              <div style={{
+                width:PW,
+                height:PH,
+                position:"absolute",
+                left:rotLayout.offsetX,
+                top:rotLayout.offsetY,
+                transform:pageRotation?`rotate(${pageRotation}deg)`:"none",
+                transformOrigin:"center center",
+                background:infiniteMode?(pageColor||T.paper):"none",
+              }}>
               {infiniteMode&&<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={3000}height={3000}><defs><pattern id="inf-grid"width={37.8}height={37.8}patternUnits="userSpaceOnUse"><path d={`M 37.8 0 L 0 0 0 37.8`}fill="none"stroke={gridColor||T.grid}strokeWidth={.6}/></pattern></defs><rect width={3000}height={3000}fill={`url(#inf-grid)`}/></svg>}
-              {!infiniteMode&&<Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={pageDims.w} PH={pageDims.h}/>}
+              {!infiniteMode&&<Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={PW} PH={PH}/>}
 
               {/* Imported images */}
               {importedImages.map(img=>{
@@ -2506,11 +2530,12 @@ export default function EditorPage(){
                   onClose={()=>{window.__clearSelection?.();setCanvasSelection(null)}}
                 />
               )}
-              {readOnly&&<canvas ref={cRef}width={pageDims.w}height={pageDims.h}style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:1,pointerEvents:"none",zIndex:5}}/>}
+              {readOnly&&<canvas ref={cRef}width={PW}height={PH}style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:1,pointerEvents:"none",zIndex:5}}/>}
+              </div>
             </div>
           </div>
 
-          {showMinimap&&<CanvasMinimap T={T} pageW={PW} pageH={PH} viewW={viewSize.w} viewH={viewSize.h} zoom={zoom} panX={panX} panY={panY} onPanChange={handleMinimapPan} getStrokes={()=>window.__getStrokes?.()||[]} placed={placed} importedImages={importedImages} revision={canvasRevision} paperColor={pageColor||T.paper}/>}
+          {showMinimap&&<CanvasMinimap T={T} pageW={displayW} pageH={displayH} viewW={viewSize.w} viewH={viewSize.h} zoom={zoom} panX={panX} panY={panY} onPanChange={handleMinimapPan} getStrokes={()=>window.__getStrokes?.()||[]} placed={placed} importedImages={importedImages} revision={canvasRevision} paperColor={pageColor||T.paper}/>}
         </div>
       </div>
 
@@ -2526,7 +2551,7 @@ export default function EditorPage(){
             </select>
           </div>
           <div style={{padding:8,display:"flex",flexDirection:"column",gap:6}}>
-            {Array.from({length:nb.pages_count||pages.length||1},(_,i)=>{
+            {Array.from({length:pagesCount},(_,i)=>{
               const pageData=pages.find(p=>p.page_number===i+1)
               return<PageThumbnail key={i+1} pageData={pageData} pageNum={i+1} current={page===i+1} T={T} notebookTemplate={nb.template} onClick={()=>goToPage(i+1)} onMenu={(e,n)=>setPageMenu({x:e.clientX,y:e.clientY,pageNum:n})}/>
             })}
@@ -2609,8 +2634,8 @@ export default function EditorPage(){
       <div style={{height:focusMode?0:32,overflow:"hidden",opacity:focusMode?0:1,pointerEvents:focusMode?"none":"auto",transition:"height .35s ease, opacity .28s ease",background:T.surface,borderTop:focusMode?"none":`1px solid ${T.border}`,display:"flex",alignItems:"center",padding:"0 10px",gap:8,zIndex:20,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",gap:4}}>
           <button onClick={()=>goToPage(Math.max(1,page-1))} disabled={page===1} style={{background:"none",border:"none",color:page===1?T.border:T.muted,cursor:page===1?"default":"pointer",fontSize:12}}>‹</button>
-          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{page}/{nb.pages_count||1}</span>
-          <button onClick={()=>goToPage(Math.min(nb.pages_count||1,page+1))} style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:12}}>›</button>
+          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{page}/{pagesCount}</span>
+          <button onClick={()=>goToPage(Math.min(pagesCount,page+1))} style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:12}}>›</button>
           <button onClick={addPage}title="Nouvelle page"style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:11}}>＋</button>
         </div>
         <div style={{width:1,height:12,background:T.border}}/>
@@ -2623,7 +2648,7 @@ export default function EditorPage(){
         <div style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool} · {formatDimension(tool==="eraser"?eraserMm:sizeMm,unitSys)} · {scale} · {Math.round(zoom*100)}%</div>
         {collabCursors.length>0&&<div style={{fontSize:9,color:"#4ade80"}}>🟢 {collabCursors.length}</div>}
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:4}}>
-          <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="saved"?"#4ade80":saveStatus==="saving"?"#f5a623":saveStatus==="error"?"#e94560":"#888"}}/>
+          <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="saved"?"#4ade80":saveStatus==="saving"?"#f5a623":saveStatus==="dirty"?"#f5a623":saveStatus==="error"?"#e94560":"#888"}}/>
           <span style={{fontSize:8,color:T.muted}}>{saveLabel}</span>
         </div>
       </div>

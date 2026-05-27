@@ -218,6 +218,17 @@ export default function UnitConverter({
 
   const lengthUnits = UNITS_BY_CATEGORY.length || []
 
+  const bodyProps = {
+    T, tab, setTab, hasScale, scale, setScale,
+    category, setCategory, ensure, value, setValue,
+    unitsList, fromUnit, setFromUnit, toUnit, setToUnit,
+    result, scaleRes, lengthUnits, fieldStyle,
+  }
+
+  if (variant === 'embedded') {
+    return <ConverterBody {...bodyProps} />
+  }
+
   const header = (
     <div style={{
       display: "flex",
@@ -238,27 +249,6 @@ export default function UnitConverter({
       </button>
     </div>
   )
-
-  const bodyProps = {
-    T, tab, setTab, hasScale, scale, setScale,
-    category, setCategory, ensure, value, setValue,
-    unitsList, fromUnit, setFromUnit, toUnit, setToUnit,
-    result, scaleRes, lengthUnits, fieldStyle,
-  }
-
-  if (variant === "float") {
-    return (
-      <GlassPanel
-        T={T}
-        variant="float"
-        animate
-        style={{ position: "fixed", top: 70, left: 268, zIndex: TOKENS.zIndex.panel, width: 300, maxHeight: "min(78vh, 520px)", overflow: "hidden", display: "flex", flexDirection: "column" }}
-      >
-        {header}
-        <ConverterBody {...bodyProps} />
-      </GlassPanel>
-    )
-  }
 
   return (
     <div

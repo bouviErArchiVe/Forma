@@ -34,7 +34,10 @@ const useAppStore = create(
       setNotebooks: (notebooks) => set({ notebooks }),
       addNotebook: (nb) => set(s => ({ notebooks: [nb, ...s.notebooks] })),
       updateNotebook: (id, updates) => set(s => ({
-        notebooks: s.notebooks.map(n => n.id === id ? { ...n, ...updates } : n)
+        notebooks: s.notebooks.map(n => n.id === id ? { ...n, ...updates } : n),
+        activeNotebook: s.activeNotebook?.id === id
+          ? { ...s.activeNotebook, ...updates }
+          : s.activeNotebook,
       })),
       deleteNotebook: (id) => set(s => ({
         notebooks: s.notebooks.filter(n => n.id !== id)

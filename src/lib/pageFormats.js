@@ -72,10 +72,6 @@ export function resolvePageDimensions(formatId, customMm, rotation = 0) {
     hMm = customMm.h
   }
 
-  if (rot === 90 || rot === 270) {
-    ;[wMm, hMm] = [hMm, wMm]
-  }
-
   const dims = mmToPx(wMm, hMm)
   return { ...dims, rotation: rot, infinite: false }
 }

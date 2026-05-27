@@ -8,7 +8,8 @@ import {
 } from '@/lib/projectPersistence'
 
 /**
- * Autosave debounced pour pages carnet (Supabase + fallback local).
+ * Autosave debounced — idle | dirty | saving | saved | error | offline
+ * Ne sauvegarde que si le payload a réellement changé.
  */
 export function useAutoSave({
   notebookId,
@@ -20,14 +21,27 @@ export function useAutoSave({
   onNotebookTouch,
 }) {
   const timer = useRef(null)
-  const [status, setStatus] = useState('idle') // idle | saving | saved | error | offline
+  const lastPayloadRef = useRef(null)
+  const savingRef = useRef(false)
+  const [status, setStatus] = useState('idle')
   const [lastSavedAt, setLastSavedAt] = useState(null)
 
+  const markDirty = useCallback(() => {
+    setStatus((s) => (s === 'saving' ? 'saving' : 'dirty'))
+  }, [])
+
   const saveNow = useCallback(async () => {
-    if (!pageId || !notebookId || readOnly) return false
+    if (!pageId || !notebookId || readOnly || savingRef.current) return false
     const payload = buildPagePayload?.()
     if (!payload) return false
 
+    const payloadKey = `${payload.elements}|${payload.canvas_data}`
+    if (payloadKey === lastPayloadRef.current) {
+      setStatus(lastSavedAt ? 'saved' : 'idle')
+      return true
+    }
+
+    savingRef.current = true
     setStatus('saving')
     const now = new Date().toISOString()
     const pageRecord = {
@@ -56,8 +70,13 @@ export function useAutoSave({
         await supabase.from('notebooks').update({ updated_at: now }).eq('id', notebookId)
         setStatus('saved')
       } else {
-        const all = saveLocalPage(notebookId, pageRecord, loadLocalPages(notebookId))
-        onPagesUpdate?.(all)
+        const existing = loadLocalPages(notebookId)
+        const all = saveLocalPage(notebookId, pageRecord, existing)
+        const prev = existing.find((p) => p.id === pageId)
+        const changed = !prev
+          || prev.elements !== pageRecord.elements
+          || prev.canvas_data !== pageRecord.canvas_data
+        if (changed) onPagesUpdate?.(all)
         upsertLocalNotebook({
           id: notebookId,
           updated_at: now,
@@ -67,8 +86,10 @@ export function useAutoSave({
         setStatus('offline')
       }
 
+      lastPayloadRef.current = payloadKey
       setLastSavedAt(new Date())
-      setTimeout(() => setStatus('idle'), 2500)
+      setStatus('saved')
+      savingRef.current = false
       return true
     } catch (err) {
       console.warn('Autosave failed, local backup:', err?.message)
@@ -76,26 +97,33 @@ export function useAutoSave({
         const all = saveLocalPage(notebookId, pageRecord, loadLocalPages(notebookId))
         onPagesUpdate?.(all)
         upsertLocalNotebook({ id: notebookId, updated_at: now })
+        lastPayloadRef.current = payloadKey
         setLastSavedAt(new Date())
         setStatus('offline')
-        setTimeout(() => setStatus('idle'), 2500)
+        savingRef.current = false
         return true
       } catch {
         setStatus('error')
-        setTimeout(() => setStatus('idle'), 4000)
+        savingRef.current = false
         return false
       }
     }
-  }, [pageId, notebookId, pageNum, readOnly, buildPagePayload, onPagesUpdate, onNotebookTouch])
+  }, [pageId, notebookId, pageNum, readOnly, buildPagePayload, onPagesUpdate, onNotebookTouch, lastSavedAt])
 
   const scheduleSave = useCallback(() => {
+    markDirty()
     if (timer.current) clearTimeout(timer.current)
-    timer.current = setTimeout(() => saveNow(), 900)
-  }, [saveNow])
+    timer.current = setTimeout(() => saveNow(), 1200)
+  }, [saveNow, markDirty])
+
+  useEffect(() => {
+    lastPayloadRef.current = null
+    setStatus('idle')
+  }, [pageId])
 
   useEffect(() => () => {
     if (timer.current) clearTimeout(timer.current)
   }, [])
 
-  return { saveNow, scheduleSave, status, lastSavedAt, setStatus }
+  return { saveNow, scheduleSave, status, lastSavedAt, markDirty }
 }
