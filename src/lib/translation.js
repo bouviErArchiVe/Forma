@@ -1,143 +1,200 @@
-/** Traduction — mock local + API optionnelle (VITE_TRANSLATE_API_URL). */
+/** Traduction — providers: api | browser (en ligne) | mock (démo). */
 
 export const TRANSLATION_LANGUAGES = [
-  { id: 'en', label: 'Anglais' },
   { id: 'fr', label: 'Français' },
+  { id: 'en', label: 'Anglais' },
 ]
 
-const WORDS_EN_FR = {
-  hello: 'bonjour',
-  world: 'monde',
-  school: 'école',
-  building: 'bâtiment',
-  architecture: 'architecture',
-  design: 'design',
-  floor: 'étage',
-  plan: 'plan',
-  section: 'coupe',
-  elevation: 'élévation',
-  wall: 'mur',
-  window: 'fenêtre',
-  door: 'porte',
-  roof: 'toiture',
-  beam: 'poutre',
-  column: 'colonne',
-  concrete: 'béton',
-  steel: 'acier',
-  wood: 'bois',
-  drawing: 'dessin',
-  sketch: 'esquisse',
-  project: 'projet',
-  homework: 'devoir',
-  assignment: 'consigne',
-  document: 'document',
-  please: 'veuillez',
-  read: 'lire',
-  write: 'écrire',
-  submit: 'rendre',
-  due: 'échéance',
-  week: 'semaine',
-  scale: 'échelle',
-  dimension: 'dimension',
-  height: 'hauteur',
-  width: 'largeur',
-  length: 'longueur',
-  the: 'le',
-  a: 'un',
-  an: 'un',
-  and: 'et',
-  or: 'ou',
-  of: 'de',
-  to: 'à',
-  in: 'dans',
-  on: 'sur',
-  for: 'pour',
-  with: 'avec',
-  this: 'ce',
-  that: 'cette',
-  is: 'est',
-  are: 'sont',
-  was: 'était',
-  will: 'sera',
-  must: 'doit',
-  should: 'devrait',
-  can: 'peut',
+export const TRANSLATION_PROVIDERS = {
+  api: 'API configurée',
+  browser: 'Traduction en ligne',
+  mock: 'Mode démo (limité)',
 }
 
-const ADVANCED_EN_FR = {
-  ...WORDS_EN_FR,
-  fenestration: 'fenêtrage',
-  cantilever: 'console',
-  cladding: 'bardage',
-  egress: 'issue de secours',
-  occupancy: 'occupation',
-  load: 'charge',
-  bearing: 'porteur',
-  foundation: 'fondation',
-  insulation: 'isolation',
-  sustainability: 'durabilité',
-  envelope: 'enveloppe',
-  circulation: 'circulation',
-  program: 'programme',
-  brief: 'cahier des charges',
-  precedent: 'précédent',
-  iteration: 'itération',
-  threshold: 'seuil',
-  datum: 'référence',
-  axis: 'axe',
-  grid: 'trame',
-  module: 'module',
-  typology: 'typologie',
+const CHUNK_SIZE = 450
+
+export function getTranslationProvider() {
+  const forced = (import.meta.env.VITE_TRANSLATE_PROVIDER || '').toLowerCase()
+  if (forced === 'mock' || forced === 'browser' || forced === 'api') return forced
+  if (import.meta.env.VITE_TRANSLATE_API_URL) return 'api'
+  return 'browser'
 }
 
-function mockTranslate(text, from, to, mode) {
-  if (!text?.trim()) return ''
-  if (from === to) return text
+export function getTranslationText(result) {
+  if (!result) return ''
+  if (typeof result === 'string') return result.replace(/\n\n—[\s\S]*$/, '').trim()
+  return String(result.text || '').trim()
+}
 
-  const dict = mode === 'advanced' && from === 'en' && to === 'fr' ? ADVANCED_EN_FR : WORDS_EN_FR
-
-  if (from === 'en' && to === 'fr') {
-    const out = text.replace(/\b[\w'-]+\b/gi, (word) => {
-      const key = word.toLowerCase()
-      return dict[key] || word
-    })
-    return `${out}\n\n— Traduction locale (mode ${mode === 'advanced' ? 'avancé' : 'base'}). Branchez VITE_TRANSLATE_API_URL pour une API.`
+function splitText(text, maxLen = CHUNK_SIZE) {
+  if (text.length <= maxLen) return [text]
+  const parts = []
+  let rest = text
+  while (rest.length > maxLen) {
+    let cut = rest.lastIndexOf('\n', maxLen)
+    if (cut < maxLen * 0.4) cut = rest.lastIndexOf('. ', maxLen)
+    if (cut < maxLen * 0.4) cut = rest.lastIndexOf(' ', maxLen)
+    if (cut < 1) cut = maxLen
+    parts.push(rest.slice(0, cut).trim())
+    rest = rest.slice(cut).trim()
   }
-
-  if (from === 'fr' && to === 'en') {
-    const reverse = Object.fromEntries(Object.entries(dict).map(([k, v]) => [v, k]))
-    const out = text.replace(/\b[\w'-àâäéèêëïîôùûüç]+/gi, (word) => {
-      const key = word.toLowerCase()
-      return reverse[key] || word
-    })
-    return `${out}\n\n— Local reverse dictionary (basic).`
-  }
-
-  return `[${from} → ${to}] ${text}`
+  if (rest) parts.push(rest)
+  return parts.filter(Boolean)
 }
 
-export async function translateText(text, { from = 'en', to = 'fr', mode = 'standard' } = {}) {
-  const trimmed = String(text || '').trim()
-  if (!trimmed) return ''
-
+async function translateApi(text, from, to, mode) {
   const apiUrl = import.meta.env.VITE_TRANSLATE_API_URL
-  if (apiUrl) {
-    try {
-      const res = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q: trimmed, source: from, target: to, format: 'text', mode }),
-      })
-      if (res.ok) {
-        const data = await res.json()
-        if (data.translatedText) return data.translatedText
-        if (data.translation) return data.translation
-      }
-    } catch (err) {
-      console.warn('[translation] API fallback to mock', err)
+  if (!apiUrl) throw new Error('VITE_TRANSLATE_API_URL non configurée')
+
+  const res = await fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ q: text, source: from, target: to, format: 'text', mode }),
+  })
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(body || `API HTTP ${res.status}`)
+  }
+
+  const data = await res.json()
+  const out = data.translatedText || data.translation || data.text
+  if (!out?.trim()) throw new Error('Réponse API vide')
+  return out.trim()
+}
+
+async function translateMyMemory(text, from, to) {
+  const chunks = splitText(text)
+  const out = []
+
+  for (let i = 0; i < chunks.length; i += 1) {
+    const chunk = chunks[i]
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${from}|${to}`
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`MyMemory HTTP ${res.status}`)
+
+    const data = await res.json()
+    const translated = data?.responseData?.translatedText
+    if (!translated?.trim()) {
+      throw new Error(data?.responseDetails || 'MyMemory : réponse vide')
+    }
+    if (/MYMEMORY WARNING|QUOTA|LIMIT/i.test(translated)) {
+      throw new Error('Quota traduction en ligne dépassé — réessayez plus tard')
+    }
+    out.push(translated.trim())
+    if (chunks.length > 1 && i < chunks.length - 1) {
+      await new Promise((r) => setTimeout(r, 350))
     }
   }
 
-  await new Promise((r) => setTimeout(r, 120))
-  return mockTranslate(trimmed, from, to, mode)
+  return out.join('\n')
+}
+
+async function translateLibreTranslate(text, from, to) {
+  const endpoints = [
+    import.meta.env.VITE_LIBRETRANSLATE_URL,
+    'https://libretranslate.com/translate',
+  ].filter(Boolean)
+
+  let lastErr = null
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ q: text, source: from, target: to, format: 'text' }),
+      })
+      if (!res.ok) throw new Error(`LibreTranslate HTTP ${res.status}`)
+      const data = await res.json()
+      if (!data?.translatedText?.trim()) throw new Error('LibreTranslate : réponse vide')
+      return data.translatedText.trim()
+    } catch (err) {
+      lastErr = err
+    }
+  }
+  throw lastErr || new Error('LibreTranslate indisponible')
+}
+
+async function translateBrowser(text, from, to) {
+  try {
+    return await translateMyMemory(text, from, to)
+  } catch (errMy) {
+    try {
+      return await translateLibreTranslate(text, from, to)
+    } catch (errLib) {
+      throw new Error(`${errMy.message} · ${errLib.message}`)
+    }
+  }
+}
+
+const WORDS_EN_FR = {
+  hello: 'bonjour', world: 'monde', school: 'école', building: 'bâtiment',
+  architecture: 'architecture', project: 'projet', wall: 'mur', fire: 'feu',
+  resistant: 'résistant', help: 'aide', need: 'besoin', with: 'avec', my: 'mon',
+  the: 'le', a: 'un', and: 'et', must: 'doit', be: 'être',
+}
+
+function mockTranslate(text, from, to) {
+  if (from === to) return text
+  const dict = WORDS_EN_FR
+  if (from === 'en' && to === 'fr') {
+    return text.replace(/\b[\w'-]+\b/gi, (word) => dict[word.toLowerCase()] || word)
+  }
+  if (from === 'fr' && to === 'en') {
+    const reverse = Object.fromEntries(Object.entries(dict).map(([k, v]) => [v, k]))
+    return text.replace(/\b[\w'-àâäéèêëïîôùûüç]+/gi, (word) => reverse[word.toLowerCase()] || word)
+  }
+  return text
+}
+
+/**
+ * @returns {{ text: string, provider: string, isDemo: boolean, error?: string, warning?: string }}
+ */
+export async function translateText(text, { from = 'en', to = 'fr', mode = 'standard' } = {}) {
+  const trimmed = String(text || '').trim()
+  if (!trimmed) {
+    return { text: '', provider: getTranslationProvider(), isDemo: false, error: 'Texte source vide' }
+  }
+  if (from === to) {
+    return { text: trimmed, provider: getTranslationProvider(), isDemo: false }
+  }
+
+  const provider = getTranslationProvider()
+
+  if (provider === 'mock') {
+    const out = mockTranslate(trimmed, from, to)
+    return {
+      text: out,
+      provider: 'mock',
+      isDemo: true,
+      warning: 'Mode démo : traduction mot à mot uniquement. Configurez VITE_TRANSLATE_PROVIDER=browser ou une API pour une vraie traduction.',
+    }
+  }
+
+  if (provider === 'api') {
+    try {
+      const out = await translateApi(trimmed, from, to, mode)
+      return { text: out, provider: 'api', isDemo: false }
+    } catch (err) {
+      return {
+        text: '',
+        provider: 'api',
+        isDemo: false,
+        error: err?.message || 'Erreur API de traduction',
+      }
+    }
+  }
+
+  // browser = traduction en ligne gratuite
+  try {
+    const out = await translateBrowser(trimmed, from, to)
+    return { text: out, provider: 'browser', isDemo: false }
+  } catch (err) {
+    return {
+      text: '',
+      provider: 'browser',
+      isDemo: false,
+      error: err?.message || 'Traduction en ligne indisponible. Vérifiez votre connexion.',
+    }
+  }
 }

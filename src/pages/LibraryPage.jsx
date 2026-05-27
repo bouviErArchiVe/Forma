@@ -36,6 +36,11 @@ import {
   saveLocalPages,
   isLocalNotebookId,
 } from "@/lib/projectPersistence"
+import {
+  loadFolders,
+  persistFolderCreate,
+  persistFolderDelete,
+} from "@/lib/folderPersistence"
 
 const DEFAULT_SUBJECTS=[
   {id:"arch",    l:"Architecture",    c:"#c8622a",e:"🏛",custom:false},
@@ -522,8 +527,12 @@ export default function LibraryPage() {
           setUserId(session.user.id)
           const uname = session.user.user_metadata?.full_name || session.user.email || ""
           setUserName(uname)
-          const {data, error} = await supabase.from("notebooks").select("*").eq("user_id", session.user.id).order("updated_at", {ascending:false})
+          const [{ data, error }, folderRes] = await Promise.all([
+            supabase.from("notebooks").select("*").eq("user_id", session.user.id).order("updated_at", {ascending:false}),
+            loadFolders(session.user.id),
+          ])
           if (error) throw error
+          setFolders(folderRes.folders || [])
           const cloud = data || []
           const merged = [...cloud]
           local.forEach((ln) => {
@@ -533,9 +542,11 @@ export default function LibraryPage() {
           setNotebooks(merged)
         } else {
           setNotebooks(local)
+          setFolders(loadFolders(null).folders || [])
         }
       } catch {
         setNotebooks(loadLocalNotebooks())
+        setFolders(loadFolders(null).folders || [])
       } finally {
         setLoading(false)
       }
@@ -687,15 +698,64 @@ export default function LibraryPage() {
   }, [subjects, folders, T, libraryView, toggleStar])
 
   const assignFolder = async (nbId, folderId) => {
-    setNotebooks(ns => ns.map(n => n.id === nbId ? {...n, folder_id:folderId||null} : n))
-    if (userId) await supabase.from("notebooks").update({folder_id:folderId||null}).eq("id", nbId)
+    const next = notebooks.map(n => n.id === nbId ? {...n, folder_id: folderId || null, updated_at: new Date().toISOString()} : n)
+    setNotebooks(next)
+    const nb = next.find(n => n.id === nbId)
+    if (nb && isLocalNotebookId(nbId)) upsertLocalNotebook(nb)
+    if (userId && nb && !isLocalNotebookId(nbId)) {
+      try {
+        await supabase.from("notebooks").update({ folder_id: folderId || null }).eq("id", nbId)
+      } catch {
+        addNotification("Erreur lors de l'assignation du dossier", "error")
+        return
+      }
+    }
+    addNotification(folderId ? "Carnet déplacé dans le dossier" : "Carnet retiré du dossier", "success")
     setShowFolderAssign(null)
   }
 
-  const createFolder = () => {
+  const createFolder = async () => {
     if (!folderName.trim()) return
-    setFolders(p => [...p, {id:Date.now().toString(), n:folderName, e:folderEmoji}])
-    setShowNewFolder(false); setFolderName(""); setFolderEmoji("📁")
+    const res = await persistFolderCreate(userId, { name: folderName.trim(), icon: folderEmoji })
+    if (!res.ok) {
+      addNotification(res.error || "Erreur de sauvegarde du dossier", "error")
+      return
+    }
+    setFolders(res.folders)
+    setShowNewFolder(false)
+    setFolderName("")
+    setFolderEmoji("📁")
+    addNotification(
+      res.warning ? `Dossier créé (local) — ${res.warning}` : "Dossier créé",
+      res.warning ? "error" : "success",
+    )
+  }
+
+  const removeFolder = async (folderId) => {
+    const res = await persistFolderDelete(userId, folderId)
+    if (!res.ok) {
+      addNotification(res.error || "Erreur de suppression du dossier", "error")
+      return
+    }
+    setFolders(res.folders)
+    const affected = notebooks.filter((n) => n.folder_id === folderId)
+    const nextNotebooks = notebooks.map((n) => (
+      n.folder_id === folderId ? { ...n, folder_id: null, updated_at: new Date().toISOString() } : n
+    ))
+    setNotebooks(nextNotebooks)
+    affected.forEach((nb) => {
+      const updated = nextNotebooks.find((n) => n.id === nb.id)
+      if (updated && isLocalNotebookId(updated.id)) upsertLocalNotebook(updated)
+    })
+    if (userId) {
+      try {
+        await supabase.from("notebooks").update({ folder_id: null }).eq("folder_id", folderId)
+      } catch {
+        addNotification("Dossier supprimé localement — erreur sync carnets", "error")
+      }
+    }
+    if (folderFilt === folderId) setFolderFilt("all")
+    addNotification(res.warning ? `Dossier supprimé — ${res.warning}` : "Dossier supprimé", "success")
   }
 
   const createSubject = () => {
@@ -1191,7 +1251,7 @@ export default function LibraryPage() {
                       <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:T.ink}}>{f.n}</div>
                       <div style={{fontSize:10,color:T.muted}}>{notebooks.filter(n => n.folder_id === f.id).length} carnets</div>
                     </div>
-                    <button onClick={e => {e.stopPropagation(); setFolders(p => p.filter(x => x.id !== f.id))}}
+                    <button onClick={e => {e.stopPropagation(); removeFolder(f.id)}}
                       style={{position:"absolute",top:6,right:6,background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:11,opacity:.5}}>×</button>
                   </div>
                 ))}

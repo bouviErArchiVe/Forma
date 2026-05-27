@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppStore from '@/stores/useAppStore'
-import { translateText, TRANSLATION_LANGUAGES } from '@/lib/translation'
+import { translateText, TRANSLATION_LANGUAGES, TRANSLATION_PROVIDERS, getTranslationProvider, getTranslationText } from '@/lib/translation'
 import GlassButton from '@/components/ui/GlassButton'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassPanel from '@/components/ui/GlassPanel'
@@ -21,6 +21,9 @@ function TranslationBody({
   mode,
   setMode,
   loading,
+  error,
+  warning,
+  providerLabel,
   onTranslate,
   onCopy,
   onSend,
@@ -39,6 +42,22 @@ function TranslationBody({
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: compact ? 10 : 14, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ fontSize: 9, color: T.muted, lineHeight: 1.35, padding: '6px 8px', borderRadius: 8, background: `${T.accent}10`, border: `1px solid ${T.border}` }}>
+        {providerLabel}
+      </div>
+
+      {warning && (
+        <div style={{ fontSize: 10, color: T.accent, padding: '8px 10px', borderRadius: 8, background: `${T.accent}12`, border: `1px solid ${T.accent}44` }}>
+          {warning}
+        </div>
+      )}
+
+      {error && (
+        <div style={{ fontSize: 10, color: '#e94560', padding: '8px 10px', borderRadius: 8, background: '#e9456012', border: '1px solid #e9456044' }}>
+          {error}
+        </div>
+      )}
+
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
         <select value={sourceLang} onChange={(e) => setSourceLang(e.target.value)} style={{ ...fieldStyle, flex: 1, minWidth: 90 }}>
           {TRANSLATION_LANGUAGES.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
@@ -126,6 +145,11 @@ export default function TranslationWidget({
   const [resultText, setResultText] = useState('')
   const [loading, setLoading] = useState(false)
   const [sendOpen, setSendOpen] = useState(false)
+  const [error, setError] = useState('')
+  const [warning, setWarning] = useState('')
+
+  const provider = getTranslationProvider()
+  const providerLabel = TRANSLATION_PROVIDERS[provider] || provider
 
   const fieldStyle = {
     width: '100%',
@@ -142,24 +166,41 @@ export default function TranslationWidget({
   const handleTranslate = useCallback(async () => {
     if (!sourceText.trim()) return
     setLoading(true)
+    setError('')
+    setWarning('')
+    setResultText('')
     try {
-      const out = await translateText(sourceText, {
+      const result = await translateText(sourceText, {
         from: translationSourceLang,
         to: translationTargetLang,
         mode: translationMode,
       })
-      setResultText(out)
-    } catch {
-      addNotification('Traduction impossible', 'error')
+      if (result.error) {
+        setError(result.error)
+        addNotification(result.error, 'error')
+        return
+      }
+      setResultText(result.text || '')
+      if (result.warning) setWarning(result.warning)
+      if (!result.text?.trim()) {
+        const msg = 'Aucune traduction retournée'
+        setError(msg)
+        addNotification(msg, 'error')
+      }
+    } catch (err) {
+      const msg = err?.message || 'Traduction impossible'
+      setError(msg)
+      addNotification(msg, 'error')
     } finally {
       setLoading(false)
     }
   }, [sourceText, translationSourceLang, translationTargetLang, translationMode, addNotification])
 
   const handleCopy = useCallback(async () => {
-    if (!resultText) return
+    const clean = getTranslationText(resultText)
+    if (!clean) return
     try {
-      await navigator.clipboard.writeText(resultText.replace(/\n\n—[\s\S]*$/, '').trim())
+      await navigator.clipboard.writeText(clean)
       addNotification('Traduction copiée', 'success')
     } catch {
       addNotification('Copie impossible', 'error')
@@ -167,7 +208,7 @@ export default function TranslationWidget({
   }, [resultText, addNotification])
 
   const handleSendPick = useCallback((nb) => {
-    const clean = resultText.replace(/\n\n—[\s\S]*$/, '').trim()
+    const clean = getTranslationText(resultText)
     if (!clean) return
     setPendingFormulaNote({ notebookId: nb.id, text: clean })
     setActiveNotebook(nb)
@@ -189,6 +230,9 @@ export default function TranslationWidget({
     mode: translationMode,
     setMode: setTranslationMode,
     loading,
+    error,
+    warning,
+    providerLabel,
     onTranslate: handleTranslate,
     onCopy: handleCopy,
     onSend: () => setSendOpen(true),

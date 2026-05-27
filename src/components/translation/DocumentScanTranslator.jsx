@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppStore from '@/stores/useAppStore'
 import { useOCR } from '@/hooks/useOCR'
-import { translateText } from '@/lib/translation'
+import { translateText, getTranslationText, TRANSLATION_PROVIDERS, getTranslationProvider } from '@/lib/translation'
 import GlassButton from '@/components/ui/GlassButton'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassPanel from '@/components/ui/GlassPanel'
@@ -29,6 +29,8 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
   const [translating, setTranslating] = useState(false)
   const [sendOpen, setSendOpen] = useState(false)
   const [ocrError, setOcrError] = useState(null)
+  const [translateError, setTranslateError] = useState('')
+  const [translateWarning, setTranslateWarning] = useState('')
 
   const sourceText = ocrText || manualText
 
@@ -70,21 +72,37 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
   const handleTranslate = useCallback(async () => {
     if (!sourceText.trim()) return
     setTranslating(true)
+    setTranslateError('')
+    setTranslateWarning('')
+    setTranslated('')
     try {
-      const out = await translateText(sourceText, {
+      const result = await translateText(sourceText, {
         from: translationSourceLang,
         to: translationTargetLang,
         mode: translationMode,
       })
-      setTranslated(out)
-    } catch {
-      addNotification('Traduction impossible', 'error')
+      if (result.error) {
+        setTranslateError(result.error)
+        addNotification(result.error, 'error')
+        return
+      }
+      setTranslated(result.text || '')
+      if (result.warning) setTranslateWarning(result.warning)
+      if (!result.text?.trim()) {
+        const msg = 'Aucune traduction retournée'
+        setTranslateError(msg)
+        addNotification(msg, 'error')
+      }
+    } catch (err) {
+      const msg = err?.message || 'Traduction impossible'
+      setTranslateError(msg)
+      addNotification(msg, 'error')
     } finally {
       setTranslating(false)
     }
   }, [sourceText, translationSourceLang, translationTargetLang, translationMode, addNotification])
 
-  const cleanTranslation = translated.replace(/\n\n—[\s\S]*$/, '').trim()
+  const cleanTranslation = getTranslationText(translated)
 
   const handleCopy = useCallback(async () => {
     if (!cleanTranslation) return
@@ -118,6 +136,22 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
         </GlassButton>
         <span style={{ fontSize: 11, color: T.muted }}>Tesseract chargé à la demande · pas au démarrage</span>
       </div>
+
+      <div style={{ fontSize: 11, color: T.muted }}>
+        {TRANSLATION_PROVIDERS[getTranslationProvider()] || 'Traduction'} · OCR à la demande
+      </div>
+
+      {translateWarning && (
+        <div style={{ fontSize: 11, color: T.accent, padding: '8px 10px', borderRadius: 8, background: `${T.accent}12`, border: `1px solid ${T.accent}44` }}>
+          {translateWarning}
+        </div>
+      )}
+
+      {translateError && (
+        <div style={{ fontSize: 11, color: '#e94560', padding: '8px 10px', borderRadius: 8, background: '#e9456012', border: '1px solid #e9456044' }}>
+          {translateError}
+        </div>
+      )}
 
       {preview && (
         <div style={{ borderRadius: 12, border: `1px solid ${T.border}`, overflow: 'hidden', background: T.surface, maxHeight: 220 }}>
