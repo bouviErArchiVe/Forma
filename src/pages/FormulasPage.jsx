@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { loadLocalNotebooks } from '@/lib/projectPersistence'
 import useAppStore from '@/stores/useAppStore'
+import { BRAND } from '@/config/branding'
 import { FORMULA_CATEGORIES, filterFormulas, getFormulaById } from '@/data/formulas'
 import { useFormulaPrefs } from '@/hooks/useFormulaPrefs'
 import FormulaCategoryMenu from '@/components/formulas/FormulaCategoryMenu'
@@ -29,7 +30,7 @@ function buildNoteText(formula, result) {
     '',
     result.summary || '',
     '',
-    `— Forma · ${new Date().toLocaleString('fr-FR')}`,
+    `— ${BRAND.productLine} · ${new Date().toLocaleString('fr-FR')}`,
   ]
   return lines.join('\n')
 }

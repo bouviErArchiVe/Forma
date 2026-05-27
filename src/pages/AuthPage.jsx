@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/lib/supabase"
 import { useTheme } from '@/hooks/useAppearance'
+import { BRAND } from '@/config/branding'
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -45,8 +46,8 @@ export default function AuthPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
           <img src={T.img} alt={T.n} style={{ width: 44, height: 44, borderRadius: 12, objectFit: "cover", boxShadow: `0 4px 14px ${T.accent}44` }}/>
           <div>
-            <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: T.ink }} className="forma-brand-title">Forma</div>
-            <div style={{ fontSize: 11, color: T.muted }}>Carnet de conception · Architecture & Design</div>
+            <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: T.ink }} className="forma-brand-title">{BRAND.appName}</div>
+            <div style={{ fontSize: 11, color: T.muted }}>par {BRAND.ecosystemName} · Architecture & Design</div>
           </div>
         </div>
 

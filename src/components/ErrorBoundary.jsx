@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { resetFormaLocalData } from '@/lib/storage'
+import { BRAND } from '@/config/branding'
 
 export default class ErrorBoundary extends Component {
   constructor(props) {
@@ -16,7 +17,7 @@ export default class ErrorBoundary extends Component {
   }
 
   handleResetData = () => {
-    if (!confirm('Réinitialiser toutes les données locales Forma sur cet appareil ?')) return
+    if (!confirm(`Réinitialiser toutes les données locales ${BRAND.appName} sur cet appareil ?`)) return
     resetFormaLocalData()
     window.location.href = '/'
   }

@@ -20,7 +20,7 @@ export default function BrandLogo({
   style,
 }) {
   const s = SIZES[size] || SIZES.md
-  const word = BRAND.shortName.charAt(0) + BRAND.shortName.slice(1).toLowerCase()
+  const word = BRAND.wordmark || (BRAND.shortName.charAt(0) + BRAND.shortName.slice(1).toLowerCase())
 
   return (
     <div

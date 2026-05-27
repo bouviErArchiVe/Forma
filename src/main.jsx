@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { bootstrapFormaTheme } from '@/theme/bootstrapTheme'
 import ThemeProvider from '@/theme/ThemeProvider'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import { BRAND } from '@/config/branding'
 import App from './App.jsx'
 import { showFatalBootScreen } from '@/lib/bootError'
 
@@ -12,7 +13,7 @@ function renderApp() {
 
   createRoot(rootEl).render(
     <StrictMode>
-      <ErrorBoundary title="Forma n'a pas pu démarrer">
+      <ErrorBoundary title={`${BRAND.appName} n'a pas pu démarrer`}>
         <ThemeProvider>
           <App />
         </ThemeProvider>
@@ -25,6 +26,6 @@ try {
   bootstrapFormaTheme()
   renderApp()
 } catch (error) {
-  console.error('[Forma boot]', error)
+  console.error(`[${BRAND.appName} boot]`, error)
   showFatalBootScreen(error)
 }
