@@ -41,7 +41,6 @@ export const ASSET_TYPES = {
   norm: { label: 'Norme', icon: '📜' },
   doc: { label: 'FormaDoc', icon: '📄' },
   sheet: { label: 'FormaTab', icon: '📊' },
-  proforma: { label: 'Proforma', icon: '✏' },
   notebook: { label: 'Carnet Forma', icon: '📓' },
   export: { label: 'Export', icon: '📤' },
   asset: { label: 'Asset', icon: '📦' },

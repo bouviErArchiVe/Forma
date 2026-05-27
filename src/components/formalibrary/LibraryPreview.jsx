@@ -28,7 +28,7 @@ export default function LibraryPreview({
         <button type="button" onClick={onClose} style={iconBtn}>✕</button>
       </div>
 
-      <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
+      <div style={{ flex: 1, minHeight: 0, overflow: 'auto', WebkitOverflowScrolling: 'touch', padding: 12 }}>
         {preview && (item.mimeType?.includes('pdf') || item.category === 'pdf') ? (
           <iframe title={item.name} src={preview} style={{ width: '100%', height: 320, border: 'none', borderRadius: 8, background: '#fff' }} />
         ) : preview ? (
@@ -67,7 +67,7 @@ export default function LibraryPreview({
         )}
       </div>
 
-      <div style={{ padding: 12, borderTop: `1px solid ${FLB_DARK.border}`, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      <div style={{ padding: '12px 12px max(12px, env(safe-area-inset-bottom))', borderTop: `1px solid ${FLB_DARK.border}`, display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
         {canPreview && <Btn primary onClick={() => onOpen?.(item)}>Ouvrir</Btn>}
         {canPreview && <Btn onClick={() => onRead?.(item)}>Lire</Btn>}
         {canPreview && <Btn onClick={() => onAnnotate?.(item)}>Annoter</Btn>}

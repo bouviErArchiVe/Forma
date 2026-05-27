@@ -11,7 +11,6 @@ import MoodboardPage from '@/pages/MoodboardPage'
 import FormulasPage from '@/pages/FormulasPage'
 import SheetsPage from '@/pages/SheetsPage'
 import DocsPage from '@/pages/DocsPage'
-import ProformaPage from '@/pages/ProformaPage'
 const FormatcalPage = lazy(() => import('@/pages/FormatcalPage'))
 const FormaCombinePage = lazy(() => import('@/pages/FormaCombinePage'))
 const FormaFolderPage = lazy(() => import('@/pages/FormaFolderPage'))
@@ -74,7 +73,6 @@ export default function App() {
           <Route path="/formatab" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaTab"><SheetsPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/docs" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaDoc"><DocsPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/formadoc" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaDoc"><DocsPage /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="/proforma" element={<ProtectedRoute><ErrorBoundary title="Erreur Proforma"><ProformaPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/formatcal" element={<ProtectedRoute><ErrorBoundary title="Erreur FormatCal"><Suspense fallback={<AppLoading />}><FormatcalPage /></Suspense></ErrorBoundary></ProtectedRoute>} />
           <Route path="/formacombine" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaCombine"><Suspense fallback={<AppLoading />}><FormaCombinePage /></Suspense></ErrorBoundary></ProtectedRoute>} />
           <Route path="/formafolder" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaFolder"><Suspense fallback={<AppLoading />}><FormaFolderPage /></Suspense></ErrorBoundary></ProtectedRoute>} />

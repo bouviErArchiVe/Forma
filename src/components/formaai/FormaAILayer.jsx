@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import GlobalSearchModal from '@/components/formaai/GlobalSearchModal'
-import FormaAIFab from '@/components/formaai/FormaAIFab'
 import { useFormaAIShortcuts } from '@/hooks/useFormaAI'
 
+/** Raccourcis globaux + modale recherche (sans FAB flottant) */
 export default function FormaAILayer() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -26,12 +26,5 @@ export default function FormaAILayer() {
     }
   }, [openAI, openSearch])
 
-  if (location.pathname === '/formaai') return null
-
-  return (
-    <>
-      <FormaAIFab onSearch={openSearch} onAI={openAI} />
-      <GlobalSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
-    </>
-  )
+  return <GlobalSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
 }

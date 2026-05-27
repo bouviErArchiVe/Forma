@@ -7,7 +7,6 @@ const TABS = [
   { id: 'files', label: 'Fichiers' },
   { id: 'doc', label: 'FormaDoc' },
   { id: 'sheet', label: 'FormaTab' },
-  { id: 'proforma', label: 'Proforma' },
 ]
 
 export default function LibraryImportModal({

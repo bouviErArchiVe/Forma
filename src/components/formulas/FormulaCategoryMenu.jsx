@@ -11,6 +11,7 @@ export default function FormulaCategoryMenu({ T, categories, activeId, onSelect,
       gap: 4,
       transition: 'width .2s',
       overflowY: 'auto',
+      WebkitOverflowScrolling: 'touch',
     }}>
       {categories.map((cat) => {
         const active = activeId === cat.id

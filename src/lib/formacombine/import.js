@@ -4,8 +4,6 @@ import JSZip from 'jszip'
 import html2canvas from 'html2canvas'
 import { getDoc, listDocs } from '@/lib/docs/persistence'
 import { getSheet, listSheets } from '@/lib/spreadsheet/persistence'
-import { getProformaDoc, listProformaDocs } from '@/lib/proforma/persistence'
-import { docToDataUrl } from '@/lib/proforma/render'
 import { loadLocalNotebooks, loadLocalPages } from '@/lib/projectPersistence'
 import { safeGetLocalStorage, safeJsonParse } from '@/lib/storage'
 import { createPage, loadImageDimensions, textPage } from './model'
@@ -191,21 +189,6 @@ export async function importFiles(files, onProgress) {
   return pages
 }
 
-export async function importProforma(id) {
-  const doc = getProformaDoc(id)
-  if (!doc) throw new Error('Proforma introuvable')
-  const dataUrl = docToDataUrl(doc)
-  return [createPage({
-    name: doc.name || 'Proforma',
-    type: 'raster',
-    width: doc.width,
-    height: doc.height,
-    dataUrl,
-    sourceType: 'proforma',
-    sourceRef: id,
-  })]
-}
-
 export async function importFormaDoc(id) {
   const doc = getDoc(id)
   if (!doc) throw new Error('FormaDoc introuvable')
@@ -237,7 +220,6 @@ export async function importFormaNotebookPage(nbId, pageId, pageLabel) {
 
 export function listInternalSources() {
   return {
-    proforma: listProformaDocs().map((d) => ({ id: d.id, name: d.name, type: 'proforma' })),
     formadoc: listDocs().map((d) => ({ id: d.id, name: d.name, type: 'formadoc' })),
     formatab: listSheets().map((d) => ({ id: d.id, name: d.name, type: 'formatab' })),
     forma: loadLocalNotebooks().flatMap((nb) => {
@@ -254,7 +236,6 @@ export function listInternalSources() {
 }
 
 export async function importInternalSource(item) {
-  if (item.type === 'proforma') return importProforma(item.id)
   if (item.type === 'formadoc') return importFormaDoc(item.id)
   if (item.type === 'formatab') return importFormaTab(item.id)
   if (item.type === 'forma') return importFormaNotebookPage(item.nbId, item.pageId, item.name)

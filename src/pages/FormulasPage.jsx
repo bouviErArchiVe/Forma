@@ -111,12 +111,25 @@ export default function FormulasPage() {
   }, [sendModal, setPendingFormulaNote, setActiveNotebook, addNotification, navigate])
 
   return (
-    <div style={{ minHeight: '100vh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100dvh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <FormaModuleHeader
         title="Formules"
         subtitle={`Calculateurs intégrés · ${listedFormulas.length} formules`}
         sticky
       >
+        <select
+          value={categoryId}
+          onChange={(e) => { setCategoryId(e.target.value); setActiveFormulaId(null) }}
+          style={{
+            padding: '8px 10px', borderRadius: 8, border: `1px solid ${T.border}`,
+            background: T.bg, color: T.ink, fontSize: 12, maxWidth: 200,
+          }}
+          aria-label="Catégorie de formules"
+        >
+          {MENU_CATEGORIES.map((c) => (
+            <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
+          ))}
+        </select>
         <div style={{ position: 'relative', flex: '1 1 240px', maxWidth: 360 }}>
           <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: T.muted }}>🔍</span>
           <input
@@ -131,7 +144,7 @@ export default function FormulasPage() {
         </button>
       </FormaModuleHeader>
 
-      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
         <FormulaCategoryMenu
           T={T}
           categories={MENU_CATEGORIES}
@@ -154,7 +167,7 @@ export default function FormulasPage() {
             onComputed={() => touchRecent(activeFormula.id)}
           />
         ) : (
-          <main style={{ flex: 1, overflow: 'auto', padding: '20px 24px 40px' }}>
+          <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px 24px 48px' }}>
             <div style={{ marginBottom: 18 }}>
               <h2 style={{ margin: 0, fontFamily: "'Syne',sans-serif", fontSize: 20, fontWeight: 800 }}>
                 {MENU_CATEGORIES.find((c) => c.id === categoryId)?.label || 'Formules'}

@@ -1332,9 +1332,19 @@ export default function LibraryPage() {
               style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
               🌐
             </GlassButton>
+            <GlassButton T={T} onClick={() => window.dispatchEvent(new CustomEvent('forma:open-search'))} title="Recherche"
+              className="forma-tap-target"
+              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
+              🔍
+            </GlassButton>
+            <GlassButton T={T} onClick={() => navigate('/formaai')} title="FormaAI"
+              className="forma-tap-target"
+              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
+              ✦
+            </GlassButton>
           </div>
 
-          {/* Right actions — bandeau outils uniquement */}
+          {/* Right actions — notifications, compte, déconnexion */}
           <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
             {userId && (
               <NotificationBell
@@ -1431,7 +1441,6 @@ export default function LibraryPage() {
                 { e: '📐', l: MODULES.formules.name, action: () => navigate(MODULES.formules.route) },
                 { e: '📊', l: MODULES.formaTab.name, action: () => navigate(MODULES.formaTab.route) },
                 { e: '📄', l: MODULES.formaDoc.name, action: () => navigate(MODULES.formaDoc.route) },
-                { e: '✏', l: MODULES.proforma.name, action: () => navigate(MODULES.proforma.route) },
                 { e: '📅', l: MODULES.formatCal.name, action: () => navigate(MODULES.formatCal.route) },
                 { e: '📎', l: MODULES.formaCombine.name, action: () => navigate(MODULES.formaCombine.route) },
                 { e: '💬', l: MODULES.formaReview.name, action: () => navigate(MODULES.formaReview.route) },

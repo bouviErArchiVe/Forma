@@ -1,6 +1,9 @@
-/** FormaReview — import PDF/images multi-formats */
+/** FormaReview — import PDF/images (aperçus optimisés, grands formats) */
 
 import { createPage } from './model'
+
+const MAX_PREVIEW_EDGE = 2048
+const MAX_FILE_MB = 80
 
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -11,13 +14,44 @@ function readFileAsDataUrl(file) {
   })
 }
 
-function loadImageSize(dataUrl) {
+function loadImage(dataUrl) {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
+    img.onload = () => resolve(img)
     img.onerror = () => reject(new Error('Image invalide'))
     img.src = dataUrl
   })
+}
+
+function fitScale(w, h, maxEdge = MAX_PREVIEW_EDGE) {
+  const m = Math.max(w, h, 1)
+  if (m <= maxEdge) return 1
+  return maxEdge / m
+}
+
+async function toPreviewDataUrl(src, naturalW, naturalH) {
+  const scale = fitScale(naturalW, naturalH)
+  if (scale >= 1) return { dataUrl: src, width: naturalW, height: naturalH, previewScale: 1 }
+  const w = Math.max(1, Math.round(naturalW * scale))
+  const h = Math.max(1, Math.round(naturalH * scale))
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')
+  const img = await loadImage(src)
+  ctx.drawImage(img, 0, 0, w, h)
+  return {
+    dataUrl: canvas.toDataURL('image/jpeg', 0.88),
+    width: naturalW,
+    height: naturalH,
+    previewScale: scale,
+  }
+}
+
+function assertFileSize(file) {
+  if (file.size > MAX_FILE_MB * 1024 * 1024) {
+    throw new Error(`Fichier trop lourd (max ${MAX_FILE_MB} Mo). Utilisez un PDF compressé ou une image plus légère.`)
+  }
 }
 
 async function getPdfJs() {
@@ -30,39 +64,47 @@ async function getPdfJs() {
 }
 
 async function importPdfFile(file) {
+  assertFileSize(file)
   const pdfjs = await getPdfJs()
   const data = await file.arrayBuffer()
   const doc = await pdfjs.getDocument({ data }).promise
   const pages = []
+  const baseName = file.name.replace(/\.[^.]+$/, '')
+
   for (let i = 1; i <= doc.numPages; i += 1) {
     const page = await doc.getPage(i)
-    const scale = 2
-    const viewport = page.getViewport({ scale })
+    const baseVp = page.getViewport({ scale: 1 })
+    const renderScale = Math.min(1.5, fitScale(baseVp.width, baseVp.height) * 1.25)
+    const viewport = page.getViewport({ scale: renderScale })
     const canvas = document.createElement('canvas')
     canvas.width = Math.ceil(viewport.width)
     canvas.height = Math.ceil(viewport.height)
     const ctx = canvas.getContext('2d')
     await page.render({ canvasContext: ctx, viewport }).promise
-    const dataUrl = canvas.toDataURL('image/png')
-    const baseName = file.name.replace(/\.[^.]+$/, '')
+    const raw = canvas.toDataURL('image/png')
+    const preview = await toPreviewDataUrl(raw, baseVp.width, baseVp.height)
     pages.push(createPage({
       name: doc.numPages > 1 ? `${baseName} — p.${i}` : baseName,
-      dataUrl,
-      width: Math.ceil(viewport.width / scale),
-      height: Math.ceil(viewport.height / scale),
+      dataUrl: preview.dataUrl,
+      width: preview.width,
+      height: preview.height,
+      previewScale: preview.previewScale,
     }))
   }
   return pages
 }
 
 export async function importImageFile(file) {
-  const dataUrl = await readFileAsDataUrl(file)
-  const size = await loadImageSize(dataUrl)
+  assertFileSize(file)
+  const raw = await readFileAsDataUrl(file)
+  const img = await loadImage(raw)
+  const preview = await toPreviewDataUrl(raw, img.naturalWidth, img.naturalHeight)
   return createPage({
     name: file.name.replace(/\.[^.]+$/, ''),
-    dataUrl,
-    width: size.width,
-    height: size.height,
+    dataUrl: preview.dataUrl,
+    width: preview.width,
+    height: preview.height,
+    previewScale: preview.previewScale,
   })
 }
 
@@ -79,7 +121,6 @@ export async function importFiles(files) {
   return pages
 }
 
-/** Import depuis FormaLibrary (dataUrl + dimensions) */
 export function importFromLibraryItem(item) {
   if (!item?.dataUrl && !item?.previewUrl) throw new Error('Fichier sans aperçu')
   return createPage({

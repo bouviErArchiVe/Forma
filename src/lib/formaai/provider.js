@@ -27,6 +27,31 @@ export function getAIProviderLabel() {
   return p
 }
 
+/** Test rapide de la connexion API (FormaAI) */
+export async function testAIConnection() {
+  if (!getAIApiKey()) {
+    const err = new Error('Aucune clé API détectée. Ajoutez VITE_AI_API_KEY dans .env.local puis relancez npm run dev.')
+    err.code = 'NO_API'
+    throw err
+  }
+  try {
+    const out = await callAIApi({
+      system: 'Test de connexion Forma.',
+      prompt: 'Réponds uniquement par le mot OK.',
+      maxTokens: 12,
+    })
+    if (!out?.trim()) throw new Error('Réponse vide du fournisseur.')
+    return { ok: true, provider: getAIProviderLabel(), preview: out.trim().slice(0, 80) }
+  } catch (err) {
+    const msg = err.message || ''
+    if (msg.includes('401') || msg.includes('403')) {
+      throw new Error('Clé API invalide ou refusée. Vérifiez la clé et les droits du compte.')
+    }
+    if (msg === 'NO_API') throw err
+    throw new Error(msg || 'Connexion impossible.')
+  }
+}
+
 async function callAIApi({ system, prompt, messages, maxTokens = 800 }) {
   const apiUrl = getAIApiUrl() || 'https://api.openai.com/v1/chat/completions'
   const apiKey = getAIApiKey()

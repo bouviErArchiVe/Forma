@@ -6,7 +6,7 @@ import { SEARCH_SOURCES, FAI_DARK, SEARCH_DEBOUNCE_MS } from '@/lib/formaai/cons
 import HighlightText from './HighlightText'
 
 const SOURCE_ICONS = {
-  library: '📓', notebook: '📝', doc: '📄', sheet: '📊', proforma: '✏',
+  library: '📓', notebook: '📝', doc: '📄', sheet: '📊',
   folder: '📁', asset: '📎', formula: '📐', combine: '📎', present: '📽', review: '💬',
 }
 

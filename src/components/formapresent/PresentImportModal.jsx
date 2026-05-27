@@ -4,7 +4,6 @@ import { FPR_DARK } from '@/lib/formapresent/constants'
 import { listInternalSources } from '@/lib/formapresent/import'
 
 const TABS = [
-  { id: 'proforma', label: 'Proforma' },
   { id: 'formadoc', label: 'FormaDoc' },
   { id: 'formatab', label: 'FormaTab' },
   { id: 'forma', label: 'Pages Forma' },
@@ -12,7 +11,7 @@ const TABS = [
 ]
 
 export default function PresentImportModal({ open, onClose, onImportInternal, moodboards = [] }) {
-  const [tab, setTab] = useState('proforma')
+  const [tab, setTab] = useState('formadoc')
   const sources = useMemo(() => (open ? listInternalSources() : {}), [open])
 
   if (!open) return null

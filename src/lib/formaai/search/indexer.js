@@ -3,7 +3,6 @@
 import { loadLocalNotebooks, loadLocalPages } from '@/lib/projectPersistence'
 import { listDocs } from '@/lib/docs/persistence'
 import { listSheets } from '@/lib/spreadsheet/persistence'
-import { listProformaDocs } from '@/lib/proforma/persistence'
 import { listProjects as listCombine } from '@/lib/formacombine/persistence'
 import { listDecks } from '@/lib/formapresent/persistence'
 import { listSessions as listReview } from '@/lib/formareview/persistence'
@@ -23,12 +22,6 @@ function extractSheetText(sheet) {
   return Object.values(cells)
     .map((c) => c?.value ?? c?.raw ?? '')
     .filter(Boolean)
-    .join(' ')
-}
-
-function extractProformaText(doc) {
-  return (doc.texts || doc.layers?.flatMap((l) => l.texts || []) || [])
-    .map((t) => t.content || t.text || '')
     .join(' ')
 }
 
@@ -112,18 +105,7 @@ export function buildSearchIndex({ force = false } = {}) {
     })
   }
 
-  // Proforma
-  for (const doc of listProformaDocs()) {
-    items.push({
-      id: `proforma:${doc.id}`,
-      source: 'proforma',
-      type: 'proforma',
-      title: doc.name || 'Proforma',
-      text: extractProformaText(doc),
-      route: '/proforma',
-      updatedAt: doc.updatedAt,
-    })
-  }
+  // Proforma désactivé — indexation ignorée
 
   // FormaCombine
   for (const proj of listCombine()) {

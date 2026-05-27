@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { runAIChat, isAIChatConfigured, getAIProviderLabel, runAIAction } from '@/lib/formaai/provider'
+import { runAIChat, isAIChatConfigured, getAIProviderLabel, runAIAction, testAIConnection } from '@/lib/formaai/provider'
 import { AI_ACTIONS, FAI_DARK } from '@/lib/formaai/constants'
 import FormaModuleHeader from '@/components/FormaModuleHeader'
 
@@ -28,7 +28,24 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
   const [busy, setBusy] = useState(false)
   const [action, setAction] = useState('chat')
   const [error, setError] = useState('')
+  const [testBusy, setTestBusy] = useState(false)
+  const [testResult, setTestResult] = useState('')
   const endRef = useRef(null)
+
+  const runConnectionTest = useCallback(async () => {
+    setTestResult('')
+    setError('')
+    setTestBusy(true)
+    try {
+      const res = await testAIConnection()
+      setTestResult(`Connexion OK (${res.provider}) — ${res.preview}`)
+    } catch (err) {
+      setTestResult('')
+      setError(err.message || 'Test de connexion échoué')
+    } finally {
+      setTestBusy(false)
+    }
+  }, [])
 
   useEffect(() => {
     if (initialText) setInput(initialText)
@@ -93,19 +110,38 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
         </div>
       )}
 
-      {!apiReady && (
-        <div style={{
-          margin: fullPage ? '12px 16px 0' : '8px 12px 0',
-          padding: '10px 12px', borderRadius: 8,
-          background: '#f5a62322', border: '1px solid #f5a62355',
-          fontSize: 12, color: FAI_DARK.ink, lineHeight: 1.5,
-        }}>
-          Connecte une clé API pour activer le chat IA.
-          {' '}Ajoute <code style={{ fontSize: 11 }}>VITE_AI_API_KEY</code> (ou <code style={{ fontSize: 11 }}>VITE_OPENAI_API_KEY</code>)
-          {' '}et optionnellement <code style={{ fontSize: 11 }}>VITE_AI_API_URL</code> dans <code style={{ fontSize: 11 }}>.env.local</code>.
-          {apiReady ? '' : ` Fournisseur : ${getAIProviderLabel()}.`}
+      <div style={{
+        margin: fullPage ? '12px 16px 0' : '8px 12px 0',
+        padding: '12px 14px', borderRadius: 8,
+        background: apiReady ? `${FAI_DARK.accent}18` : '#f5a62322',
+        border: `1px solid ${apiReady ? `${FAI_DARK.accent}44` : '#f5a62355'}`,
+        fontSize: 12, color: FAI_DARK.ink, lineHeight: 1.55,
+      }}>
+        <strong style={{ display: 'block', marginBottom: 6 }}>Configuration API IA</strong>
+        <ol style={{ margin: '0 0 8px 18px', padding: 0 }}>
+          <li>Créez une clé API chez {getAIProviderLabel()} (ex. clé secrète <code style={{ fontSize: 11 }}>sk-…</code> pour OpenAI).</li>
+          <li>Dans le fichier <code style={{ fontSize: 11 }}>.env.local</code> à la racine du projet, ajoutez&nbsp;:
+            <div style={{ marginTop: 4, padding: '6px 8px', borderRadius: 6, background: FAI_DARK.bg, fontFamily: 'monospace', fontSize: 11 }}>
+              VITE_AI_API_KEY=votre_cle<br />
+              VITE_AI_PROVIDER=openai<br />
+              VITE_AI_MODEL=gpt-4o-mini
+            </div>
+          </li>
+          <li>Relancez <code style={{ fontSize: 11 }}>npm run dev</code> pour prendre en compte la clé.</li>
+          <li>Cliquez sur « Tester la connexion » ci-dessous.</li>
+        </ol>
+        {!apiReady && (
+          <p style={{ margin: '0 0 8px', color: '#f5a623' }}>
+            Aucune clé détectée pour l&apos;instant — FormaAI fonctionne en mode local limité sans bloquer l&apos;app.
+          </p>
+        )}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+          <button type="button" onClick={runConnectionTest} disabled={testBusy || !apiReady} style={testBtn}>
+            {testBusy ? 'Test…' : 'Tester la connexion'}
+          </button>
+          {testResult && <span style={{ fontSize: 11, color: '#6ee7b7' }}>{testResult}</span>}
         </div>
-      )}
+      </div>
 
       <div style={{ padding: '8px 12px', display: 'flex', flexWrap: 'wrap', gap: 4, borderBottom: fullPage ? `1px solid ${FAI_DARK.border}` : undefined }}>
         <Chip active={action === 'chat'} onClick={() => setAction('chat')}>💬 Discussion</Chip>
@@ -114,7 +150,7 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
         ))}
       </div>
 
-      <div style={{ flex: 1, overflow: 'auto', padding: fullPage ? '16px 20px' : '10px 12px', minHeight: fullPage ? 0 : 180 }}>
+      <div style={{ flex: 1, overflow: 'auto', WebkitOverflowScrolling: 'touch', padding: fullPage ? '16px 20px' : '10px 12px', minHeight: fullPage ? 0 : 180 }}>
         {messages.length === 0 && (
           <p style={{ color: FAI_DARK.muted, fontSize: 13, lineHeight: 1.5 }}>
             {action === 'chat'
@@ -139,7 +175,7 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
         <div ref={endRef} />
       </div>
 
-      <div style={{ padding: fullPage ? '12px 16px' : '10px 12px', borderTop: `1px solid ${FAI_DARK.border}`, display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+      <div style={{ padding: fullPage ? '12px 16px max(12px, env(safe-area-inset-bottom))' : '10px 12px', borderTop: `1px solid ${FAI_DARK.border}`, display: 'flex', gap: 8, alignItems: 'flex-end', flexShrink: 0 }}>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -178,4 +214,8 @@ const iconBtn = { background: 'none', border: 'none', color: FAI_DARK.muted, cur
 const sendBtn = {
   padding: '10px 14px', borderRadius: 8, border: 'none', background: FAI_DARK.accent,
   color: '#1a1e28', fontWeight: 700, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap',
+}
+const testBtn = {
+  padding: '7px 12px', borderRadius: 8, border: `1px solid ${FAI_DARK.accent}`,
+  background: `${FAI_DARK.accent}33`, color: FAI_DARK.ink, fontSize: 12, fontWeight: 600, cursor: 'pointer',
 }

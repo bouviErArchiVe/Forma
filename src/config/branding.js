@@ -14,7 +14,6 @@ export const BRAND = {
 export const MODULES = {
   formaTab: { name: 'FormaTab', route: '/formatab', legacyRoute: '/sheets' },
   formaDoc: { name: 'FormaDoc', route: '/formadoc', legacyRoute: '/docs' },
-  proforma: { name: 'Proforma', route: '/proforma' },
   formatCal: { name: 'FormatCal', route: '/formatcal' },
   formaCombine: { name: 'FormaCombine', route: '/formacombine' },
   formaFolder: { name: 'FormaFolder', route: '/formafolder' },

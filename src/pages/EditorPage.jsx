@@ -1432,7 +1432,7 @@ function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridS
 export default function EditorPage(){
   const navigate=useNavigate()
   const { id: routeNotebookId } = useParams()
-  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,pendingSpreadsheetInsert,setPendingSpreadsheetInsert,pendingDocInsert,setPendingDocInsert,pendingProformaInsert,setPendingProformaInsert,notebooks,customProfiles,addCustomProfile,removeCustomProfile}=useAppStore()
+  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,pendingSpreadsheetInsert,setPendingSpreadsheetInsert,pendingDocInsert,setPendingDocInsert,notebooks,customProfiles,addCustomProfile,removeCustomProfile}=useAppStore()
   const{ T }=useTheme()
   const { user } = useAuth()
   const collab = useCollaboration()
@@ -1572,7 +1572,6 @@ export default function EditorPage(){
   const formulaNoteInsertedRef=useRef(false)
   const spreadsheetInsertedRef=useRef(false)
   const docInsertedRef=useRef(false)
-  const proformaInsertedRef=useRef(false)
   const saveNowRef=useRef(()=>{})
   const scheduleSaveRef=useRef(()=>{})
   const goToPageRef=useRef(async()=>{})
@@ -1783,7 +1782,7 @@ export default function EditorPage(){
     window.__clearSelection?.()
   }, [tool])
 
-  useEffect(() => { formulaNoteInsertedRef.current = false; spreadsheetInsertedRef.current = false; docInsertedRef.current = false; proformaInsertedRef.current = false }, [nb.id])
+  useEffect(() => { formulaNoteInsertedRef.current = false; spreadsheetInsertedRef.current = false; docInsertedRef.current = false }, [nb.id])
 
   useEffect(() => {
     if (readOnly || !pendingDocInsert || pendingDocInsert.notebookId !== nb.id || docInsertedRef.current) return
@@ -1812,36 +1811,6 @@ export default function EditorPage(){
     }, 700)
     return () => clearTimeout(timer)
   }, [pendingDocInsert, nb.id, readOnly, PW, PH, setPendingDocInsert, addNotification, scheduleSave])
-
-  useEffect(() => {
-    if (readOnly || !pendingProformaInsert || pendingProformaInsert.notebookId !== nb.id || proformaInsertedRef.current) return
-    const timer = setTimeout(() => {
-      if (proformaInsertedRef.current) return
-      const p = pendingProformaInsert
-      const sc = 3.78 / 50
-      const elW = (p.w || 300) * sc
-      const elH = (p.h || 220) * sc
-      const el = {
-        type: 'proforma',
-        proformaId: p.proformaId,
-        l: p.name || 'Proforma',
-        pw: p.w || 300,
-        ph: p.h || 220,
-        imageSrc: p.imageSrc || null,
-      }
-      setPlaced(prev => [...prev, {
-        id: Date.now(),
-        el,
-        x: Math.max(48, PW * 0.08),
-        y: Math.max(48, PH * 0.14),
-      }])
-      proformaInsertedRef.current = true
-      setPendingProformaInsert(null)
-      scheduleSave()
-      addNotification('Dessin Proforma inséré', 'success')
-    }, 700)
-    return () => clearTimeout(timer)
-  }, [pendingProformaInsert, nb.id, readOnly, PW, PH, setPendingProformaInsert, addNotification, scheduleSave])
 
   useEffect(() => {
     if (readOnly || !pendingSpreadsheetInsert || pendingSpreadsheetInsert.notebookId !== nb.id || spreadsheetInsertedRef.current) return

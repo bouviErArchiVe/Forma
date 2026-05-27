@@ -22,7 +22,6 @@ export const SYNC_STATUS = {
 export const RESOURCE_TYPES = {
   notebook_page: 'notebook_page',
   notebook: 'notebook',
-  proforma: 'proforma',
   doc: 'doc',
   sheet: 'sheet',
   combine: 'combine',

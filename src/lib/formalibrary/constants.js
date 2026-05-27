@@ -25,7 +25,6 @@ export const LIBRARY_CATEGORIES = {
   object: { id: 'object', label: 'Objet récurrent', icon: '🪑' },
   doc: { id: 'doc', label: 'FormaDoc', icon: '📄' },
   sheet: { id: 'sheet', label: 'FormaTab', icon: '📊' },
-  proforma: { id: 'proforma', label: 'Proforma', icon: '✏' },
   svg: { id: 'svg', label: 'SVG', icon: '◇' },
   dwg: { id: 'dwg', label: 'DWG', icon: '📐' },
   note: { id: 'note', label: 'Note de cours', icon: '📝' },

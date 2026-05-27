@@ -4,14 +4,13 @@ import { FCMB_DARK } from '@/lib/formacombine/constants'
 import { listInternalSources } from '@/lib/formacombine/import'
 
 const TABS = [
-  { id: 'proforma', label: 'Proforma' },
   { id: 'formadoc', label: 'FormaDoc' },
   { id: 'formatab', label: 'FormaTab' },
   { id: 'forma', label: 'Pages Forma' },
 ]
 
 export default function CombineImportModal({ open, onClose, onImportInternal }) {
-  const [tab, setTab] = useState('proforma')
+  const [tab, setTab] = useState('formadoc')
   const sources = useMemo(() => (open ? listInternalSources() : {}), [open])
 
   if (!open) return null

@@ -100,7 +100,7 @@ export default function FormaLibraryPage() {
   const initialItemId = params.get('item')
 
   return (
-    <div style={{ minHeight: '100vh', background: FLB_DARK.bg, color: FLB_DARK.ink, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100dvh', background: FLB_DARK.bg, color: FLB_DARK.ink, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <FormaModuleHeader
         title="FormaLibrary"
         subtitle="Textures · Matériaux · Normes · PDF · Références"

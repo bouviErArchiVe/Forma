@@ -324,7 +324,7 @@ export default function MoodboardPage() {
     setLbIdx(idx >= 0 ? idx : 0); setLightbox(true)
   }
 
-  const SB = { background: T.surface, borderRight: `1px solid ${T.border}`, display: 'flex', flexDirection: 'column', width: sW, minWidth: sW, height: '100vh', overflow: 'hidden', transition: 'width .2s,min-width .2s', zIndex: 10, flexShrink: 0 }
+  const SB = { background: T.surface, borderRight: `1px solid ${T.border}`, display: 'flex', flexDirection: 'column', width: sW, minWidth: sW, height: '100%', overflow: 'hidden', transition: 'width .2s,min-width .2s', zIndex: 10, flexShrink: 0 }
 
   const navItems = [
     { id: 'all', icon: '📚', label: 'Tous les boards' },
@@ -349,7 +349,7 @@ export default function MoodboardPage() {
   )
 
   return (
-    <div className="forma-page-shell" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+    <div className="forma-page-shell" style={{ display: 'flex', height: '100dvh', overflow: 'hidden' }}>
 
       <CalculatorDrawer
         T={T}
@@ -380,7 +380,7 @@ export default function MoodboardPage() {
           ))}
         </div>
 
-        <div style={{ flex: 1, overflowY: 'auto', padding: collapsed ? '6px 4px' : '6px 8px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: collapsed ? '6px 4px' : '6px 8px' }}>
           {visibleBoards.map(b => {
             const cnt = boardImages(b.id).length
             const isActive = activeId === b.id
@@ -397,7 +397,7 @@ export default function MoodboardPage() {
           })}
         </div>
 
-        <div style={{ padding: collapsed ? '8px 6px' : '8px 10px', borderTop: `1px solid ${T.border}`, flexShrink: 0 }}>
+        <div style={{ padding: collapsed ? '8px 6px' : '8px 10px', paddingBottom: 'max(8px, env(safe-area-inset-bottom))', borderTop: `1px solid ${T.border}`, flexShrink: 0 }}>
           <button onClick={() => setShowNewBoard(true)}
             style={{ width: '100%', padding: collapsed ? '8px 0' : '9px 0', borderRadius: 9, border: 'none', background: `linear-gradient(135deg,${T.accent},${T.a2})`, color: '#fff', cursor: 'pointer', fontSize: collapsed ? 16 : 12, fontWeight: 700, transition: 'opacity .15s' }}
             onMouseEnter={e => e.currentTarget.style.opacity = '.85'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
@@ -517,7 +517,7 @@ export default function MoodboardPage() {
           {activeId && nav === 'all' && mode === 'grid' && (
             <div onDragOver={e => { e.preventDefault(); setDragOver(true) }} onDragLeave={() => setDragOver(false)}
               onDrop={e => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files) }}
-              style={{ flex: 1, overflowY: 'auto', padding: 16, position: 'relative' }}>
+              style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '16px 16px max(16px, env(safe-area-inset-bottom))', position: 'relative' }}>
               {dragOver && <div style={{ position: 'absolute', inset: 0, background: `${T.accent}22`, border: `3px dashed ${T.accent}`, borderRadius: 12, zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}><span style={{ fontSize: 40 }}>📁</span></div>}
               {displayImages.length === 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12 }}>
@@ -533,7 +533,7 @@ export default function MoodboardPage() {
           {activeId && nav === 'all' && mode === 'canvas' && (
             <div onDragOver={e => { e.preventDefault(); setDragOver(true) }} onDragLeave={() => setDragOver(false)}
               onDrop={e => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files) }}
-              style={{ flex: 1, overflow: 'auto', position: 'relative', cursor: 'default' }}>
+              style={{ flex: 1, minHeight: 0, overflow: 'auto', WebkitOverflowScrolling: 'touch', position: 'relative', cursor: 'default' }}>
               <div onClick={() => setSelectedImgId(null)}
                 style={{ width: 3000, height: 2200, position: 'relative',
                   backgroundImage: `radial-gradient(circle, ${T.accent}33 1px, transparent 1px)`,
@@ -552,7 +552,7 @@ export default function MoodboardPage() {
           )}
 
           {nav === 'starred' && (
-            <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '16px 16px max(16px, env(safe-area-inset-bottom))' }}>
               {displayImages.length === 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 10 }}>
                   <span style={{ fontSize: 40, opacity: .4 }}>⭐</span>

@@ -29,7 +29,6 @@ export const SEARCH_SOURCES = {
   notebook: { id: 'notebook', label: 'Notes / carnets' },
   doc: { id: 'doc', label: 'FormaDoc' },
   sheet: { id: 'sheet', label: 'FormaTab' },
-  proforma: { id: 'proforma', label: 'Proforma' },
   folder: { id: 'folder', label: 'Dossiers' },
   asset: { id: 'asset', label: 'Fichiers importés' },
   formula: { id: 'formula', label: 'Formules / normes' },

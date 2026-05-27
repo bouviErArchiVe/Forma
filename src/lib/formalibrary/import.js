@@ -4,7 +4,6 @@ import { createItem } from './model'
 import { autoClassify } from './classify'
 import { listDocs } from '@/lib/docs/persistence'
 import { listSheets } from '@/lib/spreadsheet/persistence'
-import { listProformaDocs } from '@/lib/proforma/persistence'
 
 async function getPdfJs() {
   const pdfjs = await import('pdfjs-dist')
@@ -99,12 +98,11 @@ export function listInternalSources() {
   return {
     doc: listDocs().map((d) => ({ id: d.id, name: d.name, type: 'doc' })),
     sheet: listSheets().map((s) => ({ id: s.id, name: s.name, type: 'sheet' })),
-    proforma: listProformaDocs().map((p) => ({ id: p.id, name: p.name, type: 'proforma' })),
   }
 }
 
 export function linkInternalSource(item, folderId) {
-  const catMap = { doc: 'doc', sheet: 'sheet', proforma: 'proforma' }
+  const catMap = { doc: 'doc', sheet: 'sheet' }
   return createItem({
     folderId,
     name: item.name,

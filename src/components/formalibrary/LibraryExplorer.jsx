@@ -83,7 +83,7 @@ export default function LibraryExplorer({
   const handleOpenItem = useCallback((item) => {
     setSelectedId(item.id)
     if (item.refModule && item.refId) {
-      const routes = { doc: '/formadoc', sheet: '/formatab', proforma: '/proforma' }
+      const routes = { doc: '/formadoc', sheet: '/formatab' }
       const route = routes[item.refModule]
       if (route) { navigate(route); return }
     }
@@ -220,7 +220,7 @@ export default function LibraryExplorer({
         onDropTargetChange={setDropTargetId}
       />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>
         <div style={{
           padding: '10px 14px', borderBottom: `1px solid ${FLB_DARK.border}`,
           display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', background: FLB_DARK.surface,
@@ -255,7 +255,7 @@ export default function LibraryExplorer({
           <input ref={fileRef} type="file" multiple accept=".png,.jpg,.jpeg,.webp,.svg,.pdf,.dwg,.dxf" style={{ display: 'none' }} onChange={(e) => runImport(e.target.files)} />
         </div>
 
-        <div style={{ flex: 1, overflow: 'auto', padding: 14 }}>
+        <div style={{ flex: 1, minHeight: 0, overflow: 'auto', WebkitOverflowScrolling: 'touch', padding: '14px 14px max(14px, env(safe-area-inset-bottom))' }}>
           {filtered.length === 0 ? (
             <div style={{ textAlign: 'center', padding: 48, color: FLB_DARK.muted }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>📚</div>

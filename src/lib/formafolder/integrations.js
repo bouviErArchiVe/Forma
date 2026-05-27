@@ -27,8 +27,7 @@ export function openItemInModule(navigate, item, addNotification) {
       return true
     }
     if (mod === 'proforma') {
-      navigate(MODULES.proforma.route)
-      addNotification?.(`Ouvrir « ${raw.name} » dans Proforma`, 'info')
+      addNotification?.('Proforma a été retiré de Forma', 'info')
       return true
     }
     if (raw.type === 'pdf' && raw.dataUrl) {
@@ -45,7 +44,6 @@ export function integrationActions(item) {
   const t = item.raw?.type
   const actions = []
   if (['pdf', 'doc', 'text', 'fiche', 'norm'].includes(t)) actions.push({ id: 'formadoc', label: 'FormaDoc', route: MODULES.formaDoc.route })
-  if (t === 'proforma') actions.push({ id: 'proforma', label: 'Proforma', route: MODULES.proforma.route })
   if (t === 'sheet') actions.push({ id: 'formatab', label: 'FormaTab', route: MODULES.formaTab.route })
   if (['pdf', 'image'].includes(t)) actions.push({ id: 'combine', label: 'FormaCombine', route: MODULES.formaCombine.route })
   actions.push({ id: 'formatcal', label: 'FormatCal', route: MODULES.formatCal.route })
