@@ -1479,6 +1479,7 @@ export default function LibraryPage() {
                 { e: '📎', l: MODULES.formaCombine.name, action: () => navigate(MODULES.formaCombine.route) },
                 { e: '💬', l: MODULES.formaReview.name, action: () => navigate(MODULES.formaReview.route) },
                 { e: '📽', l: MODULES.formaPresent.name, action: () => navigate(MODULES.formaPresent.route) },
+                { e: '✦', l: MODULES.formaAI.name, action: () => window.dispatchEvent(new CustomEvent('forma:open-ai')) },
                 { e: '🌐', l: 'Traduction', action: () => navigate('/translate') },
                 { e: '🎮', l: MODULES.fPause.name, action: () => navigate(MODULES.fPause.route) },
                 { e: '🎨', l: MODULES.fTheme.name, action: () => setShowTheme(true) },
@@ -1723,7 +1724,7 @@ export default function LibraryPage() {
             {/* Search */}
             <div style={{position:"relative",marginBottom:20}}>
               <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:T.muted,fontSize:14}}>🔍</span>
-              <input value={search} onChange={e => { const v = e.target.value; setSearch(v); checkEasterEggText(v, 'library-search') }} placeholder="Rechercher…"
+              <input value={search} onChange={e => { const v = e.target.value; setSearch(v); checkEasterEggText(v, 'library-search') }} placeholder="Rechercher carnets… (Ctrl+K recherche globale)"
                 style={{width:"100%",padding:"10px 12px 10px 38px",borderRadius:11,border:`1px solid ${T.border}`,background:T.surface,fontSize:13,outline:"none",color:T.ink,boxSizing:"border-box"}}
                 onFocus={e => e.target.style.borderColor = T.accent}
                 onBlur={e => e.target.style.borderColor = T.border}/>

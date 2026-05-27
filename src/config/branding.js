@@ -20,6 +20,7 @@ export const MODULES = {
   formaFolder: { name: 'FormaFolder', route: '/formafolder' },
   formaReview: { name: 'FormaReview', route: '/formareview' },
   formaPresent: { name: 'FormaPresent', route: '/formapresent' },
+  formaAI: { name: 'FormaAI', route: null },
   fTheme: { name: 'FTheme', route: null },
   fMoodboard: { name: 'FMoodboard', route: '/fmoodboard', legacyRoute: '/moodboard' },
   fPause: { name: 'FPause', route: '/fpause', legacyRoute: '/games' },

@@ -22,6 +22,7 @@ import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
 import Notifications from '@/components/Notifications'
 import SyncRecoveryModal from '@/components/sync/SyncRecoveryModal'
+import FormaAILayer from '@/components/formaai/FormaAILayer'
 import { useSyncBootstrap } from '@/hooks/useSyncBootstrap'
 import EmojiBurst from '@/components/easter-eggs/EmojiBurst'
 import PageTransition from '@/components/PageTransition'
@@ -55,6 +56,7 @@ export default function App() {
     <BrowserRouter>
       <ActivityTracker />
       <SyncLayer />
+      <FormaAILayer />
       <Notifications />
       <EasterEggLayer />
       <PageTransition>
