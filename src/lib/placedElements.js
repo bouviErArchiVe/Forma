@@ -3,6 +3,9 @@
 export const PLACED_SC = 3.78 / 50
 
 export function getPlacedBaseSize(el = {}) {
+  if (el.type === 'spreadsheet') {
+    return { w: el.pw || el.w || 320, h: el.ph || el.h || 180 }
+  }
   return {
     w: (el.fw || el.w || 0) * PLACED_SC,
     h: (el.h || 0) * PLACED_SC,

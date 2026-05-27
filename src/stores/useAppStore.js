@@ -40,6 +40,9 @@ const useAppStore = create(
       pendingFormulaNote: null,
       setPendingFormulaNote: (pendingFormulaNote) => set({ pendingFormulaNote }),
 
+      pendingSpreadsheetInsert: null,
+      setPendingSpreadsheetInsert: (pendingSpreadsheetInsert) => set({ pendingSpreadsheetInsert }),
+
       easterEggsEnabled: true,
       setEasterEggsEnabled: (easterEggsEnabled) => set({ easterEggsEnabled }),
       easterEggBurst: null,
