@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTheme } from '@/hooks/useAppearance'
 import useMoodboardStore from '@/stores/useMoodboardStore'
 import CalculatorDrawer from '@/components/CalculatorDrawer'
 import { useCalculator } from '@/hooks/useCalculator'
 import { distributeMasonry, masonryColumnCount } from '@/lib/masonryLayout'
+import { downloadMoodboardPng, downloadMoodboardPdf, copyMoodboardLink } from '@/lib/moodboard/export'
+import { TOKENS } from '@/theme/tokens'
 
 const EMOJIS = ['🌅','🎨','🏛','🌿','🌊','🔥','💎','🌙','⭐','🎭','🏙','🌸','🦋','🪨','🌈','🎯','📐','✏','🖼','🗺']
 const mkId = () => Date.now().toString() + Math.random().toString(36).slice(2,6)
@@ -36,7 +38,8 @@ function GridCard({ img, T, onStar, onDelete, onFullscreen, onSelect }) {
   const [hov, setHov] = useState(false)
   return (
     <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} onClick={()=>onSelect?.(img.id)}
-      style={{borderRadius:10,overflow:'hidden',background:T.surface,border:`1px solid ${T.border}`,position:'relative',marginBottom:10,cursor:'pointer',boxShadow:hov?`0 6px 24px ${T.accent}22`:'none',transition:'box-shadow .2s'}}>
+      className="nb-card"
+      style={{borderRadius:TOKENS.radius.md,overflow:'hidden',background:T.surface,border:'none',position:'relative',marginBottom:10,cursor:'pointer',boxShadow:hov?TOKENS.shadow.cardHover:TOKENS.shadow.card,transition:'box-shadow .24s ease, transform .24s ease',transform:hov?'translateY(-3px)':'none'}}>
       <img src={img.url} alt={img.name} style={{width:'100%',display:'block',objectFit:'cover'}}/>
       {img.starred && !hov && <span style={{position:'absolute',top:6,right:7,fontSize:14,color:'#f5a623',textShadow:'0 1px 3px rgba(0,0,0,.4)'}}>★</span>}
       {hov && <>
@@ -127,6 +130,7 @@ function CanvasImg({ img, selected, T, onSelect, onUpdate, onDelete, onBringToFr
 
 export default function MoodboardPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { T } = useTheme()
   const { boards, images, addBoard, updateBoard, deleteBoard, archiveBoard, addImage, updateImage, deleteImage, toggleStar, bringToFront } = useMoodboardStore()
 
@@ -149,6 +153,8 @@ export default function MoodboardPage() {
   const [urlVal, setUrlVal] = useState('')
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [showCalc, setShowCalc] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const [toast, setToast] = useState('')
   const calc = useCalculator()
   const fileInputRef = useRef()
   const addMenuRef = useRef()
@@ -190,12 +196,68 @@ export default function MoodboardPage() {
   }, [displayImages, gridWidth])
 
   useEffect(() => {
+    const boardId = searchParams.get('board')
+    if (boardId && boards.some((b) => b.id === boardId)) {
+      setActiveId(boardId)
+      setNav('all')
+    }
+  }, [searchParams, boards])
+
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(''), 2400)
+    return () => clearTimeout(t)
+  }, [toast])
+
+  useEffect(() => {
     const onResize = () => setGridWidth(window.innerWidth)
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
   const selectedImg = images.find(i => i.id === selectedImgId)
+
+  const notify = (msg) => setToast(msg)
+
+  const handleExportPng = async () => {
+    if (!displayImages.length) return
+    setExporting(true)
+    try {
+      await downloadMoodboardPng(displayImages, {
+        boardName: activeBoard?.name || 'moodboard',
+        mode,
+        gridWidth: Math.max(800, gridWidth - sW - (selectedImgId ? 260 : 0)),
+      })
+      notify('PNG exporté')
+    } catch (e) {
+      notify(e?.message || 'Export PNG impossible')
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  const handleExportPdf = async () => {
+    if (!displayImages.length) return
+    setExporting(true)
+    try {
+      await downloadMoodboardPdf(displayImages, {
+        boardName: activeBoard?.name || 'moodboard',
+        mode,
+        gridWidth: Math.max(800, gridWidth - sW - (selectedImgId ? 260 : 0)),
+      })
+      notify('PDF exporté')
+    } catch (e) {
+      notify(e?.message || 'Export PDF impossible')
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  const handleShareLink = async () => {
+    if (!activeId) return
+    const ok = await copyMoodboardLink(activeId)
+    notify(ok ? 'Lien copié dans le presse-papiers' : 'Impossible de copier le lien')
+  }
 
   useEffect(() => {
     const handler = e => {
@@ -366,6 +428,25 @@ export default function MoodboardPage() {
             style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${showCalc ? T.accent : T.border}`, background: showCalc ? `${T.accent}18` : 'transparent', color: showCalc ? T.accent : T.ink, cursor: 'pointer', fontSize: 14, flexShrink: 0 }}>
             🧮
           </button>
+          {activeId && displayImages.length > 0 && (
+            <>
+              <button type="button" disabled={exporting} onClick={handleExportPng} title="Export PNG"
+                className="forma-btn-glass"
+                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, cursor: exporting ? 'wait' : 'pointer', fontSize: 11, flexShrink: 0 }}>
+                {exporting ? '⏳' : '⬇ PNG'}
+              </button>
+              <button type="button" disabled={exporting} onClick={handleExportPdf} title="Export PDF"
+                className="forma-btn-glass"
+                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, cursor: exporting ? 'wait' : 'pointer', fontSize: 11, flexShrink: 0 }}>
+                PDF
+              </button>
+              <button type="button" onClick={handleShareLink} title="Copier le lien du board"
+                className="forma-btn-glass"
+                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, cursor: 'pointer', fontSize: 11, flexShrink: 0 }}>
+                🔗
+              </button>
+            </>
+          )}
           {activeId && (
             <div ref={addMenuRef} style={{ position: 'relative', flexShrink: 0 }}>
               <button onClick={() => setShowAddMenu(v => !v)}
@@ -584,6 +665,11 @@ export default function MoodboardPage() {
               {displayImages[lbIdx]?.tags?.map(t => <span key={t} style={{ background: 'rgba(255,255,255,.18)', color: '#fff', fontSize: 10, padding: '2px 8px', borderRadius: 8 }}>{t}</span>)}
             </div>
           </div>
+        </div>
+      )}
+      {toast && (
+        <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 2000, background: T.panel, color: '#fff', padding: '8px 16px', borderRadius: 20, fontSize: 12, boxShadow: TOKENS.shadow.float, pointerEvents: 'none' }}>
+          {toast}
         </div>
       )}
     </div>

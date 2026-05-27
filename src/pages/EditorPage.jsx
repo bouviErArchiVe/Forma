@@ -51,10 +51,9 @@ import { DocPlacedStatic } from "@/components/docs/DocPlacedView"
 import {
   euProfilesAsLibItems,
   customProfileToLibEntry,
-  buildCustomProfile,
-  PROFILE_TYPES,
   renderWlsSvg,
 } from "@/lib/structuralProfiles"
+import CustomProfileForm from "@/components/CustomProfileForm"
 import { screenToPage, pageToScreen } from "@/lib/viewport"
 import { useCanvasViewport } from "@/hooks/useCanvasViewport"
 import { resolvePageDimensions } from "@/lib/pageFormats"
@@ -374,6 +373,7 @@ function renderEl(el,sc=1/50,sx=1,sy=1){
   if(el.type==="win")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(122,181,212,.25)"stroke="#4a90b8"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#4a90b8"strokeWidth={.8}/><line x1={0}y1={H/2}x2={W}y2={H/2}stroke="#4a90b8"strokeWidth={.8}/></svg>
   if(el.type==="spreadsheet")return<SpreadsheetPlacedStatic el={el} sx={sx} sy={sy}/>
   if(el.type==="document")return<DocPlacedStatic el={el} sx={sx} sy={sy}/>
+  if(el.type==="drawn"&&el.sketchUrl)return<img src={el.sketchUrl} alt={el.l||"Profil"} style={{width:W,height:H,objectFit:"contain",display:"block"}}/>
   return<div style={{width:W,height:H,background:"#ccc",border:"1px solid #999",fontSize:8,overflow:"hidden"}}>{el.l}</div>
 }
 
@@ -1427,7 +1427,6 @@ export default function EditorPage(){
   const[libSearch,setLibSearch]=useState("")
   const[libPending,setLibPending]=useState(null)
   const[showNewProfile,setShowNewProfile]=useState(false)
-  const[profileDraft,setProfileDraft]=useState({name:"",profileType:"HEA",w:100,h:100,tf:8,tw:5,t:6})
   const[pageBgImage,setPageBgImage]=useState(null)
   const[pageBgOpacity,setPageBgOpacity]=useState(1)
   const pagePhotoInputRef=useRef(null)
@@ -2984,27 +2983,16 @@ export default function EditorPage(){
             <button type="button" onClick={()=>setShowNewProfile(v=>!v)} style={{flex:1,padding:"4px 0",borderRadius:7,border:`1px solid ${showNewProfile?T.accent:T.border}`,background:showNewProfile?`${T.accent}12`:T.bg,color:showNewProfile?T.accent:T.muted,cursor:"pointer",fontSize:9,fontWeight:700}}>+ Profil perso</button>
           </div>
           {showNewProfile&&(
-            <div style={{padding:"6px 8px",borderBottom:`1px solid ${T.border}`,display:"flex",flexDirection:"column",gap:5,flexShrink:0}}>
-              <input value={profileDraft.name} onChange={e=>setProfileDraft(d=>({...d,name:e.target.value}))} placeholder="Nom du profil" style={{width:"100%",padding:"4px 7px",borderRadius:6,border:`1px solid ${T.border}`,fontSize:10,background:T.bg,color:T.ink,boxSizing:"border-box"}}/>
-              <select value={profileDraft.profileType} onChange={e=>setProfileDraft(d=>({...d,profileType:e.target.value}))} style={{width:"100%",padding:"4px 7px",borderRadius:6,border:`1px solid ${T.border}`,fontSize:10,background:T.bg,color:T.ink}}>
-                {PROFILE_TYPES.map(t=><option key={t.id} value={t.id}>{t.label}</option>)}
-              </select>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
-                {[["w","Largeur mm"],["h","Hauteur mm"],["tf","Semelle tf"],["tw","Âme tw"]].map(([k,l])=>(
-                  <label key={k} style={{fontSize:8,color:T.muted}}>{l}
-                    <input type="number" min={2} value={profileDraft[k]} onChange={e=>setProfileDraft(d=>({...d,[k]:e.target.value}))} style={{display:"block",width:"100%",marginTop:2,padding:"3px 5px",borderRadius:5,border:`1px solid ${T.border}`,fontSize:9,background:T.bg,color:T.ink,boxSizing:"border-box"}}/>
-                  </label>
-                ))}
-              </div>
-              <button type="button" onClick={()=>{
-                const p=buildCustomProfile(profileDraft)
+            <CustomProfileForm
+              T={T}
+              onCancel={()=>setShowNewProfile(false)}
+              onSave={(p)=>{
                 addCustomProfile(p)
                 setLibCat("⭐ Mes profils")
                 setShowNewProfile(false)
-                setProfileDraft({name:"",profileType:"HEA",w:100,h:100,tf:8,tw:5,t:6})
                 addNotification(`Profil « ${p.name} » ajouté`,"success")
-              }} style={{padding:"5px 0",borderRadius:7,border:"none",background:T.accent,color:"#fff",fontSize:10,fontWeight:700,cursor:"pointer"}}>Enregistrer</button>
-            </div>
+              }}
+            />
           )}
           <div style={{overflowX:"auto",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
             <div style={{display:"flex",gap:3,padding:"4px 5px",whiteSpace:"nowrap"}}>

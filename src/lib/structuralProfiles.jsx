@@ -32,6 +32,18 @@ export const EU_STEEL_PROFILES = [
 ]
 
 export function profileToLibEntry(p) {
+  if (p.sketchUrl || p.mode === 'draw') {
+    return {
+      id: p.id,
+      l: p.l || p.name || 'Profil dessiné',
+      w: p.w || 100,
+      h: p.h || 100,
+      fw: p.w || 100,
+      type: 'drawn',
+      sketchUrl: p.sketchUrl,
+      custom: true,
+    }
+  }
   const type = p.profileType === 'HSS' ? 'hss' : p.profileType === 'WLS' ? 'wls' : 'Ibeam'
   return {
     id: p.id,
@@ -49,6 +61,18 @@ export function profileToLibEntry(p) {
 }
 
 export function customProfileToLibEntry(profile) {
+  if (profile.sketchUrl || profile.mode === 'draw') {
+    return profileToLibEntry({
+      id: profile.id,
+      name: profile.name,
+      l: profile.name,
+      w: profile.w || 100,
+      h: profile.h || 100,
+      sketchUrl: profile.sketchUrl,
+      mode: 'draw',
+      custom: true,
+    })
+  }
   return profileToLibEntry({
     id: profile.id,
     l: profile.name,
@@ -62,7 +86,7 @@ export function customProfileToLibEntry(profile) {
   })
 }
 
-export function buildCustomProfile({ name, profileType, w, h, tf, tw, t }) {
+export function buildCustomProfile({ name, profileType, w, h, tf, tw, t, sketchUrl, mode }) {
   return {
     id: `custom-${Date.now()}`,
     name: (name || 'Profil perso').trim(),
@@ -72,6 +96,8 @@ export function buildCustomProfile({ name, profileType, w, h, tf, tw, t }) {
     tf: Math.max(2, Number(tf) || 8),
     tw: Math.max(2, Number(tw) || 5),
     t: Math.max(2, Number(t) || 6),
+    sketchUrl: sketchUrl || null,
+    mode: mode || (sketchUrl ? 'draw' : 'dims'),
     createdAt: new Date().toISOString(),
   }
 }
