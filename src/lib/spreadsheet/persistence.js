@@ -1,5 +1,6 @@
 import { createSafePersistStorage } from '@/lib/storage'
 import { createSheet, cloneSheet } from './model'
+import { notifySheetUpdated } from './sync'
 
 const KEY = 'forma-spreadsheets'
 
@@ -32,6 +33,7 @@ export function saveSheet(sheet) {
   if (idx >= 0) list[idx] = next
   else list.unshift(next)
   writeAll(list)
+  notifySheetUpdated(next.id)
   return next
 }
 

@@ -16,6 +16,7 @@ import {
   searchDocs, sortDocs, autosaveDoc, getDoc,
 } from '@/lib/docs/persistence'
 import { exportDocPdf, exportDocTxt, exportDocMd, exportDocPng, renderPageToDataUrl } from '@/lib/docs/export'
+import { exportDocDocx } from '@/lib/docs/exportDocx'
 
 export default function DocsPage() {
   const navigate = useNavigate()
@@ -118,6 +119,7 @@ export default function DocsPage() {
     else if (type === 'md') exportDocMd(doc)
     else if (type === 'png') await exportDocPng(pageRefs.current[0], `${safe}.png`)
     else if (type === 'pdf') await exportDocPdf(pageRefs.current.filter(Boolean), `${safe}.pdf`)
+    else if (type === 'docx') await exportDocDocx(doc)
     addNotification(`Export ${type.toUpperCase()} lancé`, 'success')
   }, [doc, addNotification])
 
@@ -164,6 +166,7 @@ export default function DocsPage() {
           <GlassButton T={T} size="sm" onClick={() => setInsertModal(true)}>Insérer dans la page</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('txt')}>TXT</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('md')}>MD</GlassButton>
+          <GlassButton T={T} size="sm" onClick={() => handleExport('docx')}>DOCX</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('png')}>PNG</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('pdf')}>PDF</GlassButton>
         </header>

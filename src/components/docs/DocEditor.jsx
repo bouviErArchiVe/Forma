@@ -4,30 +4,17 @@ import {
   buildTocHtml, findInDoc, replaceInDoc,
 } from '@/lib/docs/model'
 import { listSheets, getSheet } from '@/lib/spreadsheet/persistence'
-import { computeSheet } from '@/lib/spreadsheet/formulas'
-import { cellKey } from '@/lib/spreadsheet/cells'
+import { subscribeSheetUpdates } from '@/lib/spreadsheet/sync'
+import { hydrateSheetEmbeds, insertSheetEmbedMarker } from '@/lib/docs/embeds'
+import {
+  createEmptySketch, insertSketchEmbed, upsertDocSketch, getDocSketch, strokesToDataUrl,
+} from '@/lib/docs/sketches'
 import DocPreview from '@/components/docs/DocPreview'
+import DocSketchPad from '@/components/docs/DocSketchPad'
+import ModalOverlay from '@/components/ui/ModalOverlay'
 
 const FONTS = ['Inter', 'Georgia', 'Times New Roman', 'Arial', 'Courier New', 'Patrick Hand']
 const SIZES = [10, 11, 12, 14, 16, 18, 24, 32]
-
-function sheetToHtmlTable(sheet) {
-  if (!sheet) return '<p>Tableau introuvable</p>'
-  const computed = computeSheet(sheet)
-  const rows = Math.min(sheet.rows, 12)
-  const cols = Math.min(sheet.cols, 8)
-  let html = `<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;margin:12px 0"><caption><strong>📊 ${sheet.name}</strong></caption><tbody>`
-  for (let r = 0; r < rows; r++) {
-    html += '<tr>'
-    for (let c = 0; c < cols; c++) {
-      const v = computed[cellKey(r, c)]?.value ?? ''
-      html += `<td>${String(v).replace(/</g, '&lt;')}</td>`
-    }
-    html += '</tr>'
-  }
-  html += '</tbody></table><p></p>'
-  return html
-}
 
 function execCmd(cmd, val = null) {
   document.execCommand('styleWithCSS', false, true)
@@ -45,6 +32,7 @@ export default function DocEditor({
   const [findText, setFindText] = useState('')
   const [replaceText, setReplaceText] = useState('')
   const [copiedStyle, setCopiedStyle] = useState(null)
+  const [sketchModal, setSketchModal] = useState(null)
   const editorRefs = useRef([])
   const containerRef = useRef(null)
 
@@ -56,6 +44,17 @@ export default function DocEditor({
   useEffect(() => {
     onFullscreenChange?.(fullscreen)
   }, [fullscreen, onFullscreenChange])
+
+  const refreshEmbeds = useCallback(() => {
+    editorRefs.current.forEach((el) => { if (el) hydrateSheetEmbeds(el) })
+  }, [])
+
+  useEffect(() => subscribeSheetUpdates(() => refreshEmbeds()), [refreshEmbeds])
+
+  useEffect(() => {
+    const t = setTimeout(refreshEmbeds, 50)
+    return () => clearTimeout(t)
+  }, [doc.pages, activePage, refreshEmbeds])
 
   useEffect(() => {
     const el = editorRefs.current[activePage]
@@ -105,7 +104,51 @@ export default function DocEditor({
   const insertSheet = (sheetId) => {
     const sheet = getSheet(sheetId)
     if (!sheet) return
-    insertHtml(sheetToHtmlTable(sheet))
+    insertHtml(insertSheetEmbedMarker(sheetId, sheet.name))
+    setTimeout(refreshEmbeds, 30)
+  }
+
+  const openSketch = (existing = null) => {
+    setSketchModal(existing || createEmptySketch())
+  }
+
+  const saveSketch = (sketchData) => {
+    const preview = strokesToDataUrl(sketchData.strokes, sketchData.width, sketchData.height)
+    const fullSketch = { ...sketchData, preview }
+    let nextDoc = upsertDocSketch(doc, fullSketch)
+
+    if (sketchModal?.existingEmbedId) {
+      const pages = nextDoc.pages.map((p) => {
+        const wrap = document.createElement('div')
+        wrap.innerHTML = p.html || ''
+        const node = wrap.querySelector(`[data-sketch-id="${sketchData.id}"] img`)
+        if (node) node.setAttribute('src', preview)
+        return { ...p, html: wrap.innerHTML }
+      })
+      nextDoc = { ...nextDoc, pages }
+      pages.forEach((p, i) => {
+        const el = editorRefs.current[i]
+        if (el && document.activeElement !== el) el.innerHTML = p.html || ''
+      })
+    } else {
+      insertHtml(insertSketchEmbed(fullSketch))
+      const el = editorRefs.current[activePage]
+      if (el) {
+        nextDoc = upsertDocSketch({ ...doc, pages: doc.pages.map((p, i) => (i === activePage ? { ...p, html: el.innerHTML } : p)) }, fullSketch)
+      }
+    }
+    onChange(nextDoc)
+    setSketchModal(null)
+  }
+
+  const handleEditorDblClick = (e, index) => {
+    const sketchNode = e.target.closest('[data-forma-embed="sketch"]')
+    if (!sketchNode) return
+    e.preventDefault()
+    const id = sketchNode.getAttribute('data-sketch-id')
+    const existing = getDocSketch(doc, id) || createEmptySketch()
+    setSketchModal({ ...existing, id, existingEmbedId: id })
+    setActivePage(index)
   }
 
   const copyFormat = () => {
@@ -172,6 +215,7 @@ export default function DocEditor({
             editorRefs.current[index] = el
             if (el && el.innerHTML !== (pg.html || '<p></p>') && document.activeElement !== el) {
               el.innerHTML = pg.html || '<p></p>'
+              hydrateSheetEmbeds(el)
             }
           }}
           contentEditable={!readOnly && !doc.locked && !readingMode}
@@ -179,6 +223,7 @@ export default function DocEditor({
           spellCheck
           onInput={() => handleInput(index)}
           onFocus={() => setActivePage(index)}
+          onDoubleClick={(e) => handleEditorDblClick(e, index)}
           style={{ outline: 'none', minHeight: PAGE_H - (doc.settings?.marginMm || 20) * 2 }}
           className="forma-doc-page"
         />
@@ -222,6 +267,7 @@ export default function DocEditor({
       {btn('—', () => run('insertHorizontalRule'))}
       {btn('🔗', insertLink)}
       {btn('🖼', insertImage)}
+      {btn('✏️', () => openSketch(), false, 'Croquis')}
       {btn('⊞', () => insertHtml('<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><tr><td></td><td></td></tr><tr><td></td><td></td></tr></table><p></p>'))}
       {btn('📦', () => insertHtml('<div style="border:2px solid #ccd3dc;border-radius:8px;padding:16px;margin:12px 0;background:#fafbfc"><p>Encadré</p></div><p></p>'))}
       {btn('↦', () => run('indent'))}
@@ -243,7 +289,7 @@ export default function DocEditor({
         disabled={readOnly || doc.locked}
         style={{ padding: '4px 6px', fontSize: 11, borderRadius: 6, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, maxWidth: 140 }}
       >
-        <option value="">📊 Tableur…</option>
+        <option value="">📊 Tableur (lié)…</option>
         {sheets.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
       </select>
       <span style={{ fontSize: 11, color: T.muted, marginLeft: 'auto' }}>
@@ -276,7 +322,9 @@ export default function DocEditor({
             <button type="button" onClick={() => setReadingMode(false)} style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: 6, padding: '6px 12px', cursor: 'pointer', color: T.ink }}>Quitter lecture</button>
           </div>
           {doc.pages.map((pg, i) => (
-            <div key={pg.id} style={{ ...pageStyle, boxShadow: 'none', marginBottom: 24 }} dangerouslySetInnerHTML={{ __html: pg.html }} />
+            <div key={pg.id} style={{ ...pageStyle, boxShadow: 'none', marginBottom: 24 }}>
+              <div className="forma-doc-page" dangerouslySetInnerHTML={{ __html: pg.html }} ref={(el) => { if (el) hydrateSheetEmbeds(el) }} />
+            </div>
           ))}
         </div>
       ) : (
@@ -325,6 +373,11 @@ export default function DocEditor({
       )}
       {fullscreen && (
         <button type="button" onClick={() => setFullscreen(false)} style={{ position: 'fixed', top: 12, right: 12, zIndex: 10000, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: '8px 12px', cursor: 'pointer' }}>✕ Fermer</button>
+      )}
+      {sketchModal && (
+        <ModalOverlay onClose={() => setSketchModal(null)}>
+          <DocSketchPad T={T} sketch={sketchModal} onSave={saveSketch} onClose={() => setSketchModal(null)} />
+        </ModalOverlay>
       )}
     </div>
   )

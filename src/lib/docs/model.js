@@ -56,6 +56,7 @@ export function createDoc(name = 'Nouveau document', templateId = 'blank') {
     lineHeight: 1.6,
     paragraphSpacing: 12,
     pages: tpl.pages.map((p) => createPage(p.html)),
+    sketches: {},
     settings: { marginMm: 20 },
   }
 }

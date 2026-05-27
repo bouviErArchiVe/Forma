@@ -46,7 +46,7 @@ import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from
 import { loadEraserSettings, saveEraserSettings, ERASER_MODES } from "@/lib/eraserSettings"
 import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/lib/canvasHitTest"
 import { getPlacedSize, getPlacedLocalBounds, resizePlacedItem } from "@/lib/placedElements"
-import { renderSpreadsheetPlaced } from "@/components/spreadsheet/SpreadsheetPlacedView"
+import { renderSpreadsheetPlaced, SpreadsheetPlacedStatic } from "@/components/spreadsheet/SpreadsheetPlacedView"
 import { renderDocPlaced } from "@/components/docs/DocPlacedView"
 import {
   euProfilesAsLibItems,
@@ -370,7 +370,7 @@ function renderEl(el,sc=1/50,sx=1,sy=1){
   if(el.type==="door")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(200,160,80,.12)"stroke="#8b6f47"strokeWidth={1.5}/><path d={`M ${W*.05},${H*.97} A ${W*.9},${H*.9} 0 0 1 ${W*.95},${H*.97}`}fill="none"stroke="#8b6f47"strokeWidth={.8}strokeDasharray="3,2"/></svg>
   if(el.type==="doorD")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(200,160,80,.12)"stroke="#8b6f47"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#8b6f47"strokeWidth={.8}/></svg>
   if(el.type==="win")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(122,181,212,.25)"stroke="#4a90b8"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#4a90b8"strokeWidth={.8}/><line x1={0}y1={H/2}x2={W}y2={H/2}stroke="#4a90b8"strokeWidth={.8}/></svg>
-  if(el.type==="spreadsheet")return renderSpreadsheetPlaced(el,sx,sy)
+  if(el.type==="spreadsheet")return<SpreadsheetPlacedStatic el={el} sx={sx} sy={sy}/>
   if(el.type==="document")return renderDocPlaced(el,sx,sy)
   return<div style={{width:W,height:H,background:"#ccc",border:"1px solid #999",fontSize:8,overflow:"hidden"}}>{el.l}</div>
 }
