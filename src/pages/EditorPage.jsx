@@ -46,6 +46,13 @@ import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from
 import { loadEraserSettings, saveEraserSettings, ERASER_MODES } from "@/lib/eraserSettings"
 import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/lib/canvasHitTest"
 import { getPlacedSize, getPlacedLocalBounds, resizePlacedItem } from "@/lib/placedElements"
+import {
+  euProfilesAsLibItems,
+  customProfileToLibEntry,
+  buildCustomProfile,
+  PROFILE_TYPES,
+  renderWlsSvg,
+} from "@/lib/structuralProfiles"
 import { screenToPage } from "@/lib/viewport"
 import { useCanvasViewport } from "@/hooks/useCanvasViewport"
 import { PAGE_FORMATS, resolvePageDimensions } from "@/lib/pageFormats"
@@ -352,6 +359,7 @@ function renderEl(el,sc=1/50,sx=1,sy=1){
   if(["wood","glulam","clt"].includes(el.type)){const c=el.type==="wood"?"#c8a96a":el.type==="glulam"?"#b8904a":"#d4b896";return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill={c}stroke="#8B6914"strokeWidth={.8}/>{[.25,.5,.75].map(r=><line key={r}x1={W*r}y1={0}x2={W*r}y2={H}stroke="#a07820"strokeWidth={.4}strokeDasharray="3,4"/>)}</svg>}
   if(el.type==="hss")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="#607d8b"stroke="#37474f"strokeWidth={1}/><rect x={t}y={t}width={Math.max(W-2*t,1)}height={Math.max(H-2*t,1)}fill="white"stroke="#546e7a"strokeWidth={.5}/></svg>
   if(el.type==="Ibeam"){const fw=(el.fw||el.w)*px*sx,ft2=(el.ft||5)*px*sy,wt2=(el.wt||4)*px*Math.min(sx,sy);return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={(fw-wt2)/2}y={ft2}width={wt2}height={Math.max(H-2*ft2,1)}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
+  if(el.type==="wls")return renderWlsSvg(el,px,sx,sy)
   if(el.type==="channel"){const fw=(el.fw||el.w)*px*sx,ft2=(el.ft||5)*px*sy,wt2=(el.wt||4)*px*Math.min(sx,sy);return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={ft2}width={wt2}height={H-2*ft2}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
   if(el.type==="angle"){const t2=t*.8;return<svg width={W}height={H}style={{display:"block"}}><polygon points={`0,0 ${t2},0 ${t2},${H-t2} ${W},${H-t2} ${W},${H} 0,${H}`}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/></svg>}
   if(["conc","concB"].includes(el.type))return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="#c0c0c0"stroke="#888"strokeWidth={1}/><line x1={0}y1={0}x2={W}y2={H}stroke="#aaa"strokeWidth={.6}/><line x1={W}y1={0}x2={0}y2={H}stroke="#aaa"strokeWidth={.6}/></svg>
@@ -1309,7 +1317,7 @@ function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridS
 export default function EditorPage(){
   const navigate=useNavigate()
   const { id: routeNotebookId } = useParams()
-  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,notebooks}=useAppStore()
+  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,notebooks,customProfiles,addCustomProfile,removeCustomProfile}=useAppStore()
   const{ T }=useTheme()
   const { user } = useAuth()
   const collab = useCollaboration()
@@ -1363,6 +1371,11 @@ export default function EditorPage(){
   const[libCat,setLibCat]=useState("🪵 Bois Montants")
   const[libSearch,setLibSearch]=useState("")
   const[libPending,setLibPending]=useState(null)
+  const[showNewProfile,setShowNewProfile]=useState(false)
+  const[profileDraft,setProfileDraft]=useState({name:"",profileType:"HEA",w:100,h:100,tf:8,tw:5,t:6})
+  const[pageBgImage,setPageBgImage]=useState(null)
+  const[pageBgOpacity,setPageBgOpacity]=useState(1)
+  const pagePhotoInputRef=useRef(null)
   const[mousePos,setMousePos]=useState({x:0,y:0})
   const[placed,setPlaced]=useState([])
   const[selected,setSelected]=useState(null)
@@ -1518,6 +1531,8 @@ export default function EditorPage(){
     setPageGridStyle(meta.gridStyle||defaultGridStyle(nb.template))
     setInfiniteMode(!!meta.infinite)
     setPageName(meta.name||"")
+    setPageBgImage(meta.bgImage??null)
+    setPageBgOpacity(meta.bgImageOpacity??1)
     setNextPageFmt(meta.format||"a4")
   },[nb.template])
 
@@ -1532,7 +1547,9 @@ export default function EditorPage(){
     gridStyle:pageGridStyle,
     infinite:infiniteMode,
     name:pageName,
-  }),[pageFormat,pageRotation,customPageMm,placed,importedImages,pageColor,gridColor,pageGridStyle,infiniteMode,pageName])
+    bgImage:pageBgImage,
+    bgImageOpacity:pageBgOpacity,
+  }),[pageFormat,pageRotation,customPageMm,placed,importedImages,pageColor,gridColor,pageGridStyle,infiniteMode,pageName,pageBgImage,pageBgOpacity])
 
   const buildPagePayload=useCallback(()=>({
     elements:JSON.stringify(buildCurrentPageMeta()),
@@ -1600,10 +1617,16 @@ export default function EditorPage(){
     enabled:!readOnly,
     allowPan:!readOnly,
   })
-  const curLib=libMode==="symbols"?SYMBOLS_LIB:libMode==="metric"?LIB_METRIC:LIB_IMPERIAL
+  const metricLib=useMemo(()=>{
+    const base={...LIB_METRIC,"⚙️ Profilés EU":euProfilesAsLibItems()}
+    const custom=(customProfiles||[]).map(customProfileToLibEntry)
+    if(custom.length)base["⭐ Mes profils"]=custom
+    return base
+  },[customProfiles])
+  const curLib=libMode==="symbols"?SYMBOLS_LIB:libMode==="metric"?metricLib:LIB_IMPERIAL
   const libCats=Object.keys(curLib)
   const libItems=useMemo(()=>{const items=curLib[libCat]||[];return libSearch?items.filter(e=>e.l.toLowerCase().includes(libSearch.toLowerCase())):items},[libCat,libSearch,curLib,libMode])
-  useEffect(()=>{const cats=Object.keys(libMode==="metric"?LIB_METRIC:LIB_IMPERIAL);if(!cats.includes(libCat))setLibCat(cats[0])},[libMode])
+  useEffect(()=>{const cats=Object.keys(libMode==="metric"?metricLib:LIB_IMPERIAL);if(!cats.includes(libCat))setLibCat(cats[0])},[libMode,metricLib,libCat])
 
   // Load page + all pages for thumbnails
   useEffect(()=>{
@@ -1672,7 +1695,7 @@ export default function EditorPage(){
   },[nb.id,nb.template,page,applyPageMetaToState])
 
   // Add new page
-  const addPage=async()=>{
+  const addPage=async(bgImage=null)=>{
     if(addingPageRef.current)return
     addingPageRef.current=true
     try{
@@ -1684,6 +1707,8 @@ export default function EditorPage(){
         customMm:customPageMm,
         items:[],
         gridStyle:pageGridStyle||defaultGridStyle(nb.template),
+        bgImage:bgImage||null,
+        bgImageOpacity:bgImage?0.92:1,
       })
       const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
       const{data:{session}}=await supabase.auth.getSession()
@@ -1712,7 +1737,7 @@ export default function EditorPage(){
         applyPageMetaToState(parsePageElements(newMeta,nb.template))
         setPage(newNum)
         scheduleSave()
-        addNotification(`Page ${newNum} créée`,"success")
+        addNotification(bgImage?`Page ${newNum} créée avec photo`:`Page ${newNum} créée`,"success")
         pushAction({type:"page_bg",detail:`Page ${newNum} créée`})
         return
       }
@@ -1731,7 +1756,7 @@ export default function EditorPage(){
       applyPageMetaToState(parsePageElements(newMeta,nb.template))
       setPage(newNum)
       scheduleSave()
-      addNotification(`Page ${newNum} créée`,"success")
+      addNotification(bgImage?`Page ${newNum} créée avec photo`:`Page ${newNum} créée`,"success")
       pushAction({type:"page_bg",detail:`Page ${newNum} créée`})
     }catch(e){
       console.error(e)
@@ -1980,6 +2005,25 @@ export default function EditorPage(){
   const setGridColorLogged=useCallback(c=>{setGridColor(c);pushAction({type:"page_grid",color:c,detail:c||"défaut"});scheduleSave()},[pushAction,scheduleSave])
   const setPageGridStyleLogged=useCallback(s=>{setPageGridStyle(s);pushAction({type:"page_grid",detail:s});scheduleSave()},[pushAction,scheduleSave])
 
+  const handlePagePhotoPick=useCallback(async(e,mode="current")=>{
+    const file=e.target.files?.[0]
+    e.target.value=""
+    if(!file||!file.type.startsWith("image/"))return
+    const reader=new FileReader()
+    reader.onload=async()=>{
+      let url=reader.result
+      if(typeof url==="string"&&url.length>480000)url=url.slice(0,480000)
+      if(mode==="new")await addPage(url)
+      else{
+        setPageBgImage(url)
+        setPageBgOpacity(0.92)
+        scheduleSave()
+        addNotification("Photo de fond appliquée","success")
+      }
+    }
+    reader.readAsDataURL(file)
+  },[addPage,scheduleSave,addNotification])
+
   const applyPageSettings=useCallback(async(pageNum,partial)=>{
     if(pageNum===page){
       if(partial.format!==undefined){setPageFormat(partial.format);setNextPageFmt(partial.format)}
@@ -1990,6 +2034,8 @@ export default function EditorPage(){
       if(partial.gridStyle!==undefined)setPageGridStyle(partial.gridStyle)
       if(partial.infinite!==undefined)setInfiniteMode(!!partial.infinite)
       if(partial.name!==undefined)setPageName(partial.name)
+      if(partial.bgImage!==undefined)setPageBgImage(partial.bgImage)
+      if(partial.bgImageOpacity!==undefined)setPageBgOpacity(partial.bgImageOpacity)
       scheduleSave()
       return
     }
@@ -2571,6 +2617,9 @@ export default function EditorPage(){
               }}>
               {infiniteMode&&<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={3000}height={3000}><defs><pattern id="inf-grid"width={37.8}height={37.8}patternUnits="userSpaceOnUse"><path d={`M 37.8 0 L 0 0 0 37.8`}fill="none"stroke={gridColor||T.grid}strokeWidth={.6}/></pattern></defs><rect width={3000}height={3000}fill={`url(#inf-grid)`}/></svg>}
               {!infiniteMode&&<Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={PW} PH={PH}/>}
+              {pageBgImage&&!infiniteMode&&(
+                <img src={pageBgImage} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:pageBgOpacity,pointerEvents:"none",zIndex:1}}/>
+              )}
 
               {/* Imported images */}
               {importedImages.map(img=>{
@@ -2756,13 +2805,39 @@ export default function EditorPage(){
         <DraggablePanel T={T} id="editor-library" title="Bibliothèque" open={showLib} onClose={()=>setShowLib(false)} width={280} defaultSide="right">
           <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
             {[["metric","📏 mm"],["imperial","📐 in"],["symbols","🏠 Sym."]].map(([m,l],i,arr)=>(
-              <button key={m} type="button" onClick={()=>{setLibMode(m);setLibCat(Object.keys(m==="symbols"?SYMBOLS_LIB:m==="metric"?LIB_METRIC:LIB_IMPERIAL)[0])}}
+              <button key={m} type="button" onClick={()=>{setLibMode(m);setLibCat(Object.keys(m==="symbols"?SYMBOLS_LIB:m==="metric"?metricLib:LIB_IMPERIAL)[0])}}
                 style={{flex:1,padding:"5px 0",border:"none",background:libMode===m?`${T.accent}18`:T.bg,color:libMode===m?T.accent:T.muted,cursor:"pointer",fontSize:10,fontWeight:libMode===m?700:400,borderRight:i<arr.length-1?`1px solid ${T.border}`:"none"}}>{l}</button>
             ))}
           </div>
           <div style={{padding:"4px 7px",borderBottom:`1px solid ${T.border}`}}>
             <input value={libSearch} onChange={e=>setLibSearch(e.target.value)} placeholder="Chercher…" style={{width:"100%",padding:"4px 7px",borderRadius:7,border:`1px solid ${T.border}`,fontSize:10,outline:"none",background:T.bg,color:T.ink,boxSizing:"border-box"}}/>
           </div>
+          <div style={{padding:"4px 7px",borderBottom:`1px solid ${T.border}`,display:"flex",gap:6,flexShrink:0}}>
+            <button type="button" onClick={()=>setShowNewProfile(v=>!v)} style={{flex:1,padding:"4px 0",borderRadius:7,border:`1px solid ${showNewProfile?T.accent:T.border}`,background:showNewProfile?`${T.accent}12`:T.bg,color:showNewProfile?T.accent:T.muted,cursor:"pointer",fontSize:9,fontWeight:700}}>+ Profil perso</button>
+          </div>
+          {showNewProfile&&(
+            <div style={{padding:"6px 8px",borderBottom:`1px solid ${T.border}`,display:"flex",flexDirection:"column",gap:5,flexShrink:0}}>
+              <input value={profileDraft.name} onChange={e=>setProfileDraft(d=>({...d,name:e.target.value}))} placeholder="Nom du profil" style={{width:"100%",padding:"4px 7px",borderRadius:6,border:`1px solid ${T.border}`,fontSize:10,background:T.bg,color:T.ink,boxSizing:"border-box"}}/>
+              <select value={profileDraft.profileType} onChange={e=>setProfileDraft(d=>({...d,profileType:e.target.value}))} style={{width:"100%",padding:"4px 7px",borderRadius:6,border:`1px solid ${T.border}`,fontSize:10,background:T.bg,color:T.ink}}>
+                {PROFILE_TYPES.map(t=><option key={t.id} value={t.id}>{t.label}</option>)}
+              </select>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
+                {[["w","Largeur mm"],["h","Hauteur mm"],["tf","Semelle tf"],["tw","Âme tw"]].map(([k,l])=>(
+                  <label key={k} style={{fontSize:8,color:T.muted}}>{l}
+                    <input type="number" min={2} value={profileDraft[k]} onChange={e=>setProfileDraft(d=>({...d,[k]:e.target.value}))} style={{display:"block",width:"100%",marginTop:2,padding:"3px 5px",borderRadius:5,border:`1px solid ${T.border}`,fontSize:9,background:T.bg,color:T.ink,boxSizing:"border-box"}}/>
+                  </label>
+                ))}
+              </div>
+              <button type="button" onClick={()=>{
+                const p=buildCustomProfile(profileDraft)
+                addCustomProfile(p)
+                setLibCat("⭐ Mes profils")
+                setShowNewProfile(false)
+                setProfileDraft({name:"",profileType:"HEA",w:100,h:100,tf:8,tw:5,t:6})
+                addNotification(`Profil « ${p.name} » ajouté`,"success")
+              }} style={{padding:"5px 0",borderRadius:7,border:"none",background:T.accent,color:"#fff",fontSize:10,fontWeight:700,cursor:"pointer"}}>Enregistrer</button>
+            </div>
+          )}
           <div style={{overflowX:"auto",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
             <div style={{display:"flex",gap:3,padding:"4px 5px",whiteSpace:"nowrap"}}>
               {libCats.map(c=><button key={c} type="button" onClick={()=>setLibCat(c)} style={{padding:"2px 5px",borderRadius:10,border:`1px solid ${libCat===c?T.accent:T.border}`,background:libCat===c?`${T.accent}15`:T.bg,color:libCat===c?T.accent:T.muted,fontSize:8,cursor:"pointer",whiteSpace:"nowrap"}}>{c}</button>)}
@@ -2777,10 +2852,11 @@ export default function EditorPage(){
                 onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc;const pt=screenToPage({sx:e.clientX-r.left,sy:e.clientY-r.top,viewW:r.width,viewH:r.height,pageW:PW,pageH:PH,zoom,panX,panY});setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,pt.x-elW/2),y:Math.max(0,pt.y-elH/2)}]);pushAction({type:"element_placed",detail:el.l});setLibPending(null);scheduleSave()}}
                 style={{padding:"5px 7px",borderRadius:8,border:`1px solid ${libPending?.id===el.id?T.accent:T.border}`,background:libPending?.id===el.id?`${T.accent}10`:T.bg,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
                 <div style={{width:28,height:28,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>{el.type==="sym"?renderSym(el,1/300):renderEl(el,1/300)}</div>
-                <div>
+                <div style={{flex:1,minWidth:0}}>
                   <div style={{fontSize:9,fontWeight:700,color:T.ink,lineHeight:1.2}}>{el.l}</div>
                   <div style={{fontSize:7,color:T.muted,fontFamily:"monospace",marginTop:1}}>{el.w}×{el.h}mm</div>
                 </div>
+                {el.custom&&<button type="button" onClick={(e)=>{e.stopPropagation();const profile=customProfiles.find(p=>customProfileToLibEntry(p).id===el.id);if(profile)removeCustomProfile(profile.id)}} title="Supprimer" style={{background:"none",border:"none",color:"#e94560",cursor:"pointer",fontSize:10,padding:"0 4px"}}>×</button>}
               </div>
             ))}
           </div>
@@ -2793,7 +2869,9 @@ export default function EditorPage(){
           <button onClick={()=>goToPage(Math.max(1,page-1))} disabled={page===1} style={{background:"none",border:"none",color:page===1?T.border:T.muted,cursor:page===1?"default":"pointer",fontSize:12}}>‹</button>
           <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{page}/{pagesCount}</span>
           <button onClick={()=>goToPage(Math.min(pagesCount,page+1))} style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:12}}>›</button>
-          <button type="button" onClick={addPage} title="Nouvelle page" style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:11}}>＋</button>
+          <button type="button" onClick={()=>addPage()} title="Nouvelle page" style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:11}}>＋</button>
+          <button type="button" onClick={()=>pagePhotoInputRef.current?.click()} title="Page avec photo" style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:11}}>📷</button>
+          <input ref={pagePhotoInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={(e)=>handlePagePhotoPick(e,"new")}/>
         </div>
         <div style={{width:1,height:12,background:T.border}}/>
         <div style={{display:"flex",gap:3,alignItems:"center"}}>

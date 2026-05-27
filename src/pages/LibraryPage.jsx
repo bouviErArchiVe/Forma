@@ -503,6 +503,8 @@ export default function LibraryPage() {
   const [showNewFolder, setShowNewFolder] = useState(false)
   const [showNewSubject, setShowNewSubject] = useState(false)
   const [showFolderAssign, setShowFolderAssign] = useState(null)
+  const [selectionMode, setSelectionMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState(() => new Set())
 
   // New notebook
   const [newTitle, setNewTitle] = useState("")
@@ -702,11 +704,45 @@ export default function LibraryPage() {
   }
 
   const deleteNB = async (id, e) => {
-    e.stopPropagation()
+    e?.stopPropagation?.()
     if (!confirm("Supprimer ce carnet définitivement ?")) return
     setNotebooks(ns => ns.filter(n => n.id !== id))
     if (isLocalNotebookId(id)) deleteLocalNotebook(id)
     if (userId && !isLocalNotebookId(id)) await supabase.from("notebooks").delete().eq("id", id)
+  }
+
+  const clearSelection = useCallback(() => {
+    setSelectionMode(false)
+    setSelectedIds(new Set())
+  }, [])
+
+  const enterSelection = useCallback((id) => {
+    setSelectionMode(true)
+    setSelectedIds(new Set([id]))
+    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10)
+  }, [])
+
+  const toggleSelect = useCallback((id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      if (next.size === 0) setSelectionMode(false)
+      return next
+    })
+  }, [])
+
+  const deleteSelected = async () => {
+    const ids = [...selectedIds]
+    if (!ids.length) return
+    if (!confirm(`Supprimer ${ids.length} carnet(s) définitivement ?`)) return
+    setNotebooks(ns => ns.filter(n => !ids.includes(n.id)))
+    for (const id of ids) {
+      if (isLocalNotebookId(id)) deleteLocalNotebook(id)
+      else if (userId) await supabase.from("notebooks").delete().eq("id", id)
+    }
+    addNotification(`${ids.length} carnet(s) supprimé(s)`, "success")
+    clearSelection()
   }
 
   const renderNotebook = useCallback((nb, view = libraryView) => {
@@ -722,13 +758,17 @@ export default function LibraryPage() {
         template={template}
         folder={folder}
         view={view}
+        selectionMode={selectionMode}
+        selected={selectedIds.has(nb.id)}
+        onLongPress={() => enterSelection(nb.id)}
+        onToggleSelect={() => toggleSelect(nb.id)}
         onOpen={() => open(nb)}
         onStar={(e) => toggleStar(nb.id, e)}
         onAssign={(e) => { e.stopPropagation(); setShowFolderAssign(nb.id) }}
         onDelete={(e) => deleteNB(nb.id, e)}
       />
     )
-  }, [subjects, folders, T, libraryView, toggleStar])
+  }, [subjects, folders, T, libraryView, toggleStar, selectionMode, selectedIds, enterSelection, toggleSelect])
 
   const assignFolder = async (nbId, folderId) => {
     const next = notebooks.map(n => n.id === nbId ? {...n, folder_id: folderId || null, updated_at: new Date().toISOString()} : n)
@@ -745,6 +785,29 @@ export default function LibraryPage() {
     }
     addNotification(folderId ? "Carnet déplacé dans le dossier" : "Carnet retiré du dossier", "success")
     setShowFolderAssign(null)
+  }
+
+  const assignFolderBatch = async (ids, folderId) => {
+    const idSet = new Set(ids)
+    const now = new Date().toISOString()
+    const next = notebooks.map(n => idSet.has(n.id) ? { ...n, folder_id: folderId || null, updated_at: now } : n)
+    setNotebooks(next)
+    for (const id of ids) {
+      const nb = next.find(n => n.id === id)
+      if (!nb) continue
+      if (isLocalNotebookId(id)) upsertLocalNotebook(nb)
+      else if (userId) {
+        try {
+          await supabase.from("notebooks").update({ folder_id: folderId || null }).eq("id", id)
+        } catch {
+          addNotification("Erreur lors du déplacement groupé", "error")
+          return
+        }
+      }
+    }
+    addNotification(`${ids.length} carnet(s) déplacé(s)`, "success")
+    setShowFolderAssign(null)
+    clearSelection()
   }
 
   const notifyFolderResult = (res, successMsg) => {
@@ -1178,13 +1241,15 @@ export default function LibraryPage() {
       {showFolderAssign && (
         <ModalOverlay onClose={() => setShowFolderAssign(null)} variant="sheet">
           <GlassPanel T={T} variant="modal" style={{ padding: 22, width: 340, maxWidth: "94vw" }}>
-            <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: T.ink, marginBottom: 16 }}>📁 Assigner à un dossier</div>
+            <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: T.ink, marginBottom: 16 }}>
+              📁 {Array.isArray(showFolderAssign) ? `Déplacer ${showFolderAssign.length} carnets` : "Assigner à un dossier"}
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <GlassButton T={T} size="md" onClick={() => assignFolder(showFolderAssign, null)} style={{ width: "100%", textAlign: "left", justifyContent: "flex-start" }}>
+              <GlassButton T={T} size="md" onClick={() => Array.isArray(showFolderAssign) ? assignFolderBatch(showFolderAssign, null) : assignFolder(showFolderAssign, null)} style={{ width: "100%", textAlign: "left", justifyContent: "flex-start" }}>
                 ❌ Aucun dossier
               </GlassButton>
               {folders.map(f => (
-                <GlassButton key={f.id} T={T} size="md" onClick={() => assignFolder(showFolderAssign, f.id)} style={{ width: "100%", textAlign: "left", justifyContent: "flex-start", display: "flex", gap: 8 }}>
+                <GlassButton key={f.id} T={T} size="md" onClick={() => Array.isArray(showFolderAssign) ? assignFolderBatch(showFolderAssign, f.id) : assignFolder(showFolderAssign, f.id)} style={{ width: "100%", textAlign: "left", justifyContent: "flex-start", display: "flex", gap: 8 }}>
                   <span style={{ fontSize: 18 }}>{f.e}</span>{f.n}
                 </GlassButton>
               ))}
@@ -1192,6 +1257,21 @@ export default function LibraryPage() {
             <GlassButton T={T} size="md" onClick={() => setShowFolderAssign(null)} style={{ width: "100%", marginTop: 14 }}>Annuler</GlassButton>
           </GlassPanel>
         </ModalOverlay>
+      )}
+
+      {selectionMode && selectedIds.size > 0 && (
+        <div style={{
+          position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 9500,
+          padding: "12px 16px", paddingBottom: "max(12px, env(safe-area-inset-bottom))",
+          background: T.surface, borderTop: `1px solid ${T.border}`,
+          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+          boxShadow: "0 -8px 32px rgba(0,0,0,.12)",
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: T.ink, flex: 1, minWidth: 100 }}>{selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}</span>
+          <button onClick={() => setShowFolderAssign([...selectedIds])} style={{ padding: "8px 14px", borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>📁 Déplacer</button>
+          <button onClick={deleteSelected} style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #e9456044", background: "#e9456012", color: "#e94560", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>🗑 Supprimer</button>
+          <button onClick={clearSelection} style={{ padding: "8px 14px", borderRadius: 8, border: `1px solid ${T.border}`, background: "transparent", color: T.muted, fontSize: 12, cursor: "pointer" }}>Annuler</button>
+        </div>
       )}
 
       {/* HEADER */}

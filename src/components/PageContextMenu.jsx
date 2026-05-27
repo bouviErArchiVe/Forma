@@ -261,6 +261,37 @@ export default function PageContextMenu({
         Orientation : {orientation === 'landscape' ? 'Paysage' : 'Portrait'}
       </div>
 
+      <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 4px', fontWeight: 700 }}>PHOTO DE FOND</div>
+      <div style={{ margin: '0 6px 10px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <label style={{ fontSize: 9, padding: '6px 8px', borderRadius: 7, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, cursor: 'pointer', textAlign: 'center' }}>
+          📷 Importer une photo
+          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+            const file = e.target.files?.[0]
+            e.target.value = ''
+            if (!file) return
+            const reader = new FileReader()
+            reader.onload = () => {
+              let url = reader.result
+              if (typeof url === 'string' && url.length > 480000) url = url.slice(0, 480000)
+              apply({ bgImage: url, bgImageOpacity: meta.bgImageOpacity ?? 0.92 })
+            }
+            reader.readAsDataURL(file)
+          }} />
+        </label>
+        {meta.bgImage && (
+          <>
+            <div style={{ fontSize: 8, color: T.muted }}>Opacité {(Math.round((meta.bgImageOpacity ?? 1) * 100))}%</div>
+            <input type="range" min={0.2} max={1} step={0.05} value={meta.bgImageOpacity ?? 1}
+              onChange={(e) => apply({ bgImageOpacity: parseFloat(e.target.value) })}
+              style={{ width: '100%', accentColor: T.accent }} />
+            <button type="button" onClick={() => apply({ bgImage: null, bgImageOpacity: 1 })}
+              style={{ padding: '5px 8px', borderRadius: 7, border: '1px solid #e9456044', background: '#e9456010', color: '#e94560', fontSize: 9, cursor: 'pointer' }}>
+              Retirer la photo
+            </button>
+          </>
+        )}
+      </div>
+
       <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 4px', fontWeight: 700 }}>GRILLE / PAPIER</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, margin: '0 6px 10px' }}>
         {GRID_STYLES.map((g) => (

@@ -243,13 +243,21 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     .nb-card:nth-child(5) { animation-delay: 140ms; }
     .nb-card:nth-child(6) { animation-delay: 175ms; }
 
-    .forma-tap-target {
-      min-width: 44px;
-      min-height: 44px;
+    .nb-card--selected {
+      border-color: var(--forma-accent, #c8622a) !important;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--forma-accent, #c8622a) 30%, transparent) !important;
+    }
+    .nb-card--selecting:hover {
+      transform: none !important;
     }
 
     .forma-dictation-bar {
       animation: formaDictationBar .85s ease-in-out infinite;
+    }
+
+    .forma-tap-target {
+      min-width: 44px;
+      min-height: 44px;
     }
 
     .forma-btn-glass {

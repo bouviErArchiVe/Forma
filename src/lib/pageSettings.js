@@ -69,6 +69,8 @@ export function defaultPageMeta(notebookTemplate) {
     gridStyle: defaultGridStyle(notebookTemplate),
     infinite: false,
     name: '',
+    bgImage: null,
+    bgImageOpacity: 1,
   }
 }
 
@@ -88,6 +90,8 @@ function migrateMeta(el, notebookTemplate) {
     gridStyle: el.gridStyle || base.gridStyle,
     infinite: !!el.infinite || norm.format === 'infinite',
     name: el.name || '',
+    bgImage: el.bgImage ?? null,
+    bgImageOpacity: el.bgImageOpacity ?? 1,
   }
 }
 
@@ -116,6 +120,8 @@ export function serializePageElements(meta) {
     gridStyle: meta?.gridStyle || 'grid10',
     infinite: !!meta?.infinite || norm.format === 'infinite',
     name: meta?.name || '',
+    bgImage: meta?.bgImage ?? null,
+    bgImageOpacity: meta?.bgImageOpacity ?? 1,
   }
 }
 

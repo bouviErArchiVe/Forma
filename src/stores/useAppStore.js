@@ -55,6 +55,14 @@ const useAppStore = create(
       dictationLang: 'fr-FR',
       setDictationLang: (dictationLang) => set({ dictationLang: normalizeDictationLang(dictationLang) }),
 
+      customProfiles: [],
+      addCustomProfile: (profile) => set((s) => ({
+        customProfiles: [profile, ...s.customProfiles.filter((p) => p.id !== profile.id)],
+      })),
+      removeCustomProfile: (id) => set((s) => ({
+        customProfiles: s.customProfiles.filter((p) => p.id !== id),
+      })),
+
       // ── Notebooks ────────────────────────────────────────
       notebooks: [],
       setNotebooks: (notebooks) => set({ notebooks }),
@@ -211,6 +219,7 @@ const useAppStore = create(
         translationTargetLang: state.translationTargetLang,
         translationMode: state.translationMode,
         dictationLang: state.dictationLang,
+        customProfiles: state.customProfiles,
       }),
     }
   )

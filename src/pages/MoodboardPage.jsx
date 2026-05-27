@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '@/hooks/useAppearance'
 import useMoodboardStore from '@/stores/useMoodboardStore'
 import CalculatorDrawer from '@/components/CalculatorDrawer'
 import { useCalculator } from '@/hooks/useCalculator'
+import { distributeMasonry, masonryColumnCount } from '@/lib/masonryLayout'
 
 const EMOJIS = ['🌅','🎨','🏛','🌿','🌊','🔥','💎','🌙','⭐','🎭','🏙','🌸','🦋','🪨','🌈','🎯','📐','✏','🖼','🗺']
 const mkId = () => Date.now().toString() + Math.random().toString(36).slice(2,6)
@@ -31,11 +32,11 @@ function loadUrl(src) {
   })
 }
 
-function GridCard({ img, T, onStar, onDelete, onFullscreen }) {
+function GridCard({ img, T, onStar, onDelete, onFullscreen, onSelect }) {
   const [hov, setHov] = useState(false)
   return (
-    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{borderRadius:10,overflow:'hidden',background:T.surface,border:`1px solid ${T.border}`,position:'relative',marginBottom:10,cursor:'default',boxShadow:hov?`0 6px 24px ${T.accent}22`:'none',transition:'box-shadow .2s'}}>
+    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} onClick={()=>onSelect?.(img.id)}
+      style={{borderRadius:10,overflow:'hidden',background:T.surface,border:`1px solid ${T.border}`,position:'relative',marginBottom:10,cursor:'pointer',boxShadow:hov?`0 6px 24px ${T.accent}22`:'none',transition:'box-shadow .2s'}}>
       <img src={img.url} alt={img.name} style={{width:'100%',display:'block',objectFit:'cover'}}/>
       {img.starred && !hov && <span style={{position:'absolute',top:6,right:7,fontSize:14,color:'#f5a623',textShadow:'0 1px 3px rgba(0,0,0,.4)'}}>★</span>}
       {hov && <>
@@ -134,6 +135,8 @@ export default function MoodboardPage() {
   const [activeId, setActiveId] = useState(null)
   const [mode, setMode] = useState('grid')
   const [search, setSearch] = useState('')
+  const [tagFilter, setTagFilter] = useState('')
+  const [gridWidth, setGridWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 900)
   const [selectedImgId, setSelectedImgId] = useState(null)
   const [showNewBoard, setShowNewBoard] = useState(false)
   const [newBoardName, setNewBoardName] = useState('')
@@ -156,14 +159,41 @@ export default function MoodboardPage() {
 
   const visibleBoards = nav === 'archives' ? boards.filter(b => b.archived) : boards.filter(b => !b.archived)
 
-  const displayImages = (() => {
-    if (!activeId && nav === 'starred') return images.filter(i => i.starred)
+  const displayImages = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    const match = (i) => {
+      if (tagFilter && !(i.tags || []).some(t => t.toLowerCase() === tagFilter.toLowerCase())) return false
+      if (!q) return true
+      return i.name?.toLowerCase().includes(q)
+        || i.description?.toLowerCase().includes(q)
+        || i.tags?.some(t => t.toLowerCase().includes(q))
+    }
+    if (!activeId && nav === 'starred') return images.filter(i => i.starred).filter(match)
     if (!activeId && nav === 'archives') return []
     if (!activeId) return []
-    let imgs = boardImages(activeId)
-    if (search) imgs = imgs.filter(i => i.name?.toLowerCase().includes(search.toLowerCase()) || i.tags?.some(t => t.toLowerCase().includes(search.toLowerCase())))
-    return imgs
-  })()
+    return boardImages(activeId).filter(match)
+  }, [activeId, nav, search, tagFilter, images, boardImages])
+
+  const boardTags = useMemo(() => {
+    if (!activeId) return []
+    const tags = new Set()
+    boardImages(activeId).forEach(i => (i.tags || []).forEach(t => tags.add(t)))
+    return [...tags].sort()
+  }, [activeId, images, boardImages])
+
+  const masonryCols = useMemo(() => {
+    const colCount = masonryColumnCount(gridWidth)
+    return distributeMasonry(displayImages, colCount, (img) => {
+      const ratio = img.nh && img.nw ? img.nh / img.nw : (img.h && img.w ? img.h / img.w : 0.65)
+      return Math.max(120, Math.round(260 * ratio))
+    })
+  }, [displayImages, gridWidth])
+
+  useEffect(() => {
+    const onResize = () => setGridWidth(window.innerWidth)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   const selectedImg = images.find(i => i.id === selectedImgId)
 
@@ -193,7 +223,7 @@ export default function MoodboardPage() {
       const { url, nw, nh, name } = await readFile(f)
       const w = 260, h = Math.round(nh / nw * w)
       const existingCount = boardImages(activeId).length
-      addImage(activeId, { id: mkId(), url, name, w, h, x: 40 + (existingCount % 4) * 20, y: 40 + (existingCount % 4) * 20 })
+      addImage(activeId, { id: mkId(), url, name, w, h, nw, nh, x: 40 + (existingCount % 4) * 20, y: 40 + (existingCount % 4) * 20 })
     }
   }
 
@@ -202,7 +232,7 @@ export default function MoodboardPage() {
     try {
       const { url, nw, nh, name } = await loadUrl(urlVal)
       const w = 260, h = Math.round(nh / nw * w)
-      addImage(activeId, { id: mkId(), url, name, w, h })
+      addImage(activeId, { id: mkId(), url, name, w, h, nw, nh })
       setUrlVal(''); setShowUrlInput(false)
     } catch { alert('Impossible de charger cette image') }
   }
@@ -226,7 +256,21 @@ export default function MoodboardPage() {
     { id: 'archives', icon: '🗃', label: 'Archives' },
   ]
 
-  const cols = [0, 1, 2].map(col => displayImages.filter((_, i) => i % 3 === col))
+  const MasonryGrid = () => (
+    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${masonryCols.length}, 1fr)`, gap: 10, alignItems: 'start' }}>
+      {masonryCols.map((col, ci) => (
+        <div key={ci}>
+          {col.map(img => (
+            <GridCard key={img.id} img={img} T={T}
+              onStar={id => toggleStar(id)}
+              onDelete={id => deleteImage(id)}
+              onFullscreen={img => openLightbox(img)}
+              onSelect={id => setSelectedImgId(id)} />
+          ))}
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <div className="forma-page-shell" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -299,6 +343,14 @@ export default function MoodboardPage() {
             </>}
           </div>
           <div style={{ flex: 1 }}/>
+          {boardTags.length > 0 && activeId && (
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', maxWidth: 280 }}>
+              <button onClick={() => setTagFilter('')} style={{ padding: '3px 8px', borderRadius: 8, border: `1px solid ${!tagFilter ? T.accent : T.border}`, background: !tagFilter ? `${T.accent}15` : T.bg, color: !tagFilter ? T.accent : T.muted, fontSize: 10, cursor: 'pointer' }}>Tous</button>
+              {boardTags.slice(0, 8).map(t => (
+                <button key={t} onClick={() => setTagFilter(tagFilter === t ? '' : t)} style={{ padding: '3px 8px', borderRadius: 8, border: `1px solid ${tagFilter === t ? T.accent : T.border}`, background: tagFilter === t ? `${T.accent}15` : T.bg, color: tagFilter === t ? T.accent : T.muted, fontSize: 10, cursor: 'pointer' }}>{t}</button>
+              ))}
+            </div>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, padding: '0 10px', gap: 6, height: 34 }}>
             <span style={{ fontSize: 12, color: T.muted }}>🔍</span>
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder='Rechercher…'
@@ -376,18 +428,7 @@ export default function MoodboardPage() {
                   <div style={{ fontSize: 13, color: T.muted }}>Aucune image — importe ou glisse des fichiers ici</div>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, alignItems: 'start' }}>
-                  {[0, 1, 2].map(col => (
-                    <div key={col}>
-                      {cols[col].map(img => (
-                        <GridCard key={img.id} img={img} T={T}
-                          onStar={id => toggleStar(id)}
-                          onDelete={id => deleteImage(id)}
-                          onFullscreen={img => openLightbox(img)}/>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+                <MasonryGrid />
               )}
             </div>
           )}
@@ -421,23 +462,12 @@ export default function MoodboardPage() {
                   <div style={{ fontSize: 13, color: T.muted }}>Aucun favori pour l'instant</div>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, alignItems: 'start' }}>
-                  {[0, 1, 2].map(col => (
-                    <div key={col}>
-                      {displayImages.filter((_, i) => i % 3 === col).map(img => (
-                        <GridCard key={img.id} img={img} T={T}
-                          onStar={id => toggleStar(id)}
-                          onDelete={id => deleteImage(id)}
-                          onFullscreen={img => openLightbox(img)}/>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+                <MasonryGrid />
               )}
             </div>
           )}
 
-          {/* RIGHT PANEL */}
+          {/* RIGHT PANEL — grid ou canvas */}
           {selectedImg && (
             <div style={{ width: 260, background: T.surface, borderLeft: `1px solid ${T.border}`, display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0 }}>
               <div style={{ padding: '10px 12px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
