@@ -23,6 +23,7 @@ import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
 import Notifications from '@/components/Notifications'
 import SyncRecoveryModal from '@/components/sync/SyncRecoveryModal'
+import GlobalSyncStatus from '@/components/sync/GlobalSyncStatus'
 import FormaAILayer from '@/components/formaai/FormaAILayer'
 import { useSyncBootstrap } from '@/hooks/useSyncBootstrap'
 import EmojiBurst from '@/components/easter-eggs/EmojiBurst'
@@ -53,7 +54,12 @@ function ProtectedRoute({ children }) {
 
 function SyncLayer() {
   useSyncBootstrap()
-  return <SyncRecoveryModal />
+  return (
+    <>
+      <SyncRecoveryModal />
+      <GlobalSyncStatus />
+    </>
+  )
 }
 
 export default function App() {

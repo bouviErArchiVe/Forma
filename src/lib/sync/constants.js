@@ -34,7 +34,7 @@ export const RESOURCE_TYPES = {
 
 export const MAX_LOCAL_VERSIONS = 15
 export const VERSION_MIN_INTERVAL_MS = 5 * 60 * 1000
-export const AUTOSAVE_DEBOUNCE_MS = 1200
+export const AUTOSAVE_DEBOUNCE_MS = 600
 export const CLOUD_RETRY_MS = 30_000
 
 export const PERMISSION_LABELS = {

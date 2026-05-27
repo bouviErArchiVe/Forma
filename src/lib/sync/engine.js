@@ -1,13 +1,11 @@
-/** FormaSync — moteur local-first */
-
-import { saveLocalData, hashPayload, isOnline } from './localVault'
+import { saveLocalDataAsync, hashPayload, isOnline } from './localVault'
 import { appendJournalEntry, commitJournalEntry } from './journal'
 import { maybeSaveVersion, saveVersionNow } from './versions'
 import { enqueueCloudSync } from './cloudQueue'
+import { saveNotebookPagesIdb } from './idbVault'
 
 /**
- * Sauvegarde prioritaire locale, puis cloud optionnel.
- * @returns {{ savedAt: number, local: boolean, cloudQueued: boolean }}
+ * Sauvegarde prioritaire locale (IndexedDB + miroir LS), puis cloud optionnel.
  */
 export async function saveResource({
   storageKey,
@@ -19,6 +17,7 @@ export async function saveResource({
   cloudSyncFn,
   versionSnapshots = true,
   forceVersion = false,
+  notebookId,
 }) {
   const hash = hashPayload(payload)
   const journalId = appendJournalEntry({
@@ -28,15 +27,22 @@ export async function saveResource({
     payloadHash: hash,
   })
 
-  // 1. Local immédiat (priorité appareil)
   const serialized = typeof payload === 'string' ? payload : JSON.stringify(payload)
-  saveLocalData(storageKey, serialized)
+
+  // 1. IndexedDB + localStorage (priorité appareil)
+  await saveLocalDataAsync(storageKey, serialized)
+
+  if (notebookId && storageKey.startsWith('forma_pages_')) {
+    const pages = typeof payload === 'string' ? JSON.parse(payload) : payload
+    await saveNotebookPagesIdb(notebookId, pages)
+  }
+
   commitJournalEntry(journalId)
 
   // 2. Version locale
   if (versionSnapshots) {
-    if (forceVersion) saveVersionNow(resourceType, resourceId, payload, label)
-    else maybeSaveVersion(resourceType, resourceId, payload, label)
+    if (forceVersion) await saveVersionNow(resourceType, resourceId, payload, label)
+    else await maybeSaveVersion(resourceType, resourceId, payload, label)
   }
 
   // 3. Cloud optionnel (non bloquant)

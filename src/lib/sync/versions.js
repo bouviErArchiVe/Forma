@@ -1,8 +1,9 @@
-/** FormaSync — versions locales */
+/** FormaSync — versions locales (IndexedDB pour gros payloads) */
 
 import { SYNC_KEYS, MAX_LOCAL_VERSIONS, VERSION_MIN_INTERVAL_MS } from './constants'
 import { safeJsonParse, safeGetLocalStorage, safeSetLocalStorage } from '@/lib/storage'
-import { hashPayload, removeLocalData } from './localVault'
+import { hashPayload, removeLocalData, saveLocalDataAsync } from './localVault'
+import { idbAvailable, idbPut, idbGet, idbDelete, IDB_STORES } from '@/lib/storage/indexedDb'
 
 function versionKey(id) {
   return `${SYNC_KEYS.versionPrefix}${id}`
@@ -24,16 +25,34 @@ function uid() {
   return `ver_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 }
 
+async function storeVersionBlob(versionId, data) {
+  const serialized = JSON.stringify(data)
+  if (idbAvailable()) {
+    await idbPut(IDB_STORES.versions, { id: versionId, data, createdAt: Date.now() })
+  }
+  safeSetLocalStorage(versionKey(versionId), serialized)
+}
+
+async function loadVersionBlob(versionId) {
+  if (idbAvailable()) {
+    try {
+      const row = await idbGet(IDB_STORES.versions, versionId)
+      if (row?.data) return row.data
+    } catch { /* fallback */ }
+  }
+  return safeJsonParse(safeGetLocalStorage(versionKey(versionId), null), null)
+}
+
 export function listVersions(resourceType, resourceId) {
   const key = resourceKey(resourceType, resourceId)
   return (readIndex()[key] || []).sort((a, b) => b.createdAt - a.createdAt)
 }
 
-export function getVersionData(versionId) {
-  return safeJsonParse(safeGetLocalStorage(versionKey(versionId), null), null)
+export async function getVersionData(versionId) {
+  return loadVersionBlob(versionId)
 }
 
-export function maybeSaveVersion(resourceType, resourceId, payload, label) {
+export async function maybeSaveVersion(resourceType, resourceId, payload, label) {
   const key = resourceKey(resourceType, resourceId)
   const index = readIndex()
   const versions = index[key] || []
@@ -44,12 +63,12 @@ export function maybeSaveVersion(resourceType, resourceId, payload, label) {
   if (last && Date.now() - last.createdAt < VERSION_MIN_INTERVAL_MS) return null
 
   const versionId = uid()
-  safeSetLocalStorage(versionKey(versionId), JSON.stringify({
+  await storeVersionBlob(versionId, {
     resourceType,
     resourceId,
     payload,
     createdAt: Date.now(),
-  }))
+  })
 
   const entry = {
     id: versionId,
@@ -65,23 +84,26 @@ export function maybeSaveVersion(resourceType, resourceId, payload, label) {
 
   if (versions.length >= MAX_LOCAL_VERSIONS) {
     const removed = versions.slice(MAX_LOCAL_VERSIONS - 1)
-    removed.forEach((v) => removeLocalData(versionKey(v.id)))
+    for (const v of removed) {
+      removeLocalData(versionKey(v.id))
+      if (idbAvailable()) idbDelete(IDB_STORES.versions, v.id).catch(() => {})
+    }
   }
 
   return entry
 }
 
-export function saveVersionNow(resourceType, resourceId, payload, label) {
+export async function saveVersionNow(resourceType, resourceId, payload, label) {
   const key = resourceKey(resourceType, resourceId)
   const index = readIndex()
   const versions = index[key] || []
   const versionId = uid()
-  safeSetLocalStorage(versionKey(versionId), JSON.stringify({
+  await storeVersionBlob(versionId, {
     resourceType,
     resourceId,
     payload,
     createdAt: Date.now(),
-  }))
+  })
   const entry = {
     id: versionId,
     hash: hashPayload(payload),
@@ -94,14 +116,15 @@ export function saveVersionNow(resourceType, resourceId, payload, label) {
   return entry
 }
 
-export function restoreVersion(versionId) {
-  const data = getVersionData(versionId)
+export async function restoreVersion(versionId) {
+  const data = await loadVersionBlob(versionId)
   if (!data) throw new Error('Version introuvable')
   return data
 }
 
 export function deleteVersion(versionId, resourceType, resourceId) {
   removeLocalData(versionKey(versionId))
+  if (idbAvailable()) idbDelete(IDB_STORES.versions, versionId).catch(() => {})
   const key = resourceKey(resourceType, resourceId)
   const index = readIndex()
   index[key] = (index[key] || []).filter((v) => v.id !== versionId)
@@ -114,4 +137,9 @@ export function getAllVersionedResources() {
     const [resourceType, ...rest] = key.split(':')
     return { resourceType, resourceId: rest.join(':'), versions, count: versions.length }
   })
+}
+
+// Sync wrapper for callers expecting sync getVersionData
+export function getVersionDataSync(versionId) {
+  return safeJsonParse(safeGetLocalStorage(versionKey(versionId), null), null)
 }

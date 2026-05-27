@@ -1,7 +1,10 @@
-import { useEffect, useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import useSyncStore from '@/stores/useSyncStore'
 import { getPendingRecovery, clearOldJournal } from '@/lib/sync/journal'
 import { getCloudQueueCount, processCloudQueue } from '@/lib/sync/cloudQueue'
+import { getOfflineQueueCount, processOfflineQueue } from '@/lib/sync/offlineQueue'
+import { migrateLocalStorageToIdb, hydrateFromIdb } from '@/lib/sync/idbVault'
+import { hydrateProjectStore } from '@/lib/projectPersistence'
 import { syncNotebookPageToCloud } from '@/lib/sync/cloudSync'
 import { loadLocalPages } from '@/lib/projectPersistence'
 import { SYNC_STATUS } from '@/lib/sync/constants'
@@ -23,46 +26,85 @@ export function useSyncBootstrap() {
   const setOnline = useSyncStore((s) => s.setOnline)
   const setRecoveryItems = useSyncStore((s) => s.setRecoveryItems)
   const setCloudQueueCount = useSyncStore((s) => s.setCloudQueueCount)
+  const setOfflineQueueCount = useSyncStore((s) => s.setOfflineQueueCount)
   const setLastCloudSyncAt = useSyncStore((s) => s.setLastCloudSyncAt)
   const setGlobalStatus = useSyncStore((s) => s.setGlobalStatus)
 
-  const processQueue = useCallback(async () => {
-    if (!cloudEnabled || !autoCloudSync) return
-    setGlobalStatus(SYNC_STATUS.syncing_cloud)
-    const { processed } = await processCloudQueue(cloudHandlers, { cloudEnabled })
-    setCloudQueueCount(getCloudQueueCount())
-    if (processed > 0) {
-      setLastCloudSyncAt(new Date())
-      setGlobalStatus(SYNC_STATUS.synced)
+  const processQueues = useCallback(async () => {
+    setGlobalStatus(SYNC_STATUS.saving)
+
+    const offline = await processOfflineQueue()
+    setOfflineQueueCount(getOfflineQueueCount())
+    if (offline.processed > 0) {
+      setGlobalStatus(SYNC_STATUS.saved_local)
     }
-  }, [cloudEnabled, autoCloudSync, setCloudQueueCount, setLastCloudSyncAt, setGlobalStatus])
+
+    if (cloudEnabled && autoCloudSync) {
+      setGlobalStatus(SYNC_STATUS.syncing_cloud)
+      const { processed } = await processCloudQueue(cloudHandlers, { cloudEnabled })
+      setCloudQueueCount(getCloudQueueCount())
+      if (processed > 0) {
+        setLastCloudSyncAt(new Date())
+        setGlobalStatus(SYNC_STATUS.synced)
+      } else if (offline.processed === 0) {
+        setGlobalStatus(SYNC_STATUS.saved_local)
+      }
+    } else if (offline.processed === 0) {
+      setGlobalStatus(SYNC_STATUS.idle)
+    }
+  }, [cloudEnabled, autoCloudSync, setCloudQueueCount, setOfflineQueueCount, setLastCloudSyncAt, setGlobalStatus])
 
   useEffect(() => {
-    clearOldJournal()
-    setRecoveryItems(getPendingRecovery())
-    setCloudQueueCount(getCloudQueueCount())
+    let cancelled = false
+
+    async function init() {
+      try {
+        await migrateLocalStorageToIdb()
+        await hydrateFromIdb()
+        await hydrateProjectStore()
+      } catch (err) {
+        console.warn('Sync init:', err?.message)
+      }
+      if (cancelled) return
+
+      clearOldJournal()
+      setRecoveryItems(getPendingRecovery())
+      setCloudQueueCount(getCloudQueueCount())
+      setOfflineQueueCount(getOfflineQueueCount())
+
+      if (getPendingRecovery().length) {
+        setGlobalStatus(SYNC_STATUS.offline)
+      }
+
+      await processQueues()
+    }
+
+    init()
 
     const onOnline = () => {
       setOnline(true)
-      processQueue()
+      processQueues()
     }
-    const onOffline = () => setOnline(false)
+    const onOffline = () => {
+      setOnline(false)
+      setGlobalStatus(SYNC_STATUS.offline)
+    }
 
     window.addEventListener('online', onOnline)
     window.addEventListener('offline', onOffline)
     setOnline(navigator.onLine !== false)
 
-    if (cloudEnabled && autoCloudSync) processQueue()
-
     const interval = setInterval(() => {
-      if (cloudEnabled && autoCloudSync && navigator.onLine) processQueue()
+      if (navigator.onLine) processQueues()
       setCloudQueueCount(getCloudQueueCount())
+      setOfflineQueueCount(getOfflineQueueCount())
     }, 60_000)
 
     return () => {
+      cancelled = true
       window.removeEventListener('online', onOnline)
       window.removeEventListener('offline', onOffline)
       clearInterval(interval)
     }
-  }, [cloudEnabled, autoCloudSync, processQueue, setOnline, setRecoveryItems, setCloudQueueCount])
+  }, [cloudEnabled, autoCloudSync, processQueues, setOnline, setRecoveryItems, setCloudQueueCount, setOfflineQueueCount, setGlobalStatus])
 }

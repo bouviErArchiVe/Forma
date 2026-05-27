@@ -23,8 +23,8 @@ export default function VersionHistoryPanel({
     }
   }, [cloudEnabled, userId, resourceType, resourceId])
 
-  const handleRestoreLocal = (versionId) => {
-    const data = restoreVersion(versionId)
+  const handleRestoreLocal = async (versionId) => {
+    const data = await restoreVersion(versionId)
     onRestore?.(data.payload)
     onClose?.()
   }
@@ -35,9 +35,9 @@ export default function VersionHistoryPanel({
     onClose?.()
   }
 
-  const handleCheckpoint = () => {
+  const handleCheckpoint = async () => {
     if (!currentPayload) return
-    saveVersionNow(resourceType, resourceId, currentPayload, 'Point de restauration manuel')
+    await saveVersionNow(resourceType, resourceId, currentPayload, 'Point de restauration manuel')
     setVersions(listVersions(resourceType, resourceId))
   }
 

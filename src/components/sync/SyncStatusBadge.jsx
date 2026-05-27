@@ -4,7 +4,7 @@ const STATUS_CONFIG = {
   [SYNC_STATUS.idle]: { color: '#888', label: 'Prêt' },
   [SYNC_STATUS.dirty]: { color: '#f5a623', label: 'Modifications…' },
   [SYNC_STATUS.saving]: { color: '#f5a623', label: 'Sauvegarde…' },
-  [SYNC_STATUS.saved_local]: { color: '#4ade80', label: 'Local' },
+  [SYNC_STATUS.saved_local]: { color: '#4ade80', label: 'Sauvegardé' },
   [SYNC_STATUS.syncing_cloud]: { color: '#6b9fd4', label: 'Sync cloud…' },
   [SYNC_STATUS.synced]: { color: '#4ade80', label: 'Synchronisé' },
   [SYNC_STATUS.offline]: { color: '#8b95a8', label: 'Hors ligne' },
