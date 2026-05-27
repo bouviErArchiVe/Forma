@@ -86,7 +86,9 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
 
     html.forma-animations-off .forma-animate-in,
     html.forma-animations-off .forma-animate-scale,
-    html.forma-animations-off .fade-up {
+    html.forma-animations-off .forma-animate-sheet,
+    html.forma-animations-off .fade-up,
+    html.forma-animations-off .nb-card {
       animation: none !important;
     }
 
@@ -102,12 +104,145 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
       from { opacity: 0; transform: scale(.94); }
       to { opacity: 1; transform: scale(1); }
     }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(14px) scale(.97); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes formaSheetIn {
+      from { opacity: 0; transform: translateY(100%); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
     .fade-up { animation: fadeUp .28s ease forwards; }
     .forma-animate-in { animation: formaFadeUp .24s var(--forma-transition-spring) forwards; }
     .forma-animate-scale { animation: formaScaleIn .2s var(--forma-transition-spring) forwards; }
+    .forma-animate-sheet { animation: formaSheetIn .32s var(--forma-transition-spring) forwards; }
+
+    .forma-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+      padding-top: max(16px, env(safe-area-inset-top));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+    }
+    .forma-modal-backdrop--center { align-items: center; }
+    .forma-modal-backdrop--sheet {
+      align-items: flex-end;
+      padding-left: 0;
+      padding-right: 0;
+      padding-bottom: 0;
+    }
+    .forma-modal-panel { max-width: 100%; }
+    .forma-modal-backdrop--sheet .forma-modal-panel {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .forma-modal-backdrop--sheet .forma-modal-panel > * {
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      border-top-left-radius: var(--forma-radius-xl) !important;
+      border-top-right-radius: var(--forma-radius-xl) !important;
+      padding-bottom: max(26px, env(safe-area-inset-bottom)) !important;
+      max-height: min(88vh, 92dvh) !important;
+    }
+
+    .forma-library-header {
+      padding: 0 22px;
+      padding-left: max(22px, env(safe-area-inset-left));
+      padding-right: max(22px, env(safe-area-inset-right));
+      position: sticky;
+      top: 0;
+      z-index: ${TOKENS.zIndex.toolbar};
+    }
+    .forma-library-header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 62px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .forma-library-content {
+      padding: 20px 22px;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-left: max(22px, env(safe-area-inset-left));
+      padding-right: max(22px, env(safe-area-inset-right));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+    @media (min-width: 768px) {
+      .forma-library-content {
+        padding: 28px 32px 40px;
+        padding-left: max(32px, env(safe-area-inset-left));
+        padding-right: max(32px, env(safe-area-inset-right));
+        padding-bottom: max(40px, env(safe-area-inset-bottom));
+      }
+      .forma-library-header { padding: 0 32px; }
+    }
+    @media (min-width: 1024px) {
+      .forma-library-content {
+        padding: 32px 40px 48px;
+        padding-left: max(40px, env(safe-area-inset-left));
+        padding-right: max(40px, env(safe-area-inset-right));
+        padding-bottom: max(48px, env(safe-area-inset-bottom));
+      }
+    }
+
+    .forma-stat-chip {
+      padding: 8px 14px;
+      min-height: 44px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+      transition: transform var(--forma-transition-fast),
+        border-color var(--forma-transition-fast),
+        background var(--forma-transition-fast);
+    }
+    .forma-stat-chip--clickable { cursor: pointer; }
+    .forma-stat-chip--clickable:active { transform: scale(.97); }
+
+    .nb-card {
+      animation: cardIn .32s cubic-bezier(.2,.8,.2,1) both;
+      transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s;
+      box-shadow: ${shadow.sm};
+    }
+    .nb-card:hover {
+      transform: translateY(-4px) !important;
+      box-shadow: ${shadow.lg} !important;
+    }
+    .nb-card--list:hover,
+    .nb-card--timeline:hover {
+      transform: translateY(-2px) !important;
+    }
+    .nb-btn-action { opacity: 0; transition: opacity .15s; }
+    @media (hover: hover) {
+      .nb-card:hover .nb-btn-action { opacity: 1; }
+    }
+    @media (hover: none) {
+      .nb-btn-action { opacity: 1; }
+    }
+    .star-btn { transition: transform .15s, color .15s; }
+    .star-btn:hover { transform: scale(1.3); }
+    .nb-card:nth-child(1) { animation-delay: 0ms; }
+    .nb-card:nth-child(2) { animation-delay: 35ms; }
+    .nb-card:nth-child(3) { animation-delay: 70ms; }
+    .nb-card:nth-child(4) { animation-delay: 105ms; }
+    .nb-card:nth-child(5) { animation-delay: 140ms; }
+    .nb-card:nth-child(6) { animation-delay: 175ms; }
+
+    .forma-tap-target {
+      min-width: 44px;
+      min-height: 44px;
+    }
 
     .forma-btn-glass {
       transition: transform var(--forma-transition-fast),

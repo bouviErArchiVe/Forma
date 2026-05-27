@@ -38,7 +38,7 @@ export default function NotebookLibraryItem({
   if (view === 'list') {
     return (
       <div
-        className="nb-card"
+        className="nb-card nb-card--list"
         onClick={onOpen}
         style={{
           display: 'flex',
@@ -49,11 +49,7 @@ export default function NotebookLibraryItem({
           border: `1px solid ${T.border}`,
           background: T.surface,
           cursor: 'pointer',
-          boxShadow: '0 1px 6px rgba(0,0,0,.04)',
-          transition: 'transform .15s, box-shadow .15s',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = `0 4px 16px ${subject.c}18` }}
-        onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 1px 6px rgba(0,0,0,.04)' }}
       >
         <div style={{ width: 5, alignSelf: 'stretch', borderRadius: 4, background: `linear-gradient(to bottom,${subject.c},${subject.c}88)`, flexShrink: 0 }} />
         <div style={{ width: 52, height: 52, flexShrink: 0, borderRadius: 10, overflow: 'hidden', position: 'relative', background: `linear-gradient(145deg,${subject.c}28,${subject.c}08)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -81,7 +77,7 @@ export default function NotebookLibraryItem({
   if (view === 'timeline') {
     return (
       <div
-        className="nb-card"
+        className="nb-card nb-card--timeline"
         onClick={onOpen}
         style={{
           display: 'flex',
@@ -119,7 +115,6 @@ export default function NotebookLibraryItem({
         border: `1px solid ${T.border}`,
         overflow: 'hidden',
         cursor: 'pointer',
-        boxShadow: '0 2px 8px rgba(0,0,0,.06)',
       }}
     >
       <div style={{ height: 130, position: 'relative', overflow: 'hidden', background: `linear-gradient(145deg,${subject.c}25,${subject.c}08)` }}>

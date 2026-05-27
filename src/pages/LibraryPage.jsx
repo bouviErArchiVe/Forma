@@ -106,16 +106,12 @@ function StatChip({e, v, l, tab, activeTab, setActiveTab, T, action}) {
   const clickable = !!(tab || action)
   return (
     <div
+      className={`forma-stat-chip ${clickable ? 'forma-stat-chip--clickable' : ''}`}
       onClick={() => action ? action() : (tab && setActiveTab(tab))}
       style={{
-        padding:"6px 14px",
-        borderRadius:20,
         background: isActive ? `${T.accent}18` : T.surface,
         border:`1px solid ${isActive ? T.accent : T.border}`,
-        display:"flex",alignItems:"center",gap:6,
         cursor: clickable ? "pointer" : "default",
-        transition:"all .15s",
-        userSelect:"none"
       }}
       onMouseEnter={e2 => { if (clickable) e2.currentTarget.style.borderColor = T.accent + "66" }}
       onMouseLeave={e2 => { if (clickable) e2.currentTarget.style.borderColor = isActive ? T.accent : T.border }}
@@ -234,7 +230,7 @@ function ThemePicker({ onClose }) {
   }
 
   return (
-    <ModalOverlay onClose={onClose} zIndex={9000}>
+    <ModalOverlay onClose={onClose} zIndex={9000} variant="sheet">
       <GlassPanel
         T={T}
         variant="modal"
@@ -870,17 +866,6 @@ export default function LibraryPage() {
 
   return (
     <div className="forma-page-shell">
-      <style>{`
-        @keyframes cardIn { from { opacity:0; transform:translateY(14px) scale(.97); } to { opacity:1; transform:none; } }
-        @keyframes shimmer { from { background-position: -200% center; } to { background-position: 200% center; } }
-        .nb-card { animation: cardIn .3s cubic-bezier(.2,.8,.2,1) both; transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s; }
-        .nb-card:hover { transform: translateY(-6px) !important; }
-        .nb-btn-action { opacity:0; transition: opacity .15s; }
-        .nb-card:hover .nb-btn-action { opacity:1; }
-        .star-btn { transition: transform .15s, color .15s; }
-        .star-btn:hover { transform: scale(1.3); }
-        .nb-card:nth-child(1){animation-delay:0ms} .nb-card:nth-child(2){animation-delay:30ms} .nb-card:nth-child(3){animation-delay:60ms} .nb-card:nth-child(4){animation-delay:90ms} .nb-card:nth-child(5){animation-delay:120ms} .nb-card:nth-child(6){animation-delay:150ms}
-      `}</style>
 
       {showTheme && <ThemePicker onClose={() => setShowTheme(false)}/>}
 
@@ -1002,7 +987,7 @@ export default function LibraryPage() {
 
       {/* NEW NOTEBOOK */}
       {showNew && (
-        <ModalOverlay onClose={() => setShowNew(false)}>
+        <ModalOverlay onClose={() => setShowNew(false)} variant="sheet">
           <GlassPanel T={T} variant="modal" style={{ padding: 26, width: 520, maxWidth: "94vw", maxHeight: "88vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 19, color: T.ink }}>Nouveau carnet</div>
@@ -1059,7 +1044,7 @@ export default function LibraryPage() {
 
       {/* NEW FOLDER */}
       {showNewFolder && (
-        <ModalOverlay onClose={() => setShowNewFolder(false)}>
+        <ModalOverlay onClose={() => setShowNewFolder(false)} variant="sheet">
           <GlassPanel T={T} variant="modal" style={{ padding: 24, width: 380, maxWidth: "94vw" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
               <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17, color: T.ink }}>📁 Nouveau dossier</div>
@@ -1102,7 +1087,7 @@ export default function LibraryPage() {
 
       {/* EDIT FOLDER */}
       {showEditFolder && (
-        <ModalOverlay onClose={() => setShowEditFolder(false)}>
+        <ModalOverlay onClose={() => setShowEditFolder(false)} variant="sheet">
           <GlassPanel T={T} variant="modal" style={{ padding: 24, width: 380, maxWidth: "94vw" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
               <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17, color: T.ink }}>✏ Modifier le dossier</div>
@@ -1145,7 +1130,7 @@ export default function LibraryPage() {
 
       {/* NEW SUBJECT */}
       {showNewSubject && (
-        <ModalOverlay onClose={() => setShowNewSubject(false)}>
+        <ModalOverlay onClose={() => setShowNewSubject(false)} variant="sheet">
           <GlassPanel T={T} variant="modal" style={{ padding: 24, width: 400, maxWidth: "94vw", maxHeight: "88vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
               <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17, color: T.ink }}>✏ Nouvelle matière</div>
@@ -1191,7 +1176,7 @@ export default function LibraryPage() {
 
       {/* ASSIGN FOLDER */}
       {showFolderAssign && (
-        <ModalOverlay onClose={() => setShowFolderAssign(null)}>
+        <ModalOverlay onClose={() => setShowFolderAssign(null)} variant="sheet">
           <GlassPanel T={T} variant="modal" style={{ padding: 22, width: 340, maxWidth: "94vw" }}>
             <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 15, color: T.ink, marginBottom: 16 }}>📁 Assigner à un dossier</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1210,15 +1195,14 @@ export default function LibraryPage() {
       )}
 
       {/* HEADER */}
-      <div style={{
-        padding: "0 22px",
-        position: "sticky",
-        top: 0,
-        zIndex: TOKENS.zIndex.toolbar,
-        borderBottom: `1px solid ${rgbaFromHex(T.border, 0.35)}`,
-        ...glassStyle(T, { variant: "toolbar", border: false, radius: 0 }),
-      }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 62, maxWidth: 1400, margin: "0 auto" }}>
+      <div
+        className="forma-library-header"
+        style={{
+          borderBottom: `1px solid ${rgbaFromHex(T.border, 0.35)}`,
+          ...glassStyle(T, { variant: "toolbar", border: false, radius: 0 }),
+        }}
+      >
+        <div className="forma-library-header-inner">
           {/* Logo + title + tools */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <img src={T.img} alt={T.n} style={{ width: 38, height: 38, borderRadius: TOKENS.radius.sm, objectFit: "cover", boxShadow: `0 4px 16px ${T.accent}44`, flexShrink: 0 }} />
@@ -1232,15 +1216,18 @@ export default function LibraryPage() {
               <div style={{ fontSize: 9, color: T.muted, marginTop: 1 }}>{userId ? `✓ ${userName}` : "Non connecté"}</div>
             </div>
             <GlassButton T={T} active={showCalc} onClick={() => setShowCalc(v => !v)} title="Calculatrice"
-              style={{ width: 34, height: 34, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
+              className="forma-tap-target"
+              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
               🧮
             </GlassButton>
             <GlassButton T={T} active={showConverter} onClick={() => setShowConverter(v => !v)} title="Convertisseur"
-              style={{ width: 34, height: 34, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
+              className="forma-tap-target"
+              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
               📐
             </GlassButton>
             <GlassButton T={T} active={showTranslate} onClick={() => setShowTranslate(v => !v)} title="Traduction"
-              style={{ width: 34, height: 34, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
+              className="forma-tap-target"
+              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
               🌐
             </GlassButton>
           </div>
@@ -1323,10 +1310,10 @@ export default function LibraryPage() {
       )}
 
       {userId && (
-        <div style={{padding:"20px 22px",maxWidth:1400,margin:"0 auto"}}>
+        <div className="forma-library-content">
 
           {/* COMPACT STATS BAR */}
-          <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
+          <div style={{display:"flex",gap:10,marginBottom:24,flexWrap:"wrap"}}>
             {[
               {e:"📓", v:notebooks.length, l:"carnets",   tab:"notebooks"},
               {e:"⭐", v:starredCount,      l:"favoris",   tab:"favorites"},
