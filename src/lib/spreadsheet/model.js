@@ -211,11 +211,21 @@ export function mergeCells(sheet, r1, c1, r2, c2) {
   const a = { r1: Math.min(r1, r2), c1: Math.min(c1, c2), r2: Math.max(r1, r2), c2: Math.max(c1, c2) }
   const k = cellKey(a.r1, a.c1)
   const master = sheet.cells[k] || { raw: '', style: defaultStyle() }
+  const texts = []
+  for (let r = a.r1; r <= a.r2; r++) {
+    for (let c = a.c1; c <= a.c2; c++) {
+      const key = cellKey(r, c)
+      const raw = sheet.cells[key]?.raw
+      if (raw?.trim()) texts.push(raw.trim())
+    }
+  }
+  const combinedRaw = master.raw?.trim() || texts.join(' ')
+  const mergedMaster = { ...master, raw: combinedRaw }
   const cells = { ...sheet.cells }
   for (let r = a.r1; r <= a.r2; r++) {
     for (let c = a.c1; c <= a.c2; c++) {
       const key = cellKey(r, c)
-      if (r === a.r1 && c === a.c1) cells[key] = master
+      if (r === a.r1 && c === a.c1) cells[key] = mergedMaster
       else delete cells[key]
     }
   }

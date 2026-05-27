@@ -128,7 +128,7 @@ function evalFormula(raw, sheet, getVal) {
       .replace('SOMME', 'SUM')
       .replace('MOYENNE', 'AVERAGE')
       .replace('COMPTER', 'COUNT')
-    const args = fnMatch[2].split(';').map((a) => a.trim())
+    const args = fnMatch[2].split(/[;,]/).map((a) => a.trim()).filter(Boolean)
     const flat = []
     args.forEach((arg) => {
       const v = resolveRef(arg, sheet, getVal)

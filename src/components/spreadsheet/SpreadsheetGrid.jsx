@@ -2,13 +2,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { colToLetter, cellKey, defaultStyle } from '@/lib/spreadsheet/cells'
 import { computeSheet } from '@/lib/spreadsheet/formulas'
 import {
-  getCell, setCell, addRow, deleteRow, addCol, deleteCol,
+  addRow, deleteRow, addCol, deleteCol,
   mergeCells, unmergeAt, getMergeAt, isMergeHidden,
   applyStyleToRange, copyRange, pasteRange, sortByColumn,
-  swapRows, swapCols, autoFitCol, autoFitRow, applyArchTablePreset,
+  autoFitCol, autoFitRow, applyArchTablePreset,
 } from '@/lib/spreadsheet/model'
+import SpreadsheetFormulaHelp from '@/components/spreadsheet/SpreadsheetFormulaHelp'
 
 const MAX_HISTORY = 50
+const ROW_HDR_W = 40
+const COL_HDR_H = 26
+const FONT_SIZES = [10, 11, 12, 13, 14, 16, 18]
 
 function normalizeSelection(sel) {
   if (!sel) return null
@@ -18,6 +22,10 @@ function normalizeSelection(sel) {
     r2: Math.max(sel.r1, sel.r2),
     c2: Math.max(sel.c1, sel.c2),
   }
+}
+
+function cellTextColor(style, fallback = '#000000') {
+  return style?.color && style.color !== '#1c1c24' ? style.color : (style?.color || fallback)
 }
 
 export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, gridRef }) {
@@ -30,11 +38,18 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
   const [redo, setRedo] = useState([])
   const [tableSearch, setTableSearch] = useState('')
   const [resizing, setResizing] = useState(null)
+  const [formulaHelp, setFormulaHelp] = useState(false)
+  const dragRef = useRef(null)
   const internalRef = useRef(null)
   const tableWrapRef = gridRef || internalRef
 
   const computed = useMemo(() => computeSheet(sheet), [sheet])
   const selection = normalizeSelection(sel)
+
+  const tableWidth = useMemo(
+    () => ROW_HDR_W + sheet.colWidths.reduce((a, b) => a + b, 0),
+    [sheet.colWidths],
+  )
 
   const pushHistory = useCallback((prev) => {
     setHistory((h) => [...h.slice(-MAX_HISTORY + 1), JSON.stringify(prev)])
@@ -70,6 +85,12 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
     setFormulaBar(c?.raw ?? '')
   }, [activeKey, computed])
 
+  useEffect(() => {
+    const onUp = () => { dragRef.current = null }
+    window.addEventListener('mouseup', onUp)
+    return () => window.removeEventListener('mouseup', onUp)
+  }, [])
+
   const selectCell = (r, c, extend = false) => {
     if (extend && selection) {
       setSel({ r1: selection.r1, c1: selection.c1, r2: r, c2: c })
@@ -83,6 +104,18 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
     return r >= selection.r1 && r <= selection.r2 && c >= selection.c1 && c <= selection.c2
   }
 
+  const isActiveCell = (r, c) => selection && r === selection.r1 && c === selection.c1
+
+  const selectionEdge = (r, c) => {
+    if (!selection || !isSelected(r, c)) return {}
+    return {
+      borderTop: r === selection.r1 ? `2px solid ${T.accent}` : undefined,
+      borderBottom: r === selection.r2 ? `2px solid ${T.accent}` : undefined,
+      borderLeft: c === selection.c1 ? `2px solid ${T.accent}` : undefined,
+      borderRight: c === selection.c2 ? `2px solid ${T.accent}` : undefined,
+    }
+  }
+
   const rowVisible = (r) => {
     if (sheet.filterCol === null || sheet.filterCol === undefined || !sheet.filterText) return true
     const v = computed[cellKey(r, sheet.filterCol)]?.value ?? ''
@@ -91,7 +124,9 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
 
   const updateCellRaw = (r, c, raw) => {
     let next = { ...sheet, cells: { ...sheet.cells } }
-    next = setCell(next, r, c, { raw })
+    const k = cellKey(r, c)
+    const prev = next.cells[k] || { raw: '', style: defaultStyle() }
+    next.cells[k] = { ...prev, raw }
     commit(next)
   }
 
@@ -107,6 +142,11 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
     commit(applyStyleToRange(sheet, selection.r1, selection.c1, selection.r2, selection.c2, style))
   }
 
+  const toggleStyle = (key) => {
+    const cur = computed[activeKey]?.style?.[key]
+    applyStyle({ [key]: !cur })
+  }
+
   const handleKeyDown = (e) => {
     if (readOnly) return
     const mod = e.ctrlKey || e.metaKey
@@ -118,8 +158,9 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
     }
     if (mod && e.key === 'x' && selection) {
       setClipboard(copyRange(sheet, selection.r1, selection.c1, selection.r2, selection.c2))
-      let next = pasteRange(sheet, selection.r1, selection.c1, { data: selection && Array.from({ length: selection.r2 - selection.r1 + 1 }, () => Array(selection.c2 - selection.c1 + 1).fill(null)) })
-      commit(next)
+      commit(pasteRange(sheet, selection.r1, selection.c1, {
+        data: Array.from({ length: selection.r2 - selection.r1 + 1 }, () => Array(selection.c2 - selection.c1 + 1).fill(null)),
+      }))
       return
     }
     if (mod && e.key === 'v' && clipboard && selection) {
@@ -133,30 +174,38 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
       setEditVal(computed[activeKey]?.raw ?? '')
       return
     }
-    if (e.key === 'ArrowDown') selectCell(Math.min(sheet.rows - 1, activeCell.r + 1), activeCell.c)
-    if (e.key === 'ArrowUp') selectCell(Math.max(0, activeCell.r - 1), activeCell.c)
-    if (e.key === 'ArrowRight') selectCell(activeCell.r, Math.min(sheet.cols - 1, activeCell.c + 1))
-    if (e.key === 'ArrowLeft') selectCell(activeCell.r, Math.max(0, activeCell.c - 1))
+    if (e.key === 'ArrowDown') { e.preventDefault(); selectCell(Math.min(sheet.rows - 1, activeCell.r + 1), activeCell.c) }
+    if (e.key === 'ArrowUp') { e.preventDefault(); selectCell(Math.max(0, activeCell.r - 1), activeCell.c) }
+    if (e.key === 'ArrowRight') { e.preventDefault(); selectCell(activeCell.r, Math.min(sheet.cols - 1, activeCell.c + 1)) }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); selectCell(activeCell.r, Math.max(0, activeCell.c - 1)) }
     if (e.key.length === 1 && !mod) {
       setEditing({ r: activeCell.r, c: activeCell.c })
       setEditVal(e.key)
     }
   }
 
+  const onCellMouseDown = (r, c, e) => {
+    if (readOnly || e.button !== 0) return
+    e.preventDefault()
+    dragRef.current = { r, c }
+    selectCell(r, c, e.shiftKey)
+  }
+
+  const onCellMouseEnter = (r, c) => {
+    if (!dragRef.current || readOnly) return
+    setSel({ r1: dragRef.current.r, c1: dragRef.current.c, r2: r, c2: c })
+  }
+
   const startColResize = (col, e) => {
     e.preventDefault()
     e.stopPropagation()
-    const startX = e.clientX
-    const startW = sheet.colWidths[col]
-    setResizing({ type: 'col', index: col, startX, startW })
+    setResizing({ type: 'col', index: col, startX: e.clientX, startW: sheet.colWidths[col] })
   }
 
   const startRowResize = (row, e) => {
     e.preventDefault()
     e.stopPropagation()
-    const startY = e.clientY
-    const startH = sheet.rowHeights[row]
-    setResizing({ type: 'row', index: row, startY, startH })
+    setResizing({ type: 'row', index: row, startY: e.clientY, startH: sheet.rowHeights[row] })
   }
 
   useEffect(() => {
@@ -164,14 +213,10 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
     const onMove = (e) => {
       if (resizing.type === 'col') {
         const w = Math.max(40, resizing.startW + (e.clientX - resizing.startX))
-        const widths = [...sheet.colWidths]
-        widths[resizing.index] = w
-        onChange({ ...sheet, colWidths: widths, updatedAt: Date.now() })
+        onChange({ ...sheet, colWidths: sheet.colWidths.map((cw, i) => (i === resizing.index ? w : cw)), updatedAt: Date.now() })
       } else {
         const h = Math.max(22, resizing.startH + (e.clientY - resizing.startY))
-        const heights = [...sheet.rowHeights]
-        heights[resizing.index] = h
-        onChange({ ...sheet, rowHeights: heights, updatedAt: Date.now() })
+        onChange({ ...sheet, rowHeights: sheet.rowHeights.map((rh, i) => (i === resizing.index ? h : rh)), updatedAt: Date.now() })
       }
     }
     const onUp = () => setResizing(null)
@@ -190,8 +235,12 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
     return hits
   }, [computed, tableSearch])
 
-  const btn = (label, onClick, active = false) => (
-    <button type="button" onClick={onClick} disabled={readOnly} style={{
+  const hdrBg = T.surface || '#eef1f5'
+  const gridBg = '#ffffff'
+  const gridBorder = T.border || '#ccd3dc'
+
+  const btn = (label, onClick, active = false, title = '') => (
+    <button type="button" title={title} onClick={onClick} disabled={readOnly} style={{
       padding: '5px 8px', fontSize: 11, borderRadius: 6, cursor: readOnly ? 'default' : 'pointer',
       border: `1px solid ${active ? T.accent : T.border}`, background: active ? `${T.accent}18` : T.bg,
       color: T.ink, fontWeight: active ? 700 : 500,
@@ -202,10 +251,19 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }} tabIndex={0} onKeyDown={handleKeyDown}>
       {!readOnly && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '8px 0', borderBottom: `1px solid ${T.border}`, alignItems: 'center' }}>
-          {btn('↶', undo)}{btn('↷', redoAction)}
-          {btn('B', () => applyStyle({ bold: true }), computed[activeKey]?.style?.bold)}
-          {btn('I', () => applyStyle({ italic: true }), computed[activeKey]?.style?.italic)}
-          {btn('U', () => applyStyle({ underline: true }), computed[activeKey]?.style?.underline)}
+          {btn('↶', undo, false, 'Annuler')}{btn('↷', redoAction, false, 'Rétablir')}
+          {btn('B', () => toggleStyle('bold'), computed[activeKey]?.style?.bold, 'Gras')}
+          {btn('I', () => toggleStyle('italic'), computed[activeKey]?.style?.italic, 'Italique')}
+          {btn('U', () => toggleStyle('underline'), computed[activeKey]?.style?.underline, 'Souligné')}
+          <select
+            value={computed[activeKey]?.style?.fontSize || 12}
+            onChange={(e) => applyStyle({ fontSize: parseInt(e.target.value, 10) })}
+            disabled={readOnly}
+            title="Taille police"
+            style={{ padding: '4px 6px', fontSize: 11, borderRadius: 6, border: `1px solid ${T.border}`, background: T.bg, color: T.ink }}
+          >
+            {FONT_SIZES.map((s) => <option key={s} value={s}>{s}px</option>)}
+          </select>
           {btn('⬅', () => applyStyle({ alignH: 'left' }))}
           {btn('⬌', () => applyStyle({ alignH: 'center' }))}
           {btn('➡', () => applyStyle({ alignH: 'right' }))}
@@ -216,12 +274,9 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
           {btn('Fusionner', () => selection && commit(mergeCells(sheet, selection.r1, selection.c1, selection.r2, selection.c2)))}
           {btn('Séparer', () => selection && commit(unmergeAt(sheet, selection.r1, selection.c1)))}
           {btn('A→Z', () => selection && commit(sortByColumn(sheet, selection.c1, 'asc')))}
-          {btn('Z→A', () => selection && commit(sortByColumn(sheet, selection.c1, 'desc')))}
           {btn('Archi', () => commit(applyArchTablePreset(sheet)))}
           {btn('Aj. larg.', () => selection && commit(autoFitCol(sheet, selection.c1)))}
-          {btn('Aj. haut.', () => selection && commit(autoFitRow(sheet, selection.r1)))}
-          {btn('Gel L1', () => commit({ ...sheet, freezeRow: sheet.freezeRow ? 0 : 1 }))}
-          {btn('Gel C1', () => commit({ ...sheet, freezeCol: sheet.freezeCol ? 0 : 1 }))}
+          {btn('? Formules', () => setFormulaHelp((v) => !v), formulaHelp, 'Aide formules')}
           <input
             value={tableSearch}
             onChange={(e) => setTableSearch(e.target.value)}
@@ -231,41 +286,58 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
         </div>
       )}
 
+      <SpreadsheetFormulaHelp T={T} open={formulaHelp && !readOnly} onClose={() => setFormulaHelp(false)} />
+
       {!readOnly && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', fontSize: 12 }}>
-          <span style={{ color: T.muted, fontWeight: 600 }}>{activeKey}</span>
+          <span style={{ color: T.accent, fontWeight: 700, minWidth: 36, fontFamily: 'monospace' }}>{activeKey}</span>
           <input
             value={formulaBar}
             onChange={(e) => setFormulaBar(e.target.value)}
             onBlur={() => updateCellRaw(activeCell.r, activeCell.c, formulaBar)}
             onKeyDown={(e) => { if (e.key === 'Enter') { updateCellRaw(activeCell.r, activeCell.c, formulaBar); e.target.blur() } }}
-            style={{ flex: 1, padding: '6px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, fontFamily: 'monospace' }}
+            placeholder="=SOMME(A1:A5) ou texte…"
+            style={{ flex: 1, padding: '6px 10px', borderRadius: 6, border: `1px solid ${T.border}`, background: T.bg, color: '#000', fontFamily: 'monospace', fontSize: 12 }}
           />
         </div>
       )}
 
-      <div ref={tableWrapRef} style={{ flex: 1, overflow: 'auto', border: `1px solid ${T.border}`, borderRadius: 8, background: '#fff' }}>
-        <table style={{ borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: '100%' }}>
+      <div
+        ref={tableWrapRef}
+        style={{
+          flex: 1, overflow: 'auto', border: `1px solid ${gridBorder}`, borderRadius: 8,
+          background: gridBg, minHeight: 0, userSelect: 'none',
+        }}
+      >
+        <table style={{ borderCollapse: 'separate', borderSpacing: 0, tableLayout: 'fixed', width: tableWidth, minWidth: tableWidth }}>
           <thead>
             <tr>
-              <th style={{ width: 36, position: sheet.freezeCol ? 'sticky' : 'static', left: 0, zIndex: 4, background: '#eef1f5', border: '1px solid #ccd3dc' }} />
+              <th
+                style={{
+                  width: ROW_HDR_W, minWidth: ROW_HDR_W, height: COL_HDR_H,
+                  position: 'sticky', top: 0, left: 0, zIndex: 5,
+                  background: hdrBg, borderBottom: `1px solid ${gridBorder}`, borderRight: `1px solid ${gridBorder}`,
+                }}
+              />
               {Array.from({ length: sheet.cols }, (_, c) => (
                 <th
                   key={c}
-                  onClick={() => !readOnly && setSel({ r1: 0, c1: c, r2: sheet.rows - 1, c2: c })}
+                  onMouseDown={(e) => { if (!readOnly) { e.preventDefault(); setSel({ r1: 0, c1: c, r2: sheet.rows - 1, c2: c }) } }}
                   style={{
-                    width: sheet.colWidths[c], minWidth: sheet.colWidths[c],
-                    position: c < sheet.freezeCol ? 'sticky' : 'relative',
-                    left: c < sheet.freezeCol ? 36 + sheet.colWidths.slice(0, c).reduce((a, b) => a + b, 0) : undefined,
-                    top: 0,
-                    zIndex: c < sheet.freezeCol ? 3 : 1,
-                    background: '#eef1f5', border: '1px solid #ccd3dc', fontSize: 11, fontWeight: 700,
+                    width: sheet.colWidths[c], minWidth: sheet.colWidths[c], height: COL_HDR_H,
+                    position: 'sticky', top: 0, zIndex: 4,
+                    background: hdrBg, borderBottom: `1px solid ${gridBorder}`, borderRight: `1px solid ${gridBorder}`,
+                    fontSize: 11, fontWeight: 700, color: T.ink,
                     cursor: readOnly ? 'default' : 'pointer', userSelect: 'none',
+                    boxShadow: '0 1px 0 rgba(0,0,0,.06)',
                   }}
                 >
                   {colToLetter(c)}
                   {!readOnly && (
-                    <span onMouseDown={(e) => startColResize(c, e)} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 4, cursor: 'col-resize' }} />
+                    <span
+                      onMouseDown={(e) => startColResize(c, e)}
+                      style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 5, cursor: 'col-resize' }}
+                    />
                   )}
                 </th>
               ))}
@@ -277,18 +349,18 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
               return (
                 <tr key={r} style={{ height: sheet.rowHeights[r] }}>
                   <td
-                    onClick={() => !readOnly && setSel({ r1: r, c1: 0, r2: r, c2: sheet.cols - 1 })}
+                    onMouseDown={(e) => { if (!readOnly) { e.preventDefault(); setSel({ r1: r, c1: 0, r2: r, c2: sheet.cols - 1 }) } }}
                     style={{
-                      width: 36, textAlign: 'center', fontSize: 10, color: '#666',
-                      background: '#eef1f5', border: '1px solid #ccd3dc', cursor: readOnly ? 'default' : 'pointer',
-                      position: r < sheet.freezeRow ? 'sticky' : 'static',
-                      top: r < sheet.freezeRow ? 28 : undefined,
-                      left: 0, zIndex: r < sheet.freezeRow ? 3 : 1,
+                      width: ROW_HDR_W, minWidth: ROW_HDR_W, height: sheet.rowHeights[r],
+                      textAlign: 'center', fontSize: 10, fontWeight: 600, color: T.muted,
+                      background: hdrBg, borderBottom: `1px solid ${gridBorder}`, borderRight: `1px solid ${gridBorder}`,
+                      cursor: readOnly ? 'default' : 'pointer', userSelect: 'none',
+                      position: 'sticky', left: 0, zIndex: 3,
                     }}
                   >
                     {r + 1}
                     {!readOnly && (
-                      <span onMouseDown={(e) => startRowResize(r, e)} style={{ display: 'block', height: 3, cursor: 'row-resize' }} />
+                      <span onMouseDown={(e) => startRowResize(r, e)} style={{ display: 'block', height: 4, cursor: 'row-resize' }} />
                     )}
                   </td>
                   {Array.from({ length: sheet.cols }, (_, c) => {
@@ -297,29 +369,33 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
                     const k = cellKey(r, c)
                     const cell = computed[k] || { value: '', raw: '', style: defaultStyle() }
                     const selected = isSelected(r, c)
+                    const active = isActiveCell(r, c)
                     const hit = searchHits.has(k)
                     const isEdit = editing?.r === r && editing?.c === c
+                    const edges = selectionEdge(r, c)
                     return (
                       <td
                         key={c}
                         rowSpan={m ? m.r2 - m.r1 + 1 : 1}
                         colSpan={m ? m.c2 - m.c1 + 1 : 1}
-                        onClick={(e) => { if (!readOnly) selectCell(r, c, e.shiftKey) }}
+                        onMouseDown={(e) => onCellMouseDown(r, c, e)}
+                        onMouseEnter={() => onCellMouseEnter(r, c)}
                         onDoubleClick={() => { if (!readOnly) { setEditing({ r, c }); setEditVal(cell.raw ?? '') } }}
                         style={{
-                          width: sheet.colWidths[c], maxWidth: sheet.colWidths[c],
-                          padding: 0, border: '1px solid #d8dee6',
-                          background: hit ? '#fff8dc' : (cell.style?.bg || '#fff'),
-                          outline: selected ? `2px solid ${T.accent}` : 'none',
-                          outlineOffset: -2,
+                          width: sheet.colWidths[c], minWidth: sheet.colWidths[c],
+                          height: sheet.rowHeights[r],
+                          padding: 0, borderBottom: `1px solid #e2e6ec`, borderRight: `1px solid #e2e6ec`,
+                          background: hit ? '#fff8dc' : selected ? `${T.accent}14` : (cell.style?.bg || gridBg),
+                          boxShadow: active ? `inset 0 0 0 2px ${T.accent}` : undefined,
+                          ...edges,
                           fontWeight: cell.style?.bold ? 700 : 400,
                           fontStyle: cell.style?.italic ? 'italic' : 'normal',
                           textDecoration: cell.style?.underline ? 'underline' : 'none',
-                          fontSize: cell.style?.fontSize || 11,
-                          color: cell.style?.color || '#1c1c24',
+                          fontSize: cell.style?.fontSize || 12,
+                          color: cellTextColor(cell.style, '#000000'),
                           textAlign: cell.style?.alignH || 'left',
                           verticalAlign: cell.style?.alignV || 'middle',
-                          overflow: 'hidden',
+                          overflow: 'hidden', cursor: readOnly ? 'default' : 'cell',
                         }}
                       >
                         {isEdit ? (
@@ -329,13 +405,18 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
                             onChange={(e) => setEditVal(e.target.value)}
                             onBlur={finishEdit}
                             onKeyDown={(e) => { if (e.key === 'Enter') finishEdit(); if (e.key === 'Escape') setEditing(null) }}
-                            style={{ width: '100%', height: '100%', border: 'none', outline: 'none', padding: '4px 6px', font: 'inherit', background: 'transparent', boxSizing: 'border-box' }}
+                            style={{
+                              width: '100%', height: '100%', border: 'none', outline: 'none',
+                              padding: '4px 6px', font: 'inherit', color: '#000', background: '#fff',
+                              boxSizing: 'border-box',
+                            }}
                           />
                         ) : (
-                          <div style={{ padding: '4px 6px', whiteSpace: 'pre-wrap', wordBreak: 'break-word', minHeight: sheet.rowHeights[r] - 2 }}>
-                            {cell.style?.format === 'link' && cell.value ? (
-                              <a href={String(cell.raw).startsWith('http') ? cell.raw : `https://${cell.raw}`} target="_blank" rel="noreferrer">{cell.value}</a>
-                            ) : cell.value}
+                          <div style={{
+                            padding: '4px 6px', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                            minHeight: sheet.rowHeights[r] - 2, color: 'inherit',
+                          }}>
+                            {cell.value}
                           </div>
                         )}
                       </td>
