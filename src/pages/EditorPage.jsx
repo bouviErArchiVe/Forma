@@ -22,8 +22,11 @@ import { buildActionEntry } from "@/lib/actionHistory"
 import PageContextMenu from "@/components/PageContextMenu"
 import EditorTopBar from "@/components/EditorTopBar"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
+import ShareModal from "@/components/ShareModal"
 import UnitConverter from "@/components/UnitConverter"
 import { useCalculator, calcDrawerWidth } from "@/hooks/useCalculator"
+import { useAuth } from "@/hooks/useAuth"
+import { useCollaboration } from "@/hooks/useCollaboration"
 import BrandLogo, { ThemePreviewThumb } from "@/components/BrandLogo"
 import { useTheme } from "@/hooks/useAppearance"
 import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from "@/lib/favorites"
@@ -1292,51 +1295,14 @@ function PageSettings({T,pageColor,setPageColor,gridColor,setGridColor,gridStyle
   )
 }
 
-function ShareModal({T,nbId,nbTitle,onClose}){
-  const[email,setEmail]=useState("")
-  const[sent,setSent]=useState(false)
-  const shareUrl=`${window.location.origin}/editor/${nbId}`
-  const copyLink=()=>{navigator.clipboard.writeText(shareUrl);alert("Lien copié !")}
-  return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",backdropFilter:"blur(6px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
-      <div style={{background:T.surface,borderRadius:16,padding:24,width:380,maxWidth:"94vw",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,color:T.ink}}>🤝 Partager ce carnet</div>
-          <button onClick={onClose}style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:20}}>×</button>
-        </div>
-        <div style={{padding:12,borderRadius:10,background:`${T.accent}10`,border:`1px solid ${T.accent}33`,marginBottom:14,fontSize:12,color:T.ink}}><strong>{nbTitle}</strong></div>
-        {sent?(
-          <div style={{textAlign:"center",padding:"16px 0"}}>
-            <div style={{fontSize:32,marginBottom:8}}>✅</div>
-            <div style={{fontSize:14,color:T.ink,fontWeight:600}}>Lien copié !</div>
-            <button onClick={onClose}style={{marginTop:14,padding:"9px 20px",borderRadius:10,background:T.accent,border:"none",color:"#fff",fontWeight:700,cursor:"pointer",fontSize:13}}>Fermer</button>
-          </div>
-        ):(
-          <>
-            <div style={{marginBottom:14}}>
-              <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:5}}>LIEN DE PARTAGE</div>
-              <div style={{display:"flex",gap:6}}>
-                <input readOnly value={shareUrl}style={{flex:1,padding:"8px 10px",borderRadius:8,border:`1px solid ${T.border}`,fontSize:10,background:T.bg,color:T.muted,outline:"none"}}/>
-                <button onClick={()=>{copyLink();setSent(true)}}style={{padding:"8px 14px",borderRadius:8,background:T.accent,border:"none",color:"#fff",cursor:"pointer",fontSize:12,fontWeight:700}}>Copier</button>
-              </div>
-            </div>
-            <div style={{marginBottom:16,fontSize:11,color:T.muted,lineHeight:1.6}}>
-              Envoie ce lien à ton camarade pour qu'il puisse annoter le carnet en temps réel.
-            </div>
-            <button onClick={onClose}style={{width:"100%",padding:11,borderRadius:10,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,fontSize:13,cursor:"pointer"}}>Fermer</button>
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
-
 /* ══ MAIN EDITOR ══════════════════════════════════════ */
 export default function EditorPage(){
   const navigate=useNavigate()
   const { id: routeNotebookId } = useParams()
   const{activeNotebook,updateNotebook,setTheme,canvasTextFont,setCanvasTextFont}=useAppStore()
   const{ T }=useTheme()
+  const { user } = useAuth()
+  const collab = useCollaboration()
   useEffect(()=>{ensureCanvasTextFontsLoaded()},[])
   const nb=activeNotebook||{id:"1",title:"Carnet",subject:"arch",template:"plan",pages_count:1}
 
@@ -1979,7 +1945,19 @@ export default function EditorPage(){
     <div className="forma-page-shell" style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
       {showPageSettings&&<PageSettings T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} onClose={()=>setShowPageSettings(false)}/>}
       {showTheme&&<ThemePicker current={T} onChange={th=>setTheme(th.id)} onClose={()=>setShowTheme(false)}/>}
-      {showShare&&<ShareModal T={T} nbId={nb.id} nbTitle={nb.title} onClose={()=>setShowShare(false)}/>}
+      {showShare&&(
+        <ShareModal
+          T={T}
+          open={showShare}
+          onClose={()=>setShowShare(false)}
+          resourceType="notebook"
+          resourceId={nb.id}
+          resourceTitle={nb.title}
+          ownerId={user?.id}
+          ownerName={collab.profile?.display_name}
+          friends={collab.friends}
+        />
+      )}
       {pageMenu&&pageMenuMeta&&<PageContextMenu T={T} pageNum={pageMenu.pageNum} x={pageMenu.x} y={pageMenu.y} meta={pageMenuMeta} onClose={()=>setPageMenu(null)} onApply={partial=>applyPageSettings(pageMenu.pageNum,partial)} onDuplicate={()=>duplicatePageByNum(pageMenu.pageNum)} onDelete={()=>deletePage(pageMenu.pageNum)} canDelete={(nb.pages_count||1)>1}/>}
 
       {!focusMode&&(

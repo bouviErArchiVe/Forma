@@ -19,13 +19,13 @@
 2. **New Project** → choisis un nom (ex: `forma`)
 3. Note bien ton **mot de passe de base de données**
 4. Attends ~2 minutes que le projet se crée
-5. u&e&Pbgfeq-m5EJ
 
 ### Configurer la base de données
 1. Dans ton projet Supabase, clique **SQL Editor**
-2. Copie tout le commentaire SQL en bas de `src/lib/supabase.js`
-3. Colle-le dans l'éditeur SQL et clique **Run**
-4. Tu devrais voir "Success. No rows returned"
+2. Ouvre `supabase/migrations/001_account_sharing.sql` dans ce repo
+3. Colle le contenu dans l'éditeur SQL et clique **Run**
+4. Tu devrais voir « Success » — tables `profiles`, `friends`, `shared_projects`, etc.
+5. (Optionnel) Crée un bucket Storage **avatars** public pour les photos de profil
 
 ### Récupérer tes clés API
 1. Va dans **Settings > API**

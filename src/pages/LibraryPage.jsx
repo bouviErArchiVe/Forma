@@ -10,6 +10,10 @@ import { APPEARANCE_MODES, applyAppearanceToTheme } from "@/lib/appearance"
 import { optionCardStyle, optionChipStyle, optionPanelStyle } from "@/config/appearance"
 import UnitConverter from "@/components/UnitConverter"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
+import AccountMenu from "@/components/AccountMenu"
+import NotificationPanel, { NotificationBell } from "@/components/NotificationPanel"
+import { useCollaboration } from "@/hooks/useCollaboration"
+import { useAuth } from "@/hooks/useAuth"
 import { useCalculator } from "@/hooks/useCalculator"
 import BrandLogo, { ThemePreviewThumb } from "@/components/BrandLogo"
 import { useTheme } from "@/hooks/useAppearance"
@@ -488,8 +492,11 @@ export default function LibraryPage() {
 
   const [showCalc, setShowCalc] = useState(false)
   const [showConverter, setShowConverter] = useState(false)
-  const [showProfile, setShowProfile] = useState(false)
-  const [editName, setEditName] = useState("")
+  const [showAccountMenu, setShowAccountMenu] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const avatarRef = useRef(null)
+  const { signOut: authSignOut } = useAuth()
+  const collab = useCollaboration()
   const calc = useCalculator()
   const [convValue, setConvValue] = useState("")
   const [convCategory, setConvCategory] = useState("length")
@@ -525,7 +532,7 @@ export default function LibraryPage() {
         if (session?.user) {
           setUserId(session.user.id)
           const uname = session.user.user_metadata?.full_name || session.user.email || ""
-          setUserName(uname); setEditName(uname)
+          setUserName(uname)
           loadNotebooks(session.user.id)
         } else {
           setLoading(false)
@@ -656,19 +663,20 @@ export default function LibraryPage() {
     setShowNewSubject(false); setSubjName(""); setSubjEmoji("⭐"); setSubjColor("#c8622a")
   }
 
-  const logout = async () => { await supabase.auth.signOut(); setUserId(null); setUserName(""); setNotebooks([]) }
-
-  const saveProfile = async () => {
-    if (userId) { try { await supabase.auth.updateUser({data:{full_name:editName}}) } catch {} }
-    setUserName(editName); setShowProfile(false)
-  }
-
   const usedSubjects = subjects.filter(s => notebooks.some(n => n.subject === s.id))
   const starredCount = notebooks.filter(n => n.starred).length
-
   const recentNotebooks = recentIds.map(id => notebooks.find(n => n.id === id)).filter(Boolean).slice(0, 4)
 
-  const avatarLetter = userName ? userName.charAt(0).toUpperCase() : "?"
+  const logout = async () => {
+    await authSignOut()
+    setUserId(null)
+    setUserName("")
+    setNotebooks([])
+    setShowAccountMenu(false)
+  }
+
+  const avatarLetter = (collab.profile?.display_name || userName || "?").charAt(0).toUpperCase()
+  const displayName = collab.profile?.display_name || userName
 
   return (
     <div className="forma-page-shell">
@@ -754,36 +762,30 @@ export default function LibraryPage() {
         />
       )}
 
-      {/* PROFILE PANEL */}
-      {showProfile && userId && (
-        <GlassPanel T={T} variant="float" animate style={{ position: "fixed", top: 68, right: 16, zIndex: TOKENS.zIndex.modal, padding: 16, width: 260 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-            <div style={{ fontWeight: 700, fontSize: 13, color: T.ink }}>Mon profil</div>
-            <button onClick={() => setShowProfile(false)} className="forma-btn-glass" style={{ background: "none", border: "none", cursor: "pointer", color: T.muted, fontSize: 18, lineHeight: 1, padding: "2px 6px" }}>×</button>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, padding: "10px 12px", background: rgbaFromHex(T.bg, 0.4), borderRadius: TOKENS.radius.md, border: `1px solid ${rgbaFromHex(T.border, 0.4)}` }}>
-            <div style={{ width: 42, height: 42, borderRadius: "50%", background: `linear-gradient(135deg,${T.accent},${T.a2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 800, color: "#fff", flexShrink: 0 }}>
-              {avatarLetter}
-            </div>
-            <div style={{ overflow: "hidden" }}>
-              <div style={{ fontWeight: 700, fontSize: 12, color: T.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{editName || "—"}</div>
-              <div style={{ fontSize: 10, color: T.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{userName}</div>
-            </div>
-          </div>
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: T.muted, marginBottom: 4, letterSpacing: 0.8 }}>PSEUDO</div>
-            <input value={editName} onChange={e => setEditName(e.target.value)} placeholder="Ton prénom ou pseudo"
-              style={{ width: "100%", padding: "9px 11px", borderRadius: TOKENS.radius.sm, border: `1px solid ${rgbaFromHex(T.border, 0.45)}`, background: rgbaFromHex(T.bg, 0.4), color: T.ink, fontSize: 12, outline: "none", boxSizing: "border-box" }}
-              onFocus={e => { e.target.style.borderColor = T.accent }} onBlur={e => { e.target.style.borderColor = rgbaFromHex(T.border, 0.45) }}
-              onKeyDown={e => e.key === "Enter" && saveProfile()} />
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={saveProfile} className="forma-btn-glass" style={{ flex: 1, padding: "9px 0", borderRadius: TOKENS.radius.sm, background: `linear-gradient(135deg,${T.accent},${T.a2})`, border: "none", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-              Sauvegarder
-            </button>
-            <GlassButton T={T} onClick={() => { logout(); setShowProfile(false) }}>Déco.</GlassButton>
-          </div>
-        </GlassPanel>
+      {userId && (
+        <AccountMenu
+          T={T}
+          open={showAccountMenu}
+          onClose={() => setShowAccountMenu(false)}
+          anchorRef={avatarRef}
+          displayName={displayName}
+          email={collab.user?.email || userName}
+          avatarUrl={collab.profile?.avatar_url}
+          avatarLetter={avatarLetter}
+          unreadCount={collab.unreadCount}
+          onLogout={logout}
+        />
+      )}
+
+      {userId && (
+        <NotificationPanel
+          T={T}
+          open={showNotifications}
+          onClose={() => setShowNotifications(false)}
+          notifications={collab.notifications}
+          unreadCount={collab.unreadCount}
+          onRefresh={collab.refresh}
+        />
       )}
 
       {/* FLOATING BUTTONS — Spotify + Focus */}
@@ -989,6 +991,14 @@ export default function LibraryPage() {
 
           {/* Right actions */}
           <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
+            {userId && (
+              <NotificationBell
+                T={T}
+                unreadCount={collab.unreadCount}
+                active={showNotifications}
+                onClick={() => { setShowNotifications(v => !v); setShowAccountMenu(false) }}
+              />
+            )}
             <GlassButton T={T} size="md" onClick={() => navigate("/moodboard")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               🎭 Moodboard
             </GlassButton>
@@ -1002,17 +1012,19 @@ export default function LibraryPage() {
             )}
             {userId && (
               <div
-                onClick={() => setShowProfile(v => !v)}
+                ref={avatarRef}
+                onClick={() => { setShowAccountMenu(v => !v); setShowNotifications(false) }}
                 className="forma-btn-glass"
                 style={{
                   width: 32, height: 32, borderRadius: "50%",
-                  background: `linear-gradient(135deg,${T.accent},${T.a2})`,
+                  background: collab.profile?.avatar_url ? `url(${collab.profile.avatar_url}) center/cover` : `linear-gradient(135deg,${T.accent},${T.a2})`,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 13, fontWeight: 800, color: "#fff", flexShrink: 0,
                   boxShadow: `0 2px 8px ${T.accent}44`, cursor: "pointer",
+                  border: showAccountMenu ? `2px solid ${T.accent}` : 'none',
                 }}
               >
-                {avatarLetter}
+                {!collab.profile?.avatar_url && avatarLetter}
               </div>
             )}
             <button
@@ -1061,6 +1073,10 @@ export default function LibraryPage() {
               {e:"⭐", v:starredCount,      l:"favoris",   tab:"favorites"},
               {e:"📁", v:folders.length,   l:"dossiers",  tab:"folders"},
               {e:"📊", v:"",               l:"tableau",   tab:"dashboard"},
+              {e:"👤", v:"",               l:"compte",    tab:null, action:()=>navigate("/account/profile")},
+              {e:"🤝", v:collab.friends.length, l:"amis", tab:null, action:()=>navigate("/account/friends")},
+              {e:"🔗", v:"",               l:"partage",   tab:null, action:()=>navigate("/account/sharing")},
+              {e:"📂", v:(collab.sharedFolders.owned?.length||0)+(collab.sharedFolders.member?.length||0), l:"partagés", tab:null, action:()=>navigate("/account/folders")},
               {e:"🎭", v:"",               l:"moodboard", tab:null, action:()=>navigate("/moodboard")},
               {e:"🎨", v:"",               l:"thèmes",    tab:null, action:()=>setShowTheme(true)},
             ].map(s => (

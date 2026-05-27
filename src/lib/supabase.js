@@ -1,5 +1,4 @@
-// src/lib/supabase.js
-// Connexion Supabase — remplace les variables par tes clés sur supabase.com (gratuit)
+// Schéma SQL (profiles, amis, partage) : supabase/migrations/001_account_sharing.sql
 import { createClient } from '@supabase/supabase-js'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://YOUR_PROJECT.supabase.co'
