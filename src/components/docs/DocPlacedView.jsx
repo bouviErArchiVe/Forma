@@ -1,10 +1,9 @@
-import { useMemo } from 'react'
-import { getDoc } from '@/lib/docs/persistence'
+import { useDocLive } from '@/hooks/useDocLive'
 import DocPreview from '@/components/docs/DocPreview'
 import { PAGE_W, PAGE_H } from '@/lib/docs/model'
 
 export default function DocPlacedView({ el, width, height }) {
-  const doc = useMemo(() => (el?.docId ? getDoc(el.docId) : null), [el?.docId])
+  const doc = useDocLive(el?.docId)
 
   if (el?.mode === 'image' && el?.imageSrc) {
     return (
@@ -28,13 +27,14 @@ export default function DocPlacedView({ el, width, height }) {
   )
 }
 
-export function renderDocPlaced(el, sx = 1, sy = 1) {
+export function DocPlacedStatic({ el, sx = 1, sy = 1 }) {
+  const doc = useDocLive(el?.docId)
   const W = Math.max((el.pw || el.w || 280) * sx, 40)
   const H = Math.max((el.ph || el.h || 200) * sy, 30)
-  if (el.mode === 'image' && el.imageSrc) {
+
+  if (el?.mode === 'image' && el?.imageSrc) {
     return <img src={el.imageSrc} alt={el.l || 'Document'} style={{ width: W, height: H, objectFit: 'contain', display: 'block' }} />
   }
-  const doc = el.docId ? getDoc(el.docId) : null
   if (!doc) {
     return <div style={{ width: W, height: H, background: '#f0f0f0', border: '1px solid #ccc', fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{el.l || 'Document'}</div>
   }
@@ -44,4 +44,9 @@ export function renderDocPlaced(el, sx = 1, sy = 1) {
       <DocPreview doc={doc} pageIndex={el.pageIndex || 0} scale={scale * 0.92} />
     </div>
   )
+}
+
+/** @deprecated utiliser DocPlacedStatic */
+export function renderDocPlaced(el, sx = 1, sy = 1) {
+  return <DocPlacedStatic el={el} sx={sx} sy={sy} />
 }

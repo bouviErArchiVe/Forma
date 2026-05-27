@@ -1,5 +1,6 @@
 import { createSafePersistStorage } from '@/lib/storage'
 import { createDoc, cloneDoc } from './model'
+import { notifyDocUpdated } from './sync'
 
 const KEY = 'forma-documents'
 
@@ -32,6 +33,7 @@ export function saveDoc(doc) {
   if (idx >= 0) list[idx] = next
   else list.unshift(next)
   writeAll(list)
+  notifyDocUpdated(next.id)
   return next
 }
 
