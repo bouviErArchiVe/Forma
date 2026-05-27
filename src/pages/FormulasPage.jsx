@@ -11,7 +11,7 @@ import { useFormulaPrefs } from '@/hooks/useFormulaPrefs'
 import FormulaCategoryMenu from '@/components/formulas/FormulaCategoryMenu'
 import FormulaCard from '@/components/formulas/FormulaCard'
 import FormulaCalculator from '@/components/formulas/FormulaCalculator'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassButton from '@/components/ui/GlassButton'
 
@@ -112,25 +112,11 @@ export default function FormulasPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
-      <header style={{
-        padding: '14px 20px',
-        borderBottom: `1px solid ${T.border}`,
-        background: T.surface,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 14,
-        flexWrap: 'wrap',
-        position: 'sticky',
-        top: 0,
-        zIndex: 20,
-      }}>
-        <button type="button" onClick={() => navigate('/')} title="Accueil Forma" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo T={T} size={28} />
-        </button>
-        <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>Formules</div>
-          <div style={{ fontSize: 11, color: T.muted }}>Calculateurs intégrés · {listedFormulas.length} formules</div>
-        </div>
+      <FormaModuleHeader
+        title="Formules"
+        subtitle={`Calculateurs intégrés · ${listedFormulas.length} formules`}
+        sticky
+      >
         <div style={{ position: 'relative', flex: '1 1 240px', maxWidth: 360 }}>
           <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: T.muted }}>🔍</span>
           <input
@@ -143,7 +129,7 @@ export default function FormulasPage() {
         <button type="button" onClick={() => setCollapsed((v) => !v)} style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, padding: '8px 10px', cursor: 'pointer', fontSize: 12, color: T.muted }}>
           {collapsed ? '☰' : '◧'}
         </button>
-      </header>
+      </FormaModuleHeader>
 
       <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
         <FormulaCategoryMenu

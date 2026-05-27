@@ -1,29 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import { PF_DARK } from '@/lib/proforma/constants'
 import { useProformaEditor } from '@/hooks/useProformaEditor'
 import ProformaCanvas from './ProformaCanvas'
 import ProformaToolbar from './ProformaToolbar'
-import ProformaLayersPanel from './ProformaLayersPanel'
-import ProformaColorsPanel from './ProformaColorsPanel'
-import { Panel } from './ProformaLayersPanel'
 import { exportProformaPng, exportProformaPdf, downloadBlob, downloadDataUrl } from '@/lib/proforma/export'
 import { formatLabel } from '@/lib/pageFormats'
+import { PF_PALETTE } from '@/lib/proforma/tools'
 
+/** Proforma V1 — éditeur minimal stable */
 export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, addNotification }) {
-  const navigate = useNavigate()
-  const [panels, setPanels] = useState({ layers: true, colors: true, props: true })
   const [viewSize, setViewSize] = useState({ w: 0, h: 0 })
   const [vp, setVp] = useState({ zoom: 1 })
   const viewportRef = useRef({ zoom: 1, panX: 0, panY: 0 })
 
-  const editor = useProformaEditor(doc, setDoc, {
-    viewportRef,
-    viewSize,
-  })
-
-  const togglePanel = (key) => setPanels((p) => ({ ...p, [key]: !p[key] }))
+  const editor = useProformaEditor(doc, setDoc, { viewportRef, viewSize })
 
   const handleExportPng = useCallback(async () => {
     if (!doc) return
@@ -58,53 +49,27 @@ export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, 
 
   return (
     <div className="proforma-editor" style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: PF_DARK.bg, color: PF_DARK.ink }}>
-      <header style={{
-        height: 48,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '0 14px',
-        borderBottom: `1px solid ${PF_DARK.border}`,
-        background: PF_DARK.panel,
-        flexShrink: 0,
-      }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo size="sm" showText={false} />
-        </button>
+      <FormaModuleHeader
+        title="Proforma"
+        dark={PF_DARK}
+        style={{ height: 48, padding: '0 14px', background: PF_DARK.panel, borderBottom: `1px solid ${PF_DARK.border}` }}
+      >
         <button type="button" onClick={onBack} style={headerBtn}>← Projets</button>
-        <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15 }}>
-          Proforma
-        </div>
         <input
           value={doc.name}
           onChange={(e) => setDoc((d) => ({ ...d, name: e.target.value }))}
           style={{
-            flex: 1,
-            maxWidth: 280,
-            background: PF_DARK.surface,
-            border: `1px solid ${PF_DARK.border}`,
-            borderRadius: 8,
-            padding: '6px 10px',
-            color: PF_DARK.ink,
-            fontSize: 12,
-            fontWeight: 600,
+            flex: 1, maxWidth: 220, background: PF_DARK.surface,
+            border: `1px solid ${PF_DARK.border}`, borderRadius: 8,
+            padding: '6px 10px', color: PF_DARK.ink, fontSize: 12, fontWeight: 600,
           }}
         />
         <span style={{ fontSize: 10, color: PF_DARK.muted }}>
-          {formatLabel(doc.formatId)} · {doc.width}×{doc.height}px
+          {formatLabel(doc.formatId)} · {Math.round((vp.zoom || 1) * 100)}%
         </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: PF_DARK.muted }}>
-          <button type="button" style={headerBtn} onClick={() => vp.zoomBy?.(0.8)} title="Zoom −">−</button>
-          <span style={{ minWidth: 42, textAlign: 'center', color: PF_DARK.ink, fontWeight: 700 }}>{Math.round((vp.zoom || 1) * 100)}%</span>
-          <button type="button" style={headerBtn} onClick={() => vp.zoomBy?.(1.25)} title="Zoom +">+</button>
-          <button type="button" style={headerBtn} onClick={() => vp.resetViewport?.()} title="Reset zoom">100%</button>
-        </div>
-        <button type="button" onClick={() => editor.commitDoc((d) => ({ ...d, showGrid: !d.showGrid }), { recordHistory: false })} style={headerBtn}>
-          {doc.showGrid ? '▦ Grille' : 'Grille'}
-        </button>
-        <button type="button" onClick={() => editor.commitDoc((d) => ({ ...d, snapGrid: !d.snapGrid }), { recordHistory: false })} style={headerBtn}>
-          {doc.snapGrid ? '🧲 Snap' : 'Snap'}
-        </button>
+        <button type="button" style={headerBtn} onClick={() => vp.zoomBy?.(0.8)}>−</button>
+        <button type="button" style={headerBtn} onClick={() => vp.zoomBy?.(1.25)}>+</button>
+        <button type="button" style={headerBtn} onClick={() => vp.resetViewport?.()}>100%</button>
         <button type="button" onClick={handleExportPng} style={headerBtn}>PNG</button>
         <button type="button" onClick={handleExportPdf} style={headerBtn}>PDF</button>
         {onInsertNotebook && (
@@ -112,7 +77,7 @@ export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, 
             → Carnet
           </button>
         )}
-      </header>
+      </FormaModuleHeader>
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <ProformaToolbar
@@ -133,68 +98,37 @@ export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, 
         />
 
         <aside style={{
-          width: 260,
+          width: 200,
           background: PF_DARK.panel,
           borderLeft: `1px solid ${PF_DARK.border}`,
-          overflowY: 'auto',
-          padding: 10,
+          padding: 12,
           flexShrink: 0,
         }}>
-          {panels.layers && (
-            <ProformaLayersPanel
-              doc={doc}
-              setDoc={setDoc}
-              activeLayerId={doc.activeLayerId}
-              setActiveLayerId={editor.setActiveLayerId}
-              commitDoc={editor.commitDoc}
+          <div style={{ fontSize: 10, fontWeight: 700, color: PF_DARK.muted, marginBottom: 8 }}>COULEUR</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
+            {PF_PALETTE.slice(0, 10).map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => editor.setColor(c)}
+                style={{
+                  width: 24, height: 24, borderRadius: 6, background: c, cursor: 'pointer',
+                  border: editor.color === c ? `2px solid ${PF_DARK.accent}` : `1px solid ${PF_DARK.border}`,
+                }}
+              />
+            ))}
+          </div>
+          <label style={labelStyle}>
+            Épaisseur ({Math.round(editor.brush.size || 2.5)}px)
+            <input
+              type="range"
+              min={1}
+              max={editor.tool === 'eraser' ? 48 : 12}
+              value={editor.brush.size || (editor.tool === 'eraser' ? 18 : 2.5)}
+              onChange={(e) => editor.setBrush({ size: parseFloat(e.target.value) })}
+              style={{ width: '100%', marginTop: 4 }}
             />
-          )}
-          {panels.colors && (
-            <ProformaColorsPanel
-              color={editor.color}
-              setColor={editor.setColor}
-              brush={editor.brush}
-              setBrush={editor.setBrush}
-              tool={editor.tool}
-            />
-          )}
-          <Panel title="Document">
-            <label style={labelStyle}>
-              Fond
-              <input
-                type="color"
-                value={doc.bgColor || '#ffffff'}
-                onChange={(e) => editor.commitDoc((d) => ({ ...d, bgColor: e.target.value }), { recordHistory: false })}
-                style={{ width: '100%', height: 28, marginTop: 4 }}
-              />
-            </label>
-            <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
-              <input
-                type="checkbox"
-                checked={!!doc.transparent}
-                onChange={(e) => editor.commitDoc((d) => ({ ...d, transparent: e.target.checked }), { recordHistory: false })}
-              />
-              Fond transparent (export PNG)
-            </label>
-            <label style={{ ...labelStyle, marginTop: 8 }}>
-              Rotation vue ({doc.viewRotation || 0}°)
-              <input
-                type="range"
-                min={0}
-                max={359}
-                value={doc.viewRotation || 0}
-                onChange={(e) => editor.commitDoc((d) => ({ ...d, viewRotation: parseInt(e.target.value, 10) }), { recordHistory: false })}
-                style={{ width: '100%' }}
-              />
-            </label>
-            <button
-              type="button"
-              style={{ ...headerBtn, width: '100%', marginTop: 8 }}
-              onClick={() => editor.commitDoc((d) => ({ ...d, viewRotation: 0 }), { recordHistory: false })}
-            >
-              Reset rotation
-            </button>
-          </Panel>
+          </label>
         </aside>
       </div>
     </div>

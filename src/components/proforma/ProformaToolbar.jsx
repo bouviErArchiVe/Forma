@@ -1,9 +1,13 @@
-import { PF_TOOLS, PF_TOOL_GROUPS } from '@/lib/proforma/tools'
 import { PF_DARK } from '@/lib/proforma/constants'
 
-export default function ProformaToolbar({ tool, setTool, onUndo, onRedo, canUndo, canRedo }) {
-  const groups = PF_TOOL_GROUPS.filter((g) => g.id !== 'nav')
+const V1_TOOLS = [
+  { id: 'hand', icon: '✋', label: 'Main' },
+  { id: 'pen', icon: '✏', label: 'Crayon' },
+  { id: 'eraser', icon: '⌫', label: 'Gomme' },
+]
 
+/** Proforma V1 — barre d'outils minimale */
+export default function ProformaToolbar({ tool, setTool, onUndo, onRedo, canUndo, canRedo }) {
   return (
     <div className="proforma-toolbar" style={{
       width: 56,
@@ -14,33 +18,19 @@ export default function ProformaToolbar({ tool, setTool, onUndo, onRedo, canUndo
       alignItems: 'center',
       padding: '8px 0',
       gap: 4,
-      overflowY: 'auto',
       flexShrink: 0,
     }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>
-        <ToolBtn icon="↶" title="Annuler" disabled={!canUndo} onClick={onUndo} />
-        <ToolBtn icon="↷" title="Rétablir" disabled={!canRedo} onClick={onRedo} />
-      </div>
-
-      <ToolBtn icon="✋" title="Déplacer" active={tool === 'hand'} onClick={() => setTool('hand')} />
-
-      {groups.map((g) => (
-        <div key={g.id} style={{ width: '100%' }}>
-          <div style={{ fontSize: 8, color: PF_DARK.muted, textAlign: 'center', margin: '8px 0 4px', letterSpacing: 0.5 }}>
-            {g.label.slice(0, 4).toUpperCase()}
-          </div>
-          {Object.values(PF_TOOLS)
-            .filter((t) => t.group === g.id)
-            .map((t) => (
-              <ToolBtn
-                key={t.id}
-                icon={t.icon}
-                title={t.label}
-                active={tool === t.id}
-                onClick={() => setTool(t.id)}
-              />
-            ))}
-        </div>
+      <ToolBtn icon="↶" title="Annuler" disabled={!canUndo} onClick={onUndo} />
+      <ToolBtn icon="↷" title="Rétablir" disabled={!canRedo} onClick={onRedo} />
+      <div style={{ height: 1, width: 32, background: PF_DARK.border, margin: '8px 0' }} />
+      {V1_TOOLS.map((t) => (
+        <ToolBtn
+          key={t.id}
+          icon={t.icon}
+          title={t.label}
+          active={tool === t.id}
+          onClick={() => setTool(t.id)}
+        />
       ))}
     </div>
   )

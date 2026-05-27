@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import LibraryExplorer from '@/components/formalibrary/LibraryExplorer'
 import useAppStore from '@/stores/useAppStore'
 import { FLB_DARK } from '@/lib/formalibrary/constants'
@@ -101,18 +101,11 @@ export default function FormaLibraryPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: FLB_DARK.bg, color: FLB_DARK.ink, display: 'flex', flexDirection: 'column' }}>
-      <header style={{
-        display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px',
-        borderBottom: `1px solid ${FLB_DARK.border}`, background: FLB_DARK.surface,
-      }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo size="sm" showText={false} />
-        </button>
-        <h1 style={{ margin: 0, fontSize: 18, flex: 1 }}>FormaLibrary</h1>
-        <span style={{ fontSize: 11, color: FLB_DARK.muted }}>
-          Textures · Matériaux · Normes · PDF · Références
-        </span>
-      </header>
+      <FormaModuleHeader
+        title="FormaLibrary"
+        subtitle="Textures · Matériaux · Normes · PDF · Références"
+        dark={FLB_DARK}
+      />
 
       <LibraryExplorer
         folders={folders}

@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { runAIAction } from '@/lib/formaai/provider'
+import { runAIChat, isAIChatConfigured, getAIProviderLabel, runAIAction } from '@/lib/formaai/provider'
 import { AI_ACTIONS, FAI_DARK } from '@/lib/formaai/constants'
-import BrandLogo from '@/components/BrandLogo'
-import { useTheme } from '@/hooks/useAppearance'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 
 const HISTORY_KEY = 'forma-ai-chat'
 
@@ -24,8 +22,7 @@ function saveHistory(messages) {
 }
 
 export default function FormaAIChat({ fullPage = false, onClose, initialText = '' }) {
-  const navigate = useNavigate()
-  const { T } = useTheme()
+  const apiReady = isAIChatConfigured()
   const [messages, setMessages] = useState(() => loadHistory())
   const [input, setInput] = useState(initialText)
   const [busy, setBusy] = useState(false)
@@ -51,18 +48,25 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
     setError('')
     setBusy(true)
     const userMsg = { id: Date.now(), role: 'user', text, at: Date.now() }
-    setMessages((m) => [...m, userMsg])
+    const nextHistory = [...messages, userMsg]
+    setMessages(nextHistory)
     setInput('')
     try {
-      const actionId = action === 'chat' ? 'reformulate' : action
-      const reply = await runAIAction(actionId, text)
+      let reply
+      if (action === 'chat') {
+        reply = await runAIChat(nextHistory)
+      } else {
+        reply = await runAIAction(action, text)
+      }
       setMessages((m) => [...m, { id: Date.now() + 1, role: 'assistant', text: reply, at: Date.now() }])
     } catch (err) {
-      setError(err.message || 'Erreur IA')
+      setError(err.code === 'NO_API' || err.message?.includes('clé API')
+        ? 'Connecte une clé API pour activer le chat IA.'
+        : (err.message || 'Erreur IA'))
     } finally {
       setBusy(false)
     }
-  }, [input, busy, action])
+  }, [input, busy, action, messages])
 
   const shellStyle = fullPage
     ? { minHeight: '100vh', background: FAI_DARK.bg, color: FAI_DARK.ink, display: 'flex', flexDirection: 'column' }
@@ -75,23 +79,33 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
 
   return (
     <div style={shellStyle}>
-      <div style={{
-        padding: fullPage ? '12px 16px' : '12px 14px',
-        borderBottom: `1px solid ${FAI_DARK.border}`,
-        display: 'flex', alignItems: 'center', gap: 10,
-        background: fullPage ? FAI_DARK.panel : undefined,
-      }}>
-        {fullPage && (
-          <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-            <BrandLogo src={T?.img} alt={T?.n} size="sm" showText={false} accent={FAI_DARK.accent} />
-          </button>
-        )}
-        <span style={{ fontSize: fullPage ? 18 : 16 }}>✦</span>
-        <strong style={{ flex: 1, fontSize: fullPage ? 17 : 14 }}>FormaAI</strong>
-        {!fullPage && onClose && (
-          <button type="button" onClick={onClose} style={iconBtn}>✕</button>
-        )}
-      </div>
+      {fullPage ? (
+        <FormaModuleHeader title="FormaAI" subtitle="Discussion · architecture & cours" dark={FAI_DARK} />
+      ) : (
+        <div style={{
+          padding: '12px 14px',
+          borderBottom: `1px solid ${FAI_DARK.border}`,
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <span style={{ fontSize: 16 }}>✦</span>
+          <strong style={{ flex: 1, fontSize: 14 }}>FormaAI</strong>
+          {onClose && <button type="button" onClick={onClose} style={iconBtn}>✕</button>}
+        </div>
+      )}
+
+      {!apiReady && (
+        <div style={{
+          margin: fullPage ? '12px 16px 0' : '8px 12px 0',
+          padding: '10px 12px', borderRadius: 8,
+          background: '#f5a62322', border: '1px solid #f5a62355',
+          fontSize: 12, color: FAI_DARK.ink, lineHeight: 1.5,
+        }}>
+          Connecte une clé API pour activer le chat IA.
+          {' '}Ajoute <code style={{ fontSize: 11 }}>VITE_AI_API_KEY</code> (ou <code style={{ fontSize: 11 }}>VITE_OPENAI_API_KEY</code>)
+          {' '}et optionnellement <code style={{ fontSize: 11 }}>VITE_AI_API_URL</code> dans <code style={{ fontSize: 11 }}>.env.local</code>.
+          {apiReady ? '' : ` Fournisseur : ${getAIProviderLabel()}.`}
+        </div>
+      )}
 
       <div style={{ padding: '8px 12px', display: 'flex', flexWrap: 'wrap', gap: 4, borderBottom: fullPage ? `1px solid ${FAI_DARK.border}` : undefined }}>
         <Chip active={action === 'chat'} onClick={() => setAction('chat')}>💬 Discussion</Chip>
@@ -103,7 +117,9 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
       <div style={{ flex: 1, overflow: 'auto', padding: fullPage ? '16px 20px' : '10px 12px', minHeight: fullPage ? 0 : 180 }}>
         {messages.length === 0 && (
           <p style={{ color: FAI_DARK.muted, fontSize: 13, lineHeight: 1.5 }}>
-            Posez une question, collez des notes de cours, un extrait de norme ou un tableau FormaTab.
+            {action === 'chat'
+              ? 'Posez une question libre sur vos cours, projets, normes ou outils Forma.'
+              : 'Mode outil : reformulation, résumé, correction… Le mode Discussion est recommandé pour converser.'}
           </p>
         )}
         {messages.map((m) => (

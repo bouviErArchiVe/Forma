@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { loadLocalNotebooks } from '@/lib/projectPersistence'
 import useAppStore from '@/stores/useAppStore'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassButton from '@/components/ui/GlassButton'
 import SpreadsheetGrid from '@/components/spreadsheet/SpreadsheetGrid'
@@ -207,17 +207,11 @@ export default function SheetsPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: T.bg, color: T.ink }}>
-      <header style={{
-        padding: '14px 20px', borderBottom: `1px solid ${T.border}`, background: T.surface,
-        display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', position: 'sticky', top: 0, zIndex: 20,
-      }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo T={T} size={28} />
-        </button>
-        <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>FormaTab</div>
-          <div style={{ fontSize: 11, color: T.muted }}>FormaTab · {listed.length} tableau{listed.length !== 1 ? 'x' : ''}</div>
-        </div>
+      <FormaModuleHeader
+        title="FormaTab"
+        subtitle={`${listed.length} tableau${listed.length !== 1 ? 'x' : ''}`}
+        sticky
+      >
         <div style={{ position: 'relative', flex: '1 1 220px', maxWidth: 320 }}>
           <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: T.muted }}>🔍</span>
           <input
@@ -234,7 +228,7 @@ export default function SheetsPage() {
           <option value="name-desc">Nom Z→A</option>
         </select>
         <GlassButton T={T} size="md" onClick={handleNew}>+ Nouveau tableau</GlassButton>
-      </header>
+      </FormaModuleHeader>
 
       <main style={{ padding: '20px 24px 40px', maxWidth: 1200, margin: '0 auto' }}>
         {listed.length === 0 ? (

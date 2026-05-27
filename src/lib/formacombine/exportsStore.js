@@ -49,3 +49,15 @@ export function downloadExport(entry) {
   a.download = `${(entry.name || 'formacombine').replace(/[^\w\- ]+/g, '_')}.pdf`
   a.click()
 }
+
+export function openExport(entry) {
+  if (!entry?.pdfDataUrl) return
+  window.open(entry.pdfDataUrl, '_blank')
+}
+
+export function exportSizeLabel(entry) {
+  const bytes = entry?.pdfDataUrl ? Math.round(entry.pdfDataUrl.length * 0.75) : 0
+  if (bytes < 1024) return `${bytes} o`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} Ko`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`
+}

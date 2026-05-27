@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { loadLocalNotebooks } from '@/lib/projectPersistence'
 import useAppStore from '@/stores/useAppStore'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import GlassButton from '@/components/ui/GlassButton'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassPanel from '@/components/ui/GlassPanel'
@@ -118,26 +118,11 @@ export default function ProformaPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: PF_DARK.bg, color: PF_DARK.ink }}>
-      <header style={{
-        padding: '14px 20px',
-        borderBottom: `1px solid ${PF_DARK.border}`,
-        background: PF_DARK.panel,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 14,
-        flexWrap: 'wrap',
-      }}>
-        <button type="button" onClick={() => navigate('/')} title="Accueil Forma" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={PF_DARK.accent} />
-        </button>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20 }}>Proforma</div>
-          <div style={{ fontSize: 10, color: PF_DARK.muted }}>Dessin de précision professionnel</div>
-        </div>
+      <FormaModuleHeader title="Proforma" subtitle="Dessin V1 stable" dark={PF_DARK}>
         <GlassButton T={{ ...T, accent: PF_DARK.accent, ink: PF_DARK.ink, border: PF_DARK.border, bg: PF_DARK.surface }} accent onClick={() => setNewModal(true)}>
           + Nouveau
         </GlassButton>
-      </header>
+      </FormaModuleHeader>
 
       <main style={{ padding: '24px 20px 48px', maxWidth: 1100, margin: '0 auto' }}>
         <input

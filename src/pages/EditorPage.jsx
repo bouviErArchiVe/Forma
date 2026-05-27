@@ -775,21 +775,24 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     const start=pts[0],end=pts[pts.length-1]
     const closeness=Math.sqrt((start.x-end.x)**2+(start.y-end.y)**2)
     const perimeter=pts.reduce((a,p,i)=>i===0?0:a+Math.sqrt((p.x-pts[i-1].x)**2+(p.y-pts[i-1].y)**2),0)
-
-    // Closed shape?
-    const isClosed=closeness<W2*.3&&closeness<H2*.3
+    const isClosed=closeness<Math.max(W2,H2)*.35
     if(isClosed){
-      // Circle: bounding box is roughly square and perimeter ≈ π*d
       const aspect=W2/Math.max(H2,1)
-      if(aspect>.6&&aspect<1.6&&Math.abs(perimeter-Math.PI*Math.max(W2,H2))<perimeter*.4){
+      if(aspect>.6&&aspect<1.6&&Math.abs(perimeter-Math.PI*Math.max(W2,H2))<perimeter*.45){
         return{type:"circle",pts:[{x:minX,y:minY},{x:maxX,y:maxY}]}
       }
-      // Rectangle
+      if(aspect>.8&&aspect<1.25){
+        const side=Math.max(W2,H2)
+        const cx=(minX+maxX)/2,cy=(minY+maxY)/2
+        return{type:"rect",pts:[{x:cx-side/2,y:cy-side/2},{x:cx+side/2,y:cy+side/2}]}
+      }
       return{type:"rect",pts:[{x:minX,y:minY},{x:maxX,y:maxY}]}
     }
-    // Line: mostly straight
     const lineLen=Math.sqrt((end.x-start.x)**2+(end.y-start.y)**2)
-    if(lineLen>0&&perimeter/lineLen<1.3){
+    if(lineLen>8&&perimeter/lineLen<1.35){
+      if(Math.abs(end.x-start.x)>Math.abs(end.y-start.y)*2&&lineLen>20){
+        return{type:"arrow",pts:[start,end]}
+      }
       return{type:"line",pts:[start,end]}
     }
     return null
@@ -863,7 +866,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
             logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:detected.shapeType||detected.type})
           }
         }
-      },800)
+      },650)
     }
   }
 

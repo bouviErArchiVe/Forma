@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useCanvasViewport } from '@/hooks/useCanvasViewport'
-import { clampZoom, zoomAtPoint } from '@/lib/viewport'
 import { PF_ZOOM_MIN, PF_ZOOM_MAX, PF_ZOOM_DEFAULT, PF_DARK } from '@/lib/proforma/constants'
 import { renderDocument, drawGrid, drawStroke } from '@/lib/proforma/render'
-import { isEraserTool, getToolDef } from '@/lib/proforma/tools'
 import { pageToScreen } from '@/lib/viewport'
 
 export default function ProformaCanvas({
@@ -15,7 +13,6 @@ export default function ProformaCanvas({
 }) {
   const viewportRef = useRef(null)
   const canvasRef = useRef(null)
-  const rafRef = useRef(null)
   const docCacheRef = useRef({ key: '', canvas: null })
   const [viewSize, setViewSize] = useState({ w: 0, h: 0 })
 
@@ -98,7 +95,7 @@ export default function ProformaCanvas({
     ctx.rotate(((doc.viewRotation || 0) * Math.PI) / 180)
     ctx.translate(-doc.width / 2, -doc.height / 2)
 
-    const cacheKey = `${doc.updatedAt || 0}-${doc.strokes?.length || 0}-${doc.showGrid}-${doc.width}-${doc.height}-${doc.viewRotation || 0}`
+    const cacheKey = `${doc.updatedAt || 0}-${doc.strokes?.length || 0}-${doc.showGrid}-${doc.width}-${doc.height}-${doc.viewRotation || 0}-${doc.bgColor}`
     let off = docCacheRef.current.key === cacheKey ? docCacheRef.current.canvas : null
     if (!off) {
       off = document.createElement('canvas')
@@ -114,29 +111,21 @@ export default function ProformaCanvas({
     const live = editor.getLiveStroke?.()
     if (live?.pts?.length) drawStroke(ctx, live)
 
-    const zone = editor.getZoneRect?.()
-    if (zone?.start && zone?.current) {
-      ctx.strokeStyle = PF_DARK.eraser
-      ctx.lineWidth = 2 / viewport.zoom
-      ctx.setLineDash([6 / viewport.zoom, 4 / viewport.zoom])
-      const x = Math.min(zone.start.x, zone.current.x)
-      const y = Math.min(zone.start.y, zone.current.y)
-      ctx.strokeRect(x, y, Math.abs(zone.current.x - zone.start.x), Math.abs(zone.current.y - zone.start.y))
-    }
-
     ctx.restore()
   }, [doc, viewSize, viewport, editor])
 
   useEffect(() => {
     paint()
-  }, [paint, editor?.strokeFrame])
+  }, [paint, doc?.updatedAt, doc?.strokes?.length, viewport.zoom, viewport.panX, viewport.panY])
 
-  const eraserActive = isEraserTool(editor.tool)
-  const eraserDef = getToolDef(editor.tool)
-  const showEraserCursor = eraserActive && eraserDef.eraserMode === 'precision' && editor.cursorPage
+  useEffect(() => {
+    if (!editor.subscribePaint) return undefined
+    return editor.subscribePaint(paint)
+  }, [editor, paint])
 
+  const eraserActive = editor.tool === 'eraser'
   let eraserScreen = null
-  if (showEraserCursor && viewSize.w) {
+  if (eraserActive && editor.cursorPage && viewSize.w) {
     eraserScreen = pageToScreen({
       px: editor.cursorPage.x,
       py: editor.cursorPage.y,
@@ -193,16 +182,16 @@ export default function ProformaCanvas({
       }}
     >
       <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%', pointerEvents: 'none' }} />
-      {showEraserCursor && eraserScreen && (
+      {eraserActive && eraserScreen && (
         <div
           style={{
             position: 'absolute',
             left: eraserScreen.sx,
             top: eraserScreen.sy,
-            width: (editor.brush.size || 12) * viewport.zoom,
-            height: (editor.brush.size || 12) * viewport.zoom,
-            marginLeft: -((editor.brush.size || 12) * viewport.zoom) / 2,
-            marginTop: -((editor.brush.size || 12) * viewport.zoom) / 2,
+            width: (editor.brush.size || 18) * viewport.zoom,
+            height: (editor.brush.size || 18) * viewport.zoom,
+            marginLeft: -((editor.brush.size || 18) * viewport.zoom) / 2,
+            marginTop: -((editor.brush.size || 18) * viewport.zoom) / 2,
             borderRadius: '50%',
             border: `2px solid ${PF_DARK.eraser}`,
             pointerEvents: 'none',

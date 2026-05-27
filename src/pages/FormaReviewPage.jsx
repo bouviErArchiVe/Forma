@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import ReviewSidebar from '@/components/formareview/ReviewSidebar'
 import ReviewCanvas from '@/components/formareview/ReviewCanvas'
 import ReviewToolbar from '@/components/formareview/ReviewToolbar'
@@ -141,12 +141,7 @@ export default function FormaReviewPage() {
   if (view === 'library') {
     return (
       <div style={{ minHeight: '100vh', background: FRV_DARK.bg, color: FRV_DARK.ink }}>
-        <header style={headerStyle}>
-          <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-            <BrandLogo size="sm" showText={false} />
-          </button>
-          <h1 style={{ margin: 0, fontSize: 18, flex: 1 }}>FormaReview</h1>
-        </header>
+        <FormaModuleHeader title="FormaReview" dark={FRV_DARK} />
 
         <div style={{ padding: '24px 32px', maxWidth: 960, margin: '0 auto' }}>
           <p style={{ color: FRV_DARK.muted, fontSize: 14, marginBottom: 24 }}>
@@ -203,19 +198,13 @@ export default function FormaReviewPage() {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FRV_DARK.bg, color: FRV_DARK.ink }}>
-      <header style={headerStyle}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo size="sm" showText={false} />
-        </button>
+      <FormaModuleHeader title={session?.title || 'FormaReview'} dark={FRV_DARK} style={headerStyle}>
         <Btn onClick={handleBack}>← Retour</Btn>
-        <h1 style={{ margin: 0, fontSize: 16, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {session?.title}
-        </h1>
         <Btn onClick={() => fileRef.current?.click()} disabled={busy}>
           {busy ? '…' : '+ Pages'}
         </Btn>
         <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf" multiple style={{ display: 'none' }} onChange={(e) => handleImportPages(e.target.files)} />
-      </header>
+      </FormaModuleHeader>
 
       <ReviewToolbar
         tool={editor.tool}

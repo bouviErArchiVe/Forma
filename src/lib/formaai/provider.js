@@ -2,32 +2,92 @@
 
 export function getAIProvider() {
   const forced = (import.meta.env.VITE_AI_PROVIDER || '').toLowerCase()
-  if (forced === 'mock' || forced === 'api') return forced
-  if (import.meta.env.VITE_AI_API_URL) return 'api'
+  if (forced === 'mock') return 'mock'
+  if (forced === 'api') return 'api'
+  if (getAIApiKey()) return 'api'
   return 'mock'
 }
 
-async function callAIApi({ system, prompt, maxTokens = 800 }) {
-  const apiUrl = import.meta.env.VITE_AI_API_URL
-  if (!apiUrl) throw new Error('VITE_AI_API_URL non configurée')
+export function getAIApiKey() {
+  return import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_OPENAI_API_KEY || ''
+}
 
-  const headers = { 'Content-Type': 'application/json' }
-  const apiKey = import.meta.env.VITE_AI_API_KEY
-  if (apiKey) headers.Authorization = `Bearer ${apiKey}`
+export function getAIApiUrl() {
+  return import.meta.env.VITE_AI_API_URL || ''
+}
 
-  const res = await fetch(apiUrl, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      system,
-      prompt,
+export function isAIChatConfigured() {
+  return !!getAIApiKey()
+}
+
+export function getAIProviderLabel() {
+  const p = (import.meta.env.VITE_AI_PROVIDER || 'openai').toLowerCase()
+  if (p === 'claude' || p === 'anthropic') return 'Claude'
+  if (p === 'openai') return 'OpenAI'
+  return p
+}
+
+async function callAIApi({ system, prompt, messages, maxTokens = 800 }) {
+  const apiUrl = getAIApiUrl() || 'https://api.openai.com/v1/chat/completions'
+  const apiKey = getAIApiKey()
+  if (!apiKey) throw new Error('NO_API')
+
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` }
+  const model = import.meta.env.VITE_AI_MODEL || 'gpt-4o-mini'
+
+  const body = messages?.length
+    ? {
+      model,
       max_tokens: maxTokens,
-      model: import.meta.env.VITE_AI_MODEL || 'default',
-    }),
-  })
+      messages: [
+        { role: 'system', content: system || 'Tu es FormaAI, assistant architecture pour étudiants. Réponds en français, clairement.' },
+        ...messages,
+      ],
+    }
+    : {
+      model,
+      max_tokens: maxTokens,
+      messages: [
+        { role: 'system', content: system || 'Assistant Forma architecture.' },
+        { role: 'user', content: prompt },
+      ],
+    }
+
+  const res = await fetch(apiUrl, { method: 'POST', headers, body: JSON.stringify(body) })
   if (!res.ok) throw new Error(`IA API : ${res.status}`)
   const data = await res.json()
-  return data.text || data.content || data.message || data.choices?.[0]?.message?.content || ''
+  return data.text || data.content || data.message
+    || data.choices?.[0]?.message?.content
+    || data.choices?.[0]?.text
+    || ''
+}
+
+/** Discussion IA multi-tours */
+export async function runAIChat(history) {
+  const msgs = (history || []).filter((m) => m.text?.trim()).map((m) => ({
+    role: m.role === 'assistant' ? 'assistant' : 'user',
+    content: m.text.trim(),
+  }))
+  if (!msgs.length) throw new Error('Message requis')
+
+  if (!isAIChatConfigured()) {
+    const err = new Error('Connecte une clé API pour activer le chat IA.')
+    err.code = 'NO_API'
+    throw err
+  }
+
+  try {
+    const out = await callAIApi({
+      system: 'Tu es FormaAI, assistant de discussion pour étudiants en architecture. Réponds en français, de façon claire et utile. Tu peux aider sur les cours, les normes, les projets et les outils Forma.',
+      messages: msgs,
+      maxTokens: 1200,
+    })
+    if (out?.trim()) return out.trim()
+    throw new Error('Réponse vide')
+  } catch (err) {
+    if (err.code === 'NO_API' || err.message === 'NO_API') throw err
+    throw new Error(err.message || 'Erreur IA')
+  }
 }
 
 function splitSentences(text) {

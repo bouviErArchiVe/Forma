@@ -4,7 +4,7 @@ import { useTheme } from '@/hooks/useAppearance'
 import { GAMES, getGameById, loadGameComponent } from '@/data/games'
 import { useGameScores } from '@/hooks/useGameScores'
 import GameCard from '@/components/games/GameCard'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 
 function GameLoader({ gameId, T, onClose, bestScore, onSaveScore }) {
@@ -64,23 +64,7 @@ export default function GamesPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: T.bg, color: T.ink }}>
-      <header style={{
-        padding: '14px 20px',
-        borderBottom: `1px solid ${T.border}`,
-        background: T.surface,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 14,
-        flexWrap: 'wrap',
-      }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo T={T} size={26} />
-        </button>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>FPause</div>
-          <div style={{ fontSize: 11, color: T.muted }}>Mini-jeux · détente rapide</div>
-        </div>
-      </header>
+      <FormaModuleHeader title="FPause" subtitle="Mini-jeux · détente rapide" />
 
       <main style={{ maxWidth: 720, margin: '0 auto', padding: '24px 20px 48px' }}>
         <p style={{ fontSize: 13, color: T.muted, lineHeight: 1.6, margin: '0 0 22px', maxWidth: 520 }}>

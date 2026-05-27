@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '@/hooks/useAppearance'
 import useAppStore from '@/stores/useAppStore'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import FormatcalSidebar from '@/components/formatcal/FormatcalSidebar'
 import FormatcalEventModal from '@/components/formatcal/FormatcalEventModal'
 import {
@@ -126,21 +126,7 @@ export default function FormatcalPage() {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FC_DARK.bg, color: FC_DARK.ink }}>
-      <header style={{
-        height: 52,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '0 16px',
-        borderBottom: `1px solid ${FC_DARK.border}`,
-        background: FC_DARK.panel,
-        flexShrink: 0,
-      }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={FC_DARK.accent} />
-        </button>
-        <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>FormatCal</div>
-      </header>
+      <FormaModuleHeader title="FormatCal" dark={FC_DARK} style={{ height: 52, padding: '0 16px', background: FC_DARK.panel }} />
 
       <div style={{
         display: 'flex',

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import PresentSidebar from '@/components/formapresent/PresentSidebar'
 import PresentStage from '@/components/formapresent/PresentStage'
 import PresentToolbar from '@/components/formapresent/PresentToolbar'
@@ -160,12 +160,7 @@ export default function FormaPresentPage() {
   if (view === 'library') {
     return (
       <div style={{ minHeight: '100vh', background: FPR_DARK.bg, color: FPR_DARK.ink }}>
-        <header style={headerStyle}>
-          <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-            <BrandLogo size="sm" showText={false} />
-          </button>
-          <h1 style={{ margin: 0, fontSize: 18, flex: 1 }}>FormaPresent</h1>
-        </header>
+        <FormaModuleHeader title="FormaPresent" dark={FPR_DARK} />
 
         <div style={{ padding: '24px 32px', maxWidth: 960, margin: '0 auto' }}>
           <p style={{ color: FPR_DARK.muted, fontSize: 14, marginBottom: 24 }}>
@@ -222,17 +217,14 @@ export default function FormaPresentPage() {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FPR_DARK.bg, color: FPR_DARK.ink }}>
-      <header style={headerStyle}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo size="sm" showText={false} />
-        </button>
+      <FormaModuleHeader title={deck?.title || 'FormaPresent'} dark={FPR_DARK} style={headerStyle}>
         <Btn onClick={handleBack}>← Retour</Btn>
         <input
           value={deck?.title || ''}
           onChange={(e) => setDeck((prev) => ({ ...prev, title: e.target.value, updatedAt: Date.now() }))}
           style={{
-            flex: 1, background: 'transparent', border: 'none', color: FPR_DARK.ink,
-            fontSize: 16, fontWeight: 600, outline: 'none',
+            flex: 1, maxWidth: 240, background: 'transparent', border: 'none', color: FPR_DARK.ink,
+            fontSize: 14, fontWeight: 600, outline: 'none',
           }}
         />
         <select
@@ -251,7 +243,7 @@ export default function FormaPresentPage() {
           <option value="html">HTML (navigateur / PowerPoint)</option>
           <option value="slides">PNG individuels</option>
         </select>
-      </header>
+      </FormaModuleHeader>
 
       <PresentToolbar
         onAddText={() => editor.currentSlide && editor.addTextElement(editor.currentSlide.id)}

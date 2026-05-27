@@ -90,8 +90,14 @@ export function drawFreeStroke(ctx, stroke) {
     return
   }
 
-  ctx.globalAlpha = opacity
-  ctx.strokeStyle = color
+  if (tool === 'eraser') {
+    ctx.globalCompositeOperation = 'destination-out'
+    ctx.strokeStyle = 'rgba(0,0,0,1)'
+  } else {
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.strokeStyle = color
+  }
+  ctx.globalAlpha = 1
   ctx.lineWidth = size
   ctx.beginPath()
   ctx.moveTo(smoothed[0].x, smoothed[0].y)
@@ -99,6 +105,7 @@ export function drawFreeStroke(ctx, stroke) {
     ctx.lineTo(smoothed[i].x, smoothed[i].y)
   }
   ctx.stroke()
+  ctx.globalCompositeOperation = 'source-over'
   ctx.restore()
 }
 

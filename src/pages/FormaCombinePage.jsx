@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BrandLogo from '@/components/BrandLogo'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import CombineSidebar from '@/components/formacombine/CombineSidebar'
 import CombinePreview from '@/components/formacombine/CombinePreview'
 import CombineImportModal from '@/components/formacombine/CombineImportModal'
@@ -16,7 +16,7 @@ import {
   exportCombinedPdf,
 } from '@/lib/formacombine/export'
 import {
-  listCombineExports, saveCombineExport, deleteCombineExport, downloadExport,
+  listCombineExports, saveCombineExport, deleteCombineExport, downloadExport, openExport, exportSizeLabel,
 } from '@/lib/formacombine/exportsStore'
 
 export default function FormaCombinePage() {
@@ -168,13 +168,9 @@ export default function FormaCombinePage() {
   if (view === 'library') {
     return (
       <div style={{ minHeight: '100vh', background: FCMB_DARK.bg, color: FCMB_DARK.ink }}>
-        <header style={headerStyle}>
-          <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-            <BrandLogo size="sm" showText={false} />
-          </button>
-          <h1 style={{ margin: 0, fontSize: 18, flex: 1 }}>FormaCombine</h1>
+        <FormaModuleHeader title="FormaCombine" dark={FCMB_DARK}>
           <Btn onClick={handleNew}>+ Nouveau</Btn>
-        </header>
+        </FormaModuleHeader>
         <main style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
           <p style={{ color: FCMB_DARK.muted, marginBottom: 20 }}>
             Regroupez PDF, images, textes, Proforma, FormaDoc, FormaTab et pages Forma en un document exportable.
@@ -200,20 +196,27 @@ export default function FormaCombinePage() {
           )}
           {exports.length > 0 && (
             <>
-              <h2 style={{ fontSize: 16, marginTop: 32, marginBottom: 12 }}>Exports FormaCombine</h2>
+              <h2 style={{ fontSize: 16, marginTop: 32, marginBottom: 4, color: FCMB_DARK.accent2 }}>PDF combinés</h2>
+              <p style={{ fontSize: 12, color: FCMB_DARK.muted, marginBottom: 12 }}>Exports récents enregistrés localement</p>
               {exports.map((ex) => (
                 <div key={ex.id} style={{ ...cardStyle, display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{ flex: 1 }}>
-                    <strong>{ex.name}</strong>
+                    <strong>{ex.name}.pdf</strong>
                     <div style={{ fontSize: 12, color: FCMB_DARK.muted, marginTop: 4 }}>
-                      {ex.pageCount || ex.fileCount || 0} pages · {new Date(ex.createdAt).toLocaleString('fr-FR')}
+                      {ex.pageCount || ex.fileCount || 0} pages · {exportSizeLabel(ex)} · {new Date(ex.createdAt).toLocaleString('fr-FR')}
                     </div>
                   </div>
+                  <Btn onClick={() => openExport(ex)}>Ouvrir</Btn>
                   <Btn primary onClick={() => downloadExport(ex)}>Télécharger</Btn>
                   <Btn danger onClick={() => { deleteCombineExport(ex.id); refresh() }}>Suppr.</Btn>
                 </div>
               ))}
             </>
+          )}
+          {exports.length === 0 && (
+            <div style={{ ...cardStyle, marginTop: 32, color: FCMB_DARK.muted, fontSize: 13 }}>
+              Les PDF combinés exportés apparaîtront ici dans « PDF combinés ».
+            </div>
           )}
         </main>
       </div>
@@ -222,10 +225,7 @@ export default function FormaCombinePage() {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FCMB_DARK.bg, color: FCMB_DARK.ink }}>
-      <header style={headerStyle}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <BrandLogo size="sm" showText={false} />
-        </button>
+      <FormaModuleHeader title="FormaCombine" dark={FCMB_DARK} style={{ ...headerStyle, position: 'relative' }}>
         <Btn onClick={handleBack}>← Projets</Btn>
         <input
           value={project?.name || ''}
@@ -265,7 +265,7 @@ export default function FormaCombinePage() {
           <option value="pages-png">Pages PNG séparées</option>
           <option value="pages-jpg">Pages JPG séparées</option>
         </select>
-      </header>
+      </FormaModuleHeader>
 
       <input ref={fileRef} type="file" multiple hidden accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.md,.docx,.csv,image/*,application/pdf,text/*" onChange={(e) => { handleFiles(e.target.files); e.target.value = '' }} />
 
