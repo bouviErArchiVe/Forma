@@ -18,9 +18,14 @@ import { shouldShowMinimap } from "@/lib/minimap"
 import CanvasMinimap from "@/components/CanvasMinimap"
 import FocusToolbar from "@/components/FocusToolbar"
 import FloatingToolsToolbar, { EDITOR_TOOLS_LIST } from "@/components/FloatingToolsToolbar"
+import EditorSidebar from "@/components/EditorSidebar"
+import BottomSheet from "@/components/ui/BottomSheet"
+import { useTabletLayout } from "@/hooks/useTabletLayout"
+import { useSwipeToolCycle, flattenEditorTools } from "@/hooks/useSwipeToolCycle"
 import HistoryPanel from "@/components/HistoryPanel"
 import { buildActionEntry } from "@/lib/actionHistory"
 import PageContextMenu from "@/components/PageContextMenu"
+import PagePhotoInsertModal from "@/components/PagePhotoInsertModal"
 import EditorTopBar from "@/components/EditorTopBar"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
 import ShareModal from "@/components/ShareModal"
@@ -32,6 +37,8 @@ import { useAuth } from "@/hooks/useAuth"
 import { useCollaboration } from "@/hooks/useCollaboration"
 import DraggablePanel from "@/components/DraggablePanel"
 import { useAutoSave } from "@/hooks/useAutoSave"
+import { useNotebookCollab } from "@/hooks/useNotebookCollab"
+import { resolveInsertPageNumber, shiftLocalPagesForInsert, shiftSupabasePagesForInsert } from "@/lib/pages/insert"
 import {
   isLocalNotebookId,
   getLocalNotebook,
@@ -1263,35 +1270,56 @@ function PageThumbnail({pageData,pageNum,current,T,onClick,onMenu,notebookTempla
   const label=pageDisplayName(pageNum,meta)
   useEffect(()=>{
     if(!ref.current||!pageData)return
-    const ctx=ref.current.getContext("2d")
-    ctx.fillStyle=meta.pageColor||"#fff";ctx.fillRect(0,0,100,141)
-    if(pageData.canvas_data){
-      try{
-        const strokes=typeof pageData.canvas_data==="string"?JSON.parse(pageData.canvas_data):pageData.canvas_data||[]
-        const sc=100/794
-        strokes.forEach(s=>{
-          if(!s.pts&&!s.text)return
-          if(s.shapeType==="text"||s.tool==="text"){
-            const fs=Math.max((s.size||4)*3,14)*sc
-            ctx.font=`${fs}px ${canvasFontCss(s.fontFamily)}`
-            ctx.fillStyle=s.color||"#000"
-            ctx.globalAlpha=s.opacity??1
-            ctx.textBaseline="alphabetic"
-            ctx.fillText(s.text||"",(s.pts?.[0]?.x||0)*sc,(s.pts?.[0]?.y||0)*sc)
-            ctx.globalAlpha=1
-            return
-          }
-          if(!s.pts||s.pts.length<2)return
-          ctx.beginPath();ctx.strokeStyle=s.color||"#000";ctx.lineWidth=Math.max(s.size*sc,.5);ctx.lineCap="round"
-          ctx.globalAlpha=s.tool==="highlight"?.4:1
-          ctx.moveTo(s.pts[0].x*sc,s.pts[0].y*sc)
-          s.pts.forEach(p=>ctx.lineTo(p.x*sc,p.y*sc))
-          ctx.stroke()
-        })
-        ctx.globalAlpha=1
-      }catch{}
+    const canvas=ref.current
+    const ctx=canvas.getContext("2d")
+    const drawStrokes=()=>{
+      if(!meta.bgImage){
+        ctx.fillStyle=meta.pageColor||"#fff"
+        ctx.fillRect(0,0,100,141)
+      }
+      if(pageData.canvas_data){
+        try{
+          const strokes=typeof pageData.canvas_data==="string"?JSON.parse(pageData.canvas_data):pageData.canvas_data||[]
+          const sc=100/794
+          strokes.forEach(s=>{
+            if(!s.pts&&!s.text)return
+            if(s.shapeType==="text"||s.tool==="text"){
+              const fs=Math.max((s.size||4)*3,14)*sc
+              ctx.font=`${fs}px ${canvasFontCss(s.fontFamily)}`
+              ctx.fillStyle=s.color||"#000"
+              ctx.globalAlpha=s.opacity??1
+              ctx.textBaseline="alphabetic"
+              ctx.fillText(s.text||"",(s.pts?.[0]?.x||0)*sc,(s.pts?.[0]?.y||0)*sc)
+              ctx.globalAlpha=1
+              return
+            }
+            if(!s.pts||s.pts.length<2)return
+            ctx.beginPath();ctx.strokeStyle=s.color||"#000";ctx.lineWidth=Math.max(s.size*sc,.5);ctx.lineCap="round"
+            ctx.globalAlpha=s.tool==="highlight"?.4:1
+            ctx.moveTo(s.pts[0].x*sc,s.pts[0].y*sc)
+            s.pts.forEach(p=>ctx.lineTo(p.x*sc,p.y*sc))
+            ctx.stroke()
+          })
+          ctx.globalAlpha=1
+        }catch{}
+      }
     }
-  },[pageData,meta.pageColor])
+    if(meta.bgImage){
+      const img=new Image()
+      img.onload=()=>{
+        ctx.fillStyle=meta.pageColor||"#fff"
+        ctx.fillRect(0,0,100,141)
+        ctx.globalAlpha=meta.bgImageOpacity??1
+        ctx.drawImage(img,0,0,100,141)
+        ctx.globalAlpha=1
+        drawStrokes()
+      }
+      img.onerror=drawStrokes
+      img.src=meta.bgImage
+    }else{
+      drawStrokes()
+    }
+  },[pageData,meta.pageColor,meta.bgImage,meta.bgImageOpacity])
   return(
     <div style={{position:"relative",padding:4,borderRadius:8,border:`2px solid ${current?T.accent:T.border}`,background:current?`${T.accent}10`:T.bg,transition:"all .15s"}}>
       <div onClick={onClick}style={{cursor:"pointer"}}>
@@ -1451,10 +1479,11 @@ export default function EditorPage(){
   const[pageId,setPageId]=useState(null)
   const[pencilOnly,setPencilOnly]=useState(false)
   const[importedImages,setImportedImages]=useState([])
-  const[collabCursors,setCollabCursors]=useState([])
-  const realtimeChannel=useRef(null)
   const[exporting,setExporting]=useState(false)
   const[readOnly,setReadOnly]=useState(false)
+  const[readOnlyLocked,setReadOnlyLocked]=useState(false)
+  const[sharePermission,setSharePermission]=useState(null)
+  const[photoInsertPending,setPhotoInsertPending]=useState(null)
   const[showPresent,setShowPresent]=useState(false) // presentation mode
   const[focusMode,setFocusMode]=useState(false)
   const[canvasSelection,setCanvasSelection]=useState(null)
@@ -1498,7 +1527,8 @@ export default function EditorPage(){
   const[pageName,setPageName]=useState("")
   const[viewSize,setViewSize]=useState({w:0,h:0})
   const[canvasRevision,setCanvasRevision]=useState(0)
-  const[toolbarDock,setToolbarDock]=useState("top")
+  const[showEditorSidebar,setShowEditorSidebar]=useState(false)
+  const isTablet=useTabletLayout()
 
   const sizePx=mm2px(sizeMm)
   const eraserPx=mm2px(eraserMm)
@@ -1567,6 +1597,41 @@ export default function EditorPage(){
   const displayW=infiniteMode?PW:rotLayout.boxW
   const displayH=infiniteMode?PH:rotLayout.boxH
   const pagesCount=useMemo(()=>Math.max(nb.pages_count||1,pages.length||1),[nb.pages_count,pages.length])
+
+  const editorToolIds=useMemo(()=>flattenEditorTools(EDITOR_TOOLS_LIST),[])
+  const swipeToolCycle=useSwipeToolCycle({
+    enabled:isTablet&&!readOnly&&!libPending&&tool!=="hand",
+    toolIds:editorToolIds,
+    tool,
+    setTool,
+    onCycle:(nextId)=>{
+      const label=EDITOR_TOOLS_LIST.flatMap((g)=>g.items).find((t)=>t.id===nextId)?.l
+      if(label)addNotification(label,"info")
+    },
+  })
+
+  const onRemotePageUpdate=useCallback((updatedPage)=>{
+    if(!updatedPage?.page_number)return
+    setPages((prev)=>prev.map((p)=>(p.id===updatedPage.id?updatedPage:p)))
+    if(updatedPage.page_number===page){
+      addNotification("Page mise à jour par un collaborateur","info")
+    }
+  },[page,addNotification])
+
+  const notebookCollab=useNotebookCollab({
+    notebookId:nb.id,
+    notebookOwnerId:nb.user_id,
+    userId:user?.id,
+    userName:collab.profile?.display_name||user?.email||"?",
+    userColor:color,
+    onRemotePageUpdate,
+  })
+
+  useEffect(()=>{
+    setReadOnlyLocked(notebookCollab.forcedReadOnly)
+    setSharePermission(notebookCollab.permission)
+    if(notebookCollab.forcedReadOnly)setReadOnly(true)
+  },[notebookCollab.forcedReadOnly,notebookCollab.permission])
 
   const selectedPlacedItem=useMemo(()=>{
     if(readOnly) return null
@@ -1862,13 +1927,14 @@ export default function EditorPage(){
     load()
   },[nb.id,nb.template,page,applyPageMetaToState,cancelScheduledSave])
 
-  // Add new page
-  const addPage=async(bgImage=null)=>{
+  // Add / insert page
+  const insertPageAt=async(position="end",bgImage=null)=>{
     if(addingPageRef.current)return
     addingPageRef.current=true
     try{
       if(pageId)await saveNow()
-      const newNum=(pages.reduce((m,p)=>Math.max(m,p.page_number||0),0)||0)+1
+      const count=pages.length||nb.pages_count||1
+      const atNum=resolveInsertPageNumber(position,page,count)
       const newMeta=serializePageElements({
         format:nextPageFmt,
         rotation:0,
@@ -1881,21 +1947,23 @@ export default function EditorPage(){
       const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
       const{data:{session}}=await supabase.auth.getSession()
       const useLocal=!session?.user||isLocalNotebookId(nb.id)
+      const newCount=count+1
       if(useLocal){
+        const shifted=atNum<=count?shiftLocalPagesForInsert(pages,atNum):pages
         const np={
-          id:`local-${nb.id}-p${newNum}`,
-          page_number:newNum,
+          id:`local-${nb.id}-p${atNum}-${Date.now()}`,
+          page_number:atNum,
           notebook_id:nb.id,
           elements:JSON.stringify(newMeta),
           canvas_data:emptyCanvas,
           updated_at:new Date().toISOString(),
         }
-        const all=saveLocalPage(nb.id,np,pages)
+        const all=[...shifted,np].sort((a,b)=>a.page_number-b.page_number)
+        saveLocalPages(nb.id,all)
         setPages(all)
-        const nextCount=Math.max(newNum,all.length)
-        updateNotebook(nb.id,{pages_count:nextCount})
-        setActiveNotebook({...nb,pages_count:nextCount,updated_at:np.updated_at})
-        upsertLocalNotebook({...nb,pages_count:nextCount,updated_at:np.updated_at})
+        updateNotebook(nb.id,{pages_count:newCount})
+        setActiveNotebook({...nb,pages_count:newCount,updated_at:np.updated_at})
+        upsertLocalNotebook({...nb,pages_count:newCount,updated_at:np.updated_at})
         skipPageLoadRef.current=true
         setPageId(np.id)
         const norm=normalizeCanvasData(emptyCanvas)
@@ -1903,29 +1971,37 @@ export default function EditorPage(){
         setActiveLayerId(norm.activeLayerId)
         if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
         applyPageMetaToState(parsePageElements(newMeta,nb.template))
-        setPage(newNum)
+        setPage(atNum)
         scheduleSave()
-        addNotification(bgImage?`Page ${newNum} créée avec photo`:`Page ${newNum} créée`,"success")
-        pushAction({type:"page_bg",detail:`Page ${newNum} créée`})
+        addNotification(bgImage?`Page ${atNum} créée avec photo`:`Page ${atNum} créée`,"success")
+        pushAction({type:"page_bg",detail:`Page ${atNum} créée`})
         return
       }
-      const{data:np,error}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,elements:JSON.stringify(newMeta),canvas_data:emptyCanvas}]).select().single()
+      if(atNum<=count)await shiftSupabasePagesForInsert(supabase,nb.id,atNum)
+      const{data:np,error}=await supabase.from("pages").insert([{
+        notebook_id:nb.id,
+        page_number:atNum,
+        user_id:session.user.id,
+        elements:JSON.stringify(newMeta),
+        canvas_data:emptyCanvas,
+      }]).select().single()
       if(error||!np)throw error||new Error("insert failed")
-      await supabase.from("notebooks").update({pages_count:newNum}).eq("id",nb.id)
-      updateNotebook(nb.id,{pages_count:newNum})
-      setActiveNotebook({...nb,pages_count:newNum})
+      await supabase.from("notebooks").update({pages_count:newCount}).eq("id",nb.id)
+      updateNotebook(nb.id,{pages_count:newCount})
+      setActiveNotebook({...nb,pages_count:newCount})
       skipPageLoadRef.current=true
-      setPages(p=>[...p,np].sort((a,b)=>a.page_number-b.page_number))
+      const{data:allPgs}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).order("page_number")
+      setPages(allPgs||[])
       setPageId(np.id)
       const norm=normalizeCanvasData(emptyCanvas)
       setLayers(norm.layers)
       setActiveLayerId(norm.activeLayerId)
       if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
       applyPageMetaToState(parsePageElements(newMeta,nb.template))
-      setPage(newNum)
+      setPage(atNum)
       scheduleSave()
-      addNotification(bgImage?`Page ${newNum} créée avec photo`:`Page ${newNum} créée`,"success")
-      pushAction({type:"page_bg",detail:`Page ${newNum} créée`})
+      addNotification(bgImage?`Page ${atNum} créée avec photo`:`Page ${atNum} créée`,"success")
+      pushAction({type:"page_bg",detail:`Page ${atNum} créée`})
     }catch(e){
       console.error(e)
       addNotification("Impossible d'ajouter la page","error")
@@ -1933,6 +2009,8 @@ export default function EditorPage(){
       addingPageRef.current=false
     }
   }
+
+  const addPage=async(bgImage=null)=>insertPageAt("end",bgImage)
 
   const deletePage=async(pageNum)=>{
     if((nb.pages_count||pages.length||1)<=1)return
@@ -2048,29 +2126,6 @@ export default function EditorPage(){
   }
   const duplicatePage=()=>duplicatePageByNum(page)
 
-  // Realtime
-  useEffect(()=>{
-    const setup=async()=>{
-      try{
-        const{data:{session}}=await supabase.auth.getSession()
-        if(!session?.user)return
-        const ch=supabase.channel(`nb:${nb.id}`)
-        ch.on("broadcast",{event:"cursor"},({payload})=>{
-          if(payload.userId!==session.user.id)setCollabCursors(p=>[...p.filter(c=>c.userId!==payload.userId),{...payload,ts:Date.now()}])
-        }).subscribe()
-        realtimeChannel.current=ch
-        const t=setInterval(()=>setCollabCursors(p=>p.filter(c=>Date.now()-c.ts<5000)),3000)
-        return()=>{clearInterval(t);ch.unsubscribe()}
-      }catch{}
-    }
-    setup()
-  },[nb.id])
-
-  const broadcastCursor=useCallback(async(x,y)=>{
-    if(!realtimeChannel.current)return
-    try{const{data:{session}}=await supabase.auth.getSession();if(!session?.user)return;realtimeChannel.current.send({type:"broadcast",event:"cursor",payload:{userId:session.user.id,userName:session.user.user_metadata?.full_name||session.user.email||"?",x,y,color}})}catch{}
-  },[color])
-
   // Calculator — handled by CalculatorDrawer component
 
   // Timer
@@ -2181,16 +2236,23 @@ export default function EditorPage(){
     reader.onload=async()=>{
       let url=reader.result
       if(typeof url==="string"&&url.length>480000)url=url.slice(0,480000)
-      if(mode==="new")await addPage(url)
-      else{
-        setPageBgImage(url)
-        setPageBgOpacity(0.92)
-        scheduleSave()
-        addNotification("Photo de fond appliquée","success")
+      if(mode==="new"){
+        setPhotoInsertPending({url,name:file.name})
+        return
       }
+      setPageBgImage(url)
+      setPageBgOpacity(0.92)
+      scheduleSave()
+      addNotification("Photo de fond appliquée","success")
     }
     reader.readAsDataURL(file)
-  },[addPage,scheduleSave,addNotification])
+  },[scheduleSave,addNotification])
+
+  const confirmPhotoInsert=useCallback(async(position)=>{
+    if(!photoInsertPending?.url)return
+    await insertPageAt(position,photoInsertPending.url)
+    setPhotoInsertPending(null)
+  },[photoInsertPending,insertPageAt])
 
   const applyPageSettings=useCallback(async(pageNum,partial)=>{
     if(pageNum===page){
@@ -2438,8 +2500,23 @@ export default function EditorPage(){
         />
       )}
       {pageMenu&&pageMenuMeta&&<PageContextMenu T={T} pageNum={pageMenu.pageNum} x={pageMenu.x} y={pageMenu.y} meta={pageMenuMeta} onClose={()=>setPageMenu(null)} onApply={partial=>applyPageSettings(pageMenu.pageNum,partial)} onDuplicate={()=>duplicatePageByNum(pageMenu.pageNum)} onDelete={()=>deletePage(pageMenu.pageNum)} canDelete={pagesCount>1}/>}
+      <PagePhotoInsertModal
+        T={T}
+        open={!!photoInsertPending}
+        previewUrl={photoInsertPending?.url}
+        fileName={photoInsertPending?.name}
+        currentPage={page}
+        pagesCount={pagesCount}
+        onConfirm={confirmPhotoInsert}
+        onClose={()=>setPhotoInsertPending(null)}
+      />
 
-      {!focusMode&&showCalc&&(
+      {!focusMode&&showCalc&&isTablet&&(
+        <BottomSheet T={T} open onClose={()=>setShowCalc(false)} title="🔢 Calculatrice">
+          <CalculatorDrawer T={T} variant="embedded" open onClose={()=>setShowCalc(false)} scale={scale} {...calc} />
+        </BottomSheet>
+      )}
+      {!focusMode&&showCalc&&!isTablet&&(
         <DraggablePanel T={T} id="editor-calculator" title="Calculatrice" open onClose={()=>setShowCalc(false)} defaultSide="right" width={calc.calcMode==="scientific"?380:340}>
           <CalculatorDrawer
             T={T}
@@ -2660,7 +2737,7 @@ export default function EditorPage(){
         focusMode={focusMode}
         nb={nb}
         navigate={navigate}
-        collabCursors={collabCursors}
+        collabCursors={notebookCollab.remoteCursors}
         collabColors={COLLAB_COLORS}
         saveStatus={saveStatus}
         saveLabel={saveLabel}
@@ -2693,6 +2770,11 @@ export default function EditorPage(){
         setPencilOnly={setPencilOnly}
         readOnly={readOnly}
         setReadOnly={setReadOnly}
+        readOnlyLocked={readOnlyLocked}
+        sharePermission={sharePermission}
+        isTablet={isTablet}
+        showEditorSidebar={showEditorSidebar}
+        setShowEditorSidebar={setShowEditorSidebar}
         setShowPresent={setShowPresent}
         showCalc={showCalc}
         setShowCalc={setShowCalc}
@@ -2725,7 +2807,24 @@ export default function EditorPage(){
         exporting={exporting}
       />
 
-      {!focusMode&&<FloatingToolsToolbar T={T} tool={tool} setTool={setTool} color={color} sizeMm={sizeMm} eraserMm={eraserMm} unitSys={unitSys} formatDimension={formatDimension} toolsList={EDITOR_TOOLS_LIST} onLayoutChange={setToolbarDock} open={showToolsToolbar} onClose={()=>setShowToolsToolbar(false)}/>}
+      {!focusMode&&isTablet&&(
+        <EditorSidebar
+          T={T}
+          open={showEditorSidebar}
+          onOpen={()=>setShowEditorSidebar(true)}
+          onClose={()=>setShowEditorSidebar(false)}
+          tool={tool}
+          setTool={setTool}
+          toolsList={EDITOR_TOOLS_LIST}
+          page={page}
+          pagesCount={pagesCount}
+          goToPage={goToPage}
+          onAddPage={()=>addPage()}
+          readOnly={readOnly}
+        />
+      )}
+
+      {!focusMode&&<FloatingToolsToolbar T={T} tool={tool} setTool={setTool} color={color} sizeMm={sizeMm} eraserMm={eraserMm} unitSys={unitSys} formatDimension={formatDimension} toolsList={EDITOR_TOOLS_LIST} onLayoutChange={setToolbarDock} open={showToolsToolbar&&!isTablet} onClose={()=>setShowToolsToolbar(false)}/>}
 
       <div style={{display:"flex",flex:1,overflow:"hidden",transition:"padding .25s ease",...toolbarPad}}>
         {/* CANVAS */}
@@ -2733,13 +2832,23 @@ export default function EditorPage(){
           id="canvas-area"
           data-pan-tool={isPanMode?"1":"0"}
           {...canvasHandlers}
+          onPointerDown={swipeToolCycle.onPointerDown}
+          onPointerMove={(e)=>{
+            swipeToolCycle.onPointerMove(e)
+            canvasHandlers.onPointerMove?.(e)
+          }}
+          onPointerUp={(e)=>{
+            swipeToolCycle.onPointerUp(e)
+            canvasHandlers.onPointerUp?.(e)
+          }}
+          onPointerCancel={swipeToolCycle.onPointerCancel}
           onMouseMove={e=>{
             canvasHandlers.onMouseMove(e)
             if(libPending)setMousePos({x:e.clientX,y:e.clientY})
             const r=document.getElementById("canvas-area")?.getBoundingClientRect()
             if(r){
               const pt=toPageCoords(e.clientX-r.left,e.clientY-r.top,r.width,r.height)
-              broadcastCursor(pt.x,pt.y)
+              notebookCollab.broadcastCursor(pt.x,pt.y)
               if(tool==="eraser"&&!readOnly)setEraserCursor({x:e.clientX-r.left,y:e.clientY-r.top})
               else if(eraserCursor)setEraserCursor(null)
             }
@@ -2764,7 +2873,7 @@ export default function EditorPage(){
           })()}
 
           {/* Collab cursors */}
-          {collabCursors.map((c,i)=>{
+          {notebookCollab.remoteCursors.map((c,i)=>{
             const r=document.getElementById("canvas-area")?.getBoundingClientRect()
             if(!r)return null
             const pt=pageToScreen({
@@ -2914,7 +3023,7 @@ export default function EditorPage(){
       </div>
 
       {!focusMode&&(
-        <DraggablePanel T={T} id="editor-pages" title="Pages" open={showPagePanel} onClose={()=>setShowPagePanel(false)} width={220} defaultSide="right"
+        <DraggablePanel T={T} id="editor-pages" title="Pages" open={showPagePanel&&!isTablet} onClose={()=>setShowPagePanel(false)} width={220} defaultSide="right"
           headerExtra={<>
             <button type="button" onClick={addPage} title="Ajouter page" style={{background:"none",border:"none",cursor:"pointer",color:T.accent,fontSize:14,lineHeight:1,padding:0}}>+</button>
             <button type="button" onClick={duplicatePage} title="Dupliquer" style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:11,padding:0}}>⊕</button>
@@ -3041,7 +3150,7 @@ export default function EditorPage(){
         </div>
         <div style={{width:1,height:12,background:T.border}}/>
         <div style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool} · {formatDimension(tool==="eraser"?eraserMm:sizeMm,unitSys)} · {scale} · {Math.round(zoom*100)}%</div>
-        {collabCursors.length>0&&<div style={{fontSize:9,color:"#4ade80"}}>🟢 {collabCursors.length}</div>}
+        {notebookCollab.remoteCursors.length>0&&<div style={{fontSize:9,color:"#4ade80"}}>🟢 {notebookCollab.remoteCursors.length}</div>}
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:4}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="saved"?"#4ade80":saveStatus==="saving"?"#f5a623":saveStatus==="dirty"?"#f5a623":saveStatus==="error"?"#e94560":"#888"}}/>
           <span style={{fontSize:8,color:T.muted}}>{saveLabel}</span>

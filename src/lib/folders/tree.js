@@ -1,5 +1,8 @@
 /** Arborescence dossiers bibliothèque. */
 
+/** Profondeur max : racine + 2 niveaux de sous-dossiers (= 3 niveaux). */
+export const MAX_FOLDER_DEPTH = 3
+
 export function getFolderChildren(folders, parentId = null) {
   const pid = parentId || null
   return (folders || [])
@@ -21,6 +24,29 @@ export function getFolderAncestors(folders, folderId) {
   return out
 }
 
+/** Profondeur 1 = dossier racine, 2 = sous-dossier, 3 = sous-sous-dossier. */
+export function getFolderDepth(folders, folderId) {
+  if (!folderId) return 0
+  return getFolderAncestors(folders, folderId).length
+}
+
+export function canCreateChildFolder(folders, parentId) {
+  if (!parentId) return true
+  return getFolderDepth(folders, parentId) < MAX_FOLDER_DEPTH
+}
+
+export function canMoveFolderTo(folders, folderId, newParentId) {
+  if (!folderId) return false
+  if (newParentId === folderId) return false
+  if (newParentId) {
+    const descendants = getFolderDescendantIds(folders, folderId)
+    if (descendants.includes(newParentId)) return false
+    const childDepth = getFolderDepth(folders, newParentId) + 1
+    if (childDepth > MAX_FOLDER_DEPTH) return false
+  }
+  return true
+}
+
 export function getFolderDescendantIds(folders, folderId) {
   const ids = []
   const walk = (pid) => {
@@ -34,11 +60,7 @@ export function getFolderDescendantIds(folders, folderId) {
 }
 
 export function canMoveFolder(folders, folderId, newParentId) {
-  if (!folderId) return false
-  if (newParentId === folderId) return false
-  if (!newParentId) return true
-  const descendants = getFolderDescendantIds(folders, folderId)
-  return !descendants.includes(newParentId)
+  return canMoveFolderTo(folders, folderId, newParentId)
 }
 
 export function buildFolderTree(folders, parentId = null, depth = 0) {

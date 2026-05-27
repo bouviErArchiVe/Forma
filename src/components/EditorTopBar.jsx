@@ -118,6 +118,11 @@ export default function EditorTopBar({
   setPencilOnly,
   readOnly,
   setReadOnly,
+  readOnlyLocked = false,
+  sharePermission = null,
+  isTablet = false,
+  showEditorSidebar = false,
+  setShowEditorSidebar,
   setShowPresent,
   showCalc,
   setShowCalc,
@@ -202,6 +207,17 @@ export default function EditorTopBar({
         >
           {nb.title}
         </div>
+        {isTablet && setShowEditorSidebar && (
+          <button
+            type="button"
+            onClick={() => setShowEditorSidebar((v) => !v)}
+            title="Panneau outils & pages"
+            className="forma-btn-glass"
+            style={btnStyle(T, { active: showEditorSidebar, accent: true })}
+          >
+            ☰
+          </button>
+        )}
         {collabCursors.length > 0 && (
           <div style={{ display: 'flex', gap: 2, marginLeft: 4 }}>
             {collabCursors.map((c, i) => (
@@ -325,7 +341,19 @@ export default function EditorTopBar({
           <button type="button" onClick={() => setPencilOnly((v) => !v)} title="Apple Pencil uniquement" className="forma-btn-glass" style={btnStyle(T, { purple: true, active: pencilOnly })}>
             ✏️{pencilOnly ? '✓' : ''}
           </button>
-          <button type="button" onClick={() => setReadOnly((v) => !v)} title="Lecture seule" className="forma-btn-glass" style={btnStyle(T, { danger: true, active: readOnly })}>🔒</button>
+          <button
+            type="button"
+            onClick={() => { if (!readOnlyLocked) setReadOnly((v) => !v) }}
+            title={readOnlyLocked ? `Lecture seule (${sharePermission || 'partagé'})` : 'Lecture seule'}
+            className="forma-btn-glass"
+            style={{
+              ...btnStyle(T, { danger: true, active: readOnly }),
+              opacity: readOnlyLocked ? 0.85 : 1,
+              cursor: readOnlyLocked ? 'default' : 'pointer',
+            }}
+          >
+            🔒{readOnlyLocked ? '✓' : ''}
+          </button>
           <button type="button" onClick={() => setShowPresent(true)} title="Présentation" className="forma-btn-glass" style={btnStyle(T)}>📽</button>
           <button type="button" onClick={toggleFocusMode} title="Mode focus (F)" className="forma-btn-glass" style={btnStyle(T, { purple: true })}>⛶</button>
         </Group>

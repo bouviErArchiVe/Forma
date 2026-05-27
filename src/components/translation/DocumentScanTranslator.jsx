@@ -101,14 +101,25 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
     const method = typeof out === 'object' ? out?.method : lastMethod
 
     if (out?.previewUrl) {
-      setPreviewSafe({ url: out.previewUrl, name: file.name, type: 'image/png', isPdf: true, rasterized: true })
+      setPreviewSafe({
+        url: out.previewUrl,
+        name: file.name,
+        type: 'image/png',
+        isPdf: true,
+        rasterized: true,
+        pageCount: out.pageCount,
+        pagesProcessed: out.pagesProcessed,
+      })
     }
 
     if (text?.trim()) {
       setOcrText(text.trim())
       setOcrMethod(method || lastMethod)
       const label = METHOD_LABELS[method] || 'Texte extrait'
-      addNotification(`${label}`, 'success')
+      const pagesHint = out?.pageCount > 1 && out?.pagesProcessed
+        ? ` · ${out.pagesProcessed}/${out.pageCount} p.`
+        : ''
+      addNotification(`${label}${pagesHint}`, 'success')
     } else {
       const msg = out?.error || 'OCR sans résultat — saisissez le texte manuellement ci-dessous.'
       setOcrError(msg)
@@ -195,6 +206,7 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
           <div style={{ ...TYPE.micro, color: T.muted, marginTop: 2 }}>
             {TRANSLATION_PROVIDERS[getTranslationProvider()] || 'Traduction'}
             {ocrMethod && ` · ${METHOD_LABELS[ocrMethod] || ocrMethod}`}
+            {preview?.pageCount > 1 && preview?.pagesProcessed && ` · ${preview.pagesProcessed}/${preview.pageCount} pages`}
           </div>
         </div>
       </div>

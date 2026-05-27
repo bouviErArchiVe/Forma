@@ -34,11 +34,11 @@ export default function TranslateScanPage() {
         >
           ← Accueil
         </button>
-        <BrandLogo T={T} size={28} />
+        <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={T.accent} />
         <div style={{ flex: 1, minWidth: 160 }}>
           <div style={{ ...TYPE.display, fontSize: 18 }}>Scan & traduction</div>
           <div style={{ ...TYPE.caption, color: T.muted, marginTop: 2 }}>
-            OCR (Tesseract) · PDF natif ou raster · EN ↔ FR
+            OCR (Tesseract) · PDF multi-pages (jusqu&apos;à 12) · EN ↔ FR
           </div>
         </div>
       </header>

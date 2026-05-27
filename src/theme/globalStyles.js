@@ -210,6 +210,104 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
       max-height: min(88vh, 92dvh) !important;
     }
 
+    .forma-sidebar-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.32);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .24s ease;
+      z-index: ${TOKENS.zIndex.float + 1};
+    }
+    .forma-sidebar-backdrop--open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .forma-editor-sidebar {
+      position: fixed;
+      left: 0;
+      top: 46px;
+      bottom: 32px;
+      width: min(288px, 86vw);
+      padding: 16px 14px;
+      transform: translateX(-105%);
+      transition: transform .28s cubic-bezier(.2,.8,.2,1);
+      z-index: ${TOKENS.zIndex.float + 2};
+      overflow-y: auto;
+      box-shadow: ${TOKENS.shadow.panel};
+    }
+    .forma-editor-sidebar--open {
+      transform: translateX(0);
+    }
+    .forma-profile-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.32);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .24s ease;
+      z-index: ${TOKENS.zIndex.float + 1};
+    }
+    .forma-profile-backdrop--open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .forma-profile-panel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: min(320px, 90vw);
+      padding: 20px 16px;
+      padding-top: max(20px, env(safe-area-inset-top));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      padding-right: max(16px, env(safe-area-inset-right));
+      transform: translateX(105%);
+      transition: transform .28s cubic-bezier(.2,.8,.2,1);
+      z-index: ${TOKENS.zIndex.float + 2};
+      overflow-y: auto;
+      box-shadow: ${TOKENS.shadow.panel};
+    }
+    .forma-profile-panel--open {
+      transform: translateX(0);
+    }
+    .forma-editor-sidebar-tab {
+      transition: transform .18s ease, opacity .18s ease;
+    }
+    .forma-editor-sidebar-tab:active {
+      transform: translateY(-50%) scale(.96);
+    }
+    .forma-nb-swipe-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: inherit;
+    }
+    .forma-nb-swipe-actions {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-end;
+      gap: 0;
+      pointer-events: none;
+    }
+    .forma-nb-swipe-actions button {
+      pointer-events: auto;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .forma-nb-swipe-card {
+      position: relative;
+      z-index: 1;
+      transition: transform .18s ease;
+      touch-action: pan-y;
+    }
+
     .forma-library-header {
       padding: 0 22px;
       padding-left: max(22px, env(safe-area-inset-left));

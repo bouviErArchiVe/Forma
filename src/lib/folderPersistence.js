@@ -259,7 +259,7 @@ export async function persistFolderMove(userId, folderId, newParentId, sortOrder
   const ownerId = userId ?? await resolveFolderUserId()
   const folders = loadLocalFoldersForScope(ownerId)
   if (!canMoveFolder(folders, folderId, newParentId)) {
-    return { ok: false, folders, error: 'Déplacement impossible (cycle ou dossier invalide)' }
+    return { ok: false, folders, error: 'Déplacement impossible (cycle, profondeur max ou dossier invalide)' }
   }
   const next = folders.map((f) => {
     if (f.id !== folderId) return f

@@ -1,5 +1,6 @@
 import CoverPattern from '@/components/CoverPattern'
 import { useLongPress } from '@/hooks/useLongPress'
+import { useSwipeReveal } from '@/hooks/useSwipeReveal'
 import { notebookCardStyle } from '@/lib/design'
 
 function timeAgo(d) {
@@ -52,6 +53,8 @@ export default function NotebookLibraryItem({
   onToggleSelect,
 }) {
   const pages = nb.pages_count || 1
+  const swipe = useSwipeReveal({ onTap: () => { if (!selectionMode) onOpen?.() } })
+  const useSwipe = view === 'grid' && !selectionMode
 
   const lp = useLongPress({
     onLongPress: () => onLongPress?.(),
@@ -145,20 +148,21 @@ export default function NotebookLibraryItem({
     )
   }
 
-  return (
+  const gridCard = (
     <div
       className={cardClass}
-      {...lp}
+      {...(useSwipe ? swipe.handlers : lp)}
       style={{
         ...cardStyle,
         ...notebookCardStyle(T, { selected, view: 'grid' }),
+        ...(useSwipe ? { background: T.surface } : {}),
       }}
     >
       <SelectBadge selected={selected} T={T} />
       <div style={{ height: 130, position: 'relative', overflow: 'hidden', background: `linear-gradient(145deg,${subject.c}25,${subject.c}08)` }}>
         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 6, background: `linear-gradient(to bottom,${subject.c},${subject.c}aa)` }} />
         <CoverPattern tmpl={nb.template} color={subject.c} />
-        {!selectionMode && (
+        {!selectionMode && !useSwipe && (
           <button type="button" className="star-btn" onClick={onStar} style={{
             position: 'absolute', top: 8, right: 8,
             background: 'rgba(255,255,255,.15)', backdropFilter: 'blur(4px)',
@@ -182,10 +186,25 @@ export default function NotebookLibraryItem({
             <div style={{ padding: '2px 7px', borderRadius: 12, background: `${subject.c}20`, color: subject.c, fontSize: 9, fontWeight: 700 }}>{subject.l}</div>
             <div style={{ fontSize: 9, color: T.muted }}>{template?.i} {pages}p</div>
           </div>
-          {!selectionMode && <NotebookActions T={T} onAssign={onAssign} onDelete={onDelete} />}
+          {!selectionMode && !useSwipe && <NotebookActions T={T} onAssign={onAssign} onDelete={onDelete} />}
         </div>
         <div style={{ fontSize: 8, color: T.muted, marginTop: 4 }}>{timeAgo(nb.updated_at)}</div>
       </div>
     </div>
   )
+
+  if (useSwipe) {
+    return (
+      <div className="forma-nb-swipe-wrap" style={{ borderRadius: notebookCardStyle(T, { view: 'grid' }).borderRadius || 16 }}>
+        <div className="forma-nb-swipe-actions">
+          <button type="button" onClick={(e) => { e.stopPropagation(); onStar?.(); swipe.reset() }} style={{ background: '#f5a623', color: '#fff' }} title="Étoile">★</button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onAssign?.(); swipe.reset() }} style={{ background: T.accent, color: '#fff' }} title="Dossier">📁</button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onDelete?.(); swipe.reset() }} style={{ background: '#e94560', color: '#fff' }} title="Supprimer">🗑</button>
+        </div>
+        <div className="forma-nb-swipe-card" style={{ transform: `translateX(${swipe.offset}px)` }}>{gridCard}</div>
+      </div>
+    )
+  }
+
+  return gridCard
 }

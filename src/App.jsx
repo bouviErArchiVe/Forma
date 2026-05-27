@@ -1,4 +1,5 @@
 // src/App.jsx
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import ErrorBoundary from '@/components/ErrorBoundary'
@@ -33,6 +34,7 @@ function ProtectedRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <ActivityTracker />
       <Notifications />
       <EasterEggLayer />
       <PageTransition>

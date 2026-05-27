@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import useAppStore from '@/stores/useAppStore'
-import { getFolderAncestors, buildFolderTree } from '@/lib/folders/tree'
+import { getFolderAncestors, buildFolderTree, canCreateChildFolder, MAX_FOLDER_DEPTH } from '@/lib/folders/tree'
 import { getFolderStats } from '@/lib/folders/stats'
 import { FOLDER_VIEWS, FOLDER_SORTS, CONTENT_FILTERS, sortFolderItems, filterFolderItems } from '@/lib/folders/views'
 import { setFolderClipboard, getFolderClipboard, clearFolderClipboard } from '@/lib/folders/clipboard'
@@ -56,6 +56,10 @@ export default function FolderExplorer({
   const currentStats = useMemo(
     () => getFolderStats(currentFolderId, folders, notebooks, { recursive: false }),
     [currentFolderId, folders, notebooks],
+  )
+  const canAddSubfolder = useMemo(
+    () => canCreateChildFolder(folders, currentFolderId),
+    [folders, currentFolderId],
   )
 
   const notifyRes = (res, okMsg) => {
@@ -287,7 +291,25 @@ export default function FolderExplorer({
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16, alignItems: 'center' }}>
-          <button type="button" onClick={() => onCreateFolder?.(currentFolderId)} style={{ padding: '7px 14px', borderRadius: 8, background: `linear-gradient(135deg,${T.accent},${T.a2})`, border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>+ Dossier</button>
+          <button
+            type="button"
+            onClick={() => canAddSubfolder && onCreateFolder?.(currentFolderId)}
+            disabled={!canAddSubfolder}
+            title={canAddSubfolder ? 'Nouveau dossier' : `Profondeur max ${MAX_FOLDER_DEPTH} niveaux`}
+            style={{
+              padding: '7px 14px',
+              borderRadius: 8,
+              background: canAddSubfolder ? `linear-gradient(135deg,${T.accent},${T.a2})` : T.border,
+              border: 'none',
+              color: '#fff',
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: canAddSubfolder ? 'pointer' : 'not-allowed',
+              opacity: canAddSubfolder ? 1 : 0.65,
+            }}
+          >
+            + Dossier
+          </button>
           {userId && (
             <button type="button" onClick={onSyncFolders} disabled={syncingFolders} style={{ padding: '7px 12px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.surface, fontSize: 11, cursor: 'pointer' }}>{syncingFolders ? 'Sync…' : '☁ Sync'}</button>
           )}
@@ -307,7 +329,11 @@ export default function FolderExplorer({
           <div style={{ textAlign: 'center', padding: '48px 16px', color: T.muted }}>
             <div style={{ fontSize: 40, marginBottom: 8 }}>📁</div>
             <div style={{ fontSize: 14 }}>Dossier vide</div>
-            <button type="button" onClick={() => onCreateFolder?.(currentFolderId)} style={{ marginTop: 12, padding: '8px 16px', borderRadius: 8, background: T.accent, border: 'none', color: '#fff', cursor: 'pointer' }}>Créer un sous-dossier</button>
+            {canAddSubfolder ? (
+              <button type="button" onClick={() => onCreateFolder?.(currentFolderId)} style={{ marginTop: 12, padding: '8px 16px', borderRadius: 8, background: T.accent, border: 'none', color: '#fff', cursor: 'pointer' }}>Créer un sous-dossier</button>
+            ) : (
+              <div style={{ marginTop: 12, fontSize: 11, color: T.muted }}>Profondeur max {MAX_FOLDER_DEPTH} niveaux</div>
+            )}
           </div>
         )}
 

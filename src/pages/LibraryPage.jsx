@@ -15,7 +15,7 @@ import UnitConverter from "@/components/UnitConverter"
 import TranslationWidget from "@/components/translation/TranslationWidget"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
 import { checkEasterEggText } from "@/hooks/useEasterEggTrigger"
-import AccountMenu from "@/components/AccountMenu"
+import ProfilePanel from "@/components/ProfilePanel"
 import NotificationPanel, { NotificationBell } from "@/components/NotificationPanel"
 import { useCollaboration } from "@/hooks/useCollaboration"
 import { useAuth } from "@/hooks/useAuth"
@@ -48,7 +48,7 @@ import {
   syncFoldersToCloud,
   resolveFolderUserId,
 } from "@/lib/folderPersistence"
-import { getFolderDescendantIds } from "@/lib/folders/tree"
+import { getFolderDescendantIds, canCreateChildFolder, MAX_FOLDER_DEPTH } from "@/lib/folders/tree"
 import FolderExplorer from "@/components/folders/FolderExplorer"
 
 const FOLDER_EMOJIS = ["📁","📂","🏗","🏛","📐","⚙","🎨","📚","🌿","🔥","⭐","💡","🎯","🏆","🔬","🌍","🏠","🚀","💎","🗂"]
@@ -482,6 +482,7 @@ export default function LibraryPage() {
     setLibraryView,
     librarySort,
     setLibrarySort,
+    activityStreak,
   } = useAppStore()
   const { T } = useTheme()
   const [showFocus, setShowFocus] = useState(false)
@@ -504,7 +505,7 @@ export default function LibraryPage() {
   const [showCalc, setShowCalc] = useState(false)
   const [showConverter, setShowConverter] = useState(false)
   const [showTranslate, setShowTranslate] = useState(false)
-  const [showAccountMenu, setShowAccountMenu] = useState(false)
+  const [showProfilePanel, setShowProfilePanel] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const avatarRef = useRef(null)
   const { signOut: authSignOut } = useAuth()
@@ -848,6 +849,10 @@ export default function LibraryPage() {
 
   const createFolder = async () => {
     if (!folderName.trim()) return
+    if (newFolderParentId && !canCreateChildFolder(folders, newFolderParentId)) {
+      addNotification(`Profondeur max ${MAX_FOLDER_DEPTH} niveaux atteinte`, "error")
+      return
+    }
     const uid = userId || await resolveFolderUserId()
     if (uid && uid !== userId) setUserId(uid)
     const res = await persistFolderCreate(uid, {
@@ -951,11 +956,16 @@ export default function LibraryPage() {
     setUserId(null)
     setUserName("")
     setNotebooks([])
-    setShowAccountMenu(false)
+    setShowProfilePanel(false)
   }
 
   const avatarLetter = (collab.profile?.display_name || userName || "?").charAt(0).toUpperCase()
   const displayName = collab.profile?.display_name || userName
+  const sharedCount = (collab.sharedFolders.owned?.length || 0) + (collab.sharedFolders.member?.length || 0)
+  const openProfilePanel = () => {
+    setShowProfilePanel(true)
+    setShowNotifications(false)
+  }
 
   return (
     <div className="forma-page-shell">
@@ -1016,20 +1026,23 @@ export default function LibraryPage() {
         />
       )}
 
-      {userId && (
-        <AccountMenu
-          T={T}
-          open={showAccountMenu}
-          onClose={() => setShowAccountMenu(false)}
-          anchorRef={avatarRef}
-          displayName={displayName}
-          email={collab.user?.email || userName}
-          avatarUrl={collab.profile?.avatar_url}
-          avatarLetter={avatarLetter}
-          unreadCount={collab.unreadCount}
-          onLogout={logout}
-        />
-      )}
+      <ProfilePanel
+        T={T}
+        open={showProfilePanel}
+        onClose={() => setShowProfilePanel(false)}
+        displayName={displayName}
+        email={collab.user?.email || userName}
+        avatarUrl={collab.profile?.avatar_url}
+        avatarLetter={avatarLetter}
+        notebooks={notebooks}
+        folders={folders}
+        friends={collab.friends}
+        sharedCount={sharedCount}
+        unreadCount={collab.unreadCount}
+        streak={activityStreak}
+        isLoggedIn={!!userId}
+        onLogout={logout}
+      />
 
       {userId && (
         <NotificationPanel
@@ -1325,7 +1338,7 @@ export default function LibraryPage() {
                 T={T}
                 unreadCount={collab.unreadCount}
                 active={showNotifications}
-                onClick={() => { setShowNotifications(v => !v); setShowAccountMenu(false) }}
+                onClick={() => { setShowNotifications(v => !v); setShowProfilePanel(false) }}
               />
             )}
             <GlassButton T={T} size="md" onClick={() => navigate("/formulas")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
@@ -1351,7 +1364,7 @@ export default function LibraryPage() {
             {userId && (
               <div
                 ref={avatarRef}
-                onClick={() => { setShowAccountMenu(v => !v); setShowNotifications(false) }}
+                onClick={openProfilePanel}
                 className="forma-btn-glass"
                 style={{
                   width: 32, height: 32, borderRadius: "50%",
@@ -1359,7 +1372,7 @@ export default function LibraryPage() {
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 13, fontWeight: 800, color: "#fff", flexShrink: 0,
                   boxShadow: `0 2px 8px ${T.accent}44`, cursor: "pointer",
-                  border: showAccountMenu ? `2px solid ${T.accent}` : 'none',
+                  border: showProfilePanel ? `2px solid ${T.accent}` : 'none',
                 }}
               >
                 {!collab.profile?.avatar_url && avatarLetter}
@@ -1420,7 +1433,7 @@ export default function LibraryPage() {
               {e:"⭐", v:starredCount,      l:"favoris",   tab:"favorites"},
               {e:"📁", v:folders.length,   l:"dossiers",  tab:"folders"},
               {e:"📊", v:"",               l:"tableau",   tab:"dashboard"},
-              {e:"👤", v:"",               l:"compte",    tab:null, action:()=>navigate("/account/profile")},
+              {e:"👤", v:activityStreak > 0 ? activityStreak : "", l:"compte", tab:null, action:openProfilePanel},
               {e:"🤝", v:collab.friends.length, l:"amis", tab:null, action:()=>navigate("/account/friends")},
               {e:"🔗", v:"",               l:"partage",   tab:null, action:()=>navigate("/account/sharing")},
               {e:"📂", v:(collab.sharedFolders.owned?.length||0)+(collab.sharedFolders.member?.length||0), l:"partagés", tab:null, action:()=>navigate("/account/folders")},

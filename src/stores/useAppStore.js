@@ -81,6 +81,23 @@ const useAppStore = create(
       dictationLang: 'fr-FR',
       setDictationLang: (dictationLang) => set({ dictationLang: normalizeDictationLang(dictationLang) }),
 
+      lastActiveDate: '',
+      activityStreak: 0,
+      recordAppActivity: () => {
+        const today = new Date().toISOString().slice(0, 10)
+        const { lastActiveDate, activityStreak } = get()
+        if (lastActiveDate === today) return activityStreak || 1
+        let next = 1
+        if (lastActiveDate) {
+          const y = new Date()
+          y.setDate(y.getDate() - 1)
+          const yesterday = y.toISOString().slice(0, 10)
+          if (lastActiveDate === yesterday) next = (activityStreak || 0) + 1
+        }
+        set({ lastActiveDate: today, activityStreak: next })
+        return next
+      },
+
       customProfiles: [],
       addCustomProfile: (profile) => set((s) => ({
         customProfiles: [profile, ...s.customProfiles.filter((p) => p.id !== profile.id)],
@@ -289,6 +306,8 @@ const useAppStore = create(
         translationMode: state.translationMode,
         dictationLang: state.dictationLang,
         customProfiles: state.customProfiles,
+        lastActiveDate: state.lastActiveDate,
+        activityStreak: state.activityStreak,
       }),
     }
   )
