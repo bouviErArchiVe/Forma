@@ -139,6 +139,7 @@ export default function TranslationWidget({
     setTranslationSourceLang,
     setTranslationTargetLang,
     setTranslationMode,
+    setPendingTranslationSourceText,
   } = useAppStore()
 
   const [sourceText, setSourceText] = useState('')
@@ -217,6 +218,11 @@ export default function TranslationWidget({
     navigate(`/editor/${nb.id}`)
   }, [resultText, setPendingFormulaNote, setActiveNotebook, addNotification, navigate])
 
+  const handleOpenScan = useCallback(() => {
+    if (sourceText.trim()) setPendingTranslationSourceText(sourceText.trim())
+    onOpenScan?.()
+  }, [sourceText, setPendingTranslationSourceText, onOpenScan])
+
   const bodyProps = {
     T,
     sourceText,
@@ -236,7 +242,7 @@ export default function TranslationWidget({
     onTranslate: handleTranslate,
     onCopy: handleCopy,
     onSend: () => setSendOpen(true),
-    onOpenScan,
+    onOpenScan: handleOpenScan,
     fieldStyle,
     compact: variant === 'embedded',
   }

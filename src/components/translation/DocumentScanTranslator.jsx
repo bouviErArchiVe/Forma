@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import useAppStore from '@/stores/useAppStore'
 import { useOCR } from '@/hooks/useOCR'
 import { translateText, getTranslationText, TRANSLATION_PROVIDERS, getTranslationProvider } from '@/lib/translation'
@@ -8,11 +8,20 @@ import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassPanel from '@/components/ui/GlassPanel'
 import { rgbaFromHex } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
+import { ELEVATION, TYPE } from '@/lib/design'
+
+const METHOD_LABELS = {
+  'pdf-native': 'Texte PDF natif',
+  'pdf-ocr': 'OCR sur PDF',
+  'image-ocr': 'OCR image',
+}
 
 export default function DocumentScanTranslator({ T, notebooks = [], embedded = false }) {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const fileRef = useRef(null)
-  const { recognize, isProcessing, progress } = useOCR()
+  const previewUrlRef = useRef(null)
+  const { recognize, isProcessing, progress, lastMethod } = useOCR()
   const {
     addNotification,
     setPendingFormulaNote,
@@ -20,6 +29,7 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
     translationSourceLang,
     translationTargetLang,
     translationMode,
+    consumePendingTranslationSourceText,
   } = useAppStore()
 
   const [preview, setPreview] = useState(null)
@@ -29,10 +39,28 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
   const [translating, setTranslating] = useState(false)
   const [sendOpen, setSendOpen] = useState(false)
   const [ocrError, setOcrError] = useState(null)
+  const [ocrMethod, setOcrMethod] = useState(null)
   const [translateError, setTranslateError] = useState('')
   const [translateWarning, setTranslateWarning] = useState('')
 
   const sourceText = ocrText || manualText
+
+  useEffect(() => {
+    const fromStore = consumePendingTranslationSourceText?.() || ''
+    const fromQuery = searchParams.get('text') || ''
+    const initial = fromStore || fromQuery
+    if (initial.trim()) {
+      setManualText(initial.trim())
+      addNotification('Texte repris depuis le widget traduction', 'info')
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => () => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current)
+      previewUrlRef.current = null
+    }
+  }, [])
 
   const fieldStyle = {
     width: '100%',
@@ -47,6 +75,15 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
     lineHeight: 1.45,
   }
 
+  const setPreviewSafe = useCallback((next) => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current)
+      previewUrlRef.current = null
+    }
+    if (next?.url?.startsWith('blob:')) previewUrlRef.current = next.url
+    setPreview(next)
+  }, [])
+
   const handleFile = useCallback(async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -54,20 +91,31 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
     setOcrText('')
     setTranslated('')
     setManualText('')
+    setOcrMethod(null)
 
-    const url = URL.createObjectURL(file)
-    setPreview({ url, name: file.name, type: file.type })
+    const url = file.type.startsWith('image/') ? URL.createObjectURL(file) : null
+    setPreviewSafe({ url, name: file.name, type: file.type, isPdf: file.type === 'application/pdf' || /\.pdf$/i.test(file.name) })
 
-    const text = await recognize(file, translationSourceLang === 'fr' ? 'fra' : 'eng')
+    const out = await recognize(file, translationSourceLang)
+    const text = typeof out === 'string' ? out : out?.text
+    const method = typeof out === 'object' ? out?.method : lastMethod
+
+    if (out?.previewUrl) {
+      setPreviewSafe({ url: out.previewUrl, name: file.name, type: 'image/png', isPdf: true, rasterized: true })
+    }
+
     if (text?.trim()) {
       setOcrText(text.trim())
-      addNotification('Texte extrait par OCR', 'success')
+      setOcrMethod(method || lastMethod)
+      const label = METHOD_LABELS[method] || 'Texte extrait'
+      addNotification(`${label}`, 'success')
     } else {
-      setOcrError('OCR sans résultat — saisissez le texte manuellement ci-dessous.')
+      const msg = out?.error || 'OCR sans résultat — saisissez le texte manuellement ci-dessous.'
+      setOcrError(msg)
       addNotification('OCR échoué — saisie manuelle', 'error')
     }
     e.target.value = ''
-  }, [recognize, translationSourceLang, addNotification])
+  }, [recognize, translationSourceLang, addNotification, setPreviewSafe, lastMethod])
 
   const handleTranslate = useCallback(async () => {
     if (!sourceText.trim()) return
@@ -127,18 +175,28 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
     ? { display: 'flex', flexDirection: 'column', gap: 16 }
     : { maxWidth: 960, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16, padding: embedded ? 0 : '0 4px' }
 
+  const cardStyle = {
+    borderRadius: TOKENS.radius.lg,
+    border: `1px solid ${rgbaFromHex(T.border, 0.35)}`,
+    background: T.surface,
+    boxShadow: ELEVATION.card,
+    overflow: 'hidden',
+  }
+
   return (
     <div style={wrapStyle}>
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-        <input ref={fileRef} type="file" accept="image/*,.pdf" style={{ display: 'none' }} onChange={handleFile} />
+      <div style={{ ...cardStyle, padding: '14px 16px', display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+        <input ref={fileRef} type="file" accept="image/*,.pdf,application/pdf" style={{ display: 'none' }} onChange={handleFile} />
         <GlassButton T={T} accent onClick={() => fileRef.current?.click()} disabled={isProcessing}>
           {isProcessing ? `OCR ${progress}%…` : '📷 Importer image / PDF'}
         </GlassButton>
-        <span style={{ fontSize: 11, color: T.muted }}>Tesseract chargé à la demande · pas au démarrage</span>
-      </div>
-
-      <div style={{ fontSize: 11, color: T.muted }}>
-        {TRANSLATION_PROVIDERS[getTranslationProvider()] || 'Traduction'} · OCR à la demande
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <div style={{ ...TYPE.caption, color: T.muted }}>Tesseract + PDF.js chargés à la demande</div>
+          <div style={{ ...TYPE.micro, color: T.muted, marginTop: 2 }}>
+            {TRANSLATION_PROVIDERS[getTranslationProvider()] || 'Traduction'}
+            {ocrMethod && ` · ${METHOD_LABELS[ocrMethod] || ocrMethod}`}
+          </div>
+        </div>
       </div>
 
       {translateWarning && (
@@ -154,12 +212,13 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
       )}
 
       {preview && (
-        <div style={{ borderRadius: 12, border: `1px solid ${T.border}`, overflow: 'hidden', background: T.surface, maxHeight: 220 }}>
-          {preview.type.startsWith('image/') ? (
-            <img src={preview.url} alt="" style={{ width: '100%', maxHeight: 220, objectFit: 'contain', display: 'block' }} />
+        <div style={{ ...cardStyle, maxHeight: 240 }}>
+          {preview.url && (preview.type?.startsWith('image/') || preview.rasterized) ? (
+            <img src={preview.url} alt="" style={{ width: '100%', maxHeight: 240, objectFit: 'contain', display: 'block', background: rgbaFromHex(T.bg, 0.5) }} />
           ) : (
-            <div style={{ padding: 20, textAlign: 'center', color: T.muted, fontSize: 12 }}>
-              📄 {preview.name} — OCR appliqué si possible
+            <div style={{ padding: 24, textAlign: 'center', color: T.muted, ...TYPE.body }}>
+              📄 {preview.name}
+              {preview.isPdf && !preview.rasterized && ' — extraction texte ou OCR en cours…'}
             </div>
           )}
         </div>
@@ -172,27 +231,29 @@ export default function DocumentScanTranslator({ T, notebooks = [], embedded = f
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
-        <div>
-          <div style={{ fontSize: 10, fontWeight: 800, color: T.muted, letterSpacing: 0.8, marginBottom: 6 }}>TEXTE EXTRAIT / SAISIE</div>
+        <div style={{ ...cardStyle, padding: 14 }}>
+          <div style={{ ...TYPE.micro, color: T.muted, marginBottom: 8 }}>TEXTE EXTRAIT / SAISIE</div>
           <textarea
             value={ocrText || manualText}
             onChange={(e) => {
               setManualText(e.target.value)
               if (ocrText) setOcrText('')
             }}
-            placeholder="Texte OCR ou saisie manuelle…"
+            placeholder="Texte OCR, PDF ou saisie manuelle…"
             rows={10}
-            style={{ ...fieldStyle, minHeight: 200, resize: 'vertical', cursor: 'text' }}
+            style={{ ...fieldStyle, minHeight: 200, resize: 'vertical', cursor: 'text', border: 'none', background: 'transparent', padding: 0 }}
           />
         </div>
-        <div>
-          <div style={{ fontSize: 10, fontWeight: 800, color: T.muted, letterSpacing: 0.8, marginBottom: 6 }}>TRADUCTION ({translationSourceLang} → {translationTargetLang})</div>
+        <div style={{ ...cardStyle, padding: 14 }}>
+          <div style={{ ...TYPE.micro, color: T.muted, marginBottom: 8 }}>
+            TRADUCTION ({translationSourceLang} → {translationTargetLang})
+          </div>
           <textarea
             value={translated}
             readOnly
             placeholder="Traduire pour afficher ici…"
             rows={10}
-            style={{ ...fieldStyle, minHeight: 200, resize: 'vertical', cursor: 'default', opacity: translated ? 1 : 0.65 }}
+            style={{ ...fieldStyle, minHeight: 200, resize: 'vertical', cursor: 'default', opacity: translated ? 1 : 0.65, border: 'none', background: 'transparent', padding: 0 }}
           />
         </div>
       </div>

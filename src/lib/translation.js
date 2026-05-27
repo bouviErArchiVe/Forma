@@ -129,9 +129,25 @@ async function translateBrowser(text, from, to) {
 
 const WORDS_EN_FR = {
   hello: 'bonjour', world: 'monde', school: 'école', building: 'bâtiment',
-  architecture: 'architecture', project: 'projet', wall: 'mur', fire: 'feu',
-  resistant: 'résistant', help: 'aide', need: 'besoin', with: 'avec', my: 'mon',
-  the: 'le', a: 'un', and: 'et', must: 'doit', be: 'être',
+  architecture: 'architecture', architect: 'architecte', project: 'projet',
+  wall: 'mur', floor: 'étage', roof: 'toiture', facade: 'façade', beam: 'poutre',
+  column: 'colonne', foundation: 'fondation', structure: 'structure', slab: 'dalle',
+  concrete: 'béton', steel: 'acier', glass: 'verre', wood: 'bois', brick: 'brique',
+  insulation: 'isolation', ventilation: 'ventilation', thermal: 'thermique',
+  acoustic: 'acoustique', energy: 'énergie', sustainable: 'durable', renovation: 'rénovation',
+  blueprint: 'plan', elevation: 'élévation', section: 'coupe', scale: 'échelle',
+  dimension: 'dimension', material: 'matériau', load: 'charge', bearing: 'porteur',
+  window: 'fenêtre', door: 'porte', staircase: 'escalier', corridor: 'couloir',
+  room: 'pièce', space: 'espace', urban: 'urbain', landscape: 'paysage',
+  site: 'site', permit: 'permis', regulation: 'réglementation', detail: 'détail',
+  sketch: 'esquisse', drawing: 'dessin', model: 'maquette',
+  fire: 'feu', resistant: 'résistant', help: 'aide', need: 'besoin', with: 'avec',
+  my: 'mon', the: 'le', a: 'un', and: 'et', must: 'doit', be: 'être', design: 'conception',
+  construction: 'construction', framework: 'ossature', cladding: 'bardage',
+  waterproofing: 'étanchéité', humidity: 'humidité', lighting: 'éclairage',
+  circulation: 'circulation', accessibility: 'accessibilité', parking: 'stationnement',
+  basement: 'sous-sol', attic: 'combles', balcony: 'balcon', terrace: 'terrasse',
+  courtyard: 'cour', garden: 'jardin', height: 'hauteur', width: 'largeur', depth: 'profondeur',
 }
 
 function mockTranslate(text, from, to) {

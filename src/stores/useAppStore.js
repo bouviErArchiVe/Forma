@@ -68,6 +68,16 @@ const useAppStore = create(
       setTranslationTargetLang: (translationTargetLang) => set({ translationTargetLang }),
       setTranslationMode: (translationMode) => set({ translationMode }),
 
+      pendingTranslationSourceText: '',
+      setPendingTranslationSourceText: (pendingTranslationSourceText) => set({
+        pendingTranslationSourceText: String(pendingTranslationSourceText || '').slice(0, 12000),
+      }),
+      consumePendingTranslationSourceText: () => {
+        const text = get().pendingTranslationSourceText
+        set({ pendingTranslationSourceText: '' })
+        return text
+      },
+
       dictationLang: 'fr-FR',
       setDictationLang: (dictationLang) => set({ dictationLang: normalizeDictationLang(dictationLang) }),
 
