@@ -78,7 +78,7 @@ export default function GamesPage() {
         </button>
         <BrandLogo T={T} size={26} />
         <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>Pause</div>
+          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>FPause</div>
           <div style={{ fontSize: 11, color: T.muted }}>Mini-jeux · détente rapide</div>
         </div>
       </header>

@@ -129,7 +129,7 @@ export default function FormulasPage() {
         </button>
         <BrandLogo T={T} size={28} />
         <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>Formules architecture</div>
+          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>Formules</div>
           <div style={{ fontSize: 11, color: T.muted }}>Calculateurs intégrés · {listedFormulas.length} formules</div>
         </div>
         <div style={{ position: 'relative', flex: '1 1 240px', maxWidth: 360 }}>

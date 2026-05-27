@@ -214,7 +214,7 @@ export default function DocsPage() {
         </button>
         <BrandLogo T={T} size={28} />
         <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>Forma Docs</div>
+          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>FormaDoc</div>
           <div style={{ fontSize: 11, color: T.muted }}>Traitement de texte · {listed.length} document{listed.length !== 1 ? 's' : ''}</div>
         </div>
         <div style={{ position: 'relative', flex: '1 1 220px', maxWidth: 320 }}>

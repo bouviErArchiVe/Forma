@@ -31,7 +31,7 @@ export function checkReminders(events, onNotify) {
         })
         if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
           try {
-            new Notification(`FORMATCAL — ${ev.title}`, {
+            new Notification(`FormatCal — ${ev.title}`, {
               body: msg,
               tag: key,
               icon: '/favicon.ico',

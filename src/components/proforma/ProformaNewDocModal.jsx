@@ -15,7 +15,7 @@ export default function ProformaNewDocModal({ open, onClose, onCreate }) {
         style={{ padding: 22, width: 480, maxWidth: '94vw', maxHeight: '85vh', overflowY: 'auto' }}
       >
         <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: PF_DARK.ink, marginBottom: 4 }}>
-          Nouveau PROFORMA
+          Nouveau Proforma
         </div>
         <div style={{ fontSize: 11, color: PF_DARK.muted, marginBottom: 16 }}>
           Dessin de précision — architecture & design
@@ -42,7 +42,7 @@ export default function ProformaNewDocModal({ open, onClose, onCreate }) {
             <button
               key={f.id}
               type="button"
-              onClick={() => onCreate({ formatId: f.id, name: `PROFORMA ${f.l}` })}
+              onClick={() => onCreate({ formatId: f.id, name: `Proforma ${f.l}` })}
               style={{ ...cardBtn, padding: '8px 6px' }}
             >
               <div style={{ fontWeight: 700, fontSize: 11 }}>{f.l}</div>

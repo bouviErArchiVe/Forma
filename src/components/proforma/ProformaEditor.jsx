@@ -66,7 +66,7 @@ export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, 
       }}>
         <button type="button" onClick={onBack} style={headerBtn}>← Bibliothèque</button>
         <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15 }}>
-          PROFORMA
+          Proforma
         </div>
         <input
           value={doc.name}

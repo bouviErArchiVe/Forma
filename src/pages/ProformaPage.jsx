@@ -76,7 +76,7 @@ export default function ProformaPage() {
     setView('editor')
     setNewModal(false)
     refresh()
-    addNotification('Document PROFORMA créé', 'success')
+    addNotification('Document Proforma créé', 'success')
   }, [refresh, addNotification])
 
   const handleBack = useCallback(() => {
@@ -100,7 +100,7 @@ export default function ProformaPage() {
     })
     setActiveNotebook(nb)
     setInsertModal(false)
-    addNotification(`PROFORMA envoyé vers « ${nb.title} »`, 'success')
+    addNotification(`Proforma envoyé vers « ${nb.title} »`, 'success')
     navigate(`/editor/${nb.id}`)
   }, [doc, setPendingProformaInsert, setActiveNotebook, addNotification, navigate])
 
@@ -132,7 +132,7 @@ export default function ProformaPage() {
         </button>
         <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={PF_DARK.accent} />
         <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20 }}>PROFORMA</div>
+          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20 }}>Proforma</div>
           <div style={{ fontSize: 10, color: PF_DARK.muted }}>Dessin de précision professionnel</div>
         </div>
         <GlassButton T={{ ...T, accent: PF_DARK.accent, ink: PF_DARK.ink, border: PF_DARK.border, bg: PF_DARK.surface }} accent onClick={() => setNewModal(true)}>
@@ -161,7 +161,7 @@ export default function ProformaPage() {
         {docs.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', color: PF_DARK.muted }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>✏</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: PF_DARK.ink, marginBottom: 6 }}>Aucun dessin PROFORMA</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: PF_DARK.ink, marginBottom: 6 }}>Aucun dessin Proforma</div>
             <div style={{ fontSize: 12, marginBottom: 20 }}>Croquis techniques, détails constructifs, annotations pro…</div>
             <GlassButton T={{ ...T, accent: PF_DARK.accent, ink: PF_DARK.ink, border: PF_DARK.border, bg: PF_DARK.surface }} accent onClick={() => setNewModal(true)}>
               Créer un document

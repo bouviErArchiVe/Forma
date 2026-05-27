@@ -566,7 +566,7 @@ function SharedFoldersSection({ T, userId, profile, sharedFolders, friends, refr
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <select value={resType} onChange={(e) => setResType(e.target.value)} style={{ ...inputStyle(T), width: 130 }}>
               <option value="notebook">Carnet</option>
-              <option value="moodboard">Moodboard</option>
+              <option value="moodboard">FMoodboard</option>
             </select>
             <input value={resId} onChange={(e) => setResId(e.target.value)} placeholder="ID ressource" style={{ ...inputStyle(T), flex: 1 }} />
             <button type="button" onClick={addItem} style={okBtn(T)}>+</button>

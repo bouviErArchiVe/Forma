@@ -114,7 +114,7 @@ export default function FormatcalPage() {
   }
 
   const handleExportPdf = async () => {
-    const blob = await exportAgendaPdf(events, { title: 'FORMATCAL — Agenda' })
+    const blob = await exportAgendaPdf(events, { title: 'FormatCal — Agenda' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -139,7 +139,7 @@ export default function FormatcalPage() {
       }}>
         <button type="button" onClick={() => navigate('/')} style={navBtn}>← Accueil</button>
         <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={FC_DARK.accent} />
-        <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>FORMATCAL</div>
+        <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>FormatCal</div>
         <div style={{ flex: 1, minWidth: 120, fontSize: 13, fontWeight: 600, color: FC_DARK.muted }}>{navLabel}</div>
         <button type="button" onClick={() => shiftCursor('prev')} style={navBtn}>‹</button>
         <button type="button" onClick={goToday} style={{ ...navBtn, color: FC_DARK.accent, fontWeight: 700 }}>Aujourd'hui</button>

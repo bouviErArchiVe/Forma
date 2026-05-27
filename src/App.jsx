@@ -13,6 +13,7 @@ import SheetsPage from '@/pages/SheetsPage'
 import DocsPage from '@/pages/DocsPage'
 import ProformaPage from '@/pages/ProformaPage'
 const FormatcalPage = lazy(() => import('@/pages/FormatcalPage'))
+const FormaCombinePage = lazy(() => import('@/pages/FormaCombinePage'))
 import GamesPage from '@/pages/GamesPage'
 import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
@@ -50,13 +51,19 @@ export default function App() {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/" element={<ProtectedRoute><ErrorBoundary title="Erreur bibliothèque"><LibraryPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/editor/:id" element={<ProtectedRoute><ErrorBoundary title="Erreur éditeur"><EditorPage /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="/moodboard" element={<ProtectedRoute><ErrorBoundary title="Erreur moodboard"><MoodboardPage /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="/formulas" element={<ProtectedRoute><ErrorBoundary title="Erreur formules"><FormulasPage /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="/sheets" element={<ProtectedRoute><ErrorBoundary title="Erreur tableur"><SheetsPage /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="/docs" element={<ProtectedRoute><ErrorBoundary title="Erreur documents"><DocsPage /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="/proforma" element={<ProtectedRoute><ErrorBoundary title="Erreur PROFORMA"><ProformaPage /></ErrorBoundary></ProtectedRoute>} />
-          <Route path="/formatcal" element={<ProtectedRoute><ErrorBoundary title="Erreur FORMATCAL"><Suspense fallback={<AppLoading />}><FormatcalPage /></Suspense></ErrorBoundary></ProtectedRoute>} />
-          <Route path="/games" element={<ProtectedRoute><ErrorBoundary title="Erreur jeux"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/moodboard" element={<ProtectedRoute><ErrorBoundary title="Erreur FMoodboard"><MoodboardPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/fmoodboard" element={<ProtectedRoute><ErrorBoundary title="Erreur FMoodboard"><MoodboardPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/formulas" element={<ProtectedRoute><ErrorBoundary title="Erreur Formules"><FormulasPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/formules" element={<ProtectedRoute><ErrorBoundary title="Erreur Formules"><FormulasPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/sheets" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaTab"><SheetsPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/formatab" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaTab"><SheetsPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/docs" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaDoc"><DocsPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/formadoc" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaDoc"><DocsPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/proforma" element={<ProtectedRoute><ErrorBoundary title="Erreur Proforma"><ProformaPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/formatcal" element={<ProtectedRoute><ErrorBoundary title="Erreur FormatCal"><Suspense fallback={<AppLoading />}><FormatcalPage /></Suspense></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/formacombine" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaCombine"><Suspense fallback={<AppLoading />}><FormaCombinePage /></Suspense></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/games" element={<ProtectedRoute><ErrorBoundary title="Erreur FPause"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/fpause" element={<ProtectedRoute><ErrorBoundary title="Erreur FPause"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/translate" element={<ProtectedRoute><ErrorBoundary title="Erreur traduction scan"><TranslateScanPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/account" element={<ProtectedRoute><ErrorBoundary title="Erreur compte"><AccountPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/account/:tab" element={<ProtectedRoute><ErrorBoundary title="Erreur compte"><AccountPage /></ErrorBoundary></ProtectedRoute>} />

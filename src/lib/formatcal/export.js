@@ -5,7 +5,7 @@ import { fmtDate, fmtTime, fmtRange } from './dates'
 import { autoStatus } from './model'
 import { getCategoryMeta } from './model'
 
-export function exportEventsIcs(events, calName = 'FORMATCAL') {
+export function exportEventsIcs(events, calName = 'FormatCal') {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -53,7 +53,7 @@ export function downloadText(content, filename, mime = 'text/plain') {
   URL.revokeObjectURL(url)
 }
 
-export async function exportAgendaPdf(events, { title = 'FORMATCAL', from, to } = {}) {
+export async function exportAgendaPdf(events, { title = 'FormatCal', from, to } = {}) {
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
   let y = 18
   pdf.setFontSize(16)

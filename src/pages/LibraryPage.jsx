@@ -4,7 +4,7 @@ import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
 import { safeJsonParse, safeGetLocalStorage } from "@/lib/storage"
 import { THEMES } from "@/lib/themes"
-import { BRAND } from "@/config/branding"
+import { BRAND, MODULES } from "@/config/branding"
 import FocusPanel from "@/components/FocusPanel"
 import SpotifyLibraryPanel from "@/components/SpotifyLibraryPanel"
 import { BACKGROUNDS } from '@/lib/backgrounds'
@@ -174,7 +174,7 @@ function ThemePicker({ onClose }) {
 
   const [tab, setTab] = useState("theme")
   const modalRef = useRef()
-  const TABS=[["theme","🎨 Thème"],["appearance","🌗 Apparence"],["animation","✨ Animation"],["fond","🖼 Fond"],["font","🔤 Polices"]]
+  const TABS=[["theme","🎨 FTheme"],["appearance","🌗 Apparence"],["animation","✨ Animation"],["fond","🖼 Fond"],["font","🔤 Polices"]]
   const switchTab = (id) => { setTab(id); setTimeout(() => modalRef.current?.scrollTo({top:0, behavior:'auto'}), 0) }
 
   // Draft state: nothing is persisted/applied until user validates
@@ -213,7 +213,7 @@ function ThemePicker({ onClose }) {
     setCustomBg(draftCustomBg || "")
     setAppFont(draftAppFont || "")
 
-    if (draftThemeId !== themeId) addNotification("Thème appliqué", "success")
+    if (draftThemeId !== themeId) addNotification("FTheme appliqué", "success")
     if ((draftAppearanceMode || "light") !== (appearanceMode || "light")) addNotification("Apparence appliquée", "success")
     if (draftBgId !== bgId || (draftCustomBg || "") !== (customBg || "")) addNotification("Fond appliqué", "success")
     if (draftAnimType !== animType || draftAnimSpeed !== animSpeed || draftAnimationsEnabled !== animationsEnabled) addNotification("Animation appliquée", "success")
@@ -267,7 +267,7 @@ function ThemePicker({ onClose }) {
             src={draftTheme.img}
             alt={draftTheme.n}
             size="md"
-            subtitle="Ambiance · Thèmes & personnalisation"
+            subtitle="Ambiance · FTheme & personnalisation"
             accent={accent}
             ink={ink}
             muted={muted}
@@ -1341,26 +1341,29 @@ export default function LibraryPage() {
                 onClick={() => { setShowNotifications(v => !v); setShowProfilePanel(false) }}
               />
             )}
-            <GlassButton T={T} size="md" onClick={() => navigate("/formulas")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📐 Formules
+            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formules.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              📐 {MODULES.formules.name}
             </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate("/sheets")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📊 Tableur
+            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaTab.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              📊 {MODULES.formaTab.name}
             </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate("/docs")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📄 Documents
+            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaDoc.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              📄 {MODULES.formaDoc.name}
             </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate("/proforma")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              ✏ PROFORMA
+            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.proforma.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              ✏ {MODULES.proforma.name}
             </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate("/formatcal")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📅 FORMATCAL
+            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formatCal.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              📅 {MODULES.formatCal.name}
             </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate("/moodboard")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              🎭 Moodboard
+            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaCombine.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              📎 {MODULES.formaCombine.name}
+            </GlassButton>
+            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.fMoodboard.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              🎭 {MODULES.fMoodboard.name}
             </GlassButton>
             <GlassButton T={T} size="md" onClick={() => setShowTheme(true)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              {T.e || "🎨"} Thème
+              {T.e || "🎨"} {MODULES.fTheme.name}
             </GlassButton>
             {userId ? (
               <GlassButton T={T} size="md" onClick={logout}>Déconnexion</GlassButton>
@@ -1443,15 +1446,16 @@ export default function LibraryPage() {
               {e:"🤝", v:collab.friends.length, l:"amis", tab:null, action:()=>navigate("/account/friends")},
               {e:"🔗", v:"",               l:"partage",   tab:null, action:()=>navigate("/account/sharing")},
               {e:"📂", v:(collab.sharedFolders.owned?.length||0)+(collab.sharedFolders.member?.length||0), l:"partagés", tab:null, action:()=>navigate("/account/folders")},
-              {e:"🎭", v:"",               l:"moodboard", tab:null, action:()=>navigate("/moodboard")},
-              {e:"📐", v:"",               l:"formules",  tab:null, action:()=>navigate("/formulas")},
-              {e:"📊", v:"",               l:"tableur",   tab:null, action:()=>navigate("/sheets")},
-              {e:"📄", v:"",               l:"documents", tab:null, action:()=>navigate("/docs")},
-              {e:"✏", v:"",               l:"proforma",  tab:null, action:()=>navigate("/proforma")},
-              {e:"📅", v:"",               l:"formatcal", tab:null, action:()=>navigate("/formatcal")},
+              {e:"🎭", v:"",               l:MODULES.fMoodboard.name, tab:null, action:()=>navigate(MODULES.fMoodboard.route)},
+              {e:"📐", v:"",               l:MODULES.formules.name,   tab:null, action:()=>navigate(MODULES.formules.route)},
+              {e:"📊", v:"",               l:MODULES.formaTab.name,   tab:null, action:()=>navigate(MODULES.formaTab.route)},
+              {e:"📄", v:"",               l:MODULES.formaDoc.name,   tab:null, action:()=>navigate(MODULES.formaDoc.route)},
+              {e:"✏", v:"",               l:MODULES.proforma.name,   tab:null, action:()=>navigate(MODULES.proforma.route)},
+              {e:"📅", v:"",               l:MODULES.formatCal.name,  tab:null, action:()=>navigate(MODULES.formatCal.route)},
+              {e:"📎", v:"",               l:MODULES.formaCombine.name, tab:null, action:()=>navigate(MODULES.formaCombine.route)},
               {e:"🌐", v:"",               l:"traduction",tab:null, action:()=>navigate("/translate")},
-              {e:"🎮", v:"",               l:"pause",     tab:null, action:()=>navigate("/games")},
-              {e:"🎨", v:"",               l:"thèmes",    tab:null, action:()=>setShowTheme(true)},
+              {e:"🎮", v:"",               l:MODULES.fPause.name,     tab:null, action:()=>navigate(MODULES.fPause.route)},
+              {e:"🎨", v:"",               l:MODULES.fTheme.name,     tab:null, action:()=>setShowTheme(true)},
             ].map(s => (
               <StatChip key={s.l} e={s.e} v={s.v} l={s.l} tab={s.tab} activeTab={activeTab} setActiveTab={setActiveTab} T={T} action={s.action}/>
             ))}

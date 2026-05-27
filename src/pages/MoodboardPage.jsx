@@ -350,7 +350,7 @@ export default function MoodboardPage() {
       <div style={SB}>
         <div style={{ padding: collapsed ? '14px 10px' : '14px 12px', borderBottom: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <button onClick={() => navigate('/')} title='Retour' style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: T.muted, padding: '2px 4px', borderRadius: 6, lineHeight: 1, flexShrink: 0 }}>←</button>
-          {!collapsed && <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: T.ink, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Moodboard</span>}
+          {!collapsed && <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: T.ink, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>FMoodboard</span>}
           <button onClick={() => setCollapsed(c => !c)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: T.muted, padding: '2px 4px', borderRadius: 6, lineHeight: 1, flexShrink: 0, marginLeft: 'auto' }}>{collapsed ? '»' : '«'}</button>
         </div>
 

@@ -380,7 +380,7 @@ function renderEl(el,sc=1/50,sx=1,sy=1){
   if(el.type==="win")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(122,181,212,.25)"stroke="#4a90b8"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#4a90b8"strokeWidth={.8}/><line x1={0}y1={H/2}x2={W}y2={H/2}stroke="#4a90b8"strokeWidth={.8}/></svg>
   if(el.type==="spreadsheet")return<SpreadsheetPlacedStatic el={el} sx={sx} sy={sy}/>
   if(el.type==="document")return<DocPlacedStatic el={el} sx={sx} sy={sy}/>
-  if(el.type==="proforma"&&el.imageSrc)return<img src={el.imageSrc} alt={el.l||"PROFORMA"} style={{width:W,height:H,objectFit:"contain",display:"block"}}/>
+  if(el.type==="proforma"&&el.imageSrc)return<img src={el.imageSrc} alt={el.l||"Proforma"} style={{width:W,height:H,objectFit:"contain",display:"block"}}/>
   if(el.type==="drawn"&&el.sketchUrl)return<img src={el.sketchUrl} alt={el.l||"Profil"} style={{width:W,height:H,objectFit:"contain",display:"block"}}/>
   return<div style={{width:W,height:H,background:"#ccc",border:"1px solid #999",fontSize:8,overflow:"hidden"}}>{el.l}</div>
 }
@@ -1365,7 +1365,7 @@ function ThemePicker({current,onChange,onClose}){
       <div className="forma-animate-in" style={{...glassStyle(T,{variant:"modal"}),padding:22,width:560,maxWidth:"94vw",maxHeight:"82vh",overflowY:"auto"}}>
         <div style={{position:"relative",marginBottom:14}}>
           <button onClick={onClose}style={{position:"absolute",top:0,right:0,background:"none",border:"none",cursor:"pointer",fontSize:22,color:T.muted,padding:"2px 6px",zIndex:1}}>×</button>
-          <BrandLogo src={draft.img} alt={draft.n} size="md" subtitle={`Thèmes (${THEMES.length})`} accent={draft.accent} ink={T.ink} muted={T.muted}/>
+          <BrandLogo src={draft.img} alt={draft.n} size="md" subtitle={`FTheme (${THEMES.length})`} accent={draft.accent} ink={T.ink} muted={T.muted}/>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
           {THEMES.map(th=>(
@@ -1775,7 +1775,7 @@ export default function EditorPage(){
       docInsertedRef.current = true
       setPendingDocInsert(null)
       scheduleSave()
-      addNotification('Document inséré depuis Forma Docs', 'success')
+      addNotification('Document inséré depuis FormaDoc', 'success')
     }, 700)
     return () => clearTimeout(timer)
   }, [pendingDocInsert, nb.id, readOnly, PW, PH, setPendingDocInsert, addNotification, scheduleSave])
@@ -1791,7 +1791,7 @@ export default function EditorPage(){
       const el = {
         type: 'proforma',
         proformaId: p.proformaId,
-        l: p.name || 'PROFORMA',
+        l: p.name || 'Proforma',
         pw: p.w || 300,
         ph: p.h || 220,
         imageSrc: p.imageSrc || null,
@@ -1805,7 +1805,7 @@ export default function EditorPage(){
       proformaInsertedRef.current = true
       setPendingProformaInsert(null)
       scheduleSave()
-      addNotification('Dessin PROFORMA inséré', 'success')
+      addNotification('Dessin Proforma inséré', 'success')
     }, 700)
     return () => clearTimeout(timer)
   }, [pendingProformaInsert, nb.id, readOnly, PW, PH, setPendingProformaInsert, addNotification, scheduleSave])
@@ -1833,7 +1833,7 @@ export default function EditorPage(){
       spreadsheetInsertedRef.current = true
       setPendingSpreadsheetInsert(null)
       scheduleSave()
-      addNotification('Tableau inséré depuis Forma Sheets', 'success')
+      addNotification('Tableau inséré depuis FormaTab', 'success')
     }, 700)
     return () => clearTimeout(timer)
   }, [pendingSpreadsheetInsert, nb.id, readOnly, PW, PH, setPendingSpreadsheetInsert, addNotification, scheduleSave])

@@ -208,8 +208,8 @@ export default function SheetsPage() {
         </button>
         <BrandLogo T={T} size={28} />
         <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>Forma Sheets</div>
-          <div style={{ fontSize: 11, color: T.muted }}>Tableur intégré · {listed.length} tableau{listed.length !== 1 ? 'x' : ''}</div>
+          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>FormaTab</div>
+          <div style={{ fontSize: 11, color: T.muted }}>FormaTab · {listed.length} tableau{listed.length !== 1 ? 'x' : ''}</div>
         </div>
         <div style={{ position: 'relative', flex: '1 1 220px', maxWidth: 320 }}>
           <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: T.muted }}>🔍</span>
