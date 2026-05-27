@@ -9,7 +9,9 @@ import { APP_FONT_CHOICES } from "@/lib/fontUtils"
 import { APPEARANCE_MODES, applyAppearanceToTheme } from "@/lib/appearance"
 import { optionCardStyle, optionChipStyle, optionPanelStyle } from "@/config/appearance"
 import UnitConverter from "@/components/UnitConverter"
+import TranslationWidget from "@/components/translation/TranslationWidget"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
+import { checkEasterEggText } from "@/hooks/useEasterEggTrigger"
 import AccountMenu from "@/components/AccountMenu"
 import NotificationPanel, { NotificationBell } from "@/components/NotificationPanel"
 import { useCollaboration } from "@/hooks/useCollaboration"
@@ -144,6 +146,8 @@ function ThemePicker({ onClose }) {
     setAppearanceMode,
     animationsEnabled,
     setAnimationsEnabled,
+    easterEggsEnabled,
+    setEasterEggsEnabled,
     animType,
     setAnimType,
     animSpeed,
@@ -164,6 +168,7 @@ function ThemePicker({ onClose }) {
   const [draftThemeId, setDraftThemeId] = useState(themeId)
   const [draftAppearanceMode, setDraftAppearanceMode] = useState(appearanceMode || "light")
   const [draftAnimationsEnabled, setDraftAnimationsEnabled] = useState(animationsEnabled)
+  const [draftEasterEggsEnabled, setDraftEasterEggsEnabled] = useState(easterEggsEnabled !== false)
   const [draftAnimType, setDraftAnimType] = useState(animType)
   const [draftAnimSpeed, setDraftAnimSpeed] = useState(animSpeed)
   const [draftBgId, setDraftBgId] = useState(bgId)
@@ -188,6 +193,7 @@ function ThemePicker({ onClose }) {
     setTheme(draftThemeId)
     setAppearanceMode(draftAppearanceMode || "light")
     setAnimationsEnabled(draftAnimationsEnabled)
+    setEasterEggsEnabled(draftEasterEggsEnabled)
     setAnimType(draftAnimType)
     setAnimSpeed(draftAnimSpeed)
     setBgId(draftBgId)
@@ -198,6 +204,7 @@ function ThemePicker({ onClose }) {
     if ((draftAppearanceMode || "light") !== (appearanceMode || "light")) addNotification("Apparence appliquée", "success")
     if (draftBgId !== bgId || (draftCustomBg || "") !== (customBg || "")) addNotification("Fond appliqué", "success")
     if (draftAnimType !== animType || draftAnimSpeed !== animSpeed || draftAnimationsEnabled !== animationsEnabled) addNotification("Animation appliquée", "success")
+    if (draftEasterEggsEnabled !== (easterEggsEnabled !== false)) addNotification("Easter eggs mis à jour", "success")
     if ((draftAppFont || "") !== (appFont || "")) addNotification("Police appliquée", "success")
 
     onClose?.()
@@ -207,6 +214,7 @@ function ThemePicker({ onClose }) {
     setDraftThemeId("horizon")
     setDraftAppearanceMode("light")
     setDraftAnimationsEnabled(true)
+    setDraftEasterEggsEnabled(true)
     setDraftAnimType("")
     setDraftAnimSpeed(1)
     setDraftBgId("")
@@ -322,6 +330,17 @@ function ThemePicker({ onClose }) {
               <button onClick={()=>setDraftAnimationsEnabled(!draftAnimationsEnabled)}
                 style={{width:44,height:24,borderRadius:12,background:draftAnimationsEnabled?T.accent:T.border,border:"none",cursor:"pointer",position:"relative",transition:"background .2s"}}>
                 <div style={{position:"absolute",top:2,left:draftAnimationsEnabled?22:2,width:20,height:20,borderRadius:"50%",background:T.surface,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/>
+              </button>
+            </div>
+
+            <div style={optionPanelStyle(T)}>
+              <div>
+                <div style={{fontWeight:700,fontSize:13,color:ink}}>Easter eggs 🎉</div>
+                <div style={{fontSize:11,color:muted,marginTop:2}}>Animations « caca » et « chat » (non bloquantes)</div>
+              </div>
+              <button onClick={()=>setDraftEasterEggsEnabled(!draftEasterEggsEnabled)}
+                style={{width:44,height:24,borderRadius:12,background:draftEasterEggsEnabled?T.accent:T.border,border:"none",cursor:"pointer",position:"relative",transition:"background .2s"}}>
+                <div style={{position:"absolute",top:2,left:draftEasterEggsEnabled?22:2,width:20,height:20,borderRadius:"50%",background:T.surface,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/>
               </button>
             </div>
 
@@ -460,6 +479,7 @@ export default function LibraryPage() {
 
   const [showCalc, setShowCalc] = useState(false)
   const [showConverter, setShowConverter] = useState(false)
+  const [showTranslate, setShowTranslate] = useState(false)
   const [showAccountMenu, setShowAccountMenu] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const avatarRef = useRef(null)
@@ -783,6 +803,16 @@ export default function LibraryPage() {
         />
       )}
 
+      {showTranslate && (
+        <TranslationWidget
+          T={T}
+          open
+          onClose={() => setShowTranslate(false)}
+          notebooks={notebooks}
+          onOpenScan={() => { setShowTranslate(false); navigate("/translate") }}
+        />
+      )}
+
       {userId && (
         <AccountMenu
           T={T}
@@ -1008,6 +1038,10 @@ export default function LibraryPage() {
               style={{ width: 34, height: 34, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
               📐
             </GlassButton>
+            <GlassButton T={T} active={showTranslate} onClick={() => setShowTranslate(v => !v)} title="Traduction"
+              style={{ width: 34, height: 34, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
+              🌐
+            </GlassButton>
           </div>
 
           {/* Right actions */}
@@ -1103,6 +1137,7 @@ export default function LibraryPage() {
               {e:"📂", v:(collab.sharedFolders.owned?.length||0)+(collab.sharedFolders.member?.length||0), l:"partagés", tab:null, action:()=>navigate("/account/folders")},
               {e:"🎭", v:"",               l:"moodboard", tab:null, action:()=>navigate("/moodboard")},
               {e:"📐", v:"",               l:"formules",  tab:null, action:()=>navigate("/formulas")},
+              {e:"🌐", v:"",               l:"traduction",tab:null, action:()=>navigate("/translate")},
               {e:"🎮", v:"",               l:"pause",     tab:null, action:()=>navigate("/games")},
               {e:"🎨", v:"",               l:"thèmes",    tab:null, action:()=>setShowTheme(true)},
             ].map(s => (
@@ -1361,7 +1396,7 @@ export default function LibraryPage() {
             {/* Search */}
             <div style={{position:"relative",marginBottom:20}}>
               <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:T.muted,fontSize:14}}>🔍</span>
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher…"
+              <input value={search} onChange={e => { const v = e.target.value; setSearch(v); checkEasterEggText(v, 'library-search') }} placeholder="Rechercher…"
                 style={{width:"100%",padding:"10px 12px 10px 38px",borderRadius:11,border:`1px solid ${T.border}`,background:T.surface,fontSize:13,outline:"none",color:T.ink,boxSizing:"border-box"}}
                 onFocus={e => e.target.style.borderColor = T.accent}
                 onBlur={e => e.target.style.borderColor = T.border}/>

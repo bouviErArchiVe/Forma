@@ -8,8 +8,17 @@ import AuthPage from '@/pages/AuthPage'
 import MoodboardPage from '@/pages/MoodboardPage'
 import FormulasPage from '@/pages/FormulasPage'
 import GamesPage from '@/pages/GamesPage'
+import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
 import Notifications from '@/components/Notifications'
+import EmojiBurst from '@/components/easter-eggs/EmojiBurst'
+import useAppStore from '@/stores/useAppStore'
+
+function EasterEggLayer() {
+  const burst = useAppStore((s) => s.easterEggBurst)
+  const clearEasterEgg = useAppStore((s) => s.clearEasterEgg)
+  return <EmojiBurst burst={burst} onDone={clearEasterEgg} />
+}
 
 function ProtectedRoute({ children }) {
   const { loading } = useAuth()
@@ -27,6 +36,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Notifications />
+      <EasterEggLayer />
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/" element={<ProtectedRoute><ErrorBoundary title="Erreur bibliothèque"><LibraryPage /></ErrorBoundary></ProtectedRoute>} />
@@ -34,6 +44,7 @@ export default function App() {
         <Route path="/moodboard" element={<ProtectedRoute><ErrorBoundary title="Erreur moodboard"><MoodboardPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/formulas" element={<ProtectedRoute><ErrorBoundary title="Erreur formules"><FormulasPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/games" element={<ProtectedRoute><ErrorBoundary title="Erreur jeux"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/translate" element={<ProtectedRoute><ErrorBoundary title="Erreur traduction scan"><TranslateScanPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/account" element={<ProtectedRoute><ErrorBoundary title="Erreur compte"><AccountPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/account/:tab" element={<ProtectedRoute><ErrorBoundary title="Erreur compte"><AccountPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />

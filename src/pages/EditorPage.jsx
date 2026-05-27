@@ -25,6 +25,7 @@ import EditorTopBar from "@/components/EditorTopBar"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
 import ShareModal from "@/components/ShareModal"
 import UnitConverter from "@/components/UnitConverter"
+import TranslationWidget from "@/components/translation/TranslationWidget"
 import { useCalculator, calcDrawerWidth } from "@/hooks/useCalculator"
 import { useAuth } from "@/hooks/useAuth"
 import { useCollaboration } from "@/hooks/useCollaboration"
@@ -1307,7 +1308,7 @@ function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridS
 export default function EditorPage(){
   const navigate=useNavigate()
   const { id: routeNotebookId } = useParams()
-  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote}=useAppStore()
+  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,notebooks}=useAppStore()
   const{ T }=useTheme()
   const { user } = useAuth()
   const collab = useCollaboration()
@@ -1394,6 +1395,7 @@ export default function EditorPage(){
   const[showCalc,setShowCalc]=useState(false)
   const[showTimer,setShowTimer]=useState(false)
   const[showConv,setShowConv]=useState(false)
+  const[showTranslate,setShowTranslate]=useState(false)
   const calc=useCalculator()
   const[convValue,setConvValue]=useState("")
   const[convCategory,setConvCategory]=useState("length")
@@ -2075,6 +2077,7 @@ export default function EditorPage(){
     setShowCalc(false)
     setShowTimer(false)
     setShowConv(false)
+    setShowTranslate(false)
     setShowFlash(false)
   },[])
   const exitFocusMode=useCallback(()=>setFocusMode(false),[])
@@ -2227,6 +2230,16 @@ export default function EditorPage(){
             setToUnit={setConvToUnit}
             scale={scale}
             setScale={setScale}
+          />
+        </DraggablePanel>
+      )}
+      {!focusMode&&showTranslate&&(
+        <DraggablePanel T={T} id="editor-translate" title="Traduction" open onClose={()=>setShowTranslate(false)} defaultSide="right" width={320}>
+          <TranslationWidget
+            T={T}
+            variant="embedded"
+            notebooks={notebooks}
+            onOpenScan={() => { setShowTranslate(false); navigate('/translate') }}
           />
         </DraggablePanel>
       )}
@@ -2443,6 +2456,8 @@ export default function EditorPage(){
         setShowCalc={setShowCalc}
         showConv={showConv}
         setShowConv={setShowConv}
+        showTranslate={showTranslate}
+        setShowTranslate={setShowTranslate}
         showTimer={showTimer}
         setShowTimer={setShowTimer}
         timerRunning={timerRunning}

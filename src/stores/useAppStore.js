@@ -38,6 +38,19 @@ const useAppStore = create(
       pendingFormulaNote: null,
       setPendingFormulaNote: (pendingFormulaNote) => set({ pendingFormulaNote }),
 
+      easterEggsEnabled: true,
+      setEasterEggsEnabled: (easterEggsEnabled) => set({ easterEggsEnabled }),
+      easterEggBurst: null,
+      triggerEasterEgg: (type) => set({ easterEggBurst: { type, id: Date.now() } }),
+      clearEasterEgg: () => set({ easterEggBurst: null }),
+
+      translationSourceLang: 'en',
+      translationTargetLang: 'fr',
+      translationMode: 'standard',
+      setTranslationSourceLang: (translationSourceLang) => set({ translationSourceLang }),
+      setTranslationTargetLang: (translationTargetLang) => set({ translationTargetLang }),
+      setTranslationMode: (translationMode) => set({ translationMode }),
+
       // ── Notebooks ────────────────────────────────────────
       notebooks: [],
       setNotebooks: (notebooks) => set({ notebooks }),
@@ -189,6 +202,10 @@ const useAppStore = create(
         bgId: state.bgId,
         customBg: typeof state.customBg === 'string' ? state.customBg.slice(0, 400000) : '',
         spotifyUrl: state.spotifyUrl,
+        easterEggsEnabled: state.easterEggsEnabled,
+        translationSourceLang: state.translationSourceLang,
+        translationTargetLang: state.translationTargetLang,
+        translationMode: state.translationMode,
       }),
     }
   )

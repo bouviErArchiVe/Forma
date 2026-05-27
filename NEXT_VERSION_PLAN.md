@@ -207,8 +207,127 @@ _Généré le 2026-05-26 · Branch: claude/stoic-wright-3X38O_
 
 ## 🚀 Priorité recommandée pour la prochaine session
 
-1. **Polices d'écriture** (rapide, fort impact visuel) 
-2. **Vues grille/liste + tri** dans LibraryPage (UX majeure)
-3. **Resize + rotation éléments structuraux** (très demandé)
-4. **Dictée vocale** (différenciateur unique)
-5. **Design system / Premium UI** (refonte progressive)
+### ✅ Déjà livré (sessions récentes)
+- Polices d'écriture canvas
+- Vues bibliothèque grille / liste / timeline + tri
+- Resize + rotation éléments structuraux
+- Formules architecture (calculateurs)
+- Mini-jeux Pause (lazy load)
+- Fix écran blanc (`applyAppearanceToTheme` dans useAppStore)
+
+### 🔴 Avant toute nouvelle feature
+- Autosave stable
+- Pages stables (ajout, rotation, formats)
+- Menus / panneaux flottants stables
+- Éditeur stable (gomme, sélection, sauvegarde)
+- Thèmes / fonds / polices stables
+
+### 🟡 Prochaines vraies priorités
+1. **Dictée vocale** (différenciateur unique)
+2. **Design system / Premium UI** (refonte progressive)
+3. **Tailles de page améliorées** (formats impériaux/métriques)
+4. **Profils HEA/HEB personnalisés** (bibliothèque structurale)
+
+---
+
+## 🎁 PARTIE 4 — EN ATTENTE (mises de côté — ne pas développer avant stabilité)
+
+> Specs figées pour plus tard. **Priorité basse à moyenne.**  
+> Commit cible si un jour développé : `Add easter eggs, translation widget and document translation scanner`
+
+### 4.1 Easter eggs emojis — priorité **basse / fun**
+
+**Déclencheurs :**
+| Mot saisi | Animation |
+|-----------|-----------|
+| `caca` | 💩 volent partout (2–3 s max) |
+| `chat` | 🐱 / 😺 volent partout (2–3 s max) |
+
+**Contraintes :**
+- Animation courte, non bloquante
+- Ne modifie pas le contenu du carnet
+- Ne casse pas l'éditeur
+- Option désactivation (store ou préférences)
+
+**Architecture prévue :**
+```
+src/components/easter-eggs/EmojiBurst.jsx
+src/hooks/useEasterEggTrigger.js
+```
+- Hook écoute saisie texte (LibraryPage recherche ? éditeur texte ?) — à préciser à l'implémentation
+- Overlay `pointer-events: none`, z-index au-dessus du canvas, `@keyframes` CSS (pas framer-motion)
+
+---
+
+### 4.2 Mini-fenêtre de traduction — priorité **moyenne**
+
+**Objectif :** widget flottant type Google Traduction (DraggablePanel existant).
+
+**Fonctions :**
+- Texte source → traduction
+- Langues : EN ↔ FR par défaut ; modes « anglais base » / « anglais avancé » (prompt ou dictionnaire local)
+- Copier, insérer dans carnet (réutiliser `pendingFormulaNote` / `__addTextStroke`)
+- Déplaçable, réductible
+
+**UI :**
+- Champ source, champ résultat
+- Select langue source / cible
+- Boutons : Traduire, Copier, Ajouter au carnet
+
+**Architecture prévue :**
+```
+src/components/translation/TranslationWidget.jsx
+src/lib/translation.js
+```
+**Phase 1 sans API :** mock / placeholder / dictionnaire minimal EN↔FR  
+**Phase 2 :** API (LibreTranslate self-host, DeepL, Google Cloud — variable `VITE_TRANSLATE_API`)
+
+**Intégration :** icône discrète LibraryPage + EditorPage (comme UnitConverter / CalculatorDrawer)
+
+---
+
+### 4.3 Scan / traduction document — priorité **future avancée**
+
+**Objectif :** importer image ou PDF → OCR → traduction EN→FR → copier / carnet
+
+**Flux :**
+1. Import image / PDF
+2. OCR (`tesseract.js` — **lazy load obligatoire**)
+3. Traduction (même couche que 4.2)
+4. Affichage original | traduction côte à côte
+5. Copier / ajouter au carnet
+
+**Cas d'usage :** consignes école, fiches techniques, PDF, photo de document
+
+**Architecture prévue :**
+```
+src/pages/TranslateScanPage.jsx          (ou panneau modal)
+src/components/translation/DocumentScanTranslator.jsx
+src/lib/ocr.js                           (wrapper tesseract lazy)
+src/lib/translation.js                   (partagé avec 4.2)
+```
+**Contraintes :**
+- Ne pas charger Tesseract au boot
+- Fallback si OCR échoue (message + saisie manuelle)
+- PDF : extraction texte native si possible, sinon raster + OCR page par page (phase 2)
+
+**Route possible :** `/translate` ou entrée depuis widget 4.2
+
+---
+
+### 4.4 Fichiers à créer (quand priorité validée)
+
+| Fichier | Feature |
+|---------|---------|
+| `src/components/easter-eggs/EmojiBurst.jsx` | 4.1 |
+| `src/hooks/useEasterEggTrigger.js` | 4.1 |
+| `src/components/translation/TranslationWidget.jsx` | 4.2 |
+| `src/lib/translation.js` | 4.2 + 4.3 |
+| `src/pages/TranslateScanPage.jsx` | 4.3 |
+| `src/components/translation/DocumentScanTranslator.jsx` | 4.3 |
+| `src/lib/ocr.js` | 4.3 (lazy tesseract) |
+
+**Store / persistance optionnelle :**
+- `translationSourceLang`, `translationTargetLang` dans useAppStore
+- Pas de easter eggs persist (sauf toggle off)
+

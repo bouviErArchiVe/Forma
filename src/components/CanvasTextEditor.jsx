@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { TOKENS } from '@/theme/tokens'
 import { glassStyle, rgbaFromHex } from '@/theme/glass'
 import { canvasFontCss, preloadCanvasFont } from '@/lib/fontUtils'
+import { checkEasterEggText } from '@/hooks/useEasterEggTrigger'
 import TextFontPicker from '@/components/TextFontPicker'
 
 export default function CanvasTextEditor({ T, edit, onCommit, onCancel, onFontChange }) {
@@ -70,6 +71,7 @@ export default function CanvasTextEditor({ T, edit, onCommit, onCancel, onFontCh
           }
           if (e.key === 'Escape') onCancel?.()
         }}
+        onChange={(e) => checkEasterEggText(e.target.value, 'canvas-text')}
         style={{
           width: '100%',
           minHeight: fs * 1.6,

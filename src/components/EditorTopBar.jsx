@@ -123,6 +123,8 @@ export default function EditorTopBar({
   setShowCalc,
   showConv,
   setShowConv,
+  showTranslate,
+  setShowTranslate,
   showTimer,
   setShowTimer,
   timerRunning,
@@ -310,6 +312,7 @@ export default function EditorTopBar({
         <Group T={T}>
           <button type="button" onClick={() => setShowCalc((v) => !v)} title="Calculatrice" className="forma-btn-glass" style={btnStyle(T, { active: showCalc })}>🔢</button>
           <button type="button" onClick={() => setShowConv((v) => !v)} title="Convertisseur" className="forma-btn-glass" style={btnStyle(T, { active: showConv })}>📐</button>
+          <button type="button" onClick={() => setShowTranslate((v) => !v)} title="Traduction" className="forma-btn-glass" style={btnStyle(T, { active: showTranslate })}>🌐</button>
           <button type="button" onClick={() => setShowTimer((v) => !v)} title="Pomodoro" className="forma-btn-glass" style={btnStyle(T, { green: true, active: showTimer })}>
             {timerRunning ? `⏱${String(Math.floor(timerSec / 60)).padStart(2, '0')}:${String(timerSec % 60).padStart(2, '0')}` : '⏱'}
           </button>
