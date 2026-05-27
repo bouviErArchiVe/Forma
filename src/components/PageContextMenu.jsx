@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { TOKENS } from '@/theme/tokens'
 import { glassStyle } from '@/theme/glass'
-import { PAGE_FORMATS, flipPageOrientation, orientationFromFormat } from '@/lib/pageFormats'
+import { PAGE_FORMATS, flipPageOrientation } from '@/lib/pageFormats'
 import {
   GRID_STYLES,
   PAGE_COLORS,
   GRID_COLORS,
   pageDisplayName,
+  orientationFromFormat,
 } from '@/lib/pageSettings'
 
 function SwatchRow({ items, value, onChange, T, type = 'solid' }) {
