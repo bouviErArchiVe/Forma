@@ -41,8 +41,12 @@ import {
   loadLocalFoldersForScope,
   persistFolderCreate,
   persistFolderDelete,
+  persistFolderUpdate,
+  syncFoldersToCloud,
   resolveFolderUserId,
 } from "@/lib/folderPersistence"
+
+const FOLDER_EMOJIS = ["📁","📂","🏗","🏛","📐","⚙","🎨","📚","🌿","🔥","⭐","💡","🎯","🏆","🔬","🌍","🏠","🚀","💎","🗂"]
 
 const DEFAULT_SUBJECTS=[
   {id:"arch",    l:"Architecture",    c:"#c8622a",e:"🏛",custom:false},
@@ -514,6 +518,16 @@ export default function LibraryPage() {
   // New folder
   const [folderName, setFolderName] = useState("")
   const [folderEmoji, setFolderEmoji] = useState("📁")
+  const [folderColor, setFolderColor] = useState("#3d6b8c")
+
+  // Edit folder
+  const [showEditFolder, setShowEditFolder] = useState(false)
+  const [editFolderId, setEditFolderId] = useState(null)
+  const [editFolderName, setEditFolderName] = useState("")
+  const [editFolderEmoji, setEditFolderEmoji] = useState("📁")
+  const [editFolderColor, setEditFolderColor] = useState("#3d6b8c")
+  const [foldersCloudOk, setFoldersCloudOk] = useState(null)
+  const [syncingFolders, setSyncingFolders] = useState(false)
 
   // New subject
   const [subjName, setSubjName] = useState("")
@@ -536,10 +550,12 @@ export default function LibraryPage() {
 
         // Dossiers : chargement indépendant (ne jamais écraser à [] si les carnets échouent)
         try {
-          const folderRes = uid ? await loadFolders(uid) : { folders: loadLocalFoldersForScope(null) }
+          const folderRes = uid ? await loadFolders(uid) : { folders: loadLocalFoldersForScope(null), cloudOk: false }
           setFolders(folderRes.folders || [])
+          setFoldersCloudOk(folderRes.cloudOk ?? false)
         } catch {
           setFolders(loadLocalFoldersForScope(uid))
+          setFoldersCloudOk(false)
         }
 
         // Carnets
@@ -735,23 +751,73 @@ export default function LibraryPage() {
     setShowFolderAssign(null)
   }
 
+  const notifyFolderResult = (res, successMsg) => {
+    if (!res.ok) {
+      addNotification(res.error || "Erreur de sauvegarde du dossier", "error")
+      return false
+    }
+    setFolders(res.folders)
+    if (res.cloudOk) setFoldersCloudOk(true)
+    addNotification(
+      res.warning ? `${successMsg} (local) — ${res.warning}` : successMsg,
+      res.warning ? "error" : "success",
+    )
+    return true
+  }
+
   const createFolder = async () => {
     if (!folderName.trim()) return
     const uid = userId || await resolveFolderUserId()
     if (uid && uid !== userId) setUserId(uid)
-    const res = await persistFolderCreate(uid, { name: folderName.trim(), icon: folderEmoji })
-    if (!res.ok) {
-      addNotification(res.error || "Erreur de sauvegarde du dossier", "error")
-      return
-    }
-    setFolders(res.folders)
+    const res = await persistFolderCreate(uid, { name: folderName.trim(), icon: folderEmoji, color: folderColor })
+    if (!notifyFolderResult(res, "Dossier créé")) return
     setShowNewFolder(false)
     setFolderName("")
     setFolderEmoji("📁")
-    addNotification(
-      res.warning ? `Dossier créé (local) — ${res.warning}` : "Dossier créé",
-      res.warning ? "error" : "success",
-    )
+    setFolderColor("#3d6b8c")
+  }
+
+  const openEditFolder = (folder) => {
+    setEditFolderId(folder.id)
+    setEditFolderName(folder.name || folder.n || "")
+    setEditFolderEmoji(folder.icon || folder.e || "📁")
+    setEditFolderColor(folder.color || "#3d6b8c")
+    setShowEditFolder(true)
+  }
+
+  const saveEditFolder = async () => {
+    if (!editFolderId || !editFolderName.trim()) return
+    const uid = userId || await resolveFolderUserId()
+    const res = await persistFolderUpdate(uid, editFolderId, {
+      name: editFolderName.trim(),
+      icon: editFolderEmoji,
+      color: editFolderColor,
+    })
+    if (!notifyFolderResult(res, "Dossier mis à jour")) return
+    setShowEditFolder(false)
+    setEditFolderId(null)
+  }
+
+  const syncFolders = async () => {
+    const uid = userId || await resolveFolderUserId()
+    if (!uid) {
+      addNotification("Connectez-vous pour synchroniser les dossiers", "error")
+      return
+    }
+    setSyncingFolders(true)
+    try {
+      const res = await syncFoldersToCloud(uid)
+      if (res.ok) {
+        setFolders(res.folders)
+        setFoldersCloudOk(true)
+        addNotification("Dossiers synchronisés avec le cloud", "success")
+      } else {
+        setFoldersCloudOk(false)
+        addNotification(res.error || "Synchronisation échouée", "error")
+      }
+    } finally {
+      setSyncingFolders(false)
+    }
   }
 
   const removeFolder = async (folderId) => {
@@ -1008,7 +1074,7 @@ export default function LibraryPage() {
             <div style={{marginBottom:18}}>
               <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:5}}>EMOJI</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                {["📁","📂","🏗","🏛","📐","⚙","🎨","📚","🌿","🔥","⭐","💡","🎯","🏆","🔬","🌍","🏠","🚀","💎","🗂"].map(e => (
+                {FOLDER_EMOJIS.map(e => (
                   <button key={e} onClick={() => setFolderEmoji(e)}
                     style={{width:32,height:32,borderRadius:8,background:folderEmoji===e?`${T.accent}18`:T.bg,border:`1px solid ${folderEmoji===e?T.accent:T.border}`,cursor:"pointer",fontSize:16}}>
                     {e}
@@ -1016,10 +1082,62 @@ export default function LibraryPage() {
                 ))}
               </div>
             </div>
+            <div style={{marginBottom:18}}>
+              <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:5}}>COULEUR</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                {COLOR_LIST.slice(0, 16).map(c => (
+                  <button key={c} type="button" onClick={() => setFolderColor(c)}
+                    style={{width:26,height:26,borderRadius:"50%",background:c,border:`2px solid ${folderColor===c?T.ink:"transparent"}`,cursor:"pointer"}}/>
+                ))}
+              </div>
+            </div>
             <button onClick={createFolder} disabled={!folderName.trim()}
               className="forma-btn-glass"
               style={{ width: "100%", padding: 12, borderRadius: TOKENS.radius.md, background: folderName.trim() ? T.accent : T.border, border: "none", color: "#fff", fontWeight: 700, fontSize: 14, cursor: folderName.trim() ? "pointer" : "not-allowed" }}>
               Créer le dossier →
+            </button>
+          </GlassPanel>
+        </ModalOverlay>
+      )}
+
+      {/* EDIT FOLDER */}
+      {showEditFolder && (
+        <ModalOverlay onClose={() => setShowEditFolder(false)}>
+          <GlassPanel T={T} variant="modal" style={{ padding: 24, width: 380, maxWidth: "94vw" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+              <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17, color: T.ink }}>✏ Modifier le dossier</div>
+              <button onClick={() => setShowEditFolder(false)} className="forma-btn-glass" style={{ background: "none", border: "none", cursor: "pointer", color: T.muted, fontSize: 20, padding: "2px 6px" }}>×</button>
+            </div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:5}}>NOM</div>
+              <input value={editFolderName} onChange={e => setEditFolderName(e.target.value)} placeholder="Nom du dossier" autoFocus
+                onKeyDown={e => e.key === "Enter" && saveEditFolder()}
+                style={{width:"100%",padding:"10px 12px",borderRadius:10,border:`1px solid ${T.border}`,fontSize:14,outline:"none",color:T.ink,background:T.bg,boxSizing:"border-box"}}/>
+            </div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:5}}>EMOJI</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                {FOLDER_EMOJIS.map(e => (
+                  <button key={e} type="button" onClick={() => setEditFolderEmoji(e)}
+                    style={{width:32,height:32,borderRadius:8,background:editFolderEmoji===e?`${T.accent}18`:T.bg,border:`1px solid ${editFolderEmoji===e?T.accent:T.border}`,cursor:"pointer",fontSize:16}}>
+                    {e}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div style={{marginBottom:18}}>
+              <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:5}}>COULEUR</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                {COLOR_LIST.slice(0, 16).map(c => (
+                  <button key={c} type="button" onClick={() => setEditFolderColor(c)}
+                    style={{width:26,height:26,borderRadius:"50%",background:c,border:`2px solid ${editFolderColor===c?T.ink:"transparent"}`,cursor:"pointer"}}/>
+                ))}
+              </div>
+            </div>
+            <button onClick={saveEditFolder} disabled={!editFolderName.trim()}
+              className="forma-btn-glass"
+              style={{ width: "100%", padding: 12, borderRadius: TOKENS.radius.md, background: editFolderName.trim() ? T.accent : T.border, border: "none", color: "#fff", fontWeight: 700, fontSize: 14, cursor: editFolderName.trim() ? "pointer" : "not-allowed" }}>
+              Enregistrer
             </button>
           </GlassPanel>
         </ModalOverlay>
@@ -1231,9 +1349,24 @@ export default function LibraryPage() {
           {/* DOSSIERS */}
           {activeTab === "folders" && (
             <div>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-                <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:17,color:T.ink}}>📁 Dossiers de projets</div>
-                <button onClick={() => setShowNewFolder(true)} style={{padding:"7px 14px",borderRadius:8,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer"}}>+ Nouveau dossier</button>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
+                <div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:17,color:T.ink}}>📁 Dossiers de projets</div>
+                  <div style={{fontSize:10,color:T.muted,marginTop:4}}>
+                    {userId
+                      ? (foldersCloudOk ? "☁ Sync cloud active" : "💾 Sauvegarde locale — sync cloud indisponible")
+                      : "💾 Sauvegarde locale (connectez-vous pour le cloud)"}
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  {userId && (
+                    <button onClick={syncFolders} disabled={syncingFolders}
+                      style={{padding:"7px 14px",borderRadius:8,background:T.surface,border:`1px solid ${T.border}`,color:T.ink,fontSize:12,fontWeight:600,cursor:syncingFolders?"wait":"pointer"}}>
+                      {syncingFolders ? "Sync…" : "☁ Synchroniser"}
+                    </button>
+                  )}
+                  <button onClick={() => setShowNewFolder(true)} style={{padding:"7px 14px",borderRadius:8,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer"}}>+ Nouveau dossier</button>
+                </div>
               </div>
               {folders.length === 0 && (
                 <div style={{textAlign:"center",padding:"40px 0",color:T.muted}}>
@@ -1266,15 +1399,17 @@ export default function LibraryPage() {
                 {folders.map(f => (
                   <div key={f.id}
                     onClick={() => {setFolderFilt(f.id); setActiveTab("notebooks")}}
-                    style={{padding:"16px 18px",borderRadius:13,background:T.surface,border:`1px solid ${T.border}`,cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"all .2s",position:"relative"}}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = T.accent + "66"}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
-                    <div style={{fontSize:28}}>{f.e}</div>
-                    <div style={{flex:1}}>
-                      <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:T.ink}}>{f.n}</div>
+                    style={{padding:"16px 18px",borderRadius:13,background:`${f.color || "#3d6b8c"}10`,border:`1px solid ${folderFilt === f.id ? (f.color || T.accent) : T.border}`,cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"all .2s",position:"relative"}}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = (f.color || T.accent) + "88"}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = folderFilt === f.id ? (f.color || T.accent) : T.border}>
+                    <div style={{fontSize:28,width:36,height:36,borderRadius:10,background:`${f.color || "#3d6b8c"}22`,display:"flex",alignItems:"center",justifyContent:"center"}}>{f.e}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:T.ink,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{f.n}</div>
                       <div style={{fontSize:10,color:T.muted}}>{notebooks.filter(n => n.folder_id === f.id).length} carnets</div>
                     </div>
-                    <button onClick={e => {e.stopPropagation(); removeFolder(f.id)}}
+                    <button onClick={e => {e.stopPropagation(); openEditFolder(f)}} title="Modifier"
+                      style={{position:"absolute",top:6,right:28,background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,color:T.muted,cursor:"pointer",fontSize:10,padding:"2px 6px",opacity:.85}}>✏</button>
+                    <button onClick={e => {e.stopPropagation(); if (confirm(`Supprimer le dossier « ${f.n} » ? Les carnets ne seront pas supprimés.`)) removeFolder(f.id)}}
                       style={{position:"absolute",top:6,right:6,background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:11,opacity:.5}}>×</button>
                   </div>
                 ))}

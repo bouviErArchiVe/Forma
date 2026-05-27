@@ -211,11 +211,22 @@ export async function persistFolderDelete(userId, folderId) {
   }
 }
 
-export async function persistFolderRename(userId, folderId, name) {
+export async function persistFolderUpdate(userId, folderId, { name, icon, color } = {}) {
   const ownerId = userId ?? await resolveFolderUserId()
+  const existing = loadLocalFoldersForScope(ownerId).find((f) => f.id === folderId)
+  if (!existing) {
+    return { ok: false, folders: loadLocalFoldersForScope(ownerId), error: 'Dossier introuvable' }
+  }
+
   const folders = loadLocalFoldersForScope(ownerId).map((f) => (
     f.id === folderId
-      ? normalizeFolder({ ...f, name: name.trim(), updatedAt: new Date().toISOString() }, ownerId)
+      ? normalizeFolder({
+          ...f,
+          name: name != null ? name.trim() : f.name,
+          icon: icon != null ? icon : f.icon,
+          color: color != null ? color : f.color,
+          updatedAt: new Date().toISOString(),
+        }, ownerId)
       : f
   ))
   const localOk = saveLocalFolders(ownerId, folders)
@@ -229,7 +240,45 @@ export async function persistFolderRename(userId, folderId, name) {
     if (error) throw error
     return { ok: true, folders, cloudOk: true }
   } catch (err) {
-    if (isMissingTableError(err)) return { ok: true, folders, cloudOk: false }
-    return { ok: true, folders, cloudOk: false, warning: err?.message }
+    if (isMissingTableError(err)) {
+      return { ok: true, folders, cloudOk: false, warning: 'Sauvegarde locale uniquement (table Supabase absente)' }
+    }
+    return { ok: true, folders, cloudOk: false, warning: err?.message || 'Sync cloud échouée — copie locale conservée' }
+  }
+}
+
+/** @deprecated use persistFolderUpdate */
+export async function persistFolderRename(userId, folderId, name) {
+  return persistFolderUpdate(userId, folderId, { name })
+}
+
+export async function syncFoldersToCloud(userId) {
+  const ownerId = userId ?? await resolveFolderUserId()
+  if (!ownerId) {
+    return { ok: false, error: 'Connectez-vous pour synchroniser avec le cloud' }
+  }
+
+  const folders = loadLocalFoldersForScope(ownerId)
+  if (!folders.length) {
+    return { ok: true, folders, cloudOk: true }
+  }
+
+  try {
+    const { error } = await supabase
+      .from('library_folders')
+      .upsert(folders.map((f) => toRow(f, ownerId)))
+    if (error) throw error
+    saveLocalFolders(ownerId, folders)
+    return { ok: true, folders, cloudOk: true }
+  } catch (err) {
+    if (isMissingTableError(err)) {
+      return {
+        ok: false,
+        folders,
+        cloudOk: false,
+        error: 'Table Supabase absente — exécutez supabase/migrations/002_library_folders.sql',
+      }
+    }
+    return { ok: false, folders, cloudOk: false, error: err?.message || 'Synchronisation cloud échouée' }
   }
 }
