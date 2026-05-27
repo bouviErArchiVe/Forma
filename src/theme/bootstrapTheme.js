@@ -9,7 +9,28 @@ export function bootstrapFormaTheme() {
   if (typeof document === 'undefined') return
   try {
     const raw = safeGetLocalStorage(STORAGE_KEY)
-    if (!raw) return
+    if (!raw) {
+      const root = document.documentElement
+      const appearance = 'dark'
+      ;['forma-light', 'forma-soft-gray', 'forma-dark', 'forma-black'].forEach((c) => root.classList.remove(c))
+      root.classList.add(`forma-${appearance}`)
+      root.dataset.theme = 'horizon'
+      root.dataset.appearance = appearance
+      root.dataset.animation = 'pencil'
+      root.dataset.background = 'villa-savoye'
+      const base = THEMES.find((t) => t.id === 'horizon') || THEMES[0]
+      const T = applyAppearanceToTheme(base, appearance)
+      const font = T.font || 'Nunito'
+      root.style.setProperty('--forma-bg', T.bg)
+      root.style.setProperty('--forma-ink', T.ink)
+      root.style.setProperty('--forma-surface', T.surface)
+      root.style.setProperty('--forma-border', T.border)
+      root.style.setProperty('--forma-muted', T.muted)
+      root.style.setProperty('--app-font', `'${font}', sans-serif`)
+      root.style.background = T.bg
+      root.style.color = T.ink
+      return
+    }
     const parsed = safeJsonParse(raw, null)
     const s = parsed?.state ?? parsed
     if (!s) return

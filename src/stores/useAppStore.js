@@ -17,7 +17,7 @@ const useAppStore = create(
       // ── Theme ────────────────────────────────────────────
       themeId: 'horizon',
       setTheme: (themeId) => set({ themeId }),
-      appearanceMode: 'light',
+      appearanceMode: 'dark',
       setAppearanceMode: (appearanceMode) => set({ appearanceMode }),
       getTheme: () => {
         const base = THEMES.find(t => t.id === get().themeId) || THEMES[0]
@@ -173,11 +173,11 @@ const useAppStore = create(
       // ── Ambiance ─────────────────────────────────────────
       animationsEnabled: true,
       setAnimationsEnabled: (v) => set({ animationsEnabled: v }),
-      animType: '',           // '' = follow theme default, otherwise overrides
+      animType: 'pencil',
       setAnimType: (v) => set({ animType: v }),
       animSpeed: 1,           // multiplier: 0.3 | 0.6 | 1 | 1.8 | 3
       setAnimSpeed: (v) => set({ animSpeed: v }),
-      bgId: '',               // '' = no background, otherwise a backgrounds.js id
+      bgId: 'villa-savoye',
       setBgId: (v) => set({ bgId: v }),
       customBg: '',           // data URL or '' for user-uploaded background
       setCustomBg: (v) => set({ customBg: v }),
