@@ -380,6 +380,7 @@ function renderEl(el,sc=1/50,sx=1,sy=1){
   if(el.type==="win")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(122,181,212,.25)"stroke="#4a90b8"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#4a90b8"strokeWidth={.8}/><line x1={0}y1={H/2}x2={W}y2={H/2}stroke="#4a90b8"strokeWidth={.8}/></svg>
   if(el.type==="spreadsheet")return<SpreadsheetPlacedStatic el={el} sx={sx} sy={sy}/>
   if(el.type==="document")return<DocPlacedStatic el={el} sx={sx} sy={sy}/>
+  if(el.type==="proforma"&&el.imageSrc)return<img src={el.imageSrc} alt={el.l||"PROFORMA"} style={{width:W,height:H,objectFit:"contain",display:"block"}}/>
   if(el.type==="drawn"&&el.sketchUrl)return<img src={el.sketchUrl} alt={el.l||"Profil"} style={{width:W,height:H,objectFit:"contain",display:"block"}}/>
   return<div style={{width:W,height:H,background:"#ccc",border:"1px solid #999",fontSize:8,overflow:"hidden"}}>{el.l}</div>
 }
@@ -1400,7 +1401,7 @@ function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridS
 export default function EditorPage(){
   const navigate=useNavigate()
   const { id: routeNotebookId } = useParams()
-  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,pendingSpreadsheetInsert,setPendingSpreadsheetInsert,pendingDocInsert,setPendingDocInsert,notebooks,customProfiles,addCustomProfile,removeCustomProfile}=useAppStore()
+  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,pendingSpreadsheetInsert,setPendingSpreadsheetInsert,pendingDocInsert,setPendingDocInsert,pendingProformaInsert,setPendingProformaInsert,notebooks,customProfiles,addCustomProfile,removeCustomProfile}=useAppStore()
   const{ T }=useTheme()
   const { user } = useAuth()
   const collab = useCollaboration()
@@ -1539,6 +1540,7 @@ export default function EditorPage(){
   const formulaNoteInsertedRef=useRef(false)
   const spreadsheetInsertedRef=useRef(false)
   const docInsertedRef=useRef(false)
+  const proformaInsertedRef=useRef(false)
   const saveNowRef=useRef(()=>{})
   const scheduleSaveRef=useRef(()=>{})
   const goToPageRef=useRef(async()=>{})
@@ -1748,7 +1750,7 @@ export default function EditorPage(){
     window.__clearSelection?.()
   }, [tool])
 
-  useEffect(() => { formulaNoteInsertedRef.current = false; spreadsheetInsertedRef.current = false; docInsertedRef.current = false }, [nb.id])
+  useEffect(() => { formulaNoteInsertedRef.current = false; spreadsheetInsertedRef.current = false; docInsertedRef.current = false; proformaInsertedRef.current = false }, [nb.id])
 
   useEffect(() => {
     if (readOnly || !pendingDocInsert || pendingDocInsert.notebookId !== nb.id || docInsertedRef.current) return
@@ -1777,6 +1779,36 @@ export default function EditorPage(){
     }, 700)
     return () => clearTimeout(timer)
   }, [pendingDocInsert, nb.id, readOnly, PW, PH, setPendingDocInsert, addNotification, scheduleSave])
+
+  useEffect(() => {
+    if (readOnly || !pendingProformaInsert || pendingProformaInsert.notebookId !== nb.id || proformaInsertedRef.current) return
+    const timer = setTimeout(() => {
+      if (proformaInsertedRef.current) return
+      const p = pendingProformaInsert
+      const sc = 3.78 / 50
+      const elW = (p.w || 300) * sc
+      const elH = (p.h || 220) * sc
+      const el = {
+        type: 'proforma',
+        proformaId: p.proformaId,
+        l: p.name || 'PROFORMA',
+        pw: p.w || 300,
+        ph: p.h || 220,
+        imageSrc: p.imageSrc || null,
+      }
+      setPlaced(prev => [...prev, {
+        id: Date.now(),
+        el,
+        x: Math.max(48, PW * 0.08),
+        y: Math.max(48, PH * 0.14),
+      }])
+      proformaInsertedRef.current = true
+      setPendingProformaInsert(null)
+      scheduleSave()
+      addNotification('Dessin PROFORMA inséré', 'success')
+    }, 700)
+    return () => clearTimeout(timer)
+  }, [pendingProformaInsert, nb.id, readOnly, PW, PH, setPendingProformaInsert, addNotification, scheduleSave])
 
   useEffect(() => {
     if (readOnly || !pendingSpreadsheetInsert || pendingSpreadsheetInsert.notebookId !== nb.id || spreadsheetInsertedRef.current) return

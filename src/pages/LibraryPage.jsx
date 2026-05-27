@@ -1350,6 +1350,9 @@ export default function LibraryPage() {
             <GlassButton T={T} size="md" onClick={() => navigate("/docs")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               📄 Documents
             </GlassButton>
+            <GlassButton T={T} size="md" onClick={() => navigate("/proforma")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              ✏ PROFORMA
+            </GlassButton>
             <GlassButton T={T} size="md" onClick={() => navigate("/moodboard")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               🎭 Moodboard
             </GlassButton>
@@ -1441,6 +1444,7 @@ export default function LibraryPage() {
               {e:"📐", v:"",               l:"formules",  tab:null, action:()=>navigate("/formulas")},
               {e:"📊", v:"",               l:"tableur",   tab:null, action:()=>navigate("/sheets")},
               {e:"📄", v:"",               l:"documents", tab:null, action:()=>navigate("/docs")},
+              {e:"✏", v:"",               l:"proforma",  tab:null, action:()=>navigate("/proforma")},
               {e:"🌐", v:"",               l:"traduction",tab:null, action:()=>navigate("/translate")},
               {e:"🎮", v:"",               l:"pause",     tab:null, action:()=>navigate("/games")},
               {e:"🎨", v:"",               l:"thèmes",    tab:null, action:()=>setShowTheme(true)},

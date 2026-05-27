@@ -11,6 +11,7 @@ import MoodboardPage from '@/pages/MoodboardPage'
 import FormulasPage from '@/pages/FormulasPage'
 import SheetsPage from '@/pages/SheetsPage'
 import DocsPage from '@/pages/DocsPage'
+import ProformaPage from '@/pages/ProformaPage'
 import GamesPage from '@/pages/GamesPage'
 import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
@@ -23,6 +24,12 @@ function EasterEggLayer() {
   const burst = useAppStore((s) => s.easterEggBurst)
   const clearEasterEgg = useAppStore((s) => s.clearEasterEgg)
   return <EmojiBurst burst={burst} onDone={clearEasterEgg} />
+}
+
+function ActivityTracker() {
+  const recordAppActivity = useAppStore((s) => s.recordAppActivity)
+  useEffect(() => { recordAppActivity() }, [recordAppActivity])
+  return null
 }
 
 function ProtectedRoute({ children }) {
@@ -46,6 +53,7 @@ export default function App() {
           <Route path="/formulas" element={<ProtectedRoute><ErrorBoundary title="Erreur formules"><FormulasPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/sheets" element={<ProtectedRoute><ErrorBoundary title="Erreur tableur"><SheetsPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/docs" element={<ProtectedRoute><ErrorBoundary title="Erreur documents"><DocsPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/proforma" element={<ProtectedRoute><ErrorBoundary title="Erreur PROFORMA"><ProformaPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/games" element={<ProtectedRoute><ErrorBoundary title="Erreur jeux"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/translate" element={<ProtectedRoute><ErrorBoundary title="Erreur traduction scan"><TranslateScanPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/account" element={<ProtectedRoute><ErrorBoundary title="Erreur compte"><AccountPage /></ErrorBoundary></ProtectedRoute>} />
