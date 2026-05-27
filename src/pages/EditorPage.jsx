@@ -57,7 +57,8 @@ import {
 } from "@/lib/structuralProfiles"
 import { screenToPage, pageToScreen } from "@/lib/viewport"
 import { useCanvasViewport } from "@/hooks/useCanvasViewport"
-import { PAGE_FORMATS, resolvePageDimensions } from "@/lib/pageFormats"
+import { resolvePageDimensions } from "@/lib/pageFormats"
+import PageFormatPicker from "@/components/PageFormatPicker"
 import RulerSvg from "@/components/RulerSvg"
 import { computeRotatedBounds } from "@/lib/pageRotation"
 import {
@@ -2920,9 +2921,8 @@ export default function EditorPage(){
             <button type="button" onClick={duplicatePage} title="Dupliquer" style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:11,padding:0}}>⊕</button>
           </>}>
           <div style={{padding:"8px 10px 6px",borderBottom:`1px solid ${T.border}`}}>
-            <select value={nextPageFmt} onChange={e=>setNextPageFmt(e.target.value)} style={{width:"100%",fontSize:9,padding:"4px 6px",borderRadius:6,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,outline:"none",cursor:"pointer"}}>
-              {PAGE_FORMATS.map(f=><option key={f.id} value={f.id}>{f.l} — {f.desc}</option>)}
-            </select>
+            <div style={{fontSize:8,color:T.muted,fontWeight:700,marginBottom:6}}>Format nouvelle page</div>
+            <PageFormatPicker T={T} format={nextPageFmt} compact onChange={({ format }) => setNextPageFmt(format || "a4")} />
           </div>
           <div style={{padding:8,display:"flex",flexDirection:"column",gap:6}}>
             {Array.from({length:pagesCount},(_,i)=>{

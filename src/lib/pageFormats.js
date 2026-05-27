@@ -1,6 +1,19 @@
 /** Formats de page — dimensions en px (@ ~96 dpi, 1 mm ≈ 3.78 px) */
 export const MM_TO_PX = 3.78
 
+export const PAGE_FORMAT_GROUPS = [
+  { id: 'iso', label: 'ISO (A)' },
+  { id: 'iso-b', label: 'ISO (B)' },
+  { id: 'us', label: 'US / Impérial' },
+  { id: 'other', label: 'Autre' },
+]
+
+export const CUSTOM_SIZE_UNITS = [
+  { id: 'mm', label: 'mm', toMm: (v) => v, fromMm: (v) => v },
+  { id: 'cm', label: 'cm', toMm: (v) => v * 10, fromMm: (v) => v / 10 },
+  { id: 'in', label: 'po', toMm: (v) => v * 25.4, fromMm: (v) => v / 25.4 },
+]
+
 export const PAGE_FORMATS = [
   { id: 'a0', l: 'A0', wMm: 841, hMm: 1189, desc: '841×1189 mm', group: 'iso' },
   { id: 'a1', l: 'A1', wMm: 594, hMm: 841, desc: '594×841 mm', group: 'iso' },
@@ -9,8 +22,12 @@ export const PAGE_FORMATS = [
   { id: 'a4', l: 'A4', wMm: 210, hMm: 297, desc: '210×297 mm', group: 'iso' },
   { id: 'a5', l: 'A5', wMm: 148, hMm: 210, desc: '148×210 mm', group: 'iso' },
   { id: 'a6', l: 'A6', wMm: 105, hMm: 148, desc: '105×148 mm', group: 'iso' },
+  { id: 'b4', l: 'B4', wMm: 250, hMm: 353, desc: '250×353 mm', group: 'iso-b' },
+  { id: 'b5', l: 'B5', wMm: 176, hMm: 250, desc: '176×250 mm', group: 'iso-b' },
   { id: 'letter', l: 'Letter', wMm: 216, hMm: 279, desc: '8.5×11"', group: 'us' },
   { id: 'legal', l: 'Legal', wMm: 216, hMm: 356, desc: '8.5×14"', group: 'us' },
+  { id: 'tabloid', l: 'Tabloid', wMm: 279, hMm: 432, desc: '11×17"', group: 'us' },
+  { id: 'half-letter', l: 'Half Letter', wMm: 140, hMm: 216, desc: '5.5×8.5"', group: 'us' },
   { id: 'square', l: 'Carré', wMm: 210, hMm: 210, desc: '210×210 mm', group: 'other' },
   { id: 'custom', l: 'Personnalisé', wMm: 210, hMm: 297, desc: 'Taille libre', group: 'other', custom: true },
   { id: 'infinite', l: 'Infini', wMm: 3000, hMm: 3000, desc: 'Canvas infini', group: 'other', infinite: true },
@@ -89,4 +106,26 @@ export function flipPageOrientation(formatId, customMm, currentRotation = 0) {
   const norm = normalizeFormatId(formatId, currentRotation)
   const nextRot = norm.rotation === 0 ? 90 : norm.rotation === 90 ? 0 : norm.rotation === 180 ? 270 : 180
   return { format: norm.format, rotation: nextRot, customMm }
+}
+
+export function formatsByGroup(groupId) {
+  return PAGE_FORMATS.filter((f) => f.group === groupId)
+}
+
+export function formatPreviewSize(wMm, hMm, maxW = 28, maxH = 40) {
+  const ratio = Math.max(wMm, 1) / Math.max(hMm, 1)
+  let pw = maxH * ratio
+  let ph = maxH
+  if (pw > maxW) {
+    pw = maxW
+    ph = maxW / ratio
+  }
+  return { w: Math.round(pw), h: Math.round(ph) }
+}
+
+export function clampCustomMm(w, h) {
+  return {
+    w: Math.max(50, Math.min(2000, Math.round(Number(w) || 210))),
+    h: Math.max(50, Math.min(2000, Math.round(Number(h) || 297))),
+  }
 }

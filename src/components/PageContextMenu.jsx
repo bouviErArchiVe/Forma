@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { TOKENS } from '@/theme/tokens'
 import { glassStyle } from '@/theme/glass'
-import { PAGE_FORMATS, PAGE_ROTATIONS, flipPageOrientation } from '@/lib/pageFormats'
+import { PAGE_ROTATIONS, flipPageOrientation } from '@/lib/pageFormats'
+import PageFormatPicker from '@/components/PageFormatPicker'
 import {
   GRID_STYLES,
   PAGE_COLORS,
@@ -101,7 +102,6 @@ export default function PageContextMenu({
   const customMm = meta.customMm || { w: 210, h: 297 }
   const rotation = meta.rotation ?? 0
   const orientation = orientationFromFormat(meta.format, customMm, rotation)
-  const isCustom = meta.format === 'custom'
 
   const apply = (partial) => onApply?.(partial)
 
@@ -151,58 +151,14 @@ export default function PageContextMenu({
       />
 
       <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 4px', fontWeight: 700 }}>FORMAT</div>
-      <select
-        value={meta.format}
-        onChange={(e) => {
-          const fmt = e.target.value
-          apply({ format: fmt, infinite: fmt === 'infinite' })
-        }}
-        style={{
-          width: 'calc(100% - 12px)',
-          margin: '0 6px 8px',
-          fontSize: 9,
-          padding: '5px 7px',
-          borderRadius: 7,
-          border: `1px solid ${T.border}`,
-          background: T.bg,
-          color: T.ink,
-        }}
-      >
-        {PAGE_FORMATS.map((f) => (
-          <option key={f.id} value={f.id}>{f.l} — {f.desc}</option>
-        ))}
-      </select>
-
-      {isCustom && (
-        <div style={{ display: 'flex', gap: 6, margin: '0 6px 8px' }}>
-          {['w', 'h'].map((k) => (
-            <label key={k} style={{ flex: 1, fontSize: 8, color: T.muted }}>
-              {k === 'w' ? 'Largeur (mm)' : 'Hauteur (mm)'}
-              <input
-                type="number"
-                min={50}
-                max={2000}
-                value={customMm[k]}
-                onChange={(e) => {
-                  const v = Math.max(50, Math.min(2000, parseInt(e.target.value, 10) || 50))
-                  apply({ customMm: { ...customMm, [k]: v } })
-                }}
-                style={{
-                  display: 'block',
-                  width: '100%',
-                  marginTop: 3,
-                  fontSize: 9,
-                  padding: '4px 6px',
-                  borderRadius: 6,
-                  border: `1px solid ${T.border}`,
-                  background: T.bg,
-                  color: T.ink,
-                }}
-              />
-            </label>
-          ))}
-        </div>
-      )}
+      <div style={{ margin: '0 4px 10px' }}>
+        <PageFormatPicker
+          T={T}
+          format={meta.format}
+          customMm={customMm}
+          onChange={(partial) => apply(partial)}
+        />
+      </div>
 
       <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 4px', fontWeight: 700 }}>ROTATION</div>
       <div style={{ display: 'flex', gap: 5, margin: '0 6px 10px', flexWrap: 'wrap' }}>
