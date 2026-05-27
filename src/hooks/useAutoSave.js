@@ -33,6 +33,26 @@ export function useAutoSave({
     setStatus((s) => (s === 'saving' ? 'saving' : 'dirty'))
   }, [])
 
+  const syncLocalBackup = useCallback(() => {
+    if (!pageId || !notebookId || readOnly) return
+    const payload = buildPagePayloadRef.current?.()
+    if (!payload) return
+    const now = new Date().toISOString()
+    const pageRecord = {
+      id: pageId,
+      page_number: pageNum,
+      notebook_id: notebookId,
+      elements: payload.elements,
+      canvas_data: payload.canvas_data,
+      updated_at: now,
+    }
+    try {
+      saveLocalPage(notebookId, pageRecord, loadLocalPages(notebookId))
+      upsertLocalNotebook({ id: notebookId, updated_at: now, ...(onNotebookTouch?.() || {}) })
+      lastPayloadRef.current = `${payload.elements}|${payload.canvas_data}`
+    } catch { /* quota */ }
+  }, [pageId, notebookId, pageNum, readOnly, onNotebookTouch])
+
   const saveNow = useCallback(async () => {
     if (!pageId || !notebookId || readOnly || savingRef.current) return false
     const payload = buildPagePayloadRef.current?.()
@@ -132,5 +152,31 @@ export function useAutoSave({
     if (timer.current) clearTimeout(timer.current)
   }, [])
 
-  return { saveNow, scheduleSave, status, lastSavedAt, markDirty }
+  useEffect(() => {
+    const flush = () => {
+      if (timer.current) {
+        clearTimeout(timer.current)
+        timer.current = null
+      }
+      saveNow()
+    }
+    const onHidden = () => {
+      if (document.visibilityState === 'hidden') flush()
+    }
+    const onBeforeUnload = () => {
+      if (timer.current) {
+        clearTimeout(timer.current)
+        timer.current = null
+      }
+      syncLocalBackup()
+    }
+    document.addEventListener('visibilitychange', onHidden)
+    window.addEventListener('pagehide', onBeforeUnload)
+    return () => {
+      document.removeEventListener('visibilitychange', onHidden)
+      window.removeEventListener('pagehide', onBeforeUnload)
+    }
+  }, [saveNow, syncLocalBackup])
+
+  return { saveNow, scheduleSave, status, lastSavedAt, markDirty, syncLocalBackup }
 }

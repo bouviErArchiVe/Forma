@@ -406,7 +406,7 @@ function Paper({gridStyle,tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
 }
 
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */
-function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest,canvasTextFont}){
+function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest,canvasTextFont,canvasZIndex=5}){
   const drawing=useRef(false)
   const strokes=useRef([])   // committed strokes
   const history=useRef([])   // for multi-level undo (copy of strokes at each commit)
@@ -1068,7 +1068,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
   const navTool=tool==="arrow"||tool==="select"||tool==="hand"
   const cursor=navTool?"default":getToolCursor(tool,{selectionActive,dark:cursorDark})
   return<canvas ref={cRef}width={pageW}height={pageH}
-    style={{position:"absolute",inset:0,width:"100%",height:"100%",cursor,touchAction:"none",zIndex:5,pointerEvents:navTool?"none":"auto"}}
+    style={{position:"absolute",inset:0,width:"100%",height:"100%",cursor,touchAction:"none",zIndex:canvasZIndex,pointerEvents:navTool?"none":"auto"}}
     onPointerDown={dn}onPointerMove={mv}onPointerUp={up}onPointerLeave={up}/>
 }
 
@@ -1434,6 +1434,7 @@ export default function EditorPage(){
   const addingPageRef=useRef(false)
   const formulaNoteInsertedRef=useRef(false)
   const saveNowRef=useRef(()=>{})
+  const scheduleSaveRef=useRef(()=>{})
   useEffect(()=>{ placedRef.current = placed }, [placed])
   useEffect(()=>{ importedRef.current = importedImages }, [importedImages])
   useEffect(()=>{
@@ -1454,12 +1455,14 @@ export default function EditorPage(){
 
   const eraseObjectsAt = useCallback((p, r) => {
     if(!p) return
+    let changed = false
     // Imported images (absolute page coords)
     const imgs = importedRef.current || []
     if(imgs.length){
       const hitIds = imgs.filter(img => distPointToRect(p, img.x, img.y, img.w, img.h) <= r + 2).map(i => i.id)
       if(hitIds.length){
         setImportedImages(cur => cur.filter(i => !hitIds.includes(i.id)))
+        changed = true
       }
     }
 
@@ -1473,8 +1476,10 @@ export default function EditorPage(){
       if(hitIds.length){
         setPlaced(cur => cur.filter(it => !hitIds.includes(it.id)))
         if(selected && hitIds.includes(selected)) setSelected(null)
+        changed = true
       }
     }
+    if (changed) scheduleSaveRef.current?.()
   }, [selected])
   const pageDims=resolvePageDimensions(pageFormat,customPageMm,0)
   const PW=infiniteMode?3000:pageDims.w
@@ -1505,6 +1510,7 @@ export default function EditorPage(){
     setPageRotation(meta.rotation??0)
     setCustomPageMm(meta.customMm||{w:210,h:297})
     setPlaced(meta.items||[])
+    setImportedImages(meta.images||[])
     setPageColor(meta.pageColor??null)
     setGridColor(meta.gridColor??null)
     setPageGridStyle(meta.gridStyle||defaultGridStyle(nb.template))
@@ -1518,12 +1524,13 @@ export default function EditorPage(){
     rotation:pageRotation,
     customMm:customPageMm,
     items:placed,
+    images:importedImages,
     pageColor,
     gridColor,
     gridStyle:pageGridStyle,
     infinite:infiniteMode,
     name:pageName,
-  }),[pageFormat,pageRotation,customPageMm,placed,pageColor,gridColor,pageGridStyle,infiniteMode,pageName])
+  }),[pageFormat,pageRotation,customPageMm,placed,importedImages,pageColor,gridColor,pageGridStyle,infiniteMode,pageName])
 
   const buildPagePayload=useCallback(()=>({
     elements:JSON.stringify(buildCurrentPageMeta()),
@@ -1540,6 +1547,15 @@ export default function EditorPage(){
     onNotebookTouch:()=>({title:nb.title,subject:nb.subject,pages_count:pagesCount}),
   })
   saveNowRef.current=saveNow
+  scheduleSaveRef.current=scheduleSave
+
+  useEffect(() => {
+    if (tool !== 'eraser') return
+    setSelected(null)
+    setSelectedObjects({ placed: [], images: [] })
+    setCanvasSelection(null)
+    window.__clearSelection?.()
+  }, [tool])
 
   useEffect(() => { formulaNoteInsertedRef.current = false }, [nb.id])
 
@@ -1779,6 +1795,7 @@ export default function EditorPage(){
       const corners=[{x:img.x,y:img.y},{x:img.x+img.w,y:img.y},{x:img.x+img.w,y:img.y+img.h},{x:img.x,y:img.y+img.h}]
       return !corners.some(c=>{ let ins=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y;if((yi>c.y)!==(yj>c.y)&&c.x<((xj-xi)*(c.y-yi))/(yj-yi+1e-9)+xi)ins=!ins} return ins })
     }))
+    scheduleSaveRef.current?.()
   },[])
 
   // Duplicate page (optionally from a specific page number)
@@ -2048,6 +2065,7 @@ export default function EditorPage(){
       img.onload=()=>{
         const maxW=400,maxH=500,ratio=Math.min(maxW/img.width,maxH/img.height,1)
         setImportedImages(p=>[...p,{id:Date.now(),src:ev.target.result,x:100,y:80,w:img.width*ratio,h:img.height*ratio}])
+        scheduleSaveRef.current?.()
         pushAction({type:"image_import",detail:file.name})
       }
       img.src=ev.target.result
@@ -2541,9 +2559,9 @@ export default function EditorPage(){
                 const imgSel=selectedObjects.images.includes(img.id)
                 return(
                 <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,zIndex:3,cursor:readOnly||eraserActive?"default":"move",userSelect:"none",pointerEvents:eraserActive?"none":"auto",outline:imgSel?"2px solid #c8622a":"none",outlineOffset:2}}
-                  onMouseDown={e=>{if(readOnly)return;e.stopPropagation();setSelectedObjects({placed:[],images:[img.id]});const ox=e.clientX/zoom-img.x,oy=e.clientY/zoom-img.y;const mm=ev=>setImportedImages(p=>p.map(i=>i.id===img.id?{...i,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:i));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
+                  onMouseDown={e=>{if(readOnly)return;e.stopPropagation();setSelectedObjects({placed:[],images:[img.id]});const ox=e.clientX/zoom-img.x,oy=e.clientY/zoom-img.y;const mm=ev=>setImportedImages(p=>p.map(i=>i.id===img.id?{...i,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:i));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu);scheduleSave()};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
                   <img src={img.src}alt=""style={{width:img.w,height:img.h,display:"block",opacity:.88,pointerEvents:"none"}}/>
-                  {!readOnly&&<button onClick={()=>setImportedImages(p=>p.filter(i=>i.id!==img.id))}style={{position:"absolute",top:-8,right:-8,width:18,height:18,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontWeight:700}}>×</button>}
+                  {!readOnly&&!eraserActive&&<button onClick={()=>{setImportedImages(p=>p.filter(i=>i.id!==img.id));scheduleSave()}}style={{position:"absolute",top:-8,right:-8,width:18,height:18,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontWeight:700}}>×</button>}
                 </div>
               )})}
 
@@ -2570,12 +2588,12 @@ export default function EditorPage(){
                   <div style={{width:"100%",height:"100%",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,pointerEvents:"none"}}>
                     {item.el.type==="sym"?renderSym(item.el,1/50,sx,sy):renderEl(item.el,1/50,sx,sy)}
                   </div>
-                  {sel&&!readOnly&&<button onClick={()=>{pushAction({type:"element_removed",detail:item.el?.l||"élément"});setPlaced(p=>p.filter(e=>e.id!==item.id));setSelected(null);scheduleSave()}}style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,zIndex:20}}>×</button>}
+                  {sel&&!readOnly&&!eraserActive&&<button onClick={()=>{pushAction({type:"element_removed",detail:item.el?.l||"élément"});setPlaced(p=>p.filter(e=>e.id!==item.id));setSelected(null);scheduleSave()}}style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,zIndex:20}}>×</button>}
                 </div>
               )})}
 
               {/* Ruler */}
-              {showRuler&&<div style={{position:"absolute",left:rulerPos.x,top:rulerPos.y,width:Math.min(PW,1180),height:28,background:T.surface,border:`1px solid ${T.border}`,zIndex:20,opacity:.95,borderRadius:4,boxShadow:"0 2px 10px rgba(0,0,0,.12)",transform:`rotate(${rulerRotation}deg)`,transformOrigin:"left center",touchAction:"none"}}>
+              {showRuler&&<div style={{position:"absolute",left:rulerPos.x,top:rulerPos.y,width:Math.min(PW,1180),height:28,background:T.surface,border:`1px solid ${T.border}`,zIndex:20,opacity:.95,borderRadius:4,boxShadow:"0 2px 10px rgba(0,0,0,.12)",transform:`rotate(${rulerRotation}deg)`,transformOrigin:"left center",touchAction:"none",pointerEvents:eraserActive?"none":"auto"}}>
                 <div data-ruler-handle
                   onPointerDown={e=>{if(rulerLocked)return;e.preventDefault();e.stopPropagation();setRulerDrag({startX:rulerPos.x,startY:rulerPos.y,ptrX:e.clientX,ptrY:e.clientY})}}
                   style={{position:"absolute",left:0,top:0,width:22,height:28,cursor:rulerLocked?"not-allowed":rulerDrag?"grabbing":"grab",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:T.muted,borderRight:`1px solid ${T.border}`,userSelect:"none",touchAction:"none"}}>⠿</div>
@@ -2596,8 +2614,8 @@ export default function EditorPage(){
                 </div>
               )}
 
-              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone}/>}
-              {canvasSelection?.shapeBounds&&canvasSelection.count===1&&!textEdit&&(
+              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={eraserActive?15:5}/>}
+              {!eraserActive&&canvasSelection?.shapeBounds&&canvasSelection.count===1&&!textEdit&&(
                 <ShapeTransformHandles
                   T={T}
                   bounds={canvasSelection.shapeBounds}
@@ -2610,7 +2628,7 @@ export default function EditorPage(){
                   onRotate={(deg)=>{window.__setSelectionRotation?.(deg);scheduleSave()}}
                 />
               )}
-              {selectedPlacedItem&&selectedPlacedBounds&&!textEdit&&(
+              {!eraserActive&&selectedPlacedItem&&selectedPlacedBounds&&!textEdit&&(
                 <ShapeTransformHandles
                   T={T}
                   bounds={selectedPlacedBounds}
@@ -2629,7 +2647,7 @@ export default function EditorPage(){
                   }}
                 />
               )}
-              {canvasSelection&&!readOnly&&(
+              {canvasSelection&&!readOnly&&!eraserActive&&(
                 <FloatingSelectionToolbar
                   T={T}
                   bounds={canvasSelection.bounds}
