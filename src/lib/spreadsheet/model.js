@@ -5,6 +5,122 @@ const DEFAULT_COLS = 8
 const DEFAULT_ROW_H = 28
 const DEFAULT_COL_W = 96
 
+export const MIN_COL_W = 32
+export const MAX_COL_W = 640
+export const MIN_ROW_H = 20
+export const MAX_ROW_H = 480
+
+export function clampColWidth(w) {
+  return Math.max(MIN_COL_W, Math.min(MAX_COL_W, Math.round(w)))
+}
+
+export function clampRowHeight(h) {
+  return Math.max(MIN_ROW_H, Math.min(MAX_ROW_H, Math.round(h)))
+}
+
+export function sumColWidths(colWidths, c1, c2) {
+  let t = 0
+  for (let c = c1; c <= c2; c++) t += colWidths[c] || DEFAULT_COL_W
+  return t
+}
+
+export function sumRowHeights(rowHeights, r1, r2) {
+  let t = 0
+  for (let r = r1; r <= r2; r++) t += rowHeights[r] || DEFAULT_ROW_H
+  return t
+}
+
+function textDisplayWidth(text, fontSize = 12, bold = false) {
+  const s = String(text ?? '')
+  if (!s) return MIN_COL_W
+  const charW = fontSize * (bold ? 0.62 : 0.52)
+  return Math.ceil(s.length * charW) + 14
+}
+
+function textDisplayHeight(text, colWidth, fontSize = 12) {
+  const s = String(text ?? '')
+  if (!s) return MIN_ROW_H
+  const inner = Math.max(MIN_COL_W, colWidth - 12)
+  const charW = fontSize * 0.52
+  const charsPerLine = Math.max(1, Math.floor(inner / charW))
+  const lines = Math.ceil(s.length / charsPerLine)
+  const lineH = fontSize * 1.35
+  return Math.ceil(lines * lineH) + 10
+}
+
+function cellForAutoFit(sheet, computed, row, col) {
+  const k = cellKey(row, col)
+  if (computed?.[k]) {
+    const c = computed[k]
+    return { value: c.value, raw: c.raw, style: c.style }
+  }
+  return getCell(sheet, row, col)
+}
+
+function measureColAutoWidth(sheet, col, computed) {
+  let max = MIN_COL_W
+  for (let r = 0; r < sheet.rows; r++) {
+    if (isMergeHidden(sheet, r, col)) continue
+    const m = getMergeAt(sheet, r, col)
+    if (m && col !== m.c1) continue
+    const cell = cellForAutoFit(sheet, computed, r, col)
+    const text = cell.value ?? cell.raw ?? ''
+    const fs = cell.style?.fontSize || 12
+    const w = textDisplayWidth(text, fs, cell.style?.bold)
+    if (m && m.c2 > m.c1) {
+      const span = m.c2 - m.c1 + 1
+      max = Math.max(max, clampColWidth(w / span))
+    } else {
+      max = Math.max(max, w)
+    }
+  }
+  return clampColWidth(max)
+}
+
+function measureRowAutoHeight(sheet, row, computed) {
+  let max = MIN_ROW_H
+  for (let c = 0; c < sheet.cols; c++) {
+    if (isMergeHidden(sheet, row, c)) continue
+    const m = getMergeAt(sheet, row, c)
+    if (m && row !== m.r1) continue
+    const cell = cellForAutoFit(sheet, computed, row, c)
+    const text = cell.value ?? cell.raw ?? ''
+    const fs = cell.style?.fontSize || 12
+    let colW = sheet.colWidths[c] || DEFAULT_COL_W
+    if (m) colW = sumColWidths(sheet.colWidths, m.c1, m.c2)
+    const h = textDisplayHeight(text, colW, fs)
+    if (m && m.r2 > m.r1) {
+      const span = m.r2 - m.r1 + 1
+      max = Math.max(max, clampRowHeight(h / span))
+    } else {
+      max = Math.max(max, h)
+    }
+  }
+  return clampRowHeight(max)
+}
+
+export function resizeColumns(sheet, cols, widthOrDelta, { mode = 'set', baseWidths } = {}) {
+  const widths = [...sheet.colWidths]
+  cols.forEach((col, i) => {
+    const base = baseWidths?.[i] ?? widths[col]
+    widths[col] = mode === 'delta'
+      ? clampColWidth(base + widthOrDelta)
+      : clampColWidth(typeof widthOrDelta === 'number' ? widthOrDelta : base)
+  })
+  return { ...sheet, colWidths: widths, updatedAt: Date.now() }
+}
+
+export function resizeRows(sheet, rows, heightOrDelta, { mode = 'delta', baseHeights } = {}) {
+  const heights = [...sheet.rowHeights]
+  rows.forEach((row, i) => {
+    const base = baseHeights?.[i] ?? heights[row]
+    heights[row] = mode === 'delta'
+      ? clampRowHeight(base + heightOrDelta)
+      : clampRowHeight(typeof heightOrDelta === 'number' ? heightOrDelta : base)
+  })
+  return { ...sheet, rowHeights: heights, updatedAt: Date.now() }
+}
+
 export function createSheet(name = 'Nouveau tableau') {
   const now = Date.now()
   return {
@@ -327,27 +443,27 @@ export function sortByColumn(sheet, col, dir = 'asc') {
   return next
 }
 
-export function autoFitCol(sheet, col) {
+export function autoFitCol(sheet, col, computed = null) {
   const widths = [...sheet.colWidths]
-  let max = 48
-  for (let r = 0; r < sheet.rows; r++) {
-    const c = getCell(sheet, r, col)
-    max = Math.max(max, Math.min(280, String(c.value || c.raw || '').length * 8 + 24))
-  }
-  widths[col] = max
+  widths[col] = measureColAutoWidth(sheet, col, computed)
   return { ...sheet, colWidths: widths, updatedAt: Date.now() }
 }
 
-export function autoFitRow(sheet, row) {
+export function autoFitRow(sheet, row, computed = null) {
   const heights = [...sheet.rowHeights]
-  let max = 28
-  for (let c = 0; c < sheet.cols; c++) {
-    const cell = getCell(sheet, row, c)
-    const len = String(cell.value || cell.raw || '').length
-    if (len > 30) max = Math.max(max, 40)
-    if (len > 80) max = Math.max(max, 56)
-  }
-  heights[row] = max
+  heights[row] = measureRowAutoHeight(sheet, row, computed)
+  return { ...sheet, rowHeights: heights, updatedAt: Date.now() }
+}
+
+export function autoFitColsInRange(sheet, c1, c2, computed = null) {
+  const widths = [...sheet.colWidths]
+  for (let c = c1; c <= c2; c++) widths[c] = measureColAutoWidth(sheet, c, computed)
+  return { ...sheet, colWidths: widths, updatedAt: Date.now() }
+}
+
+export function autoFitRowsInRange(sheet, r1, r2, computed = null) {
+  const heights = [...sheet.rowHeights]
+  for (let r = r1; r <= r2; r++) heights[r] = measureRowAutoHeight(sheet, r, computed)
   return { ...sheet, rowHeights: heights, updatedAt: Date.now() }
 }
 

@@ -5,7 +5,9 @@ import {
   addRow, deleteRow, addCol, deleteCol,
   mergeCells, unmergeAt, getMergeAt, isMergeHidden,
   applyStyleToRange, copyRange, pasteRange, sortByColumn,
-  autoFitCol, autoFitRow, applyArchTablePreset,
+  autoFitCol, autoFitRow, autoFitColsInRange, autoFitRowsInRange,
+  applyArchTablePreset,
+  sumColWidths, sumRowHeights, clampColWidth, clampRowHeight,
 } from '@/lib/spreadsheet/model'
 import SpreadsheetFormulaHelp from '@/components/spreadsheet/SpreadsheetFormulaHelp'
 
@@ -13,6 +15,7 @@ const MAX_HISTORY = 50
 const ROW_HDR_W = 40
 const COL_HDR_H = 26
 const FONT_SIZES = [10, 11, 12, 13, 14, 16, 18]
+const RESIZE_HANDLE_W = 7
 
 function normalizeSelection(sel) {
   if (!sel) return null
@@ -38,17 +41,22 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
   const [redo, setRedo] = useState([])
   const [tableSearch, setTableSearch] = useState('')
   const [resizing, setResizing] = useState(null)
+  const [resizeLive, setResizeLive] = useState(null)
   const [formulaHelp, setFormulaHelp] = useState(false)
   const dragRef = useRef(null)
+  const resizeLiveRef = useRef(null)
   const internalRef = useRef(null)
   const tableWrapRef = gridRef || internalRef
 
   const computed = useMemo(() => computeSheet(sheet), [sheet])
   const selection = normalizeSelection(sel)
 
+  const colWidths = resizeLive?.colWidths ?? sheet.colWidths
+  const rowHeights = resizeLive?.rowHeights ?? sheet.rowHeights
+
   const tableWidth = useMemo(
-    () => ROW_HDR_W + sheet.colWidths.reduce((a, b) => a + b, 0),
-    [sheet.colWidths],
+    () => ROW_HDR_W + colWidths.reduce((a, b) => a + b, 0),
+    [colWidths],
   )
 
   const pushHistory = useCallback((prev) => {
@@ -196,34 +204,110 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
     setSel({ r1: dragRef.current.r, c1: dragRef.current.c, r2: r, c2: c })
   }
 
+  const colsInSelection = (col) => {
+    if (!selection || col < selection.c1 || col > selection.c2) return [col]
+    const out = []
+    for (let c = selection.c1; c <= selection.c2; c++) out.push(c)
+    return out
+  }
+
+  const rowsInSelection = (row) => {
+    if (!selection || row < selection.r1 || row > selection.r2) return [row]
+    const out = []
+    for (let r = selection.r1; r <= selection.r2; r++) out.push(r)
+    return out
+  }
+
   const startColResize = (col, e) => {
     e.preventDefault()
     e.stopPropagation()
-    setResizing({ type: 'col', index: col, startX: e.clientX, startW: sheet.colWidths[col] })
+    const cols = colsInSelection(col)
+    setResizing({
+      type: 'col',
+      index: col,
+      cols,
+      startX: e.clientX,
+      startWidths: cols.map((c) => sheet.colWidths[c]),
+    })
+    setResizeLive({ colWidths: [...sheet.colWidths], rowHeights: [...sheet.rowHeights] })
+    resizeLiveRef.current = { colWidths: [...sheet.colWidths], rowHeights: [...sheet.rowHeights] }
   }
 
   const startRowResize = (row, e) => {
     e.preventDefault()
     e.stopPropagation()
-    setResizing({ type: 'row', index: row, startY: e.clientY, startH: sheet.rowHeights[row] })
+    const rows = rowsInSelection(row)
+    setResizing({
+      type: 'row',
+      index: row,
+      rows,
+      startY: e.clientY,
+      startHeights: rows.map((r) => sheet.rowHeights[r]),
+    })
+    const live = { colWidths: [...sheet.colWidths], rowHeights: [...sheet.rowHeights] }
+    setResizeLive(live)
+    resizeLiveRef.current = live
+  }
+
+  const autoFitColumn = (col) => {
+    const cols = colsInSelection(col)
+    if (cols.length > 1) commit(autoFitColsInRange(sheet, cols[0], cols[cols.length - 1], computed))
+    else commit(autoFitCol(sheet, col, computed))
+  }
+
+  const autoFitRowAt = (row) => {
+    const rows = rowsInSelection(row)
+    if (rows.length > 1) commit(autoFitRowsInRange(sheet, rows[0], rows[rows.length - 1], computed))
+    else commit(autoFitRow(sheet, row, computed))
   }
 
   useEffect(() => {
     if (!resizing) return
     const onMove = (e) => {
       if (resizing.type === 'col') {
-        const w = Math.max(40, resizing.startW + (e.clientX - resizing.startX))
-        onChange({ ...sheet, colWidths: sheet.colWidths.map((cw, i) => (i === resizing.index ? w : cw)), updatedAt: Date.now() })
+        const delta = e.clientX - resizing.startX
+        const nextWidths = [...sheet.colWidths]
+        resizing.cols.forEach((col, i) => {
+          nextWidths[col] = clampColWidth(resizing.startWidths[i] + delta)
+        })
+        const live = { colWidths: nextWidths, rowHeights: [...sheet.rowHeights] }
+        resizeLiveRef.current = live
+        setResizeLive(live)
       } else {
-        const h = Math.max(22, resizing.startH + (e.clientY - resizing.startY))
-        onChange({ ...sheet, rowHeights: sheet.rowHeights.map((rh, i) => (i === resizing.index ? h : rh)), updatedAt: Date.now() })
+        const delta = e.clientY - resizing.startY
+        const nextHeights = [...sheet.rowHeights]
+        resizing.rows.forEach((row, i) => {
+          nextHeights[row] = clampRowHeight(resizing.startHeights[i] + delta)
+        })
+        const live = { colWidths: [...sheet.colWidths], rowHeights: nextHeights }
+        resizeLiveRef.current = live
+        setResizeLive(live)
       }
     }
-    const onUp = () => setResizing(null)
+    const onUp = () => {
+      const live = resizeLiveRef.current
+      if (live) {
+        const changed = live.colWidths.some((w, i) => w !== sheet.colWidths[i])
+          || live.rowHeights.some((h, i) => h !== sheet.rowHeights[i])
+        if (changed) {
+          commit({ ...sheet, colWidths: live.colWidths, rowHeights: live.rowHeights, updatedAt: Date.now() })
+        }
+      }
+      resizeLiveRef.current = null
+      setResizeLive(null)
+      setResizing(null)
+    }
     window.addEventListener('mousemove', onMove)
     window.addEventListener('mouseup', onUp)
     return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
-  }, [resizing, sheet, onChange])
+  }, [resizing, sheet, commit])
+
+  useEffect(() => {
+    if (!resizing) return undefined
+    const cursor = resizing.type === 'col' ? 'col-resize' : 'row-resize'
+    document.body.style.cursor = cursor
+    return () => { document.body.style.cursor = '' }
+  }, [resizing])
 
   const searchHits = useMemo(() => {
     if (!tableSearch.trim()) return new Set()
@@ -275,7 +359,16 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
           {btn('Séparer', () => selection && commit(unmergeAt(sheet, selection.r1, selection.c1)))}
           {btn('A→Z', () => selection && commit(sortByColumn(sheet, selection.c1, 'asc')))}
           {btn('Archi', () => commit(applyArchTablePreset(sheet)))}
-          {btn('Aj. larg.', () => selection && commit(autoFitCol(sheet, selection.c1)))}
+          {btn('Aj. larg.', () => {
+            if (!selection) return
+            if (selection.c1 !== selection.c2) commit(autoFitColsInRange(sheet, selection.c1, selection.c2, computed))
+            else commit(autoFitCol(sheet, selection.c1, computed))
+          }, false, 'Ajuster largeur colonne(s)')}
+          {btn('Aj. haut.', () => {
+            if (!selection) return
+            if (selection.r1 !== selection.r2) commit(autoFitRowsInRange(sheet, selection.r1, selection.r2, computed))
+            else commit(autoFitRow(sheet, selection.r1, computed))
+          }, false, 'Ajuster hauteur ligne(s)')}
           {btn('? Formules', () => setFormulaHelp((v) => !v), formulaHelp, 'Aide formules')}
           <input
             value={tableSearch}
@@ -322,21 +415,29 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
               {Array.from({ length: sheet.cols }, (_, c) => (
                 <th
                   key={c}
-                  onMouseDown={(e) => { if (!readOnly) { e.preventDefault(); setSel({ r1: 0, c1: c, r2: sheet.rows - 1, c2: c }) } }}
+                  onMouseDown={(e) => { if (!readOnly && !resizing) { e.preventDefault(); setSel({ r1: 0, c1: c, r2: sheet.rows - 1, c2: c }) } }}
                   style={{
-                    width: sheet.colWidths[c], minWidth: sheet.colWidths[c], height: COL_HDR_H,
+                    width: colWidths[c], minWidth: colWidths[c], maxWidth: colWidths[c], height: COL_HDR_H,
                     position: 'sticky', top: 0, zIndex: 4,
                     background: hdrBg, borderBottom: `1px solid ${gridBorder}`, borderRight: `1px solid ${gridBorder}`,
                     fontSize: 11, fontWeight: 700, color: T.ink,
                     cursor: readOnly ? 'default' : 'pointer', userSelect: 'none',
                     boxShadow: '0 1px 0 rgba(0,0,0,.06)',
+                    overflow: 'visible',
                   }}
                 >
                   {colToLetter(c)}
                   {!readOnly && (
                     <span
+                      role="separator"
+                      aria-orientation="vertical"
+                      title="Glisser pour redimensionner · double-clic pour ajuster"
                       onMouseDown={(e) => startColResize(c, e)}
-                      style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 5, cursor: 'col-resize' }}
+                      onDoubleClick={(e) => { e.preventDefault(); e.stopPropagation(); autoFitColumn(c) }}
+                      style={{
+                        position: 'absolute', right: -Math.floor(RESIZE_HANDLE_W / 2), top: 0, bottom: 0,
+                        width: RESIZE_HANDLE_W, cursor: 'col-resize', zIndex: 6,
+                      }}
                     />
                   )}
                 </th>
@@ -347,20 +448,30 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
             {Array.from({ length: sheet.rows }, (_, r) => {
               if (!rowVisible(r)) return null
               return (
-                <tr key={r} style={{ height: sheet.rowHeights[r] }}>
+                <tr key={r} style={{ height: rowHeights[r] }}>
                   <td
-                    onMouseDown={(e) => { if (!readOnly) { e.preventDefault(); setSel({ r1: r, c1: 0, r2: r, c2: sheet.cols - 1 }) } }}
+                    onMouseDown={(e) => { if (!readOnly && !resizing) { e.preventDefault(); setSel({ r1: r, c1: 0, r2: r, c2: sheet.cols - 1 }) } }}
                     style={{
-                      width: ROW_HDR_W, minWidth: ROW_HDR_W, height: sheet.rowHeights[r],
+                      width: ROW_HDR_W, minWidth: ROW_HDR_W, height: rowHeights[r],
                       textAlign: 'center', fontSize: 10, fontWeight: 600, color: T.muted,
                       background: hdrBg, borderBottom: `1px solid ${gridBorder}`, borderRight: `1px solid ${gridBorder}`,
                       cursor: readOnly ? 'default' : 'pointer', userSelect: 'none',
-                      position: 'sticky', left: 0, zIndex: 3,
+                      position: 'sticky', left: 0, zIndex: 3, overflow: 'visible',
                     }}
                   >
                     {r + 1}
                     {!readOnly && (
-                      <span onMouseDown={(e) => startRowResize(r, e)} style={{ display: 'block', height: 4, cursor: 'row-resize' }} />
+                      <span
+                        role="separator"
+                        aria-orientation="horizontal"
+                        title="Glisser pour redimensionner · double-clic pour ajuster"
+                        onMouseDown={(e) => startRowResize(r, e)}
+                        onDoubleClick={(e) => { e.preventDefault(); e.stopPropagation(); autoFitRowAt(r) }}
+                        style={{
+                          position: 'absolute', left: 0, right: 0, bottom: -Math.floor(RESIZE_HANDLE_W / 2),
+                          height: RESIZE_HANDLE_W, cursor: 'row-resize', zIndex: 2,
+                        }}
+                      />
                     )}
                   </td>
                   {Array.from({ length: sheet.cols }, (_, c) => {
@@ -373,6 +484,8 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
                     const hit = searchHits.has(k)
                     const isEdit = editing?.r === r && editing?.c === c
                     const edges = selectionEdge(r, c)
+                    const cellW = m ? sumColWidths(colWidths, m.c1, m.c2) : colWidths[c]
+                    const cellH = m ? sumRowHeights(rowHeights, m.r1, m.r2) : rowHeights[r]
                     return (
                       <td
                         key={c}
@@ -382,8 +495,11 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
                         onMouseEnter={() => onCellMouseEnter(r, c)}
                         onDoubleClick={() => { if (!readOnly) { setEditing({ r, c }); setEditVal(cell.raw ?? '') } }}
                         style={{
-                          width: sheet.colWidths[c], minWidth: sheet.colWidths[c],
-                          height: sheet.rowHeights[r],
+                          width: m ? cellW : colWidths[c],
+                          minWidth: m ? cellW : colWidths[c],
+                          maxWidth: m ? cellW : colWidths[c],
+                          height: m ? cellH : rowHeights[r],
+                          maxHeight: m ? cellH : rowHeights[r],
                           padding: 0, borderBottom: `1px solid #e2e6ec`, borderRight: `1px solid #e2e6ec`,
                           background: hit ? '#fff8dc' : selected ? `${T.accent}14` : (cell.style?.bg || gridBg),
                           boxShadow: active ? `inset 0 0 0 2px ${T.accent}` : undefined,
@@ -408,13 +524,14 @@ export default function SpreadsheetGrid({ sheet, onChange, T, readOnly = false, 
                             style={{
                               width: '100%', height: '100%', border: 'none', outline: 'none',
                               padding: '4px 6px', font: 'inherit', color: '#000', background: '#fff',
-                              boxSizing: 'border-box',
+                              boxSizing: 'border-box', maxHeight: cellH,
                             }}
                           />
                         ) : (
                           <div style={{
                             padding: '4px 6px', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                            minHeight: sheet.rowHeights[r] - 2, color: 'inherit',
+                            overflow: 'hidden', maxHeight: Math.max(16, cellH - 2), lineHeight: 1.35,
+                            color: 'inherit', boxSizing: 'border-box',
                           }}>
                             {cell.value}
                           </div>
