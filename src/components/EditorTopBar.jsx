@@ -102,9 +102,9 @@ export default function EditorTopBar({
   showPagePanel,
   setShowPagePanel,
   setShowPageSettings,
-  showTheme,
-  setShowTheme,
   showLayers,
+  onSaveNow,
+  saveLabel,
   setShowLayers,
   showRuler,
   setShowRuler,
@@ -219,6 +219,12 @@ export default function EditorTopBar({
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', marginLeft: 'auto' }}>
         {saveStatus === 'saving' && <span style={{ fontSize: 9, color: '#f5a623' }}>⏳</span>}
         {saveStatus === 'saved' && <span style={{ fontSize: 9, color: '#4ade80' }}>✓</span>}
+        {saveStatus === 'offline' && <span style={{ fontSize: 9, color: '#f5a623' }}>💾</span>}
+        {saveStatus === 'error' && <span style={{ fontSize: 9, color: '#e94560' }}>!</span>}
+        {saveLabel && <span style={{ fontSize: 8, color: T.muted, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{saveLabel}</span>}
+        {onSaveNow && (
+          <button type="button" onClick={onSaveNow} title="Sauvegarder maintenant" className="forma-btn-glass" style={btnStyle(T, { accent: true })}>💾</button>
+        )}
 
         <Group T={T}>
           <div style={{ display: 'flex', borderRadius: TOKENS.radius.sm, overflow: 'hidden', border: `1px solid ${rgbaFromHex(T.border, 0.4)}` }}>
@@ -278,7 +284,6 @@ export default function EditorTopBar({
             [() => setShowLib((v) => !v), '🏗', showLib, 'Bibliothèque'],
             [() => setShowPagePanel((v) => !v), '📋', showPagePanel, 'Pages'],
             [() => setShowPageSettings(true), '🎨', false, 'Fond / Grille'],
-            [() => setShowTheme(true), '✨', showTheme, 'Thème'],
             [() => setShowLayers((v) => !v), '⊞', showLayers, 'Calques'],
             [() => setShowRuler((v) => !v), '📏', showRuler, 'Règle'],
           ].map(([fn, label, active, title], i) => (

@@ -1,4 +1,4 @@
-import { getFormatById } from '@/lib/pageFormats'
+import { normalizeFormatId, resolvePageDimensions } from '@/lib/pageFormats'
 
 export const GRID_STYLES = [
   { id: 'blank', label: 'Vierge', desc: 'Fond uni' },
@@ -59,7 +59,8 @@ export function defaultGridStyle(notebookTemplate) {
 
 export function defaultPageMeta(notebookTemplate) {
   return {
-    format: 'a4p',
+    format: 'a4',
+    rotation: 0,
     customMm: { w: 210, h: 297 },
     items: [],
     pageColor: null,
@@ -70,39 +71,48 @@ export function defaultPageMeta(notebookTemplate) {
   }
 }
 
-/** Parse elements JSON (legacy array ou objet meta) */
+function migrateMeta(el, notebookTemplate) {
+  const base = defaultPageMeta(notebookTemplate)
+  if (!el) return base
+  const norm = normalizeFormatId(el.format || base.format, el.rotation ?? 0)
+  return {
+    ...base,
+    format: norm.format,
+    rotation: el.rotation ?? norm.rotation ?? 0,
+    customMm: el.customMm || el.custom || base.customMm,
+    items: el.items || [],
+    pageColor: el.pageColor ?? null,
+    gridColor: el.gridColor ?? null,
+    gridStyle: el.gridStyle || base.gridStyle,
+    infinite: !!el.infinite || norm.format === 'infinite',
+    name: el.name || '',
+  }
+}
+
 export function parsePageElements(raw, notebookTemplate) {
   const base = defaultPageMeta(notebookTemplate)
   if (!raw) return base
   try {
     const el = typeof raw === 'string' ? JSON.parse(raw) : raw
     if (Array.isArray(el)) return { ...base, items: el }
-    return {
-      ...base,
-      format: el.format || base.format,
-      customMm: el.customMm || el.custom || base.customMm,
-      items: el.items || [],
-      pageColor: el.pageColor ?? null,
-      gridColor: el.gridColor ?? null,
-      gridStyle: el.gridStyle || base.gridStyle,
-      infinite: !!el.infinite,
-      name: el.name || '',
-    }
+    return migrateMeta(el, notebookTemplate)
   } catch {
     return base
   }
 }
 
 export function serializePageElements(meta) {
+  const norm = normalizeFormatId(meta?.format || 'a4', meta?.rotation ?? 0)
   return {
-    format: meta.format || 'a4p',
-    customMm: meta.customMm || { w: 210, h: 297 },
-    items: meta.items || [],
-    pageColor: meta.pageColor ?? null,
-    gridColor: meta.gridColor ?? null,
-    gridStyle: meta.gridStyle || 'grid10',
-    infinite: !!meta.infinite,
-    name: meta.name || '',
+    format: norm.format,
+    rotation: meta?.rotation ?? norm.rotation ?? 0,
+    customMm: meta?.customMm || { w: 210, h: 297 },
+    items: meta?.items || [],
+    pageColor: meta?.pageColor ?? null,
+    gridColor: meta?.gridColor ?? null,
+    gridStyle: meta?.gridStyle || 'grid10',
+    infinite: !!meta?.infinite || norm.format === 'infinite',
+    name: meta?.name || '',
   }
 }
 
@@ -115,10 +125,7 @@ export function pageDisplayName(pageNum, meta) {
   return name || `Page ${pageNum}`
 }
 
-export function orientationFromFormat(formatId, customMm) {
-  if (formatId === 'custom' && customMm?.w && customMm?.h) {
-    return customMm.w > customMm.h ? 'landscape' : 'portrait'
-  }
-  const f = getFormatById(formatId)
-  return f.w > f.h ? 'landscape' : 'portrait'
+export function orientationFromFormat(formatId, customMm, rotation = 0) {
+  const dims = resolvePageDimensions(formatId, customMm, rotation)
+  return dims.w > dims.h ? 'landscape' : 'portrait'
 }

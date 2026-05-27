@@ -117,6 +117,9 @@ export function getToolCursor(tool, opts = {}) {
   switch (tool) {
     case 'select':
     case 'arrow':
+      url = makeCursor(panning ? grabSvg(p) : moveSvg(p), 10, panning ? 12 : 10, panning ? 'grabbing' : 'default')
+      break
+    case 'hand':
       url = makeCursor(panning ? grabSvg(p) : handSvg(p), 10, panning ? 12 : 10, panning ? 'grabbing' : 'grab')
       break
     case 'pen':

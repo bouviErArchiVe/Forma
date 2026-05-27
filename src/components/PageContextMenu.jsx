@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { TOKENS } from '@/theme/tokens'
 import { glassStyle } from '@/theme/glass'
-import { PAGE_FORMATS, flipPageOrientation } from '@/lib/pageFormats'
+import { PAGE_FORMATS, PAGE_ROTATIONS, flipPageOrientation } from '@/lib/pageFormats'
 import {
   GRID_STYLES,
   PAGE_COLORS,
@@ -98,9 +98,10 @@ export default function PageContextMenu({
 
   if (!meta) return null
 
-  const orientation = orientationFromFormat(meta.format, customMm)
-  const isCustom = meta.format === 'custom'
   const customMm = meta.customMm || { w: 210, h: 297 }
+  const rotation = meta.rotation ?? 0
+  const orientation = orientationFromFormat(meta.format, customMm, rotation)
+  const isCustom = meta.format === 'custom'
 
   const apply = (partial) => onApply?.(partial)
 
@@ -152,7 +153,10 @@ export default function PageContextMenu({
       <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 4px', fontWeight: 700 }}>FORMAT</div>
       <select
         value={meta.format}
-        onChange={(e) => apply({ format: e.target.value })}
+        onChange={(e) => {
+          const fmt = e.target.value
+          apply({ format: fmt, infinite: fmt === 'infinite' })
+        }}
         style={{
           width: 'calc(100% - 12px)',
           margin: '0 6px 8px',
@@ -200,35 +204,46 @@ export default function PageContextMenu({
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 5, margin: '0 6px 10px' }}>
-        {[
-          { id: 'portrait', label: 'Portrait', active: orientation === 'portrait' },
-          { id: 'landscape', label: 'Paysage', active: orientation === 'landscape' },
-        ].map((o) => (
-          <button
-            key={o.id}
-            type="button"
-            disabled={o.active}
-            onClick={() => apply(flipPageOrientation(meta.format, customMm))}
-            style={{
-              flex: 1,
-              padding: '5px 0',
-              borderRadius: 7,
-              border: `1px solid ${o.active ? T.accent : T.border}`,
-              background: o.active ? `${T.accent}18` : T.bg,
-              color: o.active ? T.accent : T.ink,
-              fontSize: 9,
-              cursor: o.active ? 'default' : 'pointer',
-              opacity: o.active ? 1 : 0.9,
-            }}
-          >
-            {o.label}
-          </button>
-        ))}
+      <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 4px', fontWeight: 700 }}>ROTATION</div>
+      <div style={{ display: 'flex', gap: 5, margin: '0 6px 10px', flexWrap: 'wrap' }}>
+        <select
+          value={rotation}
+          onChange={(e) => apply({ rotation: parseInt(e.target.value, 10) })}
+          style={{
+            flex: 1,
+            minWidth: 120,
+            fontSize: 9,
+            padding: '5px 7px',
+            borderRadius: 7,
+            border: `1px solid ${T.border}`,
+            background: T.bg,
+            color: T.ink,
+          }}
+        >
+          {PAGE_ROTATIONS.map((r) => (
+            <option key={r.id} value={r.id}>{r.l}</option>
+          ))}
+        </select>
         <button
           type="button"
-          onClick={() => apply({ infinite: !meta.infinite })}
-          title="Canvas infini pour cette page"
+          onClick={() => apply(flipPageOrientation(meta.format, customMm, rotation))}
+          title="Pivoter 90°"
+          style={{
+            padding: '5px 8px',
+            borderRadius: 7,
+            border: `1px solid ${T.border}`,
+            background: T.bg,
+            color: T.ink,
+            fontSize: 9,
+            cursor: 'pointer',
+          }}
+        >
+          ↻ 90°
+        </button>
+        <button
+          type="button"
+          onClick={() => apply({ infinite: !meta.infinite, format: meta.infinite ? 'a4' : 'infinite' })}
+          title="Canvas infini"
           style={{
             padding: '5px 8px',
             borderRadius: 7,
@@ -241,6 +256,9 @@ export default function PageContextMenu({
         >
           ∞
         </button>
+      </div>
+      <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 8px' }}>
+        Orientation : {orientation === 'landscape' ? 'Paysage' : 'Portrait'}
       </div>
 
       <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 4px', fontWeight: 700 }}>GRILLE / PAPIER</div>
@@ -268,23 +286,12 @@ export default function PageContextMenu({
 
       <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 4px', fontWeight: 700 }}>FOND</div>
       <div style={{ margin: '0 6px 10px' }}>
-        <SwatchRow
-          T={T}
-          items={PAGE_COLORS}
-          value={meta.pageColor}
-          onChange={(c) => apply({ pageColor: c })}
-        />
+        <SwatchRow T={T} items={PAGE_COLORS} value={meta.pageColor} onChange={(c) => apply({ pageColor: c })} />
       </div>
 
       <div style={{ fontSize: 8, color: T.muted, padding: '0 6px 4px', fontWeight: 700 }}>COULEUR GRILLE</div>
       <div style={{ margin: '0 6px 12px' }}>
-        <SwatchRow
-          T={T}
-          type="grid"
-          items={GRID_COLORS}
-          value={meta.gridColor}
-          onChange={(c) => apply({ gridColor: c })}
-        />
+        <SwatchRow T={T} type="grid" items={GRID_COLORS} value={meta.gridColor} onChange={(c) => apply({ gridColor: c })} />
       </div>
 
       <div style={{ borderTop: `1px solid ${T.border}`, margin: '4px 0 6px' }} />

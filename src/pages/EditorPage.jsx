@@ -27,6 +27,16 @@ import UnitConverter from "@/components/UnitConverter"
 import { useCalculator, calcDrawerWidth } from "@/hooks/useCalculator"
 import { useAuth } from "@/hooks/useAuth"
 import { useCollaboration } from "@/hooks/useCollaboration"
+import DraggablePanel from "@/components/DraggablePanel"
+import { useAutoSave } from "@/hooks/useAutoSave"
+import {
+  isLocalNotebookId,
+  getLocalNotebook,
+  loadLocalPages,
+  saveLocalPages,
+  saveLocalPage,
+  upsertLocalNotebook,
+} from "@/lib/projectPersistence"
 import BrandLogo, { ThemePreviewThumb } from "@/components/BrandLogo"
 import { useTheme } from "@/hooks/useAppearance"
 import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from "@/lib/favorites"
@@ -1051,7 +1061,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     }
   },[redraw,notifySelection,onStroke,shapeStyle])
 
-  const navTool=tool==="arrow"||tool==="select"
+  const navTool=tool==="arrow"||tool==="select"||tool==="hand"
   const cursor=navTool?"default":getToolCursor(tool,{selectionActive,dark:cursorDark})
   return<canvas ref={cRef}width={pageW}height={pageH}
     style={{position:"absolute",inset:0,width:"100%",height:"100%",cursor,touchAction:"none",zIndex:5,pointerEvents:navTool?"none":"auto"}}
@@ -1299,7 +1309,7 @@ function PageSettings({T,pageColor,setPageColor,gridColor,setGridColor,gridStyle
 export default function EditorPage(){
   const navigate=useNavigate()
   const { id: routeNotebookId } = useParams()
-  const{activeNotebook,updateNotebook,setTheme,canvasTextFont,setCanvasTextFont}=useAppStore()
+  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification}=useAppStore()
   const{ T }=useTheme()
   const { user } = useAuth()
   const collab = useCollaboration()
@@ -1308,10 +1318,23 @@ export default function EditorPage(){
 
   useEffect(()=>{
     if(!routeNotebookId)return
-    if(!activeNotebook||activeNotebook.id!==routeNotebookId){
-      navigate("/",{replace:true})
+    if(activeNotebook?.id===routeNotebookId)return
+    let cancelled=false
+    const loadNb=async()=>{
+      const local=getLocalNotebook(routeNotebookId)
+      if(local&&!cancelled){setActiveNotebook(local);return}
+      try{
+        const{data:{session}}=await supabase.auth.getSession()
+        if(session?.user){
+          const{data}=await supabase.from("notebooks").select("*").eq("id",routeNotebookId).single()
+          if(!cancelled&&data){setActiveNotebook(data);return}
+        }
+      }catch{/* ignore */}
+      if(!cancelled)navigate("/",{replace:true})
     }
-  },[routeNotebookId,activeNotebook,navigate])
+    loadNb()
+    return()=>{cancelled=true}
+  },[routeNotebookId,activeNotebook,setActiveNotebook,navigate])
   const cRef=useRef()
 
   const[tool,setTool]=useState("pen")
@@ -1325,8 +1348,12 @@ export default function EditorPage(){
   const eraserMm=eraserSettings.sizeMm
   const[selectedObjects,setSelectedObjects]=useState({placed:[],images:[]})
   const[pageMenu,setPageMenu]=useState(null)
-  const[rulerPos,setRulerPos]=useState({x:0,y:0})
+  const[rulerPos,setRulerPos]=useState({x:40,y:40})
+  const rulerPosRef=useRef(rulerPos)
+  useEffect(()=>{rulerPosRef.current=rulerPos},[rulerPos])
   const[rulerDrag,setRulerDrag]=useState(null)
+  const[rulerRotation,setRulerRotation]=useState(0)
+  const[rulerLocked,setRulerLocked]=useState(false)
   const[eraserCursor,setEraserCursor]=useState(null)
   const[unitSys,setUnitSys]=useState("metric")
   const[scale,setScale]=useState("1:50")
@@ -1350,13 +1377,10 @@ export default function EditorPage(){
   const[showPageSettings,setShowPageSettings]=useState(false)
   const[pageColor,setPageColor]=useState(null)
   const[gridColor,setGridColor]=useState(null)
-  const[showTheme,setShowTheme]=useState(false)
   const[showShare,setShowShare]=useState(false)
   const[showRuler,setShowRuler]=useState(false)
   const[showProt,setShowProt]=useState(false)
-  const[saveStatus,setSaveStatus]=useState("idle")
   const[pageId,setPageId]=useState(null)
-  const saveTimer=useRef(null)
   const[pencilOnly,setPencilOnly]=useState(false)
   const[importedImages,setImportedImages]=useState([])
   const[collabCursors,setCollabCursors]=useState([])
@@ -1391,8 +1415,9 @@ export default function EditorPage(){
   const[showHistory,setShowHistory]=useState(false)
   const[actionLog,setActionLog]=useState([])
   const[infiniteMode,setInfiniteMode]=useState(false)
-  const[pageFormat,setPageFormat]=useState("a4p")
-  const[nextPageFmt,setNextPageFmt]=useState("a4p")
+  const[pageFormat,setPageFormat]=useState("a4")
+  const[nextPageFmt,setNextPageFmt]=useState("a4")
+  const[pageRotation,setPageRotation]=useState(0)
   const[customPageMm,setCustomPageMm]=useState({w:210,h:297})
   const[pageGridStyle,setPageGridStyle]=useState(()=>defaultGridStyle("plan"))
   const[pageName,setPageName]=useState("")
@@ -1448,12 +1473,13 @@ export default function EditorPage(){
       }
     }
   }, [selected])
-  const pageDims=resolvePageDimensions(pageFormat,customPageMm)
+  const pageDims=resolvePageDimensions(pageFormat,customPageMm,pageRotation)
   const PW=infiniteMode?3000:pageDims.w
   const PH=infiniteMode?3000:pageDims.h
 
   const applyPageMetaToState=useCallback(meta=>{
-    setPageFormat(meta.format||"a4p")
+    setPageFormat(meta.format||"a4")
+    setPageRotation(meta.rotation??0)
     setCustomPageMm(meta.customMm||{w:210,h:297})
     setPlaced(meta.items||[])
     setPageColor(meta.pageColor??null)
@@ -1461,11 +1487,12 @@ export default function EditorPage(){
     setPageGridStyle(meta.gridStyle||defaultGridStyle(nb.template))
     setInfiniteMode(!!meta.infinite)
     setPageName(meta.name||"")
-    setNextPageFmt(meta.format||"a4p")
+    setNextPageFmt(meta.format||"a4")
   },[nb.template])
 
   const buildCurrentPageMeta=useCallback(()=>serializePageElements({
     format:pageFormat,
+    rotation:pageRotation,
     customMm:customPageMm,
     items:placed,
     pageColor,
@@ -1473,7 +1500,30 @@ export default function EditorPage(){
     gridStyle:pageGridStyle,
     infinite:infiniteMode,
     name:pageName,
-  }),[pageFormat,customPageMm,placed,pageColor,gridColor,pageGridStyle,infiniteMode,pageName])
+  }),[pageFormat,pageRotation,customPageMm,placed,pageColor,gridColor,pageGridStyle,infiniteMode,pageName])
+
+  const buildPagePayload=useCallback(()=>({
+    elements:JSON.stringify(buildCurrentPageMeta()),
+    canvas_data:serializeCanvasData(window.__getStrokes?.()||[],layers,activeLayerId),
+  }),[buildCurrentPageMeta,layers,activeLayerId])
+
+  const{saveNow,scheduleSave,status:saveStatus,lastSavedAt}=useAutoSave({
+    notebookId:nb.id,
+    pageId,
+    pageNum:page,
+    readOnly,
+    buildPagePayload,
+    onPagesUpdate:setPages,
+    onNotebookTouch:()=>({title:nb.title,subject:nb.subject,pages_count:nb.pages_count}),
+  })
+
+  const saveLabel=useMemo(()=>{
+    if(saveStatus==="saving")return "Sauvegarde…"
+    if(saveStatus==="error")return "Erreur sauvegarde"
+    if(saveStatus==="offline")return lastSavedAt?`Local · ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`:"Sauvegarde locale"
+    if(saveStatus==="saved"&&lastSavedAt)return `Sauvegardé · ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`
+    return lastSavedAt?`Dernière sauvegarde ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`:"Auto-save actif"
+  },[saveStatus,lastSavedAt])
 
   const{
     zoom,panX,panY,panActive,spacePan,
@@ -1494,20 +1544,31 @@ export default function EditorPage(){
     const load=async()=>{
       try{
         const{data:{session}}=await supabase.auth.getSession()
-        if(!session?.user){
-          const meta=defaultPageMeta(nb.template)
-          applyPageMetaToState(meta)
-          const initialMeta=serializePageElements(meta)
-          const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
-          setPages([{id:`local-${nb.id}-p1`,page_number:1,elements:JSON.stringify(initialMeta),canvas_data:emptyCanvas}])
-          setPageId(`local-${nb.id}-p1`)
-          const norm=normalizeCanvasData(emptyCanvas)
-          setLayers(norm.layers)
-          setActiveLayerId(norm.activeLayerId)
-          if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
+        const useLocal=!session?.user||isLocalNotebookId(nb.id)
+
+        if(useLocal){
+          let localPages=loadLocalPages(nb.id)
+          if(!localPages.length){
+            const meta=defaultPageMeta(nb.template)
+            const initialMeta=serializePageElements(meta)
+            const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
+            localPages=[{id:`local-${nb.id}-p1`,page_number:1,notebook_id:nb.id,elements:JSON.stringify(initialMeta),canvas_data:emptyCanvas,updated_at:new Date().toISOString()}]
+            saveLocalPages(nb.id,localPages)
+            upsertLocalNotebook({...nb,pages_count:Math.max(nb.pages_count||1,1)})
+          }
+          setPages(localPages)
+          const pg=localPages.find(p=>p.page_number===page)||localPages[0]
+          if(pg){
+            setPageId(pg.id)
+            const norm=normalizeCanvasData(pg.canvas_data||[])
+            setLayers(norm.layers)
+            setActiveLayerId(norm.activeLayerId)
+            if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
+            applyPageMetaToState(parsePageElements(pg.elements,nb.template))
+          }
           return
         }
-        // Load current page
+
         const{data:pg}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).eq("page_number",page).single()
         if(pg){
           setPageId(pg.id)
@@ -1531,7 +1592,6 @@ export default function EditorPage(){
             applyPageMetaToState(parsePageElements(initialMeta,nb.template))
           }
         }
-        // Load all pages for thumbnails
         const{data:allPgs}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).order("page_number")
         setPages(allPgs||[])
       }catch(err){
@@ -1543,37 +1603,96 @@ export default function EditorPage(){
 
   // Add new page
   const addPage=async()=>{
+    await saveNow()
+    const newNum=(nb.pages_count||pages.length||1)+1
+    const newMeta=serializePageElements({
+      format:nextPageFmt,
+      rotation:0,
+      customMm:customPageMm,
+      items:[],
+      gridStyle:pageGridStyle||defaultGridStyle(nb.template),
+    })
+    const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
     try{
       const{data:{session}}=await supabase.auth.getSession()
-      if(!session?.user)return
-      const newNum=(nb.pages_count||1)+1
-      const newMeta=serializePageElements({format:nextPageFmt,customMm:customPageMm,items:[],gridStyle:pageGridStyle||defaultGridStyle(nb.template)})
-      const{data:np,error}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,elements:JSON.stringify(newMeta)}]).select().single()
-      if(error||!np)return
+      const useLocal=!session?.user||isLocalNotebookId(nb.id)
+      if(useLocal){
+        const np={
+          id:`local-${nb.id}-p${newNum}`,
+          page_number:newNum,
+          notebook_id:nb.id,
+          elements:JSON.stringify(newMeta),
+          canvas_data:emptyCanvas,
+          updated_at:new Date().toISOString(),
+        }
+        const all=saveLocalPage(nb.id,np,pages)
+        setPages(all)
+        updateNotebook(nb.id,{pages_count:newNum})
+        upsertLocalNotebook({...nb,pages_count:newNum,updated_at:np.updated_at})
+        setPageId(np.id)
+        const norm=normalizeCanvasData(emptyCanvas)
+        setLayers(norm.layers)
+        setActiveLayerId(norm.activeLayerId)
+        if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
+        setPage(newNum)
+        applyPageMetaToState(parsePageElements(newMeta,nb.template))
+        scheduleSave()
+        addNotification(`Page ${newNum} créée`,"success")
+        pushAction({type:"page_bg",detail:`Page ${newNum} créée`})
+        return
+      }
+      const{data:np,error}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,elements:JSON.stringify(newMeta),canvas_data:emptyCanvas}]).select().single()
+      if(error||!np)throw error||new Error("insert failed")
       await supabase.from("notebooks").update({pages_count:newNum}).eq("id",nb.id)
       updateNotebook(nb.id,{pages_count:newNum})
       setPages(p=>[...p,np].sort((a,b)=>a.page_number-b.page_number))
+      setPageId(np.id)
+      const norm=normalizeCanvasData(emptyCanvas)
+      setLayers(norm.layers)
+      setActiveLayerId(norm.activeLayerId)
+      if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
       applyPageMetaToState(parsePageElements(newMeta,nb.template))
       setPage(newNum)
+      scheduleSave()
+      addNotification(`Page ${newNum} créée`,"success")
       pushAction({type:"page_bg",detail:`Page ${newNum} créée`})
-    }catch(e){console.error(e)}
+    }catch(e){
+      console.error(e)
+      addNotification("Impossible d'ajouter la page","error")
+    }
   }
 
   const deletePage=async(pageNum)=>{
-    if((nb.pages_count||1)<=1)return
+    if((nb.pages_count||pages.length||1)<=1)return
     if(!confirm(`Supprimer la page ${pageNum} ?`))return
+    await saveNow()
     try{
       const{data:{session}}=await supabase.auth.getSession()
-      if(!session?.user)return
+      const useLocal=!session?.user||isLocalNotebookId(nb.id)
+      const newCount=(nb.pages_count||pages.length||1)-1
+      if(useLocal){
+        const remaining=pages.filter(p=>p.page_number!==pageNum).map((p,i)=>({...p,page_number:i+1}))
+        saveLocalPages(nb.id,remaining)
+        upsertLocalNotebook({...nb,pages_count:newCount,updated_at:new Date().toISOString()})
+        updateNotebook(nb.id,{pages_count:newCount})
+        setPages(remaining)
+        if(page===pageNum)goToPage(Math.max(1,pageNum-1))
+        else if(page>pageNum)goToPage(page-1)
+        addNotification(`Page ${pageNum} supprimée`,"success")
+        return
+      }
       await supabase.from("pages").delete().eq("notebook_id",nb.id).eq("page_number",pageNum)
-      const newCount=(nb.pages_count||1)-1
       await supabase.from("notebooks").update({pages_count:newCount}).eq("id",nb.id)
       updateNotebook(nb.id,{pages_count:newCount})
       const{data:allPgs}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).order("page_number")
       setPages(allPgs||[])
-      if(page===pageNum)setPage(Math.max(1,pageNum-1))
-      else if(page>pageNum)setPage(page-1)
-    }catch{}
+      if(page===pageNum)goToPage(Math.max(1,pageNum-1))
+      else if(page>pageNum)goToPage(page-1)
+      addNotification(`Page ${pageNum} supprimée`,"success")
+    }catch(e){
+      console.error(e)
+      addNotification("Impossible de supprimer la page","error")
+    }
   }
 
   const handleLassoComplete=useCallback(({type,points,x1,y1,x2,y2})=>{
@@ -1604,18 +1723,55 @@ export default function EditorPage(){
   // Duplicate page (optionally from a specific page number)
   const duplicatePageByNum=async(sourcePageNum=page)=>{
     try{
-      const{data:{session}}=await supabase.auth.getSession()
-      if(!session?.user)return
+      await saveNow()
       const src=pages.find(p=>p.page_number===sourcePageNum)
       if(!src)return
-      const newNum=(nb.pages_count||1)+1
-      await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,canvas_data:src.canvas_data,elements:src.elements}])
+      const newNum=(nb.pages_count||pages.length||1)+1
+      const{data:{session}}=await supabase.auth.getSession()
+      const useLocal=!session?.user||isLocalNotebookId(nb.id)
+      if(useLocal){
+        const np={
+          id:`local-${nb.id}-p${newNum}`,
+          page_number:newNum,
+          notebook_id:nb.id,
+          elements:src.elements,
+          canvas_data:src.canvas_data,
+          updated_at:new Date().toISOString(),
+        }
+        const all=saveLocalPage(nb.id,np,pages)
+        upsertLocalNotebook({...nb,pages_count:newNum,updated_at:np.updated_at})
+        updateNotebook(nb.id,{pages_count:newNum})
+        setPages(all)
+        setPageId(np.id)
+        const norm=normalizeCanvasData(src.canvas_data||[])
+        setLayers(norm.layers)
+        setActiveLayerId(norm.activeLayerId)
+        if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
+        applyPageMetaToState(parsePageElements(src.elements,nb.template))
+        setPage(newNum)
+        scheduleSave()
+        addNotification(`Page ${newNum} dupliquée`,"success")
+        return
+      }
+      const{data:np,error}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,canvas_data:src.canvas_data,elements:src.elements}]).select().single()
+      if(error||!np)throw error
       await supabase.from("notebooks").update({pages_count:newNum}).eq("id",nb.id)
       updateNotebook(nb.id,{pages_count:newNum})
       const{data:allPgs}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).order("page_number")
       setPages(allPgs||[])
+      setPageId(np.id)
+      const norm=normalizeCanvasData(src.canvas_data||[])
+      setLayers(norm.layers)
+      setActiveLayerId(norm.activeLayerId)
+      if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
+      applyPageMetaToState(parsePageElements(src.elements,nb.template))
       setPage(newNum)
-    }catch{}
+      scheduleSave()
+      addNotification(`Page ${newNum} dupliquée`,"success")
+    }catch(e){
+      console.error(e)
+      addNotification("Impossible de dupliquer la page","error")
+    }
   }
   const duplicatePage=()=>duplicatePageByNum(page)
 
@@ -1666,32 +1822,11 @@ export default function EditorPage(){
   }
   const deleteFlashCard=id=>saveFlash(flashCards.filter(c=>c.id!==id))
 
-  // Save
-  const save=useCallback(async strokes=>{
-    if(!pageId||readOnly)return
-    try{
-      const{data:{session}}=await supabase.auth.getSession()
-      if(!session?.user)return
-      setSaveStatus("saving")
-      await supabase.from("pages").update({canvas_data:serializeCanvasData(strokes,layers,activeLayerId),elements:JSON.stringify(buildCurrentPageMeta()),updated_at:new Date().toISOString()}).eq("id",pageId)
-      setPages(prev=>prev.map(p=>p.id===pageId?{...p,elements:JSON.stringify(buildCurrentPageMeta())}:p))
-      await supabase.from("notebooks").update({updated_at:new Date().toISOString()}).eq("id",nb.id)
-      setSaveStatus("saved");setTimeout(()=>setSaveStatus("idle"),2000)
-    }catch{setSaveStatus("error");setTimeout(()=>setSaveStatus("idle"),3000)}
-  },[pageId,nb.id,readOnly,layers,activeLayerId,buildCurrentPageMeta])
-
-  const requestSave=useCallback(()=>{
-    if(saveTimer.current)clearTimeout(saveTimer.current)
-    saveTimer.current=setTimeout(()=>{
-      const s=window.__getStrokes?.()||[]
-      save(s)
-    },1500)
-  },[save])
-
+  // Save — debounced via useAutoSave (scheduleSave / saveNow)
   const commitLayerRename=()=>{
     if(renamingLayer&&renameVal.trim()){
       setLayers(p=>p.map(x=>x.id===renamingLayer?{...x,n:renameVal.trim()}:x))
-      requestSave()
+      scheduleSave()
     }
     setRenamingLayer(null)
   }
@@ -1703,7 +1838,7 @@ export default function EditorPage(){
     setLayers(r.layers)
     window.__setStrokes?.(r.strokes)
     if(activeLayerId===id)setActiveLayerId(r.activeFallback)
-    requestSave()
+    scheduleSave()
   }
 
   const handleCanvasSelection=useCallback(info=>setCanvasSelection(info?.active?info:null),[])
@@ -1727,8 +1862,8 @@ export default function EditorPage(){
       window.__addTextStroke?.({x:payload.x,y:payload.y,text:payload.text,color:payload.color,size:payload.size,fontFamily})
     }
     setTextEdit(null)
-    requestSave()
-  },[requestSave,canvasTextFont])
+    scheduleSave()
+  },[scheduleSave,canvasTextFont])
 
   const handleTextCancel=useCallback(()=>setTextEdit(null),[])
 
@@ -1747,20 +1882,21 @@ export default function EditorPage(){
     setActionLog([])
     try{localStorage.removeItem(ACTION_KEY)}catch{}
   },[ACTION_KEY])
-  const setPageColorLogged=useCallback(c=>{setPageColor(c);pushAction({type:"page_bg",color:c,detail:c||"défaut"});requestSave()},[pushAction,requestSave])
-  const setGridColorLogged=useCallback(c=>{setGridColor(c);pushAction({type:"page_grid",color:c,detail:c||"défaut"});requestSave()},[pushAction,requestSave])
-  const setPageGridStyleLogged=useCallback(s=>{setPageGridStyle(s);pushAction({type:"page_grid",detail:s});requestSave()},[pushAction,requestSave])
+  const setPageColorLogged=useCallback(c=>{setPageColor(c);pushAction({type:"page_bg",color:c,detail:c||"défaut"});scheduleSave()},[pushAction,scheduleSave])
+  const setGridColorLogged=useCallback(c=>{setGridColor(c);pushAction({type:"page_grid",color:c,detail:c||"défaut"});scheduleSave()},[pushAction,scheduleSave])
+  const setPageGridStyleLogged=useCallback(s=>{setPageGridStyle(s);pushAction({type:"page_grid",detail:s});scheduleSave()},[pushAction,scheduleSave])
 
   const applyPageSettings=useCallback(async(pageNum,partial)=>{
     if(pageNum===page){
       if(partial.format!==undefined){setPageFormat(partial.format);setNextPageFmt(partial.format)}
+      if(partial.rotation!==undefined)setPageRotation(partial.rotation)
       if(partial.customMm)setCustomPageMm(partial.customMm)
       if(partial.pageColor!==undefined)setPageColor(partial.pageColor)
       if(partial.gridColor!==undefined)setGridColor(partial.gridColor)
       if(partial.gridStyle!==undefined)setPageGridStyle(partial.gridStyle)
       if(partial.infinite!==undefined)setInfiniteMode(!!partial.infinite)
       if(partial.name!==undefined)setPageName(partial.name)
-      requestSave()
+      scheduleSave()
       return
     }
     const pg=pages.find(p=>p.page_number===pageNum)
@@ -1768,10 +1904,19 @@ export default function EditorPage(){
     try{
       const merged=serializePageElements({...parsePageElements(pg.elements,nb.template),...partial})
       const elementsStr=JSON.stringify(merged)
+      const{data:{session}}=await supabase.auth.getSession()
+      const useLocal=!session?.user||isLocalNotebookId(nb.id)
+      if(useLocal){
+        const updated={...pg,elements:elementsStr,updated_at:new Date().toISOString()}
+        saveLocalPage(nb.id,updated,pages)
+        setPages(prev=>prev.map(p=>p.id===pg.id?updated:p))
+        upsertLocalNotebook({...nb,updated_at:updated.updated_at})
+        return
+      }
       await supabase.from("pages").update({elements:elementsStr,updated_at:new Date().toISOString()}).eq("id",pg.id)
       setPages(prev=>prev.map(p=>p.id===pg.id?{...p,elements:elementsStr}:p))
-    }catch{}
-  },[page,pages,nb.template,requestSave])
+    }catch(e){console.error(e)}
+  },[page,pages,nb,scheduleSave])
 
   const pageMenuMeta=useMemo(()=>{
     if(!pageMenu)return null
@@ -1780,7 +1925,13 @@ export default function EditorPage(){
     return parsePageElements(pg?.elements,nb.template)
   },[pageMenu,page,pages,nb.template,buildCurrentPageMeta])
 
-  const onStroke=useCallback(s=>{setCanvasRevision(r=>r+1);if(saveTimer.current)clearTimeout(saveTimer.current);saveTimer.current=setTimeout(()=>save(s),1500)},[save])
+  const onStroke=useCallback(()=>{setCanvasRevision(r=>r+1);scheduleSave()},[scheduleSave])
+
+  const goToPage=useCallback(async(num)=>{
+    if(num===page)return
+    await saveNow()
+    setPage(num)
+  },[page,saveNow])
 
   // Page versioning (localStorage, 20 versions max per page)
   const HIST_KEY=`forma_hist_${nb.id}_${page}`
@@ -1848,6 +1999,8 @@ export default function EditorPage(){
     return()=>window.removeEventListener("pointerdown",handleDblTap)
   },[])
 
+  useEffect(()=>()=>{saveNow()},[nb.id,saveNow])
+
   // Keyboard shortcuts for lasso selection + mode focus
   const closeSidePanels=useCallback(()=>{
     setShowLib(false)
@@ -1893,13 +2046,28 @@ export default function EditorPage(){
   },[page])
 
   useEffect(()=>{
+    try{
+      const raw=localStorage.getItem(`forma_ruler_${nb.id}`)
+      if(raw){const p=JSON.parse(raw);if(p?.x!=null)setRulerPos({x:p.x,y:p.y});if(p?.rotation!=null)setRulerRotation(p.rotation);if(p?.locked!=null)setRulerLocked(!!p.locked)}
+    }catch{}
+  },[nb.id])
+
+  useEffect(()=>{
     if(!rulerDrag)return
-    const mm=e=>setRulerPos({x:e.clientX-rulerDrag.ox,y:e.clientY-rulerDrag.oy})
-    const mu=()=>setRulerDrag(null)
-    window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)
-    return()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)}
-  },[rulerDrag])
-  const isPanMode=tool==="arrow"||tool==="select"
+    const onMove=e=>{
+      const dx=(e.clientX-rulerDrag.ptrX)/zoom
+      const dy=(e.clientY-rulerDrag.ptrY)/zoom
+      setRulerPos({x:Math.max(0,rulerDrag.startX+dx),y:Math.max(0,rulerDrag.startY+dy)})
+    }
+    const onUp=()=>{
+      setRulerDrag(null)
+      try{localStorage.setItem(`forma_ruler_${nb.id}`,JSON.stringify({...rulerPosRef.current,rotation:rulerRotation,locked:rulerLocked}))}catch{}
+    }
+    window.addEventListener("pointermove",onMove)
+    window.addEventListener("pointerup",onUp)
+    return()=>{window.removeEventListener("pointermove",onMove);window.removeEventListener("pointerup",onUp)}
+  },[rulerDrag,zoom,nb.id,rulerRotation,rulerLocked])
+  const isPanMode=tool==="hand"||spacePan
   const eraserAuto=tool==="eraser"&&eraserSettings.mode==="auto"
   const cursorDark=useMemo(()=>isDarkSurface(T),[T])
   const showMinimap=useMemo(()=>!focusMode&&!showPresent&&shouldShowMinimap({pageW:PW,pageH:PH,viewW:viewSize.w,viewH:viewSize.h,zoom,panX,panY}),[focusMode,showPresent,PW,PH,viewSize,zoom,panX,panY])
@@ -1907,7 +2075,7 @@ export default function EditorPage(){
   const areaCursor=useMemo(()=>{
     if(spacePan)return panActive?"grabbing":"grab"
     if(libPending) return getPlacementCursor(cursorDark)
-    if(isPanMode) return getToolCursor("arrow",{dark:cursorDark,panning:panActive})
+    if(isPanMode) return getToolCursor("hand",{dark:cursorDark,panning:panActive})
     return "default"
   },[libPending,isPanMode,panActive,cursorDark,spacePan])
   const SCALES_M=["1:1","1:2","1:5","1:10","1:20","1:50","1:100","1:200","1:500","1:1000"]
@@ -1944,7 +2112,6 @@ export default function EditorPage(){
   return(
     <div className="forma-page-shell" style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
       {showPageSettings&&<PageSettings T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} onClose={()=>setShowPageSettings(false)}/>}
-      {showTheme&&<ThemePicker current={T} onChange={th=>setTheme(th.id)} onClose={()=>setShowTheme(false)}/>}
       {showShare&&(
         <ShareModal
           T={T}
@@ -2157,6 +2324,8 @@ export default function EditorPage(){
         collabCursors={collabCursors}
         collabColors={COLLAB_COLORS}
         saveStatus={saveStatus}
+        saveLabel={saveLabel}
+        onSaveNow={saveNow}
         unitSys={unitSys}
         setUnitSys={setUnitSys}
         scale={scale}
@@ -2209,28 +2378,6 @@ export default function EditorPage(){
       {!focusMode&&<FloatingToolsToolbar T={T} tool={tool} setTool={setTool} color={color} sizeMm={sizeMm} eraserMm={eraserMm} unitSys={unitSys} formatDimension={formatDimension} toolsList={EDITOR_TOOLS_LIST} onLayoutChange={setToolbarDock}/>}
 
       <div style={{display:"flex",flex:1,overflow:"hidden",transition:"padding .25s ease",...toolbarPad}}>
-        {/* PAGE THUMBNAILS */}
-        {showPagePanel&&!focusMode&&<div style={{width:110,background:T.surface,borderRight:`1px solid ${T.border}`,display:"flex",flexDirection:"column",flexShrink:0}}>
-          <div style={{padding:"8px 8px 6px",borderBottom:`1px solid ${T.border}`}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
-              <div style={{fontSize:10,fontWeight:700,color:T.accent}}>Pages</div>
-              <div style={{display:"flex",gap:3}}>
-                <button onClick={addPage}title="Ajouter page"style={{background:"none",border:"none",cursor:"pointer",color:T.accent,fontSize:14,lineHeight:1}}>+</button>
-                <button onClick={duplicatePage}title="Dupliquer page courante"style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:11}}>⊕</button>
-              </div>
-            </div>
-            <select value={nextPageFmt}onChange={e=>setNextPageFmt(e.target.value)}style={{width:"100%",fontSize:8,padding:"2px 3px",borderRadius:5,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,outline:"none",cursor:"pointer"}}>
-              {PAGE_FORMATS.map(f=><option key={f.id}value={f.id}>{f.l} — {f.desc}</option>)}
-            </select>
-          </div>
-          <div style={{flex:1,overflowY:"auto",padding:6,display:"flex",flexDirection:"column",gap:6}}>
-            {Array.from({length:nb.pages_count||1},(_,i)=>{
-              const pageData=pages.find(p=>p.page_number===i+1)
-              return<PageThumbnail key={i+1} pageData={pageData} pageNum={i+1} current={page===i+1} T={T} notebookTemplate={nb.template} onClick={()=>setPage(i+1)} onMenu={(e,n)=>setPageMenu({x:e.clientX,y:e.clientY,pageNum:n})}/>
-            })}
-          </div>
-        </div>}
-
         {/* CANVAS */}
         <div style={{flex:1,overflow:"hidden",background:focusMode?T.panel:T.bg,position:"relative",cursor:areaCursor,transition:"background .35s ease",touchAction:"none"}}
           id="canvas-area"
@@ -2303,9 +2450,13 @@ export default function EditorPage(){
               })}
 
               {/* Ruler */}
-              {showRuler&&<div style={{position:"absolute",left:rulerPos.x,top:rulerPos.y,width:Math.min(PW,1180),height:28,background:T.surface,border:`1px solid ${T.border}`,zIndex:20,opacity:.95,borderRadius:4,boxShadow:"0 2px 10px rgba(0,0,0,.12)"}}onMouseDown={e=>{if(e.target.closest("[data-ruler-handle]")){e.stopPropagation();setRulerDrag({ox:e.clientX-rulerPos.x,oy:e.clientY-rulerPos.y})}}}>
-                <div data-ruler-handle style={{position:"absolute",left:0,top:0,width:22,height:28,cursor:rulerDrag?"grabbing":"grab",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:T.muted,borderRight:`1px solid ${T.border}`,userSelect:"none"}}>⠿</div>
-                <svg width={Math.min(PW,1158)}height={24}style={{marginLeft:22,display:"block"}}>{Array.from({length:Math.ceil(Math.min(PW,1158)/10)},(_,i)=>{const x=i*10,big=i%10===0,med=i%5===0;return<g key={i}><line x1={x}y1={24}x2={x}y2={big?5:med?10:17}stroke={T.muted}strokeWidth={big?1:.5}/>{big&&<text x={x+2}y={8}fontSize={6}fill={T.muted}fontFamily="monospace">{i*(unitSys==="metric"?10:1)}{unitSys==="metric"?"mm":"\""}</text>}</g>})}</svg>
+              {showRuler&&<div style={{position:"absolute",left:rulerPos.x,top:rulerPos.y,width:Math.min(PW,1180),height:28,background:T.surface,border:`1px solid ${T.border}`,zIndex:20,opacity:.95,borderRadius:4,boxShadow:"0 2px 10px rgba(0,0,0,.12)",transform:`rotate(${rulerRotation}deg)`,transformOrigin:"left center",touchAction:"none"}}>
+                <div data-ruler-handle
+                  onPointerDown={e=>{if(rulerLocked)return;e.preventDefault();e.stopPropagation();setRulerDrag({startX:rulerPos.x,startY:rulerPos.y,ptrX:e.clientX,ptrY:e.clientY})}}
+                  style={{position:"absolute",left:0,top:0,width:22,height:28,cursor:rulerLocked?"not-allowed":rulerDrag?"grabbing":"grab",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:T.muted,borderRight:`1px solid ${T.border}`,userSelect:"none",touchAction:"none"}}>⠿</div>
+                <button type="button" onClick={e=>{e.stopPropagation();setRulerRotation(r=>r+90);try{localStorage.setItem(`forma_ruler_${nb.id}`,JSON.stringify({...rulerPosRef.current,rotation:(rulerRotation+90)%360,locked:rulerLocked}))}catch{}}} title="Rotation 90°" style={{position:"absolute",right:26,top:4,background:T.bg,border:`1px solid ${T.border}`,borderRadius:4,cursor:"pointer",fontSize:9,color:T.muted,padding:"1px 4px",zIndex:2}}>↻</button>
+                <button type="button" onClick={e=>{e.stopPropagation();setRulerLocked(v=>!v);try{localStorage.setItem(`forma_ruler_${nb.id}`,JSON.stringify({...rulerPosRef.current,rotation:rulerRotation,locked:!rulerLocked}))}catch{}}} title={rulerLocked?"Déverrouiller":"Verrouiller"} style={{position:"absolute",right:4,top:4,background:rulerLocked?`${T.accent}22`:T.bg,border:`1px solid ${rulerLocked?T.accent:T.border}`,borderRadius:4,cursor:"pointer",fontSize:9,color:rulerLocked?T.accent:T.muted,padding:"1px 4px",zIndex:2}}>{rulerLocked?"🔒":"🔓"}</button>
+                <svg width={Math.min(PW,1158)}height={24}style={{marginLeft:22,display:"block",pointerEvents:"none"}}>{Array.from({length:Math.ceil(Math.min(PW,1158)/10)},(_,i)=>{const x=i*10,big=i%10===0,med=i%5===0;return<g key={i}><line x1={x}y1={24}x2={x}y2={big?5:med?10:17}stroke={T.muted}strokeWidth={big?1:.5}/>{big&&<text x={x+2}y={8}fontSize={6}fill={T.muted}fontFamily="monospace">{i*(unitSys==="metric"?10:1)}{unitSys==="metric"?"mm":"\""}</text>}</g>})}</svg>
               </div>}
 
               {/* Cartouche architectural */}
@@ -2329,8 +2480,8 @@ export default function EditorPage(){
                   canvasEl={cRef.current}
                   pageW={PW}
                   pageH={PH}
-                  onResize={(x1,y1,x2,y2)=>{window.__resizeSelectedShape?.(x1,y1,x2,y2);requestSave()}}
-                  onRotate={(deg)=>{window.__setSelectionRotation?.(deg);requestSave()}}
+                  onResize={(x1,y1,x2,y2)=>{window.__resizeSelectedShape?.(x1,y1,x2,y2);scheduleSave()}}
+                  onRotate={(deg)=>{window.__setSelectionRotation?.(deg);scheduleSave()}}
                 />
               )}
               {canvasSelection&&!readOnly&&(
@@ -2351,7 +2502,7 @@ export default function EditorPage(){
                   onFill={c=>window.__setSelectionFill?.(c)}
                   onFillOpacity={o=>window.__setSelectionFill?.(null,o)}
                   onRotation={deg=>window.__setSelectionRotation?.(deg)}
-                  onFont={f=>{window.__setSelectionFont?.(f);requestSave()}}
+                  onFont={f=>{window.__setSelectionFont?.(f);scheduleSave()}}
                   onClose={()=>{window.__clearSelection?.();setCanvasSelection(null)}}
                 />
               )}
@@ -2361,112 +2512,88 @@ export default function EditorPage(){
 
           {showMinimap&&<CanvasMinimap T={T} pageW={PW} pageH={PH} viewW={viewSize.w} viewH={viewSize.h} zoom={zoom} panX={panX} panY={panY} onPanChange={handleMinimapPan} getStrokes={()=>window.__getStrokes?.()||[]} placed={placed} importedImages={importedImages} revision={canvasRevision} paperColor={pageColor||T.paper}/>}
         </div>
+      </div>
 
-        {/* CALQUES — style Procreate */}
-        {showLayers&&!focusMode&&<div style={{width:196,background:T.surface,borderLeft:`1px solid ${T.border}`,display:"flex",flexDirection:"column",flexShrink:0}}>
-          <div style={{padding:"9px 12px 7px",borderBottom:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:11,color:T.accent,letterSpacing:.5}}>CALQUES</div>
-            <button onClick={()=>{
-              const nl=createLayer(layers.length,layers)
-              setLayers(p=>[...p,nl])
-              setActiveLayerId(nl.id)
-              requestSave()
-            }} style={{background:T.accent,border:"none",cursor:"pointer",color:"#fff",fontSize:13,width:20,height:20,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>+</button>
+      {!focusMode&&(
+        <DraggablePanel T={T} id="editor-pages" title="Pages" open={showPagePanel} onClose={()=>setShowPagePanel(false)} width={220} defaultSide="right"
+          headerExtra={<>
+            <button type="button" onClick={addPage} title="Ajouter page" style={{background:"none",border:"none",cursor:"pointer",color:T.accent,fontSize:14,lineHeight:1,padding:0}}>+</button>
+            <button type="button" onClick={duplicatePage} title="Dupliquer" style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:11,padding:0}}>⊕</button>
+          </>}>
+          <div style={{padding:"8px 10px 6px",borderBottom:`1px solid ${T.border}`}}>
+            <select value={nextPageFmt} onChange={e=>setNextPageFmt(e.target.value)} style={{width:"100%",fontSize:9,padding:"4px 6px",borderRadius:6,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,outline:"none",cursor:"pointer"}}>
+              {PAGE_FORMATS.map(f=><option key={f.id} value={f.id}>{f.l} — {f.desc}</option>)}
+            </select>
           </div>
-          <div style={{flex:1,overflowY:"auto",padding:"6px 5px",display:"flex",flexDirection:"column",gap:3}}>
+          <div style={{padding:8,display:"flex",flexDirection:"column",gap:6}}>
+            {Array.from({length:nb.pages_count||pages.length||1},(_,i)=>{
+              const pageData=pages.find(p=>p.page_number===i+1)
+              return<PageThumbnail key={i+1} pageData={pageData} pageNum={i+1} current={page===i+1} T={T} notebookTemplate={nb.template} onClick={()=>goToPage(i+1)} onMenu={(e,n)=>setPageMenu({x:e.clientX,y:e.clientY,pageNum:n})}/>
+            })}
+          </div>
+        </DraggablePanel>
+      )}
+
+      {!focusMode&&(
+        <DraggablePanel T={T} id="editor-layers" title="Calques" open={showLayers} onClose={()=>setShowLayers(false)} width={240} defaultSide="right"
+          headerExtra={<button type="button" onClick={()=>{const nl=createLayer(layers.length,layers);setLayers(p=>[...p,nl]);setActiveLayerId(nl.id);scheduleSave()}} style={{background:T.accent,border:"none",cursor:"pointer",color:"#fff",fontSize:13,width:20,height:20,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>+</button>}>
+          <div style={{padding:"6px 5px",display:"flex",flexDirection:"column",gap:3}}>
             {[...layers].reverse().map(l=>{
               const i=layers.findIndex(x=>x.id===l.id)
               const lc=l.color||T.accent
               const isActive=activeLayerId===l.id
               const strokeCount=(window.__getStrokes?.()||[]).filter(s=>(s.layerId||layers[0]?.id)===l.id).length
               return(
-              <div key={l.id}
-                draggable
-                onDragStart={()=>setDragLayerIdx(i)}
-                onDragOver={e=>e.preventDefault()}
-                onDrop={()=>{
-                  if(dragLayerIdx===null||dragLayerIdx===i)return
-                  setLayers(p=>reorderLayers(p,dragLayerIdx,i))
-                  setDragLayerIdx(null)
-                  requestSave()
-                }}
-                onClick={()=>setActiveLayerId(l.id)}
-                style={{borderRadius:10,background:isActive?`${lc}14`:T.bg,border:`1px solid ${isActive?lc:l.v?lc+"44":T.border}`,overflow:"hidden",transition:"border-color .15s, background .15s",cursor:"pointer"}}>
+              <div key={l.id} draggable onDragStart={()=>setDragLayerIdx(i)} onDragOver={e=>e.preventDefault()} onDrop={()=>{if(dragLayerIdx===null||dragLayerIdx===i)return;setLayers(p=>reorderLayers(p,dragLayerIdx,i));setDragLayerIdx(null);scheduleSave()}} onClick={()=>setActiveLayerId(l.id)}
+                style={{borderRadius:10,background:isActive?`${lc}14`:T.bg,border:`1px solid ${isActive?lc:l.v?lc+"44":T.border}`,overflow:"hidden",cursor:"pointer"}}>
                 <div style={{display:"flex",alignItems:"center",gap:6,padding:"7px 8px"}}>
                   <div style={{fontSize:9,color:T.muted,opacity:.7,cursor:"grab",userSelect:"none"}}>⠿</div>
                   <div style={{width:10,height:10,borderRadius:3,background:l.v?lc:T.muted,flexShrink:0}}/>
                   {renamingLayer===l.id?(
-                    <input value={renameVal} autoFocus onChange={e=>setRenameVal(e.target.value)}
-                      onBlur={commitLayerRename}
-                      onKeyDown={e=>{if(e.key==="Enter")commitLayerRename();if(e.key==="Escape")setRenamingLayer(null)}}
-                      onClick={e=>e.stopPropagation()}
+                    <input value={renameVal} autoFocus onChange={e=>setRenameVal(e.target.value)} onBlur={commitLayerRename} onKeyDown={e=>{if(e.key==="Enter")commitLayerRename();if(e.key==="Escape")setRenamingLayer(null)}} onClick={e=>e.stopPropagation()}
                       style={{flex:1,minWidth:0,padding:"2px 4px",borderRadius:5,border:`1px solid ${T.accent}`,background:T.bg,color:T.ink,fontSize:10,outline:"none"}}/>
                   ):(
-                    <div onDoubleClick={e=>{e.stopPropagation();setRenamingLayer(l.id);setRenameVal(l.n)}}
-                      style={{flex:1,fontSize:10,color:l.v?T.ink:T.muted,fontWeight:isActive?800:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                      {l.n}
-                    </div>
+                    <div onDoubleClick={e=>{e.stopPropagation();setRenamingLayer(l.id);setRenameVal(l.n)}} style={{flex:1,fontSize:10,color:l.v?T.ink:T.muted,fontWeight:isActive?800:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{l.n}</div>
                   )}
                   <span style={{fontSize:8,color:T.muted,flexShrink:0}}>{strokeCount||""}</span>
-                  <button onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,v:!x.v}:x));requestSave()}}
-                    style={{background:"none",border:"none",cursor:"pointer",color:l.v?lc:T.muted+"66",fontSize:11,padding:"0 2px",flexShrink:0}}>
-                    {l.v?"◉":"○"}
-                  </button>
-                  <button onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,locked:!x.locked}:x));requestSave()}}
-                    style={{background:"none",border:"none",cursor:"pointer",color:l.locked?T.accent:T.muted+"66",fontSize:10,padding:"0 1px",flexShrink:0}}>
-                    {l.locked?"🔒":"🔓"}
-                  </button>
-                  {layers.length>1&&(
-                    <button onClick={e=>{e.stopPropagation();handleDeleteLayer(l.id)}}
-                      style={{background:"none",border:"none",cursor:"pointer",color:"#e94560",fontSize:10,padding:"0 1px",flexShrink:0}}>×</button>
-                  )}
+                  <button type="button" onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,v:!x.v}:x));scheduleSave()}} style={{background:"none",border:"none",cursor:"pointer",color:l.v?lc:T.muted+"66",fontSize:11,padding:"0 2px",flexShrink:0}}>{l.v?"◉":"○"}</button>
+                  <button type="button" onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,locked:!x.locked}:x));scheduleSave()}} style={{background:"none",border:"none",cursor:"pointer",color:l.locked?T.accent:T.muted+"66",fontSize:10,padding:"0 1px",flexShrink:0}}>{l.locked?"🔒":"🔓"}</button>
+                  {layers.length>1&&<button type="button" onClick={e=>{e.stopPropagation();handleDeleteLayer(l.id)}} style={{background:"none",border:"none",cursor:"pointer",color:"#e94560",fontSize:10,padding:"0 1px",flexShrink:0}}>×</button>}
                 </div>
                 <div style={{padding:"0 8px 6px",display:"flex",alignItems:"center",gap:6}} onClick={e=>e.stopPropagation()}>
-                  <input type="range" min="0.05" max="1" step="0.05" value={l.opacity??1}
-                    onChange={e=>setLayers(p=>p.map(x=>x.id===l.id?{...x,opacity:parseFloat(e.target.value)}:x))}
-                    onMouseUp={()=>requestSave()}
-                    style={{flex:1,accentColor:lc,height:4}}/>
+                  <input type="range" min="0.05" max="1" step="0.05" value={l.opacity??1} onChange={e=>setLayers(p=>p.map(x=>x.id===l.id?{...x,opacity:parseFloat(e.target.value)}:x))} onMouseUp={()=>scheduleSave()} style={{flex:1,accentColor:lc,height:4}}/>
                   <span style={{fontSize:8,color:T.muted,minWidth:26,textAlign:"right"}}>{Math.round((l.opacity??1)*100)}%</span>
                 </div>
               </div>
             )})}
           </div>
-        </div>}
+        </DraggablePanel>
+      )}
 
-        {/* BIBLIOTHÈQUE */}
-        {showLib&&!focusMode&&<div style={{width:250,background:T.surface,borderLeft:`1px solid ${T.border}`,display:"flex",flexDirection:"column",flexShrink:0}}>
-          <div style={{padding:"8px 10px 6px",borderBottom:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:11,color:T.accent}}>Bibliothèque</div>
-            <button onClick={()=>setShowLib(false)}style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:15}}>×</button>
-          </div>
+      {!focusMode&&(
+        <DraggablePanel T={T} id="editor-library" title="Bibliothèque" open={showLib} onClose={()=>setShowLib(false)} width={280} defaultSide="right">
           <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
             {[["metric","📏 mm"],["imperial","📐 in"],["symbols","🏠 Sym."]].map(([m,l],i,arr)=>(
-              <button key={m} onClick={()=>{setLibMode(m);setLibCat(Object.keys(m==="symbols"?SYMBOLS_LIB:m==="metric"?LIB_METRIC:LIB_IMPERIAL)[0])}}
-                style={{flex:1,padding:"5px 0",border:"none",background:libMode===m?`${T.accent}18`:T.bg,color:libMode===m?T.accent:T.muted,cursor:"pointer",fontSize:10,fontWeight:libMode===m?700:400,borderRight:i<arr.length-1?`1px solid ${T.border}`:"none"}}>
-                {l}
-              </button>
+              <button key={m} type="button" onClick={()=>{setLibMode(m);setLibCat(Object.keys(m==="symbols"?SYMBOLS_LIB:m==="metric"?LIB_METRIC:LIB_IMPERIAL)[0])}}
+                style={{flex:1,padding:"5px 0",border:"none",background:libMode===m?`${T.accent}18`:T.bg,color:libMode===m?T.accent:T.muted,cursor:"pointer",fontSize:10,fontWeight:libMode===m?700:400,borderRight:i<arr.length-1?`1px solid ${T.border}`:"none"}}>{l}</button>
             ))}
           </div>
           <div style={{padding:"4px 7px",borderBottom:`1px solid ${T.border}`}}>
-            <input value={libSearch}onChange={e=>setLibSearch(e.target.value)}placeholder="Chercher…"style={{width:"100%",padding:"4px 7px",borderRadius:7,border:`1px solid ${T.border}`,fontSize:10,outline:"none",background:T.bg,color:T.ink,boxSizing:"border-box"}}/>
+            <input value={libSearch} onChange={e=>setLibSearch(e.target.value)} placeholder="Chercher…" style={{width:"100%",padding:"4px 7px",borderRadius:7,border:`1px solid ${T.border}`,fontSize:10,outline:"none",background:T.bg,color:T.ink,boxSizing:"border-box"}}/>
           </div>
           <div style={{overflowX:"auto",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
             <div style={{display:"flex",gap:3,padding:"4px 5px",whiteSpace:"nowrap"}}>
-              {libCats.map(c=><button key={c}onClick={()=>setLibCat(c)}style={{padding:"2px 5px",borderRadius:10,border:`1px solid ${libCat===c?T.accent:T.border}`,background:libCat===c?`${T.accent}15`:T.bg,color:libCat===c?T.accent:T.muted,fontSize:8,cursor:"pointer",whiteSpace:"nowrap"}}>{c}</button>)}
+              {libCats.map(c=><button key={c} type="button" onClick={()=>setLibCat(c)} style={{padding:"2px 5px",borderRadius:10,border:`1px solid ${libCat===c?T.accent:T.border}`,background:libCat===c?`${T.accent}15`:T.bg,color:libCat===c?T.accent:T.muted,fontSize:8,cursor:"pointer",whiteSpace:"nowrap"}}>{c}</button>)}
             </div>
           </div>
           <div style={{padding:"3px 6px",borderBottom:`1px solid ${T.border}`,background:`${T.accent}05`,flexShrink:0}}>
-            <div style={{fontSize:8,color:T.muted,textAlign:"center"}}>{libPending?`📍 Clic feuille → "${libPending.l}"`:("Clic = sélect · glisser aussi")}</div>
+            <div style={{fontSize:8,color:T.muted,textAlign:"center"}}>{libPending?`📍 Clic feuille → "${libPending.l}"`:"Clic = sélect · glisser aussi"}</div>
           </div>
-          <div style={{flex:1,overflowY:"auto",padding:4,display:"flex",flexDirection:"column",gap:3}}>
+          <div style={{padding:4,display:"flex",flexDirection:"column",gap:3}}>
             {libItems.map(el=>(
-              <div key={el.id}
-                onClick={()=>setLibPending(libPending?.id===el.id?null:el)}
-                draggable
-                onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc;const pt=screenToPage({sx:e.clientX-r.left,sy:e.clientY-r.top,viewW:r.width,viewH:r.height,pageW:PW,pageH:PH,zoom,panX,panY});setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,pt.x-elW/2),y:Math.max(0,pt.y-elH/2)}]);pushAction({type:"element_placed",detail:el.l});setLibPending(null)}}
-                style={{padding:"5px 7px",borderRadius:8,border:`1px solid ${libPending?.id===el.id?T.accent:T.border}`,background:libPending?.id===el.id?`${T.accent}10`:T.bg,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}
-                onMouseEnter={e=>{if(libPending?.id!==el.id)e.currentTarget.style.borderColor=T.accent}}
-                onMouseLeave={e=>{if(libPending?.id!==el.id)e.currentTarget.style.borderColor=T.border}}>
+              <div key={el.id} onClick={()=>setLibPending(libPending?.id===el.id?null:el)} draggable
+                onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc;const pt=screenToPage({sx:e.clientX-r.left,sy:e.clientY-r.top,viewW:r.width,viewH:r.height,pageW:PW,pageH:PH,zoom,panX,panY});setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,pt.x-elW/2),y:Math.max(0,pt.y-elH/2)}]);pushAction({type:"element_placed",detail:el.l});setLibPending(null);scheduleSave()}}
+                style={{padding:"5px 7px",borderRadius:8,border:`1px solid ${libPending?.id===el.id?T.accent:T.border}`,background:libPending?.id===el.id?`${T.accent}10`:T.bg,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
                 <div style={{width:28,height:28,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>{el.type==="sym"?renderSym(el,1/300):renderEl(el,1/300)}</div>
                 <div>
                   <div style={{fontSize:9,fontWeight:700,color:T.ink,lineHeight:1.2}}>{el.l}</div>
@@ -2475,20 +2602,20 @@ export default function EditorPage(){
               </div>
             ))}
           </div>
-        </div>}
-      </div>
+        </DraggablePanel>
+      )}
 
       {/* BOTTOM BAR */}
       <div style={{height:focusMode?0:32,overflow:"hidden",opacity:focusMode?0:1,pointerEvents:focusMode?"none":"auto",transition:"height .35s ease, opacity .28s ease",background:T.surface,borderTop:focusMode?"none":`1px solid ${T.border}`,display:"flex",alignItems:"center",padding:"0 10px",gap:8,zIndex:20,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",gap:4}}>
-          <button onClick={()=>setPage(p=>Math.max(1,p-1))}disabled={page===1}style={{background:"none",border:"none",color:page===1?T.border:T.muted,cursor:page===1?"default":"pointer",fontSize:12}}>‹</button>
+          <button onClick={()=>goToPage(Math.max(1,page-1))} disabled={page===1} style={{background:"none",border:"none",color:page===1?T.border:T.muted,cursor:page===1?"default":"pointer",fontSize:12}}>‹</button>
           <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{page}/{nb.pages_count||1}</span>
-          <button onClick={()=>setPage(p=>Math.min(nb.pages_count||1,p+1))}style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:12}}>›</button>
+          <button onClick={()=>goToPage(Math.min(nb.pages_count||1,page+1))} style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:12}}>›</button>
           <button onClick={addPage}title="Nouvelle page"style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:11}}>＋</button>
         </div>
         <div style={{width:1,height:12,background:T.border}}/>
         <div style={{display:"flex",gap:3,alignItems:"center"}}>
-          {[["↑",()=>setPan(panX,panY+80)],["↓",()=>setPan(panX,panY-80)],["←",()=>setPan(panX+80,panY)],["→",()=>setPan(panX-80,panY)],["⊙",resetViewport]].map(([l,fn])=>(
+          {[["↑",()=>setPan(panX,panY+80)],["↓",()=>setPan(panX,panY-80)],["←",()=>setPan(panX+80,panY)],["→",()=>setPan(panX-80,panY)]].map(([l,fn])=>(
             <button key={l}onClick={fn}style={{width:20,height:20,borderRadius:4,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:9}}>{l}</button>
           ))}
         </div>
@@ -2496,8 +2623,8 @@ export default function EditorPage(){
         <div style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool} · {formatDimension(tool==="eraser"?eraserMm:sizeMm,unitSys)} · {scale} · {Math.round(zoom*100)}%</div>
         {collabCursors.length>0&&<div style={{fontSize:9,color:"#4ade80"}}>🟢 {collabCursors.length}</div>}
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:4}}>
-          <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="saved"?"#4ade80":saveStatus==="saving"?"#f5a623":"#4ade80"}}/>
-          <span style={{fontSize:8,color:T.muted}}>{saveStatus==="saving"?"Sauvegarde...":saveStatus==="saved"?"Sauvegardé ✓":"Auto-save"}</span>
+          <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="saved"?"#4ade80":saveStatus==="saving"?"#f5a623":saveStatus==="error"?"#e94560":"#888"}}/>
+          <span style={{fontSize:8,color:T.muted}}>{saveLabel}</span>
         </div>
       </div>
     </div>

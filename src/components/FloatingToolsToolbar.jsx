@@ -3,7 +3,7 @@ import { glassStyle } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
 
 export const EDITOR_TOOLS_LIST = [
-  { g: 'Nav', items: [{ id: 'arrow', l: 'Flèche', i: '↖' }] },
+  { g: 'Nav', items: [{ id: 'hand', l: 'Déplacer', i: '✋' }, { id: 'arrow', l: 'Sélection', i: '↖' }] },
   { g: 'Dessin', items: [{ id: 'pen', l: 'Crayon', i: '✏' }, { id: 'highlight', l: 'Surlig.', i: '▌' }, { id: 'eraser', l: 'Gomme', i: '◻' }] },
   { g: 'Formes', items: [{ id: 'line', l: 'Ligne', i: '/' }, { id: 'rect', l: 'Rect.', i: '□' }, { id: 'circle', l: 'Cercle', i: '○' }, { id: 'shape-arrow', l: 'Flèche', i: '→' }] },
   { g: 'Archi', items: [{ id: 'dimline', l: 'Cotation', i: '↔' }, { id: 'cloud', l: 'Bulle', i: '💬' }, { id: 'lasso', l: 'Lasso', i: '⬡' }, { id: 'lasso-rect', l: 'Lasso ▭', i: '⬜' }] },
