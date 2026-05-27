@@ -49,4 +49,6 @@ export const DEFAULT_SYNC_SETTINGS = {
   autoCloudSync: true,
   versionSnapshots: true,
   saveIndicator: true,
+  cloudProvider: 'local',
+  icloudLinked: false,
 }

@@ -6,6 +6,13 @@ import { applyAppearanceToTheme } from '@/lib/appearance'
 import { normalizeCanvasTextFont } from '@/lib/fontUtils'
 import { normalizeDictationLang } from '@/lib/speechRecognition'
 import { createSafePersistStorage } from '@/lib/storage'
+import {
+  createVisualProfile as buildVisualProfile,
+  duplicateVisualProfile as cloneVisualProfile,
+  applyVisualProfileSettings,
+  seedVisualProfiles,
+} from '@/lib/visualProfiles'
+import { loadLocalProfile, saveLocalProfile, clearLocalProfile } from '@/lib/localUser'
 
 const useAppStore = create(
   persist(
@@ -105,6 +112,69 @@ const useAppStore = create(
       removeCustomProfile: (id) => set((s) => ({
         customProfiles: s.customProfiles.filter((p) => p.id !== id),
       })),
+
+      // ── Profil local (pseudo sans backend) ───────────────
+      localProfile: null,
+      setLocalProfile: (localProfile) => {
+        const saved = localProfile ? saveLocalProfile(localProfile) : null
+        if (!localProfile) clearLocalProfile()
+        set({ localProfile: saved })
+        return saved
+      },
+      initLocalProfile: () => {
+        const loaded = loadLocalProfile()
+        if (loaded) set({ localProfile: loaded })
+        return loaded
+      },
+
+      // ── Profils d'apparence visuelle ────────────────────
+      visualProfiles: [],
+      activeVisualProfileId: null,
+      initVisualProfiles: () => set((s) => {
+        const seeded = seedVisualProfiles(s.visualProfiles)
+        const defaultId = seeded.find((p) => p.isDefault)?.id || seeded[0]?.id || null
+        return {
+          visualProfiles: seeded,
+          activeVisualProfileId: s.activeVisualProfileId || defaultId,
+        }
+      }),
+      createVisualProfile: (name) => {
+        const profile = buildVisualProfile(name, get())
+        set((s) => ({ visualProfiles: [profile, ...s.visualProfiles] }))
+        return profile
+      },
+      renameVisualProfile: (id, name) => set((s) => ({
+        visualProfiles: s.visualProfiles.map((p) => (
+          p.id === id ? { ...p, name: name.trim().slice(0, 48) } : p
+        )),
+      })),
+      duplicateVisualProfile: (id) => {
+        const src = get().visualProfiles.find((p) => p.id === id)
+        if (!src) return null
+        const copy = cloneVisualProfile(src)
+        set((s) => ({ visualProfiles: [copy, ...s.visualProfiles] }))
+        return copy
+      },
+      applyVisualProfile: (id) => {
+        const profile = get().visualProfiles.find((p) => p.id === id)
+        if (!profile) return false
+        applyVisualProfileSettings(profile, get())
+        set({ activeVisualProfileId: id })
+        return true
+      },
+      deleteVisualProfile: (id) => set((s) => ({
+        visualProfiles: s.visualProfiles.filter((p) => p.id !== id),
+        activeVisualProfileId: s.activeVisualProfileId === id ? null : s.activeVisualProfileId,
+      })),
+      setDefaultVisualProfile: (id) => set((s) => ({
+        visualProfiles: s.visualProfiles.map((p) => ({ ...p, isDefault: p.id === id })),
+        activeVisualProfileId: id,
+      })),
+      saveCurrentAsVisualProfile: (name) => {
+        const profile = buildVisualProfile(name, get())
+        set((s) => ({ visualProfiles: [profile, ...s.visualProfiles], activeVisualProfileId: profile.id }))
+        return profile
+      },
 
       // ── Notebooks ────────────────────────────────────────
       notebooks: [],
@@ -276,6 +346,8 @@ const useAppStore = create(
           merged.spotifyLinks = [{ id, url: legacyUrl, label: spotifyLinkLabel(legacyUrl) }]
           merged.activeSpotifyId = persisted?.activeSpotifyId || id
         }
+        merged.visualProfiles = seedVisualProfiles(persisted?.visualProfiles)
+        merged.localProfile = persisted?.localProfile || loadLocalProfile()
         return merged
       },
       partialize: (state) => ({
@@ -310,6 +382,9 @@ const useAppStore = create(
         translationMode: state.translationMode,
         dictationLang: state.dictationLang,
         customProfiles: state.customProfiles,
+        localProfile: state.localProfile,
+        visualProfiles: state.visualProfiles,
+        activeVisualProfileId: state.activeVisualProfileId,
         lastActiveDate: state.lastActiveDate,
         activityStreak: state.activityStreak,
       }),

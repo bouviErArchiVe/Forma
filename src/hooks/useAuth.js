@@ -1,13 +1,25 @@
 // src/hooks/useAuth.js
 import { useEffect, useState } from 'react'
-import { supabase, signInWithGoogle, signInWithApple, signInWithEmail, signUpWithEmail, signOut } from '@/lib/supabase'
+import { supabase, signInWithGoogle, signInWithApple, signInWithEmail, signUpWithEmail, signOut, isSupabaseConfigured } from '@/lib/supabase'
 import useAppStore from '@/stores/useAppStore'
+import { loadLocalProfile } from '@/lib/localUser'
 
 export function useAuth() {
-  const { user, setUser } = useAppStore()
+  const { user, setUser, localProfile, setLocalProfile, initLocalProfile } = useAppStore()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    initLocalProfile()
+    const stored = loadLocalProfile()
+    if (stored && !localProfile) setLocalProfile(stored)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setLoading(false)
+      return undefined
+    }
+
     let cancelled = false
 
     const finish = (session) => {
@@ -35,14 +47,26 @@ export function useAuth() {
     }
   }, [setUser])
 
+  const hasLocalSession = !!localProfile?.pseudo
+  const isAuthenticated = !!user || hasLocalSession
+
   return {
     user,
+    localProfile,
+    setLocalProfile,
     loading,
-    isAuthenticated: !!user,
+    isAuthenticated,
+    isCloudUser: !!user,
+    isLocalUser: hasLocalSession && !user,
+    isSupabaseConfigured,
     signInWithGoogle,
     signInWithApple,
     signInWithEmail,
     signUpWithEmail,
-    signOut,
+    signOut: async () => {
+      await signOut()
+      setUser(null)
+    },
+    signOutLocal: () => setLocalProfile(null),
   }
 }

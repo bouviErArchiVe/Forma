@@ -9,6 +9,8 @@ import BrandLogo from '@/components/BrandLogo'
 import { rgbaFromHex } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
 import SyncSettingsSection from '@/components/sync/SyncSettingsSection'
+import VisualProfilesSection from '@/components/settings/VisualProfilesSection'
+import { updateLocalProfile } from '@/lib/localUser'
 import {
   updateProfile,
   uploadAvatar,
@@ -72,6 +74,83 @@ function inputStyle(T) {
     outline: 'none',
     boxSizing: 'border-box',
   }
+}
+
+function LocalProfileSection({ T, localProfile, setLocalProfile, addNotification }) {
+  const [pseudo, setPseudo] = useState(localProfile?.pseudo || '')
+  const [phone, setPhone] = useState(localProfile?.phone || '')
+  const fileRef = useRef()
+
+  useEffect(() => {
+    setPseudo(localProfile?.pseudo || '')
+    setPhone(localProfile?.phone || '')
+  }, [localProfile])
+
+  const save = () => {
+    if (!pseudo.trim()) {
+      addNotification('Le pseudo ne peut pas être vide', 'error')
+      return
+    }
+    try {
+      const updated = updateLocalProfile({ pseudo: pseudo.trim(), phone: phone.trim() })
+      setLocalProfile(updated)
+      addNotification('Profil local mis à jour', 'success')
+    } catch (e) {
+      addNotification(e.message, 'error')
+    }
+  }
+
+  const onAvatar = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const updated = updateLocalProfile({ avatarUrl: reader.result })
+        setLocalProfile(updated)
+        addNotification('Avatar mis à jour', 'success')
+      } catch (err) {
+        addNotification(err.message, 'error')
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const letter = (pseudo || '?').charAt(0).toUpperCase()
+
+  return (
+    <div>
+      <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: T.ink, marginBottom: 12 }}>Profil local</h2>
+      <p style={{ fontSize: 13, color: T.muted, marginBottom: 20, lineHeight: 1.5 }}>
+        Mode local — vos carnets sont sauvegardés sur cet appareil. Connectez un compte cloud pour la sync multi-appareils.
+      </p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+        {localProfile?.avatarUrl ? (
+          <img src={localProfile.avatarUrl} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover' }} />
+        ) : (
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: `linear-gradient(135deg,${T.accent},${T.a2})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, color: '#fff' }}>{letter}</div>
+        )}
+        <div>
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={onAvatar} />
+          <button type="button" onClick={() => fileRef.current?.click()} style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            Photo (optionnelle)
+          </button>
+        </div>
+      </div>
+      <Field label="PSEUDO" T={T}>
+        <input value={pseudo} onChange={(e) => setPseudo(e.target.value)} style={inputStyle(T)} />
+      </Field>
+      <Field label="TÉLÉPHONE (optionnel)" T={T}>
+        <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+33 6 12 34 56 78" style={inputStyle(T)} />
+      </Field>
+      <Field label="ESPACE DE TRAVAIL" T={T}>
+        <input value={localProfile?.workspaceId || ''} readOnly style={{ ...inputStyle(T), opacity: 0.7 }} />
+      </Field>
+      <button type="button" onClick={save} style={{ padding: '11px 22px', borderRadius: 10, border: 'none', background: `linear-gradient(135deg,${T.accent},${T.a2})`, color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+        Enregistrer
+      </button>
+    </div>
+  )
 }
 
 function ProfileSection({ T, profile, user, refresh }) {
@@ -152,7 +231,7 @@ function ProfileSection({ T, profile, user, refresh }) {
   )
 }
 
-function SettingsSection({ T, profile, user, refresh }) {
+function SettingsSection({ T, profile, user, refresh, isLocalUser }) {
   const { appearanceMode, setAppearanceMode } = useAppStore()
   const addNotification = useAppStore((s) => s.addNotification)
   const [email, setEmail] = useState(user.email || '')
@@ -164,6 +243,10 @@ function SettingsSection({ T, profile, user, refresh }) {
   const [notifApp, setNotifApp] = useState(profile?.notification_prefs?.in_app !== false)
 
   const savePrefs = async () => {
+    if (isLocalUser) {
+      addNotification('Préférences enregistrées localement', 'success')
+      return
+    }
     try {
       await updateProfile(user.id, {
         language: lang,
@@ -214,6 +297,8 @@ function SettingsSection({ T, profile, user, refresh }) {
     <div>
       <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: T.ink, marginBottom: 20 }}>Paramètres du compte</h2>
 
+      <VisualProfilesSection T={T} />
+
       <GlassPanel T={T} style={{ padding: 16, marginBottom: 16 }}>
         <div style={{ fontWeight: 700, fontSize: 13, color: T.ink, marginBottom: 12 }}>Apparence</div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
@@ -239,6 +324,8 @@ function SettingsSection({ T, profile, user, refresh }) {
         <button type="button" onClick={savePrefs} style={{ padding: '9px 16px', borderRadius: 8, background: T.accent, border: 'none', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Enregistrer préférences</button>
       </GlassPanel>
 
+      {!isLocalUser && (
+      <>
       <GlassPanel T={T} style={{ padding: 16, marginBottom: 16 }}>
         <div style={{ fontWeight: 700, fontSize: 13, color: T.ink, marginBottom: 12 }}>Changer l'e-mail</div>
         <Field label="NOUVEL E-MAIL" T={T}><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={inputStyle(T)} /></Field>
@@ -252,6 +339,8 @@ function SettingsSection({ T, profile, user, refresh }) {
         <Field label="CONFIRMER" T={T}><input type="password" value={pwd2} onChange={(e) => setPwd2(e.target.value)} style={inputStyle(T)} /></Field>
         <button type="button" onClick={changePwd} style={{ padding: '9px 16px', borderRadius: 8, background: T.bg, border: `1px solid ${T.border}`, color: T.ink, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Mettre à jour le mot de passe</button>
       </GlassPanel>
+      </>
+      )}
     </div>
   )
 }
@@ -655,28 +744,53 @@ export default function AccountPage() {
   const navigate = useNavigate()
   const { tab = 'profile' } = useParams()
   const { T } = useTheme()
-  const { user, signOut, isAuthenticated, loading: authLoading } = useAuth()
+  const {
+    user, signOut, signOutLocal, isAuthenticated, isLocalUser, isCloudUser,
+    loading: authLoading, localProfile, setLocalProfile,
+  } = useAuth()
   const collab = useCollaboration()
+  const addNotification = useAppStore((s) => s.addNotification)
+
+  const localNav = NAV.filter((n) => ['profile', 'settings', 'sync'].includes(n.id))
+  const navItems = isCloudUser ? NAV : localNav
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) navigate('/auth')
   }, [authLoading, isAuthenticated, navigate])
 
-  if (authLoading || !user) {
+  if (authLoading || (!user && !localProfile)) {
     return <div className="forma-app-loading">Chargement…</div>
   }
 
-  const sectionProps = { T, user, userId: user.id, profile: collab.profile, refresh: collab.refresh, ...collab }
+  const sectionProps = {
+    T,
+    user,
+    userId: user?.id,
+    profile: collab.profile,
+    refresh: collab.refresh,
+    isLocalUser,
+    localProfile,
+    setLocalProfile,
+    addNotification,
+    ...collab,
+  }
 
   let content = null
   switch (tab) {
     case 'settings': content = <SettingsSection {...sectionProps} />; break
-    case 'friends': content = <FriendsSection {...sectionProps} />; break
+    case 'friends': content = isCloudUser ? <FriendsSection {...sectionProps} /> : null; break
     case 'sync': content = <SyncSettingsSection T={T} />; break
-    case 'sharing': content = <SharingSection {...sectionProps} />; break
-    case 'folders': content = <SharedFoldersSection {...sectionProps} />; break
-    case 'notifications': content = <NotificationsSection {...sectionProps} />; break
-    default: content = <ProfileSection {...sectionProps} />
+    case 'sharing': content = isCloudUser ? <SharingSection {...sectionProps} /> : null; break
+    case 'folders': content = isCloudUser ? <SharedFoldersSection {...sectionProps} /> : null; break
+    case 'notifications': content = isCloudUser ? <NotificationsSection {...sectionProps} /> : null; break
+    default:
+      content = isLocalUser
+        ? <LocalProfileSection T={T} localProfile={localProfile} setLocalProfile={setLocalProfile} addNotification={addNotification} />
+        : <ProfileSection {...sectionProps} />
+  }
+
+  if (!content && tab !== 'profile' && tab !== 'settings' && tab !== 'sync') {
+    content = <div style={{ color: T.muted, fontSize: 13 }}>Connectez un compte cloud pour accéder à cette section.</div>
   }
 
   return (
@@ -687,7 +801,7 @@ export default function AccountPage() {
         </button>
         <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: T.ink, marginBottom: 20, padding: '0 8px' }}>Mon compte</div>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {NAV.map((item) => (
+          {navItems.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -715,8 +829,11 @@ export default function AccountPage() {
             </button>
           ))}
         </nav>
-        <button type="button" onClick={() => signOut().then(() => navigate('/'))} style={{ marginTop: 24, width: '100%', padding: 10, borderRadius: 8, border: `1px solid ${T.border}`, background: '#e9456010', color: '#e94560', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
-          Déconnexion
+        <button type="button" onClick={() => {
+          if (isLocalUser) { signOutLocal(); navigate('/auth') }
+          else signOut().then(() => navigate('/'))
+        }} style={{ marginTop: 24, width: '100%', padding: 10, borderRadius: 8, border: `1px solid ${T.border}`, background: '#e9456010', color: '#e94560', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+          {isLocalUser ? 'Quitter le profil local' : 'Déconnexion'}
         </button>
       </aside>
 

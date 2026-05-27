@@ -37,7 +37,11 @@ function EasterEggLayer() {
 
 function ActivityTracker() {
   const recordAppActivity = useAppStore((s) => s.recordAppActivity)
-  useEffect(() => { recordAppActivity() }, [recordAppActivity])
+  const initVisualProfiles = useAppStore((s) => s.initVisualProfiles)
+  useEffect(() => {
+    recordAppActivity()
+    initVisualProfiles()
+  }, [recordAppActivity, initVisualProfiles])
   return null
 }
 
