@@ -1082,8 +1082,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 }
 
 /* ══ FLOATING PANEL ══════════════════════════════════ */
-function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle,canvasTextFont,setCanvasTextFont,focusMode}){
-  const[collapsed,setCollapsed]=useState(true)
+function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle,canvasTextFont,setCanvasTextFont,focusMode,open=true,collapsed=false,onClose,onExpand}){
   const[cPal,setCPal]=useState("📐 Plans")
   const[hPal,setHPal]=useState("Standards")
   const[showWheel,setShowWheel]=useState(false)
@@ -1094,9 +1093,9 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
   const isTextTool=tool==="text"
   const prevToolRef=useRef(tool)
   useEffect(()=>{
-    if(tool==="text"&&prevToolRef.current!=="text")setCollapsed(false)
+    if(tool==="text"&&prevToolRef.current!=="text")onExpand?.()
     prevToolRef.current=tool
-  },[tool])
+  },[tool,onExpand])
 
   useEffect(()=>{
     if(!showWheel||!wheelRef.current)return
@@ -1105,11 +1104,11 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
     const dg=ctx.createRadialGradient(cx,cy,0,cx,cy,r);dg.addColorStop(0,"rgba(0,0,0,0)");dg.addColorStop(1,"rgba(0,0,0,0.5)");ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=dg;ctx.fill()
   },[showWheel])
 
+  if(focusMode||!open)return null
+
   const pickWheel=e=>{const r=wheelRef.current.getBoundingClientRect(),ctx=wheelRef.current.getContext("2d"),px2=ctx.getImageData(e.clientX-r.left,e.clientY-r.top,1,1).data;if(px2[3]>0){const h=`#${[px2[0],px2[1],px2[2]].map(v=>v.toString(16).padStart(2,"0")).join("")}`;setColor(h);setCustomHex(h)}}
   const saveFav=i=>{const f=[...favorites];f[i]=favoriteFromEditor({color,sizeMm,tool,eraserMm,label:`F${i+1}`});setFavorites(f)}
   const loadFav=f=>{if(!f)return;setColor(f.color);setSizeMm(f.sizeMm);if(f.tool)setTool(f.tool);if(f.eraserMm!=null)setEraserMm(f.eraserMm)}
-
-  if(focusMode)return null
 
   return(
     <DraggablePanel
@@ -1118,8 +1117,8 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
       title="Outils & couleurs"
       open
       collapsed={collapsed}
-      onExpand={()=>setCollapsed(false)}
-      onClose={()=>setCollapsed(true)}
+      onExpand={onExpand}
+      onClose={onClose}
       defaultSide="left"
       width={220}
       zIndexOffset={2}
@@ -1430,7 +1429,12 @@ export default function EditorPage(){
   const[pageHistory,setPageHistory]=useState([]) // [{ts, label, data, elements}]
   const[showHistory,setShowHistory]=useState(false)
   const[actionLog,setActionLog]=useState([])
+  const[showToolsToolbar,setShowToolsToolbar]=useState(true)
+  const[showPropsPanel,setShowPropsPanel]=useState(true)
+  const[propsCollapsed,setPropsCollapsed]=useState(true)
+  const[showEraserPanel,setShowEraserPanel]=useState(true)
   const[infiniteMode,setInfiniteMode]=useState(false)
+  useEffect(()=>{if(tool==="eraser")setShowEraserPanel(true)},[tool])
   const[pageFormat,setPageFormat]=useState("a4")
   const[nextPageFmt,setNextPageFmt]=useState("a4")
   const[pageRotation,setPageRotation]=useState(0)
@@ -2453,10 +2457,10 @@ export default function EditorPage(){
         </DraggablePanel>
       )}
 
-      {!focusMode&&<FloatingPanel T={T} focusMode={focusMode} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont}/>}
+      {!focusMode&&<FloatingPanel T={T} focusMode={focusMode} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont} open={showPropsPanel} collapsed={propsCollapsed} onClose={()=>setPropsCollapsed(true)} onExpand={()=>{setShowPropsPanel(true);setPropsCollapsed(false)}}/>}
 
-      {!focusMode&&tool==="eraser"&&(
-        <DraggablePanel T={T} id="editor-eraser" title="Gomme" open defaultSide="left" width={220} zIndexOffset={1}>
+      {!focusMode&&tool==="eraser"&&showEraserPanel&&(
+        <DraggablePanel T={T} id="editor-eraser" title="Gomme" open onClose={()=>setShowEraserPanel(false)} defaultSide="left" width={220} zIndexOffset={1}>
           <EraserOptionsPanel T={T} settings={eraserSettings} setSettings={setEraserSettings} unitSys={unitSys} formatDimension={formatDimension}/>
         </DraggablePanel>
       )}
@@ -2540,6 +2544,15 @@ export default function EditorPage(){
         setShowTranslate={setShowTranslate}
         showDictation={showDictation}
         setShowDictation={setShowDictation}
+        showToolsToolbar={showToolsToolbar}
+        setShowToolsToolbar={setShowToolsToolbar}
+        showPropsPanel={showPropsPanel}
+        propsCollapsed={propsCollapsed}
+        setShowPropsPanel={setShowPropsPanel}
+        setPropsCollapsed={setPropsCollapsed}
+        showEraserPanel={showEraserPanel}
+        setShowEraserPanel={setShowEraserPanel}
+        tool={tool}
         showTimer={showTimer}
         setShowTimer={setShowTimer}
         timerRunning={timerRunning}
@@ -2554,7 +2567,7 @@ export default function EditorPage(){
         exporting={exporting}
       />
 
-      {!focusMode&&<FloatingToolsToolbar T={T} tool={tool} setTool={setTool} color={color} sizeMm={sizeMm} eraserMm={eraserMm} unitSys={unitSys} formatDimension={formatDimension} toolsList={EDITOR_TOOLS_LIST} onLayoutChange={setToolbarDock}/>}
+      {!focusMode&&<FloatingToolsToolbar T={T} tool={tool} setTool={setTool} color={color} sizeMm={sizeMm} eraserMm={eraserMm} unitSys={unitSys} formatDimension={formatDimension} toolsList={EDITOR_TOOLS_LIST} onLayoutChange={setToolbarDock} open={showToolsToolbar} onClose={()=>setShowToolsToolbar(false)}/>}
 
       <div style={{display:"flex",flex:1,overflow:"hidden",transition:"padding .25s ease",...toolbarPad}}>
         {/* CANVAS */}

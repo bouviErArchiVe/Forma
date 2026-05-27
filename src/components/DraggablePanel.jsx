@@ -1,18 +1,35 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { glassStyle, rgbaFromHex } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
+import {
+  subscribePanelDock,
+  syncPanelDock,
+  clearPanelDock,
+  getPanelStackIndex,
+  getPanelStackCount,
+} from '@/lib/panelDockStack'
 
 const TOP_BAR = 46
 const BOTTOM_BAR = 32
 const SNAP = 28
 const MIN_FLOAT_W = 180
 
+function defaultFloatPos(id) {
+  let hash = 0
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0
+  return {
+    x: 16 + (Math.abs(hash) % 140),
+    y: TOP_BAR + 8 + (Math.abs(hash >> 4) % 100),
+  }
+}
+
 function loadLayout(id, defaultSide = 'right', width = 260) {
   try {
     const raw = JSON.parse(localStorage.getItem(`forma_panel_${id}`) || 'null')
     if (raw) return { w: width, ...raw }
   } catch { /* ignore */ }
-  return { mode: defaultSide, x: 16, y: TOP_BAR + 8, w: width }
+  const { x, y } = defaultFloatPos(id)
+  return { mode: defaultSide, x, y, w: width }
 }
 
 function saveLayout(id, layout) {
@@ -25,27 +42,87 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n))
 }
 
-function dockStyle(mode, width, panelHeight, dockSizes) {
+function dockStyle(mode, width, panelHeight, dockSizes, stackIdx = 0, stackCount = 1) {
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1200
   const h = vh - TOP_BAR - BOTTOM_BAR
   const topH = dockSizes?.top ?? Math.min(280, h * 0.45)
   const bottomH = dockSizes?.bottom ?? Math.min(280, h * 0.45)
   const sideW = dockSizes?.left ?? width
+  const segH = h / stackCount
+  const segW = vw / stackCount
   switch (mode) {
     case 'left':
-      return { position: 'fixed', left: 0, top: TOP_BAR, width: sideW, height: h, zIndex: TOKENS.zIndex.float }
+      return {
+        position: 'fixed',
+        left: 0,
+        top: TOP_BAR + stackIdx * segH,
+        width: sideW,
+        height: Math.max(segH - 2, 120),
+        zIndex: TOKENS.zIndex.float,
+      }
     case 'top':
-      return { position: 'fixed', left: 0, top: TOP_BAR, right: 0, height: topH, zIndex: TOKENS.zIndex.float }
+      return {
+        position: 'fixed',
+        left: stackIdx * segW,
+        top: TOP_BAR,
+        width: Math.max(segW - 1, 160),
+        height: topH,
+        zIndex: TOKENS.zIndex.float,
+      }
     case 'bottom':
-      return { position: 'fixed', left: 0, bottom: BOTTOM_BAR, right: 0, height: bottomH, zIndex: TOKENS.zIndex.float }
+      return {
+        position: 'fixed',
+        left: stackIdx * segW,
+        bottom: BOTTOM_BAR,
+        width: Math.max(segW - 1, 160),
+        height: bottomH,
+        zIndex: TOKENS.zIndex.float,
+      }
     case 'right':
-      return { position: 'fixed', right: 0, top: TOP_BAR, width: dockSizes?.right ?? width, height: h, zIndex: TOKENS.zIndex.float }
+      return {
+        position: 'fixed',
+        right: 0,
+        top: TOP_BAR + stackIdx * segH,
+        width: dockSizes?.right ?? width,
+        height: Math.max(segH - 2, 120),
+        zIndex: TOKENS.zIndex.float,
+      }
     default:
       return {
         position: 'fixed',
         width,
         height: panelHeight || Math.min(h * 0.72, h - 24),
         zIndex: TOKENS.zIndex.float + 1,
+      }
+  }
+}
+
+function collapsedBubbleStyle(mode, stackIdx, zIndexOffset, layout) {
+  const base = {
+    position: 'fixed',
+    zIndex: TOKENS.zIndex.float + zIndexOffset + 2,
+    touchAction: 'none',
+  }
+  const bubbleGap = 44
+  switch (mode) {
+    case 'left':
+      return { ...base, left: 6, top: TOP_BAR + 8 + stackIdx * bubbleGap }
+    case 'right': {
+      const vw = typeof window !== 'undefined' ? window.innerWidth : 1200
+      return { ...base, left: vw - 42, top: TOP_BAR + 8 + stackIdx * bubbleGap }
+    }
+    case 'top':
+      return { ...base, left: 8 + stackIdx * bubbleGap, top: TOP_BAR + 4 }
+    case 'bottom': {
+      const vh = typeof window !== 'undefined' ? window.innerHeight : 800
+      return { ...base, left: 8 + stackIdx * bubbleGap, top: vh - BOTTOM_BAR - 42 }
+    }
+    default:
+      return {
+        ...base,
+        left: layout.x ?? 16,
+        top: layout.y ?? TOP_BAR + 8,
       }
   }
 }
@@ -77,7 +154,7 @@ export default function DraggablePanel({
   collapsedPreview,
   resizable = true,
   zIndexOffset = 0,
-  dockOnRelease = false,
+  dockOnRelease = true,
   variant = 'panel',
   dockSizes,
   onLayoutChange,
@@ -85,9 +162,21 @@ export default function DraggablePanel({
 }) {
   const [layout, setLayout] = useState(() => loadLayout(id, defaultSide, width))
   const [dragging, setDragging] = useState(false)
+  const [dragZ, setDragZ] = useState(0)
+  const [, setStackTick] = useState(0)
   const dragRef = useRef(null)
   const layoutRef = useRef(layout)
   layoutRef.current = layout
+
+  useEffect(() => {
+    syncPanelDock(id, layout.mode, open)
+    return () => clearPanelDock(id)
+  }, [id, layout.mode, open])
+
+  useEffect(() => subscribePanelDock(() => setStackTick((t) => t + 1)), [])
+
+  const stackIdx = getPanelStackIndex(id, layout.mode)
+  const stackCount = getPanelStackCount(layout.mode)
 
   const persistLayout = useCallback((next, { save = true } = {}) => {
     setLayout(next)
@@ -106,6 +195,7 @@ export default function DraggablePanel({
     if (!rect) return
     e.currentTarget.setPointerCapture?.(e.pointerId)
     dragRef.current = { ox: e.clientX - rect.left, oy: e.clientY - rect.top }
+    setDragZ(Date.now())
     if (layoutRef.current.mode !== 'float') {
       persistLayout({ ...layoutRef.current, mode: 'float', x: rect.left, y: rect.top })
     }
@@ -173,16 +263,16 @@ export default function DraggablePanel({
   if (!open) return null
 
   if (collapsed) {
+    const bubblePos = collapsedBubbleStyle(
+      layout.mode === 'float' ? 'float' : layout.mode,
+      stackIdx,
+      zIndexOffset,
+      layout,
+    )
     return (
       <div
         data-forma-panel
-        style={{
-          position: 'fixed',
-          left: layout.x ?? 16,
-          top: layout.y ?? TOP_BAR + 8,
-          zIndex: TOKENS.zIndex.float + zIndexOffset,
-          touchAction: 'none',
-        }}
+        style={bubblePos}
         onPointerDown={startDrag}
       >
         <div onClick={(e) => { e.stopPropagation(); onExpand?.() }} style={{ cursor: 'pointer' }}>
@@ -196,8 +286,8 @@ export default function DraggablePanel({
   const isToolbar = variant === 'toolbar'
   const isVertical = layout.mode === 'left' || layout.mode === 'right'
   const panelW = layout.w || width
-  const shell = dockStyle(layout.mode, panelW, height, dockSizes)
-  shell.zIndex = (shell.zIndex || (isToolbar ? TOKENS.zIndex.toolbar : TOKENS.zIndex.float)) + zIndexOffset
+  const shell = dockStyle(layout.mode, panelW, height, dockSizes, stackIdx, stackCount)
+  shell.zIndex = (shell.zIndex || (isToolbar ? TOKENS.zIndex.toolbar : TOKENS.zIndex.float)) + zIndexOffset + (dragging ? dragZ % 1000 : 0)
   if (isFloat) {
     shell.left = layout.x ?? 16
     shell.top = layout.y ?? TOP_BAR + 8

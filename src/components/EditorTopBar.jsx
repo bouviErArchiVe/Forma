@@ -127,6 +127,15 @@ export default function EditorTopBar({
   setShowTranslate,
   showDictation,
   setShowDictation,
+  showToolsToolbar,
+  setShowToolsToolbar,
+  showPropsPanel,
+  propsCollapsed,
+  setShowPropsPanel,
+  setPropsCollapsed,
+  showEraserPanel,
+  setShowEraserPanel,
+  tool,
   showTimer,
   setShowTimer,
   timerRunning,
@@ -286,6 +295,16 @@ export default function EditorTopBar({
 
         <Group T={T}>
           {[
+            [() => setShowToolsToolbar((v) => !v), '🧰', showToolsToolbar, 'Barre outils'],
+            [() => {
+              if (!showPropsPanel || propsCollapsed) {
+                setShowPropsPanel(true)
+                setPropsCollapsed(false)
+              } else {
+                setShowPropsPanel(false)
+              }
+            }, '🖍', showPropsPanel, 'Couleurs & taille'],
+            ...(tool === 'eraser' ? [[() => setShowEraserPanel((v) => !v), '◻', showEraserPanel, 'Options gomme']] : []),
             [() => setShowLib((v) => !v), '🏗', showLib, 'Bibliothèque'],
             [() => setShowPagePanel((v) => !v), '📋', showPagePanel, 'Pages'],
             [() => setShowPageSettings(true), '🎨', false, 'Fond / Grille'],

@@ -21,6 +21,8 @@ export default function FloatingToolsToolbar({
   formatDimension,
   toolsList = EDITOR_TOOLS_LIST,
   onLayoutChange,
+  open = true,
+  onClose,
 }) {
   const [dockMode, setDockMode] = useState('top')
   const isVertical = dockMode === 'left' || dockMode === 'right'
@@ -36,13 +38,13 @@ export default function FloatingToolsToolbar({
       T={T}
       id="editor-tools"
       title=""
-      open
+      open={open}
+      onClose={onClose}
       variant="toolbar"
       defaultSide="top"
       width={52}
       dockSizes={{ top: 44, bottom: 44, left: 52, right: 52 }}
       resizable={false}
-      hideClose
       zIndexOffset={2}
       onLayoutChange={handleLayoutChange}
       headerExtra={!isVertical ? (
