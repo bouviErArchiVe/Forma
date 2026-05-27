@@ -2,8 +2,8 @@ const STORAGE_KEY = 'forma-eraser-settings'
 
 export const ERASER_MODES = [
   { id: 'auto', label: 'Auto', desc: 'Supprime l\'élément entier touché' },
-  { id: 'precision', label: 'Précision', desc: 'Efface progressivement les traits' },
-  { id: 'zone', label: 'Zone', desc: 'Supprime tout dans la zone dessinée' },
+  { id: 'precision', label: 'Précision', desc: 'Efface sous le curseur, trait par trait' },
+  { id: 'zone', label: 'Zone', desc: 'Dessine une zone — efface uniquement l\'intérieur' },
 ]
 
 export function loadEraserSettings() {

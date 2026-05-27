@@ -45,6 +45,7 @@ export default function FloatingToolsToolbar({
       width={52}
       dockSizes={{ top: 44, bottom: 44, left: 52, right: 52 }}
       resizable={false}
+      hideClose
       zIndexOffset={2}
       onLayoutChange={handleLayoutChange}
       headerExtra={!isVertical ? (
@@ -77,7 +78,8 @@ export default function FloatingToolsToolbar({
               key={t.id}
               type="button"
               title={t.l}
-              onClick={() => setTool(t.id)}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); setTool(t.id) }}
               className="forma-tool-btn"
               style={{
                 height: isVertical ? 32 : 32,

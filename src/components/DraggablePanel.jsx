@@ -188,6 +188,7 @@ export default function DraggablePanel({
   }, [id, onLayoutChange])
 
   const startDrag = useCallback((e) => {
+    if (e.target.closest('button, input, select, textarea, a, [data-no-drag]')) return
     e.preventDefault()
     e.stopPropagation()
     const panel = e.currentTarget.closest('[data-forma-panel]')

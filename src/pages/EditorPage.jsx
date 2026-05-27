@@ -693,20 +693,41 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     return s.pts.some(pt=>pointInPoly(pt,poly))
   }
 
-  const eraseStrokesInPolygon=(poly)=>{
-    if(!strokes.current.length||!canUseActiveLayer()||!poly?.length)return 0
+  const trimStrokesInPolygon=(poly)=>{
+    if(!strokes.current.length||!canUseActiveLayer()||!poly?.length||poly.length<3)return 0
     const activeId=activeLayerRef.current
-    const hit=new Set()
-    strokes.current.forEach((s,i)=>{ if(strokeLayerId(s)===activeId&&strokeInPolygon(s,poly))hit.add(i) })
-    if(!hit.size)return 0
+    const next=[]
+    let changed=0
+    strokes.current.forEach(s=>{
+      if(strokeLayerId(s)!==activeId){next.push(s);return}
+      const st=s.shapeType||s.tool
+      if(st&&st!=="pen"&&st!=="highlight"&&st!=="eraser"){
+        if(strokeInPolygon(s,poly)){changed++;return}
+        next.push(s);return
+      }
+      if(!s.pts?.length){next.push(s);return}
+      const runs=[]
+      let run=[]
+      s.pts.forEach(pt=>{
+        if(!pointInPoly(pt,poly))run.push(pt)
+        else if(run.length>=2){runs.push([...run]);run=[]}
+        else run=[]
+      })
+      if(run.length>=2)runs.push(run)
+      if(runs.length===0){changed++;return}
+      if(runs.length===1&&runs[0].length===s.pts.length){next.push(s);return}
+      runs.forEach(pts=>{if(pts.length>=2)next.push({...s,pts})})
+      changed++
+    })
+    if(!changed)return 0
     history.current.push(JSON.stringify(strokes.current))
     if(history.current.length>50)history.current.shift()
-    strokes.current=strokes.current.filter((_,i)=>!hit.has(i))
+    strokes.current=next
     selectedStrokes.current.clear()
     redraw()
     if(onStroke)onStroke(strokes.current)
-    logAction("erase_strokes",{count:hit.size})
-    return hit.size
+    logAction("erase_strokes",{count:changed})
+    return changed
   }
 
   // Smart shape detection (GoodNotes-style)
@@ -763,6 +784,12 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     if(["pen","highlight","eraser","line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)&&!canUseActiveLayer())return
     if(tool==="eraser"&&eraserMode==="zone"){
       e.preventDefault();drawing.current=true;cur.current=[p];return
+    }
+    if(tool==="eraser"&&eraserMode==="auto"){
+      e.preventDefault();drawing.current=true
+      eraseStrokesAt(p,eraserSize)
+      onEraseAt?.(p,eraserSize)
+      return
     }
     if(tool==="lasso"){
       if(tryStartGroupDrag(p,e))return
@@ -845,22 +872,15 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       return
     }
     cur.current.push(p)
-    if(cur.current.length<2)return
-    const pts=cur.current,actualSize=tool==="eraser"?eraserSize:size
-    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=actualSize;ctx.lineCap="round";ctx.lineJoin="round"
-    ctx.globalAlpha=tool==="highlight"?.4:1;ctx.globalCompositeOperation=tool==="eraser"?"destination-out":"source-over"
-    ctx.moveTo(pts[pts.length-2].x,pts[pts.length-2].y);ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);ctx.stroke()
-    ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1
 
     if(tool==="eraser"){
-      const now=performance.now()
       if(eraserMode==="zone"){
-        cur.current.push(p)
         redraw()
         const ctx2=cRef.current.getContext("2d")
         if(cur.current.length>1){
           ctx2.save()
-          ctx2.strokeStyle="rgba(233,69,96,.7)";ctx2.fillStyle="rgba(233,69,96,.12)";ctx2.lineWidth=1.5
+          ctx2.strokeStyle="rgba(233,69,96,.85)";ctx2.fillStyle="rgba(233,69,96,.14)";ctx2.lineWidth=2
+          ctx2.setLineDash([6,4])
           ctx2.beginPath();ctx2.moveTo(cur.current[0].x,cur.current[0].y)
           cur.current.forEach(pt=>ctx2.lineTo(pt.x,pt.y))
           ctx2.closePath();ctx2.fill();ctx2.stroke()
@@ -868,12 +888,31 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
         }
         return
       }
-      if(now-eraseCooldown.current.t>16){
-        eraseCooldown.current.t=now
-        eraseStrokesAt(p,eraserSize/2)
-        if(eraserMode==="auto"&&onEraseAt)onEraseAt(p,eraserSize/2)
+      if(eraserMode==="auto"){
+        const now=performance.now()
+        if(now-eraseCooldown.current.t>10){
+          eraseCooldown.current.t=now
+          eraseStrokesAt(p,eraserSize)
+          onEraseAt?.(p,eraserSize)
+        }
+        return
       }
+      // precision — gomme pixel sous le curseur uniquement
+      if(cur.current.length<2)return
+      const pts=cur.current
+      ctx.beginPath();ctx.strokeStyle="rgba(0,0,0,1)";ctx.lineWidth=eraserSize;ctx.lineCap="round";ctx.lineJoin="round"
+      ctx.globalCompositeOperation="destination-out"
+      ctx.moveTo(pts[pts.length-2].x,pts[pts.length-2].y);ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);ctx.stroke()
+      ctx.globalCompositeOperation="source-over"
+      return
     }
+
+    if(cur.current.length<2)return
+    const pts=cur.current,actualSize=size
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=actualSize;ctx.lineCap="round";ctx.lineJoin="round"
+    ctx.globalAlpha=tool==="highlight"?.4:1;ctx.globalCompositeOperation="source-over"
+    ctx.moveTo(pts[pts.length-2].x,pts[pts.length-2].y);ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);ctx.stroke()
+    ctx.globalAlpha=1
   }
 
   const up=e=>{
@@ -893,10 +932,15 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     if(holdTimer.current){clearTimeout(holdTimer.current);holdTimer.current=null}
     if(tool==="eraser"&&eraserMode==="zone"&&cur.current.length>2){
       const poly=[...cur.current]
-      eraseStrokesInPolygon(poly)
+      trimStrokesInPolygon(poly)
       onEraseZone?.(poly)
       cur.current=[]
       redraw()
+      if(onStroke)onStroke(strokes.current)
+      return
+    }
+    if(tool==="eraser"&&eraserMode==="auto"){
+      cur.current=[]
       return
     }
     if(tool==="lasso"){
@@ -946,9 +990,15 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       shape.current=null;redraw()
       logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:tool})
     } else if(cur.current.length>0){
-      pushStroke({pts:[...cur.current],color,size:tool==="eraser"?eraserSize:size,tool})
-      const last=strokes.current[strokes.current.length-1]
-      logAction(tool==="eraser"?"erase_draw":tool==="highlight"?"stroke_highlight":"stroke_pen",{stroke:last})
+      if(tool==="eraser"&&eraserMode==="precision"){
+        pushStroke({pts:[...cur.current],color:"#000000",size:eraserSize,tool:"eraser"})
+        const last=strokes.current[strokes.current.length-1]
+        logAction("erase_draw",{stroke:last})
+      } else if(tool!=="eraser"){
+        pushStroke({pts:[...cur.current],color,size,tool})
+        const last=strokes.current[strokes.current.length-1]
+        logAction(tool==="highlight"?"stroke_highlight":"stroke_pen",{stroke:last})
+      }
     }
     cur.current=[]
     if(onStroke)onStroke(strokes.current)
@@ -1477,10 +1527,11 @@ export default function EditorPage(){
   const eraseObjectsAt = useCallback((p, r) => {
     if(!p) return
     let changed = false
+    const hitR = Math.max(r, 2)
     // Imported images (absolute page coords)
     const imgs = importedRef.current || []
     if(imgs.length){
-      const hitIds = imgs.filter(img => distPointToRect(p, img.x, img.y, img.w, img.h) <= r + 2).map(i => i.id)
+      const hitIds = imgs.filter(img => distPointToRect(p, img.x, img.y, img.w, img.h) <= hitR + 2).map(i => i.id)
       if(hitIds.length){
         setImportedImages(cur => cur.filter(i => !hitIds.includes(i.id)))
         changed = true
@@ -1492,7 +1543,7 @@ export default function EditorPage(){
     if(els.length){
       const hitIds = els.filter(it => {
         const { w, h } = getPlacedSize(it)
-        return distPointToRect(p, it.x, it.y, w, h) <= r + 3
+        return distPointToRect(p, it.x, it.y, w, h) <= hitR + 3
       }).map(i => i.id)
       if(hitIds.length){
         setPlaced(cur => cur.filter(it => !hitIds.includes(it.id)))
