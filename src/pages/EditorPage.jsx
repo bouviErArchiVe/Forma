@@ -1692,6 +1692,7 @@ export default function EditorPage(){
     buildPagePayload,
     onPagesUpdate:setPages,
     onNotebookTouch:()=>({title:nb.title,subject:nb.subject,pages_count:pagesCount}),
+    userId:user?.id,
   })
   saveNowRef.current=saveNow
   scheduleSaveRef.current=scheduleSave
@@ -1861,10 +1862,14 @@ export default function EditorPage(){
 
   const saveLabel=useMemo(()=>{
     if(saveStatus==="dirty")return "Modifications en attente…"
-    if(saveStatus==="saving")return "Sauvegarde…"
+    if(saveStatus==="saving")return "Sauvegarde locale…"
+    if(saveStatus==="syncing_cloud")return "Sync cloud…"
     if(saveStatus==="error")return "Erreur sauvegarde"
     if(saveStatus==="offline")return lastSavedAt?`Local · ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`:"Sauvegarde locale"
-    if(saveStatus==="saved"&&lastSavedAt)return `Sauvegardé · ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`
+    if((saveStatus==="saved_local"||saveStatus==="saved"||saveStatus==="synced")&&lastSavedAt){
+      const prefix=saveStatus==="synced"?"Sync ·":saveStatus==="saved_local"?"Local ·":"Sauvegardé ·"
+      return `${prefix} ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`
+    }
     if(lastSavedAt)return `Dernière sauvegarde ${lastSavedAt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`
     return "Prêt"
   },[saveStatus,lastSavedAt])
@@ -3185,7 +3190,7 @@ export default function EditorPage(){
         <div style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool} · {formatDimension(tool==="eraser"?eraserMm:sizeMm,unitSys)} · {scale} · {Math.round(zoom*100)}%</div>
         {notebookCollab.remoteCursors.length>0&&<div style={{fontSize:9,color:"#4ade80"}}>🟢 {notebookCollab.remoteCursors.length}</div>}
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:4}}>
-          <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="saved"?"#4ade80":saveStatus==="saving"?"#f5a623":saveStatus==="dirty"?"#f5a623":saveStatus==="error"?"#e94560":"#888"}}/>
+          <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="synced"||saveStatus==="saved_local"||saveStatus==="saved"?"#4ade80":saveStatus==="syncing_cloud"?"#6b9fd4":saveStatus==="saving"?"#f5a623":saveStatus==="dirty"?"#f5a623":saveStatus==="offline"?"#8b95a8":saveStatus==="error"?"#e94560":"#888"}}/>
           <span style={{fontSize:8,color:T.muted}}>{saveLabel}</span>
         </div>
       </div>

@@ -62,6 +62,7 @@ export function resetFormaLocalData() {
       if (
         k.startsWith('forma_') ||
         k.startsWith('forma-') ||
+        k.startsWith('forma-sync') ||
         k.startsWith('forma_pages_') ||
         k.startsWith('archnote')
       ) {

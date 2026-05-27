@@ -21,6 +21,8 @@ import GamesPage from '@/pages/GamesPage'
 import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
 import Notifications from '@/components/Notifications'
+import SyncRecoveryModal from '@/components/sync/SyncRecoveryModal'
+import { useSyncBootstrap } from '@/hooks/useSyncBootstrap'
 import EmojiBurst from '@/components/easter-eggs/EmojiBurst'
 import PageTransition from '@/components/PageTransition'
 import useAppStore from '@/stores/useAppStore'
@@ -43,10 +45,16 @@ function ProtectedRoute({ children }) {
   return children
 }
 
+function SyncLayer() {
+  useSyncBootstrap()
+  return <SyncRecoveryModal />
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <ActivityTracker />
+      <SyncLayer />
       <Notifications />
       <EasterEggLayer />
       <PageTransition>

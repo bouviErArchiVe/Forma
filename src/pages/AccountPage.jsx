@@ -7,6 +7,7 @@ import useAppStore from '@/stores/useAppStore'
 import GlassPanel from '@/components/ui/GlassPanel'
 import { rgbaFromHex } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
+import SyncSettingsSection from '@/components/sync/SyncSettingsSection'
 import {
   updateProfile,
   uploadAvatar,
@@ -41,6 +42,7 @@ const NAV = [
   { id: 'profile', label: 'Mon profil', icon: '👤' },
   { id: 'settings', label: 'Paramètres', icon: '⚙' },
   { id: 'friends', label: 'Amis', icon: '🤝' },
+  { id: 'sync', label: 'Sauvegarde', icon: '💾' },
   { id: 'sharing', label: 'Partage', icon: '🔗' },
   { id: 'folders', label: 'Dossiers partagés', icon: '📂' },
   { id: 'notifications', label: 'Notifications', icon: '🔔' },
@@ -669,6 +671,7 @@ export default function AccountPage() {
   switch (tab) {
     case 'settings': content = <SettingsSection {...sectionProps} />; break
     case 'friends': content = <FriendsSection {...sectionProps} />; break
+    case 'sync': content = <SyncSettingsSection T={T} />; break
     case 'sharing': content = <SharingSection {...sectionProps} />; break
     case 'folders': content = <SharedFoldersSection {...sectionProps} />; break
     case 'notifications': content = <NotificationsSection {...sectionProps} />; break
