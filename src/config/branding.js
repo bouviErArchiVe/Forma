@@ -18,6 +18,7 @@ export const MODULES = {
   formatCal: { name: 'FormatCal', route: '/formatcal' },
   formaCombine: { name: 'FormaCombine', route: '/formacombine' },
   formaFolder: { name: 'FormaFolder', route: '/formafolder' },
+  formaReview: { name: 'FormaReview', route: '/formareview' },
   fTheme: { name: 'FTheme', route: null },
   fMoodboard: { name: 'FMoodboard', route: '/fmoodboard', legacyRoute: '/moodboard' },
   fPause: { name: 'FPause', route: '/fpause', legacyRoute: '/games' },
