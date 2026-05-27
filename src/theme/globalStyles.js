@@ -1,9 +1,14 @@
 import { TOKENS } from './tokens'
 
+function isDarkAppearance(mode) {
+  return mode === 'dark' || mode === 'black'
+}
+
 /** CSS global injecté dans App.jsx — reset + tokens CSS + animations + classes UI */
-export function buildGlobalThemeCSS(T, appFont) {
+export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
   const font = appFont || T.font || 'Nunito'
   const { radius, spacing, transition, shadow } = TOKENS
+  const dark = isDarkAppearance(appearanceMode)
 
   return `
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,11 +17,14 @@ export function buildGlobalThemeCSS(T, appFont) {
       --accent: ${T.accent};
       --app-font: '${font}', sans-serif;
       --forma-accent: ${T.accent};
+      --forma-accent-2: ${T.a2 || T.accent};
       --forma-bg: ${T.bg};
       --forma-ink: ${T.ink};
+      --forma-muted: ${T.muted};
       --forma-border: ${T.border};
       --forma-surface: ${T.surface};
       --forma-panel: ${T.panel};
+      --forma-paper: ${T.paper || T.surface};
       --forma-radius-sm: ${radius.sm}px;
       --forma-radius-md: ${radius.md}px;
       --forma-radius-lg: ${radius.lg}px;
@@ -28,17 +36,59 @@ export function buildGlobalThemeCSS(T, appFont) {
       --forma-transition-spring: ${transition.spring};
       --forma-shadow-float: ${shadow.float};
     }
+    html {
+      background: ${T.bg};
+      color: ${T.ink};
+    }
     body {
       font-family: var(--app-font);
       -webkit-font-smoothing: antialiased;
       background: ${T.bg};
       color: ${T.ink};
     }
-    #root { height: 100%; }
-    button, input, select, textarea { font-family: var(--app-font); }
+    html.forma-dark, html.forma-black { color-scheme: dark; }
+    html.forma-light, html.forma-soft-gray { color-scheme: light; }
+    #root {
+      height: 100%;
+      min-height: 100%;
+      background: ${T.bg};
+      color: ${T.ink};
+      font-family: var(--app-font);
+    }
+    button, input, select, textarea {
+      font-family: var(--app-font);
+      color: inherit;
+    }
+    input, select, textarea {
+      background: ${T.surface};
+      color: ${T.ink};
+      border-color: ${T.border};
+    }
+    input::placeholder, textarea::placeholder {
+      color: ${T.muted};
+      opacity: .85;
+    }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .92em;
+    }
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
+
+    /* Mode sombre — surfaces hardcodées remplacées par tokens */
+    html.forma-dark .forma-surface-auto,
+    html.forma-black .forma-surface-auto {
+      background: var(--forma-surface) !important;
+      color: var(--forma-ink) !important;
+      border-color: var(--forma-border) !important;
+    }
+
+    html.forma-animations-off .forma-animate-in,
+    html.forma-animations-off .forma-animate-scale,
+    html.forma-animations-off .fade-up {
+      animation: none !important;
+    }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(8px); }
@@ -68,7 +118,7 @@ export function buildGlobalThemeCSS(T, appFont) {
     }
     .forma-btn-glass:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(0,0,0,.1);
+      box-shadow: 0 4px 14px rgba(0,0,0,${dark ? '.35' : '.1'});
     }
     .forma-btn-glass:active:not(:disabled) {
       transform: scale(.96) translateY(0);
@@ -88,6 +138,36 @@ export function buildGlobalThemeCSS(T, appFont) {
       align-self: stretch;
       background: linear-gradient(to bottom, transparent, ${T.border}88, transparent);
       margin: 0 2px;
+    }
+
+    .forma-logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .forma-logo-container .forma-logo {
+      margin: 0 auto;
+      display: block;
+      flex-shrink: 0;
+      object-fit: contain;
+      object-position: center center;
+    }
+    .forma-logo-container .forma-logo-wordmark {
+      margin: 0;
+      padding: 0;
+      letter-spacing: 0;
+      text-align: center;
+      width: 100%;
+    }
+
+    .forma-brand-title {
+      font-family: 'Syne', sans-serif;
+      letter-spacing: 0;
     }
   `
 }

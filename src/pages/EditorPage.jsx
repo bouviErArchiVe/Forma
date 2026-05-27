@@ -9,6 +9,19 @@ import { TOKENS } from "@/theme/tokens"
 import { getToolCursor, getPlacementCursor, isDarkSurface } from "@/theme/cursors"
 import { normalizeCanvasData, serializeCanvasData, DEFAULT_LAYERS, defaultActiveLayerId, createLayer, reorderLayers, deleteLayer } from "@/lib/layers"
 import { collectSnapLines, snapDelta, snapPoint, drawSnapGuides } from "@/lib/snap"
+import { shouldShowMinimap } from "@/lib/minimap"
+import CanvasMinimap from "@/components/CanvasMinimap"
+import FocusToolbar from "@/components/FocusToolbar"
+import FloatingToolsToolbar, { EDITOR_TOOLS_LIST } from "@/components/FloatingToolsToolbar"
+import HistoryPanel from "@/components/HistoryPanel"
+import { buildActionEntry } from "@/lib/actionHistory"
+import PageContextMenu from "@/components/PageContextMenu"
+import BrandLogo, { ThemePreviewThumb } from "@/components/BrandLogo"
+import { useTheme } from "@/hooks/useAppearance"
+import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from "@/lib/favorites"
+import { loadEraserSettings, saveEraserSettings, ERASER_MODES } from "@/lib/eraserSettings"
+import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/lib/canvasHitTest"
+import { screenToPage } from "@/lib/viewport"
 
 /* ══ PALETTES ═══════════════════════════════════════════ */
 const CPAL={
@@ -366,10 +379,11 @@ function Paper({tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
 }
 
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */
-function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId}){
+function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone}){
   const drawing=useRef(false)
   const strokes=useRef([])   // committed strokes
   const history=useRef([])   // for multi-level undo (copy of strokes at each commit)
+  const redoStack=useRef([])
   const cur=useRef([])
   const shape=useRef(null)
   const holdTimer=useRef(null) // for shape auto-correct on hold
@@ -382,6 +396,9 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
   const eraseCooldown=useRef({t:0})
   const onSelRef=useRef(onSelectionChange)
   onSelRef.current=onSelectionChange
+  const onActionRef=useRef(onAction)
+  onActionRef.current=onAction
+  const logAction=(type,payload={})=>onActionRef.current?.({type,...payload})
   const layersRef=useRef(layers||[])
   const activeLayerRef=useRef(activeLayerId)
   useEffect(()=>{layersRef.current=layers||[]},[layers])
@@ -648,7 +665,38 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     }
     redraw()
     if(onStroke)onStroke(strokes.current)
+    logAction("erase_strokes",{count:hit.size})
     return true
+  }
+
+  const pointInPoly=(p,poly)=>{
+    let inside=false
+    for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+      const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y
+      if((yi>p.y)!==(yj>p.y)&&p.x<((xj-xi)*(p.y-yi))/(yj-yi+1e-9)+xi)inside=!inside
+    }
+    return inside
+  }
+
+  const strokeInPolygon=(s,poly)=>{
+    if(!s?.pts?.length)return false
+    return s.pts.some(pt=>pointInPoly(pt,poly))
+  }
+
+  const eraseStrokesInPolygon=(poly)=>{
+    if(!strokes.current.length||!canUseActiveLayer()||!poly?.length)return 0
+    const activeId=activeLayerRef.current
+    const hit=new Set()
+    strokes.current.forEach((s,i)=>{ if(strokeLayerId(s)===activeId&&strokeInPolygon(s,poly))hit.add(i) })
+    if(!hit.size)return 0
+    history.current.push(JSON.stringify(strokes.current))
+    if(history.current.length>50)history.current.shift()
+    strokes.current=strokes.current.filter((_,i)=>!hit.has(i))
+    selectedStrokes.current.clear()
+    redraw()
+    if(onStroke)onStroke(strokes.current)
+    logAction("erase_strokes",{count:hit.size})
+    return hit.size
   }
 
   // Smart shape detection (GoodNotes-style)
@@ -682,6 +730,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 
   const dn=e=>{
     if(pencilOnly&&e.pointerType==="touch")return
+    if(tool==="arrow"||tool==="select")return
     const p=gP(e)
     if(tool==="eyedropper"){
       const ctx=cRef.current.getContext("2d")
@@ -692,10 +741,13 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     if(tool==="text"){
       if(!canUseActiveLayer())return
       const txt=prompt("Texte :")
-      if(txt){pushStroke({pts:[p,{x:p.x+1,y:p.y+1}],color,size,tool:"text",text:txt,shapeType:"text"});redraw();if(onStroke)onStroke(strokes.current)}
+      if(txt){pushStroke({pts:[p,{x:p.x+1,y:p.y+1}],color,size,tool:"text",text:txt,shapeType:"text"});redraw();if(onStroke)onStroke(strokes.current);logAction("stroke_text",{stroke:strokes.current[strokes.current.length-1]})}
       return
     }
-    if(["pen","highlight","eraser","line","rect","circle","arrow","cloud","dimline"].includes(tool)&&!canUseActiveLayer())return
+    if(["pen","highlight","eraser","line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)&&!canUseActiveLayer())return
+    if(tool==="eraser"&&eraserMode==="zone"){
+      e.preventDefault();drawing.current=true;cur.current=[p];return
+    }
     if(tool==="lasso"){
       if(tryStartGroupDrag(p,e))return
       selectedStrokes.current.clear();lassoRect.current=null;lassoPath.current=[p];notifySelection();drawing.current=true;return
@@ -712,7 +764,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       }
     }
     e.preventDefault();drawing.current=true;cur.current=[p]
-    if(["line","rect","circle","arrow","cloud","dimline"].includes(tool)){
+    if(["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)){
       const sp=snapPoint(p,strokes.current,new Set())
       shape.current={start:{x:sp.x,y:sp.y}}
       return
@@ -729,6 +781,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
             drawing.current=false
             redraw()
             if(onStroke)onStroke(strokes.current)
+            logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:detected.shapeType||detected.type})
           }
         }
       },800)
@@ -762,7 +815,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       lassoRect.current={x1:Math.min(s.x,p.x),y1:Math.min(s.y,p.y),x2:Math.max(s.x,p.x),y2:Math.max(s.y,p.y)}
       redraw();return
     }
-    if(["line","rect","circle","arrow","cloud","dimline"].includes(tool)&&shape.current){
+    if(["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)&&shape.current){
       const snapped=snapPoint(p,strokes.current,new Set())
       snapGuides.current=snapped.guides
       const ep={x:snapped.x,y:snapped.y}
@@ -773,7 +826,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       if(tool==="line"||tool==="dimline"){ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(ep.x,ep.y);ctx.stroke()}
       else if(tool==="rect"){ctx.strokeRect(s.x,s.y,ep.x-s.x,ep.y-s.y)}
       else if(tool==="circle"){const rx=Math.abs(ep.x-s.x)/2,ry=Math.abs(ep.y-s.y)/2;if(rx>0&&ry>0){ctx.beginPath();ctx.ellipse((s.x+ep.x)/2,(s.y+ep.y)/2,rx,ry,0,0,Math.PI*2);ctx.stroke()}}
-      else if(tool==="arrow"){
+      else if(tool==="shape-arrow"){
         const ang=Math.atan2(ep.y-s.y,ep.x-s.x),hs=Math.min(20,size*5+10)
         ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(ep.x,ep.y);ctx.stroke()
         ctx.beginPath();ctx.moveTo(ep.x,ep.y);ctx.lineTo(ep.x-hs*Math.cos(ang-Math.PI/6),ep.y-hs*Math.sin(ang-Math.PI/6));ctx.lineTo(ep.x-hs*Math.cos(ang+Math.PI/6),ep.y-hs*Math.sin(ang+Math.PI/6));ctx.closePath();ctx.fillStyle=color;ctx.fill()
@@ -793,10 +846,24 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 
     if(tool==="eraser"){
       const now=performance.now()
+      if(eraserMode==="zone"){
+        cur.current.push(p)
+        redraw()
+        const ctx2=cRef.current.getContext("2d")
+        if(cur.current.length>1){
+          ctx2.save()
+          ctx2.strokeStyle="rgba(233,69,96,.7)";ctx2.fillStyle="rgba(233,69,96,.12)";ctx2.lineWidth=1.5
+          ctx2.beginPath();ctx2.moveTo(cur.current[0].x,cur.current[0].y)
+          cur.current.forEach(pt=>ctx2.lineTo(pt.x,pt.y))
+          ctx2.closePath();ctx2.fill();ctx2.stroke()
+          ctx2.restore()
+        }
+        return
+      }
       if(now-eraseCooldown.current.t>16){
         eraseCooldown.current.t=now
         eraseStrokesAt(p,eraserSize/2)
-        if(onEraseAt) onEraseAt(p, eraserSize/2)
+        if(eraserMode==="auto"&&onEraseAt)onEraseAt(p,eraserSize/2)
       }
     }
   }
@@ -810,11 +877,20 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       history.current.push(JSON.stringify(strokes.current))
       if(history.current.length>50)history.current.shift()
       if(onStroke)onStroke(strokes.current)
+      logAction("move_selection",{count:selectedStrokes.current.size})
       notifySelection()
       return
     }
     drawing.current=false
     if(holdTimer.current){clearTimeout(holdTimer.current);holdTimer.current=null}
+    if(tool==="eraser"&&eraserMode==="zone"&&cur.current.length>2){
+      const poly=[...cur.current]
+      eraseStrokesInPolygon(poly)
+      onEraseZone?.(poly)
+      cur.current=[]
+      redraw()
+      return
+    }
     if(tool==="lasso"){
       // Lasso complete — select strokes inside polygon
       if(lassoPath.current&&lassoPath.current.length>3){
@@ -826,6 +902,8 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
           if(s.pts&&s.pts.some(pt=>pointInPolygon(pt,poly)))selectedStrokes.current.add(i)
         })
         redraw();notifySelection()
+        if(selectedStrokes.current.size)logAction("select_strokes",{count:selectedStrokes.current.size})
+        if(lassoPath.current?.length>3)onLassoComplete?.({type:"polygon",points:[...lassoPath.current]})
       }else{
         lassoPath.current=null;redraw();notifySelection()
       }
@@ -841,6 +919,8 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
           if(!lm[strokeLayerId(s)]?.v||lm[strokeLayerId(s)]?.locked)return
           if(s.pts&&s.pts.some(pt=>pt.x>=lr.x1&&pt.x<=lr.x2&&pt.y>=lr.y1&&pt.y<=lr.y2))selectedStrokes.current.add(i)
         })
+        if(selectedStrokes.current.size)logAction("select_strokes",{count:selectedStrokes.current.size})
+        if(lassoRect.current)onLassoComplete?.({type:"rect",...lassoRect.current})
       }
       shape.current=null;redraw();notifySelection()
       return
@@ -848,15 +928,19 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     const p=gP(e)
     history.current.push(JSON.stringify(strokes.current)) // save for undo
     if(history.current.length>50)history.current.shift()
+    redoStack.current=[]
     snapGuides.current=[]
-    if(["line","rect","circle","arrow","cloud","dimline"].includes(tool)&&shape.current){
+    if(["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)&&shape.current){
       const s=shape.current.start
       const end=shape.current.end||p
       const finalPts=tool==="cloud"?[{x:Math.min(s.x,end.x),y:Math.min(s.y,end.y)},{x:Math.max(s.x,end.x),y:Math.max(s.y,end.y)}]:[s,end]
-      pushStroke({pts:finalPts,color,size,tool,shapeType:tool})
+      pushStroke({pts:finalPts,color,size,tool,shapeType:tool==="shape-arrow"?"arrow":tool})
       shape.current=null;redraw()
+      logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:tool})
     } else if(cur.current.length>0){
       pushStroke({pts:[...cur.current],color,size:tool==="eraser"?eraserSize:size,tool})
+      const last=strokes.current[strokes.current.length-1]
+      logAction(tool==="eraser"?"erase_draw":tool==="highlight"?"stroke_highlight":"stroke_pen",{stroke:last})
     }
     cur.current=[]
     if(onStroke)onStroke(strokes.current)
@@ -864,14 +948,22 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 
   useEffect(()=>{
     window.__undo=()=>{
-      if(history.current.length>0){
-        strokes.current=JSON.parse(history.current.pop())
-      }else{strokes.current.pop()}
+      if(history.current.length===0)return
+      redoStack.current.push(JSON.stringify(strokes.current))
+      strokes.current=JSON.parse(history.current.pop())
       redraw()
       if(onStroke)onStroke(strokes.current)
+      logAction("undo")
     }
-    window.__redo=()=>{} // future
-    window.__clear=()=>{history.current.push(JSON.stringify(strokes.current));strokes.current=[];redraw();if(onStroke)onStroke(strokes.current)}
+    window.__redo=()=>{
+      if(redoStack.current.length===0)return
+      history.current.push(JSON.stringify(strokes.current))
+      strokes.current=JSON.parse(redoStack.current.pop())
+      redraw()
+      if(onStroke)onStroke(strokes.current)
+      logAction("redo")
+    }
+    window.__clear=()=>{history.current.push(JSON.stringify(strokes.current));strokes.current=[];redraw();if(onStroke)onStroke(strokes.current);logAction("clear_canvas")}
     window.__loadStrokes=data=>{try{const norm=normalizeCanvasData(data);strokes.current=norm.strokes;selectedStrokes.current.clear();redraw()}catch{}}
     window.__getStrokes=()=>strokes.current
     window.__setStrokes=st=>{strokes.current=st||[];redraw();if(onStroke)onStroke(strokes.current)}
@@ -880,15 +972,18 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     window.__clearSelection=()=>{selectedStrokes.current.clear();lassoPath.current=null;lassoRect.current=null;redraw();notifySelection()}
     window.__deleteSelected=()=>{
       if(selectedStrokes.current.size===0)return
+      const n=selectedStrokes.current.size
       history.current.push(JSON.stringify(strokes.current))
       strokes.current=strokes.current.filter((_,i)=>!selectedStrokes.current.has(i))
       selectedStrokes.current.clear()
       lassoPath.current=null;lassoRect.current=null
       redraw();notifySelection()
       if(onStroke)onStroke(strokes.current)
+      logAction("delete_selection",{count:n})
     }
     window.__duplicateSelected=()=>{
       if(selectedStrokes.current.size===0)return
+      const n=selectedStrokes.current.size
       history.current.push(JSON.stringify(strokes.current))
       const newIndices=new Set(),offset={x:14,y:14}
       ;[...selectedStrokes.current].sort((a,b)=>a-b).forEach(i=>{
@@ -903,27 +998,32 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       if(b)lassoRect.current={x1:b.x1+offset.x,y1:b.y1+offset.y,x2:b.x2+offset.x,y2:b.y2+offset.y}
       redraw();notifySelection()
       if(onStroke)onStroke(strokes.current)
+      logAction("duplicate_selection",{count:n})
     }
     window.__setSelectionColor=c=>{
       if(selectedStrokes.current.size===0)return
       selectedStrokes.current.forEach(i=>{strokes.current[i].color=c})
       redraw();if(onStroke)onStroke(strokes.current)
+      logAction("selection_color",{color:c,count:selectedStrokes.current.size})
     }
     window.__setSelectionSize=s=>{
       if(selectedStrokes.current.size===0)return
       selectedStrokes.current.forEach(i=>{strokes.current[i].size=s})
       redraw();if(onStroke)onStroke(strokes.current)
+      logAction("selection_size",{count:selectedStrokes.current.size,detail:String(s)})
     }
     window.__setSelectionOpacity=o=>{
       if(selectedStrokes.current.size===0)return
       selectedStrokes.current.forEach(i=>{strokes.current[i].opacity=o})
       redraw();if(onStroke)onStroke(strokes.current)
+      logAction("selection_opacity",{count:selectedStrokes.current.size,detail:`${Math.round(o*100)}%`})
     }
   },[redraw,notifySelection,onStroke])
 
-  const cursor=getToolCursor(tool,{selectionActive,dark:cursorDark})
+  const navTool=tool==="arrow"||tool==="select"
+  const cursor=navTool?"default":getToolCursor(tool,{selectionActive,dark:cursorDark})
   return<canvas ref={cRef}width={794}height={1123}
-    style={{position:"absolute",inset:0,width:"100%",height:"100%",cursor,touchAction:"none",zIndex:5}}
+    style={{position:"absolute",inset:0,width:"100%",height:"100%",cursor,touchAction:"none",zIndex:5,pointerEvents:navTool?"none":"auto"}}
     onPointerDown={dn}onPointerMove={mv}onPointerUp={up}onPointerLeave={up}/>
 }
 
@@ -957,8 +1057,8 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
   },[showWheel])
 
   const pickWheel=e=>{const r=wheelRef.current.getBoundingClientRect(),ctx=wheelRef.current.getContext("2d"),px2=ctx.getImageData(e.clientX-r.left,e.clientY-r.top,1,1).data;if(px2[3]>0){const h=`#${[px2[0],px2[1],px2[2]].map(v=>v.toString(16).padStart(2,"0")).join("")}`;setColor(h);setCustomHex(h)}}
-  const saveFav=i=>{const f=[...favorites];f[i]={color,sizeMm,tool};setFavorites(f)}
-  const loadFav=f=>{if(!f)return;setColor(f.color);setSizeMm(f.sizeMm);if(f.tool)setTool(f.tool)}
+  const saveFav=i=>{const f=[...favorites];f[i]=favoriteFromEditor({color,sizeMm,tool,eraserMm,label:`F${i+1}`});setFavorites(f)}
+  const loadFav=f=>{if(!f)return;setColor(f.color);setSizeMm(f.sizeMm);if(f.tool)setTool(f.tool);if(f.eraserMm!=null)setEraserMm(f.eraserMm)}
 
   if(collapsed)return(
     <div style={{position:"fixed",left:pos.x,top:pos.y,zIndex:TOKENS.zIndex.float,cursor:"grab"}}onMouseDown={startDrag}>
@@ -1013,7 +1113,7 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
         </div>
         <div>
           <div style={{fontSize:8,color:T.muted,marginBottom:3}}>FAVORIS — clic: charger · dbl: sauvegarder</div>
-          <div style={{display:"flex",gap:4}}>{Array.from({length:6},(_,i)=>{const fav=favorites[i];return<button key={i}onClick={()=>loadFav(fav)}onDoubleClick={()=>saveFav(i)}title={fav?`${fav.color} ${formatDimension(fav.sizeMm,unitSys)}`:"Dbl-clic sauvegarder"}style={{width:28,height:28,borderRadius:7,background:fav?fav.color:T.bg,border:`1px solid ${fav?T.accent:T.border}`,cursor:"pointer",fontSize:fav?"0":"13",color:T.muted,display:"flex",alignItems:"center",justifyContent:"center"}}>{!fav&&"+"}</button>})}</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:4}}>{Array.from({length:FAVORITE_SLOTS},(_,i)=>{const fav=favorites[i];return<button key={i}onClick={()=>loadFav(fav)}onDoubleClick={()=>saveFav(i)}title={fav?`${fav.label||""} ${fav.tool} ${fav.color} ${formatDimension(fav.sizeMm,unitSys)}`:"Dbl-clic sauvegarder"}style={{width:26,height:26,borderRadius:7,background:fav?fav.color:T.bg,border:`1px solid ${fav?T.accent:T.border}`,cursor:"pointer",fontSize:fav?"0":"11",color:T.muted,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{!fav&&"+"}</button>})}</div>
         </div>
       </div>
     </div>
@@ -1021,7 +1121,7 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
 }
 
 /* ══ PAGE THUMBNAIL ═══════════════════════════════════ */
-function PageThumbnail({pageData,pageNum,current,T,onClick}){
+function PageThumbnail({pageData,pageNum,current,T,onClick,onMenu}){
   const ref=useRef()
   useEffect(()=>{
     if(!ref.current||!pageData)return
@@ -1044,36 +1144,55 @@ function PageThumbnail({pageData,pageNum,current,T,onClick}){
     }
   },[pageData])
   return(
-    <div onClick={onClick}style={{cursor:"pointer",padding:4,borderRadius:8,border:`2px solid ${current?T.accent:T.border}`,background:current?`${T.accent}10`:T.bg,transition:"all .15s"}}>
-      <canvas ref={ref}width={100}height={141}style={{display:"block",width:80,height:113,borderRadius:4}}/>
-      <div style={{fontSize:9,color:current?T.accent:T.muted,textAlign:"center",marginTop:3,fontFamily:"monospace"}}>{pageNum}</div>
+    <div style={{position:"relative",padding:4,borderRadius:8,border:`2px solid ${current?T.accent:T.border}`,background:current?`${T.accent}10`:T.bg,transition:"all .15s"}}>
+      <div onClick={onClick}style={{cursor:"pointer"}}>
+        <canvas ref={ref}width={100}height={141}style={{display:"block",width:80,height:113,borderRadius:4}}/>
+        <div style={{fontSize:9,color:current?T.accent:T.muted,textAlign:"center",marginTop:3,fontFamily:"monospace"}}>{pageNum}</div>
+      </div>
+      <button type="button"onClick={e=>{e.stopPropagation();onMenu?.(e,pageNum)}}title="Options page"style={{position:"absolute",top:2,right:2,width:18,height:18,borderRadius:4,border:`1px solid ${T.border}`,background:T.surface,color:T.muted,cursor:"pointer",fontSize:10,lineHeight:1,padding:0}}>⋯</button>
+    </div>
+  )
+}
+
+function EraserOptionsPanel({T,settings,setSettings,unitSys,formatDimension}){
+  const sizeMm=settings.sizeMm
+  const setSizeMm=v=>setSettings(s=>({...s,sizeMm:typeof v==="function"?v(s.sizeMm):v}))
+  return(
+    <div style={{position:"fixed",left:16,bottom:52,zIndex:TOKENS.zIndex.float,...glassStyle(T,{variant:"panel"}),padding:"8px 10px",width:210,userSelect:"none"}}>
+      <div style={{fontSize:9,fontWeight:700,color:T.accent,marginBottom:6}}>GOMME</div>
+      <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:8}}>
+        {ERASER_MODES.map(m=>(
+          <button key={m.id}type="button"onClick={()=>setSettings(s=>({...s,mode:m.id}))}title={m.desc}style={{padding:"5px 8px",borderRadius:7,border:`1px solid ${settings.mode===m.id?T.accent:T.border}`,background:settings.mode===m.id?`${T.accent}18`:T.bg,color:settings.mode===m.id?T.accent:T.ink,cursor:"pointer",fontSize:9,textAlign:"left"}}>
+            {m.label}
+          </button>
+        ))}
+      </div>
+      <div style={{fontSize:8,color:T.muted,marginBottom:4}}>TAILLE</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:6}}>
+        {ERASER_SIZES_MM.map(s=><button key={s}type="button"onClick={()=>setSizeMm(s)}style={{padding:"2px 5px",borderRadius:5,border:`1px solid ${sizeMm===s?T.accent:T.border}`,background:sizeMm===s?`${T.accent}18`:T.bg,color:sizeMm===s?T.accent:T.muted,cursor:"pointer",fontSize:8,fontFamily:"monospace"}}>{s}</button>)}
+      </div>
+      <input type="range"min={1}max={20}step={0.5}value={sizeMm}onChange={e=>setSizeMm(parseFloat(e.target.value))}style={{width:"100%",accentColor:T.accent}}/>
+      <div style={{fontSize:8,color:T.muted,textAlign:"center",marginTop:4,fontFamily:"monospace"}}>{formatDimension(sizeMm,unitSys)}</div>
     </div>
   )
 }
 
 /* ══ MODALS ═══════════════════════════════════════════ */
 function ThemePicker({current,onChange,onClose}){
+  const [draftId,setDraftId]=useState(current?.id||THEMES[0]?.id)
+  const draft=THEMES.find(t=>t.id===draftId)||THEMES[0]
+  const T=current||draft
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",backdropFilter:"blur(6px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
-      <div style={{background:"#fff",borderRadius:20,padding:22,width:560,maxWidth:"94vw",maxHeight:"82vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:18}}>Thèmes ({THEMES.length})</div>
-          <button onClick={onClose}style={{background:"none",border:"none",cursor:"pointer",fontSize:22,color:"#888"}}>×</button>
+      <div className="forma-animate-in" style={{...glassStyle(T,{variant:"modal"}),padding:22,width:560,maxWidth:"94vw",maxHeight:"82vh",overflowY:"auto"}}>
+        <div style={{position:"relative",marginBottom:14}}>
+          <button onClick={onClose}style={{position:"absolute",top:0,right:0,background:"none",border:"none",cursor:"pointer",fontSize:22,color:T.muted,padding:"2px 6px",zIndex:1}}>×</button>
+          <BrandLogo src={draft.img} alt={draft.n} size="md" subtitle={`Thèmes (${THEMES.length})`} accent={draft.accent} ink={T.ink} muted={T.muted}/>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
-          {THEMES.map(th=><button key={th.id}onClick={()=>{onChange(th);onClose()}}style={{padding:0,border:`2px solid ${current?.id===th.id?"#c8622a":"#eee"}`,borderRadius:13,overflow:"hidden",cursor:"pointer",background:"none"}}>
-            <div style={{height:80,background:`linear-gradient(135deg,${th.panel},${th.surface})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
-              {th.img
-                ? <img src={th.img} alt={th.n} style={{width:60,height:60,borderRadius:9,objectFit:"cover",boxShadow:"0 2px 8px rgba(0,0,0,.3)"}}/>
-                : <span style={{fontSize:24}}>{th.e}</span>
-              }
-              <div style={{position:"absolute",bottom:4,right:6,fontSize:9,color:th.surface+"cc",fontFamily:"'Syne',sans-serif",fontWeight:700}}>{th.n}</div>
-            </div>
-            <div style={{padding:"5px 9px",background:th.bg,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <div style={{display:"flex",gap:3}}>{[th.accent,th.a2,th.a3].map((c,i)=><div key={i}style={{width:9,height:9,borderRadius:3,background:c}}/>)}</div>
-              {current?.id===th.id&&<div style={{fontSize:9,color:th.accent,fontWeight:700}}>✓</div>}
-            </div>
-          </button>)}
+          {THEMES.map(th=>(
+            <ThemePreviewThumb key={th.id} theme={th} selected={draftId===th.id} onSelect={()=>{setDraftId(th.id);onChange(th);onClose()}} selectedLabel="✓"/>
+          ))}
         </div>
       </div>
     </div>
@@ -1144,25 +1263,27 @@ function ShareModal({T,nbId,nbTitle,onClose}){
 /* ══ MAIN EDITOR ══════════════════════════════════════ */
 export default function EditorPage(){
   const navigate=useNavigate()
-  const{activeNotebook,getTheme,setTheme}=useAppStore()
-  const[localTheme,setLocalTheme]=useState(null)
-  const T=localTheme||getTheme()
+  const{activeNotebook,updateNotebook,setTheme}=useAppStore()
+  const{ T }=useTheme()
   const nb=activeNotebook||{id:"1",title:"Carnet",subject:"arch",template:"plan",pages_count:1}
   const cRef=useRef()
 
   const[tool,setTool]=useState("pen")
   const[color,setColor]=useState("#1c1c24")
   const[sizeMm,setSizeMm]=useState(0.5)
-  const[eraserMm,setEraserMm]=useState(5.0)
-  const[favorites,setFavorites]=useState(Array(6).fill(null))
+  const[favorites,setFavorites]=useState(()=>loadFavorites())
+  useEffect(()=>{saveFavorites(favorites)},[favorites])
+  const[eraserSettings,setEraserSettings]=useState(()=>loadEraserSettings())
+  useEffect(()=>{saveEraserSettings(eraserSettings)},[eraserSettings])
+  const setEraserMm=useCallback(v=>setEraserSettings(s=>({...s,sizeMm:typeof v==="function"?v(s.sizeMm):v})),[])
+  const eraserMm=eraserSettings.sizeMm
+  const[selectedObjects,setSelectedObjects]=useState({placed:[],images:[]})
+  const[pageMenu,setPageMenu]=useState(null)
+  const[rulerPos,setRulerPos]=useState({x:0,y:0})
+  const[rulerDrag,setRulerDrag]=useState(null)
+  const[eraserCursor,setEraserCursor]=useState(null)
   const[unitSys,setUnitSys]=useState("metric")
   const[scale,setScale]=useState("1:50")
-  const[zoom,setZoom]=useState(.85)
-  const[panX,setPanX]=useState(0)
-  const[panY,setPanY]=useState(0)
-  const isPanning=useRef(false)
-  const panStart=useRef(null)
-  const[panActive,setPanActive]=useState(false)
   const[showLib,setShowLib]=useState(false)
   const[libMode,setLibMode]=useState("metric")
   const[libCat,setLibCat]=useState("🪵 Bois Montants")
@@ -1221,9 +1342,13 @@ export default function EditorPage(){
   const[flashFlipped,setFlashFlipped]=useState(false)
   const[pageHistory,setPageHistory]=useState([]) // [{ts, label, data, elements}]
   const[showHistory,setShowHistory]=useState(false)
+  const[actionLog,setActionLog]=useState([])
   const[infiniteMode,setInfiniteMode]=useState(false)
   const[pageFormat,setPageFormat]=useState("a4p")
   const[nextPageFmt,setNextPageFmt]=useState("a4p")
+  const[viewSize,setViewSize]=useState({w:0,h:0})
+  const[canvasRevision,setCanvasRevision]=useState(0)
+  const[toolbarDock,setToolbarDock]=useState("top")
 
   const sizePx=mm2px(sizeMm)
   const eraserPx=mm2px(eraserMm)
@@ -1231,6 +1356,15 @@ export default function EditorPage(){
   const importedRef=useRef(importedImages)
   useEffect(()=>{ placedRef.current = placed }, [placed])
   useEffect(()=>{ importedRef.current = importedImages }, [importedImages])
+  useEffect(()=>{
+    const el=document.getElementById("canvas-area")
+    if(!el)return
+    const sync=()=>setViewSize({w:el.clientWidth,h:el.clientHeight})
+    sync()
+    const ro=new ResizeObserver(()=>sync())
+    ro.observe(el)
+    return()=>ro.disconnect()
+  },[])
 
   const distPointToRect=(p,rx,ry,rw,rh)=>{
     const cx=Math.max(rx,Math.min(p.x,rx+rw))
@@ -1267,6 +1401,16 @@ export default function EditorPage(){
   const fmt=PAGE_FORMATS.find(f=>f.id===pageFormat)||PAGE_FORMATS[0]
   const PW=infiniteMode?3000:fmt.w
   const PH=infiniteMode?3000:fmt.h
+
+  const{
+    zoom,panX,panY,panActive,spacePan,
+    setPan,zoomBy,resetViewport,canvasHandlers,
+  }=useCanvasViewport({
+    viewW:viewSize.w,
+    viewH:viewSize.h,
+    enabled:!readOnly,
+    allowPan:!readOnly,
+  })
   const curLib=libMode==="symbols"?SYMBOLS_LIB:libMode==="metric"?LIB_METRIC:LIB_IMPERIAL
   const libCats=Object.keys(curLib)
   const libItems=useMemo(()=>{const items=curLib[libCat]||[];return libSearch?items.filter(e=>e.l.toLowerCase().includes(libSearch.toLowerCase())):items},[libCat,libSearch,curLib,libMode])
@@ -1311,15 +1455,58 @@ export default function EditorPage(){
       const{data:{session}}=await supabase.auth.getSession()
       if(!session?.user)return
       const newNum=(nb.pages_count||1)+1
-      const{data:np}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,elements:JSON.stringify({format:nextPageFmt,items:[]})}]).select().single()
-      if(np){
-        await supabase.from("notebooks").update({pages_count:newNum}).eq("id",nb.id)
-        activeNotebook.pages_count=newNum
-        setPageFormat(nextPageFmt)
-        setPage(newNum)
-      }
+      const{data:np,error}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,elements:JSON.stringify({format:nextPageFmt,items:[]})}]).select().single()
+      if(error||!np)return
+      await supabase.from("notebooks").update({pages_count:newNum}).eq("id",nb.id)
+      updateNotebook(nb.id,{pages_count:newNum})
+      setPages(p=>[...p,np].sort((a,b)=>a.page_number-b.page_number))
+      setPageFormat(nextPageFmt)
+      setPage(newNum)
+      pushAction({type:"page_bg",detail:`Page ${newNum} créée`})
+    }catch(e){console.error(e)}
+  }
+
+  const deletePage=async(pageNum)=>{
+    if((nb.pages_count||1)<=1)return
+    if(!confirm(`Supprimer la page ${pageNum} ?`))return
+    try{
+      const{data:{session}}=await supabase.auth.getSession()
+      if(!session?.user)return
+      await supabase.from("pages").delete().eq("notebook_id",nb.id).eq("page_number",pageNum)
+      const newCount=(nb.pages_count||1)-1
+      await supabase.from("notebooks").update({pages_count:newCount}).eq("id",nb.id)
+      updateNotebook(nb.id,{pages_count:newCount})
+      const{data:allPgs}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).order("page_number")
+      setPages(allPgs||[])
+      if(page===pageNum)setPage(Math.max(1,pageNum-1))
+      else if(page>pageNum)setPage(page-1)
     }catch{}
   }
+
+  const handleLassoComplete=useCallback(({type,points,x1,y1,x2,y2})=>{
+    if(type==="rect"){
+      const sel=selectObjectsInRect(placed,importedImages,{x1,y1,x2,y2})
+      setSelectedObjects({placed:sel.placedIds,images:sel.imageIds})
+      if(sel.placedIds[0])setSelected(sel.placedIds[0])
+    }else if(type==="polygon"&&points?.length){
+      const sel=selectObjectsInPolygon(placed,importedImages,points)
+      setSelectedObjects({placed:sel.placedIds,images:sel.imageIds})
+      if(sel.placedIds[0])setSelected(sel.placedIds[0])
+    }
+  },[placed,importedImages])
+
+  const handleEraseZone=useCallback((poly)=>{
+    if(!poly?.length)return
+    setPlaced(p=>p.filter(it=>{
+      const sc=3.78/50,el=it.el||{},w=(el.fw||el.w||0)*sc,h=(el.h||0)*sc
+      const corners=[{x:it.x,y:it.y},{x:it.x+w,y:it.y},{x:it.x+w,y:it.y+h},{x:it.x,y:it.y+h}]
+      return !corners.some(c=>{ let ins=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y;if((yi>c.y)!==(yj>c.y)&&c.x<((xj-xi)*(c.y-yi))/(yj-yi+1e-9)+xi)ins=!ins} return ins })
+    }))
+    setImportedImages(p=>p.filter(img=>{
+      const corners=[{x:img.x,y:img.y},{x:img.x+img.w,y:img.y},{x:img.x+img.w,y:img.y+img.h},{x:img.x,y:img.y+img.h}]
+      return !corners.some(c=>{ let ins=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y;if((yi>c.y)!==(yj>c.y)&&c.x<((xj-xi)*(c.y-yi))/(yj-yi+1e-9)+xi)ins=!ins} return ins })
+    }))
+  },[])
 
   // Duplicate page
   const duplicatePage=async()=>{
@@ -1332,7 +1519,9 @@ export default function EditorPage(){
       const newNum=(nb.pages_count||1)+1
       await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,canvas_data:current.canvas_data,elements:current.elements}])
       await supabase.from("notebooks").update({pages_count:newNum}).eq("id",nb.id)
-      activeNotebook.pages_count=newNum
+      updateNotebook(nb.id,{pages_count:newNum})
+      const{data:allPgs}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).order("page_number")
+      setPages(allPgs||[])
       setPage(newNum)
     }catch{}
   }
@@ -1432,14 +1621,34 @@ export default function EditorPage(){
   }
 
   const handleCanvasSelection=useCallback(info=>setCanvasSelection(info?.active?info:null),[])
-  const onStroke=useCallback(s=>{if(saveTimer.current)clearTimeout(saveTimer.current);saveTimer.current=setTimeout(()=>save(s),1500)},[save])
+
+  const ACTION_KEY=useMemo(()=>`forma_actions_${nb.id}_${page}`,[nb.id,page])
+  useEffect(()=>{try{setActionLog(JSON.parse(localStorage.getItem(ACTION_KEY)||"[]"))}catch{setActionLog([])}},[ACTION_KEY])
+  const pushAction=useCallback((payload)=>{
+    const entry=buildActionEntry(payload)
+    setActionLog(log=>{
+      const next=[entry,...log].slice(0,100)
+      try{localStorage.setItem(ACTION_KEY,JSON.stringify(next))}catch{}
+      return next
+    })
+  },[ACTION_KEY])
+  const handleCanvasAction=useCallback(payload=>pushAction(payload),[pushAction])
+  const clearActionLog=useCallback(()=>{
+    setActionLog([])
+    try{localStorage.removeItem(ACTION_KEY)}catch{}
+  },[ACTION_KEY])
+  const setPageColorLogged=useCallback(c=>{setPageColor(c);pushAction({type:"page_bg",color:c,detail:c||"défaut"})},[pushAction])
+  const setGridColorLogged=useCallback(c=>{setGridColor(c);pushAction({type:"page_grid",color:c,detail:c||"défaut"})},[pushAction])
+
+  const onStroke=useCallback(s=>{setCanvasRevision(r=>r+1);if(saveTimer.current)clearTimeout(saveTimer.current);saveTimer.current=setTimeout(()=>save(s),1500)},[save])
 
   // Page versioning (localStorage, 20 versions max per page)
   const HIST_KEY=`forma_hist_${nb.id}_${page}`
   const saveVersion=label=>{
     const canvas=cRef.current;if(!canvas)return
     const snap=canvas.toDataURL("image/jpeg",.4)
-    const ver={ts:Date.now(),label:label||new Date().toLocaleTimeString("fr-FR"),snap,elements:JSON.stringify(placed)}
+    const strokes=window.__getStrokes?.()||[]
+    const ver={ts:Date.now(),label:label||new Date().toLocaleTimeString("fr-FR"),snap,data:strokes,elements:JSON.stringify(placed)}
     const hist=[ver,...(()=>{try{return JSON.parse(localStorage.getItem(HIST_KEY)||"[]")}catch{return[]}})()].slice(0,20)
     localStorage.setItem(HIST_KEY,JSON.stringify(hist))
     setPageHistory(hist)
@@ -1447,9 +1656,11 @@ export default function EditorPage(){
   useEffect(()=>{try{setPageHistory(JSON.parse(localStorage.getItem(HIST_KEY)||"[]"))}catch{}},[page,nb.id])
   const restoreVersion=ver=>{
     if(!confirm("Restaurer cette version ? Les changements non sauvegardés seront perdus."))return
-    if(ver.elements&&window.__loadStrokes){
-      try{const el=JSON.parse(ver.elements);setPlaced(el)}catch{}
+    if(ver.data&&window.__loadStrokes)window.__loadStrokes(ver.data)
+    if(ver.elements){
+      try{setPlaced(JSON.parse(ver.elements))}catch{}
     }
+    pushAction({type:"version_restore",detail:ver.label})
     setShowHistory(false)
   }
 
@@ -1479,6 +1690,7 @@ export default function EditorPage(){
       img.onload=()=>{
         const maxW=400,maxH=500,ratio=Math.min(maxW/img.width,maxH/img.height,1)
         setImportedImages(p=>[...p,{id:Date.now(),src:ev.target.result,x:100,y:80,w:img.width*ratio,h:img.height*ratio}])
+        pushAction({type:"image_import",detail:file.name})
       }
       img.src=ev.target.result
     }
@@ -1496,38 +1708,77 @@ export default function EditorPage(){
     return()=>window.removeEventListener("pointerdown",handleDblTap)
   },[])
 
-  // Keyboard shortcuts for lasso selection
+  // Keyboard shortcuts for lasso selection + mode focus
+  const closeSidePanels=useCallback(()=>{
+    setShowLib(false)
+    setShowPagePanel(false)
+    setShowLayers(false)
+    setShowHistory(false)
+    setShowCalc(false)
+    setShowTimer(false)
+    setShowConv(false)
+    setShowFlash(false)
+  },[])
+  const exitFocusMode=useCallback(()=>setFocusMode(false),[])
+  const toggleFocusMode=useCallback(()=>{
+    setFocusMode(v=>{
+      if(!v)closeSidePanels()
+      return !v
+    })
+  },[closeSidePanels])
+
   useEffect(()=>{
     const handleKey=e=>{
+      const tag=e.target?.tagName
+      const typing=tag==="INPUT"||tag==="TEXTAREA"||tag==="SELECT"||e.target?.isContentEditable
       if(e.key==="Delete"||e.key==="Backspace")window.__deleteSelected?.()
-      if(e.key==="Escape")window.__clearSelection?.()
+      if(e.key==="Escape"){
+        if(canvasSelection?.active){window.__clearSelection?.();setCanvasSelection(null);return}
+        if(focusMode){exitFocusMode();return}
+        window.__clearSelection?.()
+      }
+      if(!typing&&(e.key==="f"||e.key==="F")&&!e.metaKey&&!e.ctrlKey&&!e.altKey){
+        e.preventDefault()
+        toggleFocusMode()
+      }
     }
     window.addEventListener("keydown",handleKey)
     return()=>window.removeEventListener("keydown",handleKey)
-  },[])
+  },[focusMode,canvasSelection,exitFocusMode,toggleFocusMode])
 
   useEffect(()=>{
     window.__clearSelection?.()
     setCanvasSelection(null)
+    setSelectedObjects({placed:[],images:[]})
   },[page])
 
-  const isPanMode=tool==="select"
+  useEffect(()=>{
+    if(!rulerDrag)return
+    const mm=e=>setRulerPos({x:e.clientX-rulerDrag.ox,y:e.clientY-rulerDrag.oy})
+    const mu=()=>setRulerDrag(null)
+    window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)
+    return()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)}
+  },[rulerDrag])
+  const isPanMode=tool==="arrow"||tool==="select"
+  const eraserAuto=tool==="eraser"&&eraserSettings.mode==="auto"
   const cursorDark=useMemo(()=>isDarkSurface(T),[T])
+  const showMinimap=useMemo(()=>!focusMode&&!showPresent&&shouldShowMinimap({pageW:PW,pageH:PH,viewW:viewSize.w,viewH:viewSize.h,zoom,panX,panY}),[focusMode,showPresent,PW,PH,viewSize,zoom,panX,panY])
+  const handleMinimapPan=useCallback((x,y)=>setPan(x,y),[setPan])
   const areaCursor=useMemo(()=>{
+    if(spacePan)return panActive?"grabbing":"grab"
     if(libPending) return getPlacementCursor(cursorDark)
-    if(isPanMode) return getToolCursor("select",{dark:cursorDark,panning:panActive})
+    if(isPanMode) return getToolCursor("arrow",{dark:cursorDark,panning:panActive})
     return "default"
-  },[libPending,isPanMode,panActive,cursorDark])
+  },[libPending,isPanMode,panActive,cursorDark,spacePan])
   const SCALES_M=["1:1","1:2","1:5","1:10","1:20","1:50","1:100","1:200","1:500","1:1000"]
   const SCALES_I=['1/4"=1\'','3/16"=1\'','1/8"=1\'','3/32"=1\'','1"=10\'','1"=20\'','1"=40\'','1"=100\'']
-  const TOOLS_LIST=[
-    {g:"Nav",items:[{id:"select",l:"Déplacer",i:"✋"}]},
-    {g:"Dessin",items:[{id:"pen",l:"Crayon",i:"✏"},{id:"highlight",l:"Surlig.",i:"▌"},{id:"eraser",l:"Gomme",i:"◻"}]},
-    {g:"Formes",items:[{id:"line",l:"Ligne",i:"/"},{id:"rect",l:"Rect.",i:"□"},{id:"circle",l:"Cercle",i:"○"},{id:"arrow",l:"Flèche",i:"→"}]},
-    {g:"Archi",items:[{id:"dimline",l:"Cotation",i:"↔"},{id:"cloud",l:"Bulle",i:"💬"},{id:"lasso",l:"Lasso",i:"⬡"},{id:"lasso-rect",l:"Lasso ▭",i:"⬜"}]},
-    {g:"Spécial",items:[{id:"text",l:"Texte",i:"T"},{id:"eyedropper",l:"Pipette",i:"💉"}]},
-  ]
   const COLLAB_COLORS=["#e94560","#2196f3","#4ade80","#f5a623","#a855f7","#00bcd4"]
+  const toolbarPad=useMemo(()=>({
+    paddingTop:!focusMode&&toolbarDock==="top"?36:0,
+    paddingBottom:!focusMode&&toolbarDock==="bottom"?36:0,
+    paddingLeft:!focusMode&&toolbarDock==="left"?52:0,
+    paddingRight:!focusMode&&toolbarDock==="right"?52:0,
+  }),[focusMode,toolbarDock])
 
   // Presentation mode
   if(showPresent){
@@ -1550,13 +1801,14 @@ export default function EditorPage(){
   }
 
   return(
-    <div style={{display:"flex",flexDirection:"column",height:"100vh",background:T.bg,fontFamily:"'Nunito',sans-serif",overflow:"hidden",color:T.ink,position:"relative",zIndex:2}}>
-      {showPageSettings&&<PageSettings T={T} pageColor={pageColor} setPageColor={setPageColor} gridColor={gridColor} setGridColor={setGridColor} onClose={()=>setShowPageSettings(false)}/>}
-      {showTheme&&<ThemePicker current={T} onChange={th=>{setLocalTheme(th);setTheme(th.id)}} onClose={()=>setShowTheme(false)}/>}
+    <div style={{display:"flex",flexDirection:"column",height:"100vh",background:T.bg,fontFamily:"var(--app-font)",overflow:"hidden",color:T.ink,position:"relative",zIndex:2}}>
+      {showPageSettings&&<PageSettings T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} onClose={()=>setShowPageSettings(false)}/>}
+      {showTheme&&<ThemePicker current={T} onChange={th=>setTheme(th.id)} onClose={()=>setShowTheme(false)}/>}
       {showShare&&<ShareModal T={T} nbId={nb.id} nbTitle={nb.title} onClose={()=>setShowShare(false)}/>}
+      {pageMenu&&<PageContextMenu T={T} pageNum={pageMenu.pageNum} x={pageMenu.x} y={pageMenu.y} pageFormats={PAGE_FORMATS} currentFormat={pageMenu.pageNum===page?pageFormat:nextPageFmt} onClose={()=>setPageMenu(null)} onSetFormat={fmtId=>{if(pageMenu.pageNum===page)setPageFormat(fmtId);else setNextPageFmt(fmtId);setPageMenu(null)}} onDuplicate={()=>{setPage(pageMenu.pageNum);duplicatePage();setPageMenu(null)}} onDelete={()=>{deletePage(pageMenu.pageNum);setPageMenu(null)}} onOpenSettings={()=>{setPage(pageMenu.pageNum);setShowPageSettings(true);setPageMenu(null)}} canDelete={(nb.pages_count||1)>1}/>}
 
       {/* ── CALCULATRICE ──────────────────────────────── */}
-      {showCalc&&<div style={{position:"fixed",bottom:72,right:showTimer?280:20,width:232,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:90,overflow:"hidden",userSelect:"none"}}>
+      {!focusMode&&showCalc&&<div style={{position:"fixed",bottom:72,right:showTimer?280:20,width:232,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:90,overflow:"hidden",userSelect:"none"}}>
         <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:"#fff"}}>🔢 Calculatrice</span>
           <button onClick={()=>setShowCalc(false)} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:18,lineHeight:1}}>×</button>
@@ -1582,7 +1834,7 @@ export default function EditorPage(){
       </div>}
 
       {/* ── POMODORO ──────────────────────────────────── */}
-      {showTimer&&<div style={{position:"fixed",bottom:72,right:20,width:220,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:89,overflow:"hidden",userSelect:"none"}}>
+      {!focusMode&&showTimer&&<div style={{position:"fixed",bottom:72,right:20,width:220,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:89,overflow:"hidden",userSelect:"none"}}>
         <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:"#fff"}}>⏱ Pomodoro</span>
           <button onClick={()=>setShowTimer(false)} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:18,lineHeight:1}}>×</button>
@@ -1616,7 +1868,7 @@ export default function EditorPage(){
       </div>}
 
       {/* ── CONVERTISSEUR ─────────────────────────────── */}
-      {showConv&&(()=>{
+      {!focusMode&&showConv&&(()=>{
         const TO_MM={mm:1,cm:10,m:1000,ft:304.8,in:25.4}
         const UNITS=["mm","cm","m","ft","in"]
         const base=parseFloat(convVal)*TO_MM[convFrom]
@@ -1629,20 +1881,20 @@ export default function EditorPage(){
         }
         const offset=20+(showTimer?240:0)+(showCalc?252:0)
         return(
-        <div style={{position:"fixed",bottom:72,right:offset,width:238,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:88,overflow:"hidden",userSelect:"none"}}>
-          <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{position:"fixed",bottom:72,right:offset,width:238,maxHeight:"min(70vh, 420px)",background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:88,overflow:"hidden",userSelect:"none",display:"flex",flexDirection:"column"}}>
+          <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
             <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:"#fff"}}>📐 Convertisseur</span>
             <button onClick={()=>setShowConv(false)} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:18,lineHeight:1}}>×</button>
           </div>
           {/* Mode tabs */}
-          <div style={{display:"flex",borderBottom:`1px solid ${T.border}`}}>
+          <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
             {[["unit","Unités"],["scale","Échelle"]].map(([m,l])=>(
               <button key={m} onClick={()=>setConvMode(m)} style={{flex:1,padding:"6px 0",border:"none",cursor:"pointer",fontSize:10,fontWeight:convMode===m?700:400,background:convMode===m?`${T.accent}15`:T.bg,color:convMode===m?T.accent:T.muted}}>
                 {l}
               </button>
             ))}
           </div>
-          <div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:8}}>
+          <div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:8,overflowY:"auto",flex:1,minHeight:0}}>
             {/* Input */}
             <div style={{display:"flex",gap:6}}>
               <input value={convVal} onChange={e=>setConvVal(e.target.value.replace(/[^0-9.,]/g,""))} placeholder="0"
@@ -1711,7 +1963,7 @@ export default function EditorPage(){
       )})()}
 
       {/* ── FLASHCARDS ────────────────────────────────── */}
-      {showFlash&&(()=>{
+      {!focusMode&&showFlash&&(()=>{
         const flashOffset=20+(showTimer?240:0)+(showCalc?252:0)+(showConv?258:0)
         const card=flashCards[flashIdx]
         return(
@@ -1780,61 +2032,60 @@ export default function EditorPage(){
         </div>
       )})()}
 
-      {/* ── HISTORIQUE DE VERSIONS ────────────────────── */}
-      {showHistory&&<div style={{position:"fixed",top:0,right:0,bottom:0,width:280,background:T.surface,borderLeft:`1px solid ${T.border}`,zIndex:150,display:"flex",flexDirection:"column",boxShadow:"-4px 0 24px rgba(0,0,0,.2)"}}>
-        <div style={{background:T.panel,padding:"12px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:"#fff"}}>🕐 Historique ({pageHistory.length})</span>
-          <button onClick={()=>setShowHistory(false)} style={{background:"none",border:"none",color:"#888",cursor:"pointer",fontSize:20,lineHeight:1}}>×</button>
-        </div>
-        <div style={{padding:"10px 10px 6px",borderBottom:`1px solid ${T.border}`,display:"flex",gap:6}}>
-          <button onClick={()=>saveVersion()} style={{flex:1,padding:"7px 0",borderRadius:8,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontWeight:700,fontSize:11,cursor:"pointer"}}>📸 Sauvegarder version</button>
-        </div>
-        <div style={{flex:1,overflowY:"auto",padding:8,display:"flex",flexDirection:"column",gap:6}}>
-          {pageHistory.length===0&&<div style={{textAlign:"center",padding:"30px 0",color:T.muted,fontSize:12}}>Aucune version sauvegardée.<br/>Cliquez sur "Sauvegarder version".</div>}
-          {pageHistory.map((ver,i)=>(
-            <div key={ver.ts} style={{borderRadius:10,border:`1px solid ${T.border}`,overflow:"hidden",background:T.bg}}>
-              {ver.snap&&<img src={ver.snap} alt="" style={{width:"100%",height:80,objectFit:"cover",display:"block",opacity:.85}}/>}
-              <div style={{padding:"6px 9px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <div>
-                  <div style={{fontSize:10,fontWeight:700,color:T.ink}}>{i===0?"Dernière":"Version "+(pageHistory.length-i)}</div>
-                  <div style={{fontSize:8,color:T.muted,fontFamily:"monospace"}}>{ver.label}</div>
-                </div>
-                <button onClick={()=>restoreVersion(ver)} style={{padding:"4px 9px",borderRadius:7,background:`${T.accent}18`,border:`1px solid ${T.accent}44`,color:T.accent,cursor:"pointer",fontSize:9,fontWeight:700}}>Restaurer</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>}
+      {/* ── HISTORIQUE ────────────────────── */}
+      {!focusMode&&showHistory&&(
+        <HistoryPanel
+          T={T}
+          actionLog={actionLog}
+          pageHistory={pageHistory}
+          onClose={()=>setShowHistory(false)}
+          onSaveVersion={()=>saveVersion()}
+          onRestoreVersion={restoreVersion}
+          onClearActions={clearActionLog}
+        />
+      )}
 
-      <FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys}/>
+      {!focusMode&&<FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys}/>}
 
-      {libPending&&<div style={{position:"fixed",bottom:52,left:"50%",transform:"translateX(-50%)",zIndex:50,background:T.panel,color:"#fff",padding:"7px 14px",borderRadius:20,fontSize:11,pointerEvents:"none",boxShadow:"0 4px 16px rgba(0,0,0,.3)"}}>
+      {focusMode&&(
+        <FocusToolbar
+          T={T}
+          title={nb.title}
+          page={page}
+          pagesCount={nb.pages_count}
+          tool={tool}
+          setTool={setTool}
+          color={color}
+          setColor={setColor}
+          sizeMm={sizeMm}
+          setSizeMm={setSizeMm}
+          eraserMm={eraserMm}
+          unitSys={unitSys}
+          formatDimension={formatDimension}
+          zoom={zoom}
+          zoomBy={zoomBy}
+          viewW={viewSize.w}
+          viewH={viewSize.h}
+          saveStatus={saveStatus}
+          timerSec={timerSec}
+          timerRunning={timerRunning}
+          timerMode={timerMode}
+          onUndo={()=>window.__undo?.()}
+          onExit={exitFocusMode}
+        />
+      )}
+      {libPending&&!focusMode&&<div style={{position:"fixed",bottom:52,left:"50%",transform:"translateX(-50%)",zIndex:50,background:T.panel,color:"#fff",padding:"7px 14px",borderRadius:20,fontSize:11,pointerEvents:"none",boxShadow:"0 4px 16px rgba(0,0,0,.3)"}}>
         📍 Clic sur la feuille → <strong>{libPending.l}</strong> — Échap pour annuler
       </div>}
-
-      {/* FOCUS MODE — barre flottante */}
-      {focusMode&&<div className="forma-animate-in" style={{position:"fixed",bottom:20,left:"50%",transform:"translateX(-50%)",zIndex:TOKENS.zIndex.modal,display:"flex",gap:4,alignItems:"center",padding:"8px 12px",...glassStyle(T,{variant:"float",blur:TOKENS.blur.lg})}}>
-        {TOOLS_LIST.flatMap(g=>g.items).map(t=>(
-          <button key={t.id} title={t.l} onClick={()=>setTool(t.id)}
-            style={{padding:"5px 8px",borderRadius:8,border:`1px solid ${tool===t.id?T.accent:"transparent"}`,background:tool===t.id?`${T.accent}25`:"transparent",color:tool===t.id?T.accent:"#aaa",cursor:"pointer",fontSize:13}}>
-            {t.i}
-          </button>
-        ))}
-        <div style={{width:1,height:18,background:"#ffffff14",margin:"0 2px"}}/>
-        <div style={{width:16,height:16,borderRadius:"50%",background:color,border:"2px solid rgba(255,255,255,.3)",cursor:"pointer"}}/>
-        <div style={{width:1,height:18,background:"#ffffff14",margin:"0 2px"}}/>
-        <button onClick={()=>window.__undo?.()} style={{padding:"5px 8px",borderRadius:8,background:"transparent",border:"1px solid transparent",color:"#aaa",cursor:"pointer",fontSize:12}}>↩</button>
-        <button onClick={()=>setFocusMode(false)} title="Quitter focus" style={{padding:"4px 8px",borderRadius:8,background:"rgba(168,85,247,.2)",border:"1px solid #a855f7",color:"#a855f7",cursor:"pointer",fontSize:9,fontWeight:700,marginLeft:2}}>⛶ Exit</button>
-      </div>}
-      {readOnly&&<div style={{position:"fixed",top:60,left:"50%",transform:"translateX(-50%)",zIndex:50,background:"rgba(233,69,96,.9)",color:"#fff",padding:"6px 14px",borderRadius:20,fontSize:11,fontWeight:700}}>🔒 Mode lecture seule</div>}
+      {readOnly&&!focusMode&&<div style={{position:"fixed",top:60,left:"50%",transform:"translateX(-50%)",zIndex:50,background:"rgba(233,69,96,.9)",color:"#fff",padding:"6px 14px",borderRadius:20,fontSize:11,fontWeight:700}}>🔒 Mode lecture seule</div>}
 
       {/* TOP BAR */}
-      <div style={{height:46,display:"flex",alignItems:"center",padding:"0 10px",gap:5,flexShrink:0,zIndex:TOKENS.zIndex.toolbar,...glassStyle(T,{variant:"toolbar",border:false})}}>
+      <div style={{minHeight:focusMode?0:46,overflow:"hidden",opacity:focusMode?0:1,pointerEvents:focusMode?"none":"auto",transition:"height .35s ease, opacity .28s ease",display:"flex",flexWrap:"wrap",alignItems:"center",padding:"4px 10px",gap:5,flexShrink:0,zIndex:TOKENS.zIndex.toolbar,...glassStyle(T,{variant:"toolbar",border:false})}}>
         <button onClick={()=>navigate("/")}style={{background:"none",border:"none",color:"#888",cursor:"pointer",fontSize:11,padding:"4px 7px",borderRadius:7}}>← Retour</button>
         <div style={{width:1,height:20,background:"#ffffff14"}}/>
-        <div style={{flex:1,fontFamily:"'Syne',sans-serif",fontWeight:600,fontSize:12,color:"#ddd",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nb.title}</div>
+        <div style={{fontFamily:"'Syne',sans-serif",fontWeight:600,fontSize:12,color:"#ddd",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:180}}>{nb.title}</div>
         {collabCursors.length>0&&<div style={{display:"flex",gap:2}}>{collabCursors.map((c,i)=><div key={c.userId}title={c.userName}style={{width:20,height:20,borderRadius:"50%",background:COLLAB_COLORS[i%6],display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:700,color:"#fff",border:"2px solid rgba(255,255,255,.3)"}}>{(c.userName||"?")[0].toUpperCase()}</div>)}</div>}
-        <div style={{display:"flex",gap:4,alignItems:"center"}}>
+        <div style={{display:"flex",flexWrap:"wrap",gap:4,alignItems:"center",marginLeft:"auto"}}>
           {saveStatus==="saving"&&<span style={{fontSize:9,color:"#f5a623"}}>⏳</span>}
           {saveStatus==="saved"&&<span style={{fontSize:9,color:"#4ade80"}}>✓</span>}
           <div style={{display:"flex",borderRadius:6,overflow:"hidden",border:"1px solid #ffffff14"}}>
@@ -1845,9 +2096,9 @@ export default function EditorPage(){
             {(unitSys==="metric"?SCALES_M:SCALES_I).map(s=><option key={s}value={s}>{s}</option>)}
           </select>
           <div style={{display:"flex",alignItems:"center",gap:2,background:"#ffffff0a",borderRadius:6,padding:"0 6px",border:"1px solid #ffffff10"}}>
-            <button onClick={()=>setZoom(z=>Math.max(.25,z-.1))}style={{background:"none",border:"none",color:"#aaa",cursor:"pointer",fontSize:13}}>−</button>
+            <button onClick={()=>zoomBy(1/1.1,{x:viewSize.w/2,y:viewSize.h/2})}style={{background:"none",border:"none",color:"#aaa",cursor:"pointer",fontSize:13}}>−</button>
             <span style={{color:"#666",fontSize:9,minWidth:26,textAlign:"center"}}>{Math.round(zoom*100)}%</span>
-            <button onClick={()=>setZoom(z=>Math.min(3,z+.1))}style={{background:"none",border:"none",color:"#aaa",cursor:"pointer",fontSize:13}}>+</button>
+            <button onClick={()=>zoomBy(1.1,{x:viewSize.w/2,y:viewSize.h/2})}style={{background:"none",border:"none",color:"#aaa",cursor:"pointer",fontSize:13}}>+</button>
           </div>
           {/* Quick action buttons */}
           {[
@@ -1861,7 +2112,7 @@ export default function EditorPage(){
             <button key={i}onClick={fn}title={title}style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${active?T.accent:"#ffffff14"}`,background:active?`${T.accent}22`:"#ffffff0a",color:active?T.accent:"#888",cursor:"pointer",fontSize:10}}>{label}</button>
           ))}
           <button onClick={()=>setInfiniteMode(v=>!v)}title="Canvas infini"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${infiniteMode?"#00ffcc":"#ffffff14"}`,background:infiniteMode?"rgba(0,255,204,.15)":"#ffffff0a",color:infiniteMode?"#00ffcc":"#888",cursor:"pointer",fontSize:9}}>∞{infiniteMode?"✓":""}</button>
-          <button onClick={()=>setShowHistory(v=>!v)}title="Historique versions"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showHistory?T.accent:"#ffffff14"}`,background:showHistory?`${T.accent}22`:"#ffffff0a",color:showHistory?T.accent:"#888",cursor:"pointer",fontSize:10}}>🕐</button>
+          <button onClick={()=>setShowHistory(v=>!v)}title="Historique actions + versions"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showHistory?T.accent:"#ffffff14"}`,background:showHistory?`${T.accent}22`:"#ffffff0a",color:showHistory?T.accent:"#888",cursor:"pointer",fontSize:10}}>🕐{actionLog.length>0?actionLog.length:""}</button>
           <button onClick={()=>setPencilOnly(v=>!v)}title="Mode Apple Pencil — bloque le doigt"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${pencilOnly?"#a855f7":"#ffffff14"}`,background:pencilOnly?"rgba(168,85,247,.2)":"#ffffff0a",color:pencilOnly?"#a855f7":"#888",cursor:"pointer",fontSize:9}}>✏️{pencilOnly?"✓":""}</button>
           <button onClick={()=>setReadOnly(v=>!v)}title="Mode lecture seule"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${readOnly?"#e94560":"#ffffff14"}`,background:readOnly?"rgba(233,69,96,.2)":"#ffffff0a",color:readOnly?"#e94560":"#888",cursor:"pointer",fontSize:10}}>🔒</button>
           <button onClick={()=>setShowPresent(true)}title="Mode présentation"style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#888",cursor:"pointer",fontSize:10}}>📽</button>
@@ -1869,37 +2120,23 @@ export default function EditorPage(){
           <button onClick={()=>setShowConv(v=>!v)}title="Convertisseur"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showConv?T.accent:"#ffffff14"}`,background:showConv?`${T.accent}22`:"#ffffff0a",color:showConv?T.accent:"#888",cursor:"pointer",fontSize:10}}>📐</button>
           <button onClick={()=>setShowTimer(v=>!v)}title="Pomodoro"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showTimer?"#4ade80":"#ffffff14"}`,background:showTimer?"rgba(74,222,128,.15)":"#ffffff0a",color:showTimer?"#4ade80":"#888",cursor:"pointer",fontSize:10}}>{timerRunning?`⏱${String(Math.floor(timerSec/60)).padStart(2,'0')}:${String(timerSec%60).padStart(2,'0')}`:"⏱"}</button>
           <button onClick={()=>setShowFlash(v=>!v)}title={`Flashcards (${flashCards.length})`}style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showFlash?"#a855f7":"#ffffff14"}`,background:showFlash?"rgba(168,85,247,.2)":"#ffffff0a",color:showFlash?"#a855f7":"#888",cursor:"pointer",fontSize:10}}>🃏{flashCards.length>0?flashCards.length:""}</button>
-          <button onClick={()=>setFocusMode(v=>!v)}title="Mode focus"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${focusMode?"#a855f7":"#ffffff14"}`,background:focusMode?"rgba(168,85,247,.2)":"#ffffff0a",color:focusMode?"#a855f7":"#888",cursor:"pointer",fontSize:10}}>⛶</button>
+          <button onClick={toggleFocusMode}title="Mode focus (F)"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${focusMode?"#a855f7":"#ffffff14"}`,background:focusMode?"rgba(168,85,247,.2)":"#ffffff0a",color:focusMode?"#a855f7":"#888",cursor:"pointer",fontSize:10}}>⛶</button>
           <button onClick={()=>setShowShare(true)}style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#88c",cursor:"pointer",fontSize:9}}>🤝</button>
           <label title="Importer image"style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#888",cursor:"pointer",fontSize:9}}>
             📎<input type="file"accept="image/*"style={{display:"none"}}onChange={handleImport}/>
           </label>
           <button onClick={exportPNG}disabled={exporting}title="Exporter PNG 2x"style={{padding:"3px 7px",borderRadius:6,border:"1px solid rgba(74,222,128,.3)",background:"rgba(74,222,128,.1)",color:"#4ade80",cursor:"pointer",fontSize:9}}>{exporting?"⏳":"⬇️"}</button>
           <button onClick={()=>window.__undo?.()}style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#aaa",cursor:"pointer",fontSize:11}}>↩</button>
+          <button onClick={()=>window.__redo?.()}style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#aaa",cursor:"pointer",fontSize:11}}>↪</button>
           <button onClick={()=>window.__clear?.()}style={{padding:"3px 7px",borderRadius:6,border:"1px solid rgba(233,69,96,.3)",background:"rgba(233,69,96,.1)",color:"#e94560",cursor:"pointer",fontSize:9}}>🗑</button>
         </div>
       </div>
 
-      {/* TOOLS ROW */}
-      <div style={{height:focusMode?0:36,overflow:"hidden",display:"flex",alignItems:"center",padding:focusMode?"0":"0 10px",gap:4,flexShrink:0,overflowX:focusMode?"hidden":"auto",transition:"height .3s ease",borderBottom:`1px solid ${T.border}44`,...glassStyle(T,{variant:"surface",opacity:0.55,blur:TOKENS.blur.sm,border:false,radius:0})}}>
-        {TOOLS_LIST.map(grp=>(
-          <div key={grp.g}style={{display:"flex",gap:2,paddingRight:6,marginRight:3,borderRight:`1px solid ${T.border}`,flexShrink:0}}>
-            {grp.items.map(t=>(
-              <button key={t.id}title={t.l}onClick={()=>setTool(t.id)}
-                className="forma-tool-btn"
-                style={{height:25,padding:"0 6px",borderRadius:TOKENS.radius.sm,border:`1px solid ${tool===t.id?T.accent:T.border}`,background:tool===t.id?`${T.accent}18`:T.bg,color:tool===t.id?T.accent:T.muted,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",gap:3,whiteSpace:"nowrap",flexShrink:0}}>
-                <span>{t.i}</span><span style={{fontSize:8}}>{t.l}</span>
-              </button>
-            ))}
-          </div>
-        ))}
-        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:5,flexShrink:0}}>
-          <div style={{width:12,height:12,borderRadius:"50%",background:tool==="eraser"?"#eee":color,border:`1px solid ${T.border}`}}/>
-          <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{formatDimension(tool==="eraser"?eraserMm:sizeMm,unitSys)} · {tool}</span>
-        </div>
-      </div>
+      {!focusMode&&tool==="eraser"&&<EraserOptionsPanel T={T} settings={eraserSettings} setSettings={setEraserSettings} unitSys={unitSys} formatDimension={formatDimension}/>}
 
-      <div style={{display:"flex",flex:1,overflow:"hidden"}}>
+      {!focusMode&&<FloatingToolsToolbar T={T} tool={tool} setTool={setTool} color={color} sizeMm={sizeMm} eraserMm={eraserMm} unitSys={unitSys} formatDimension={formatDimension} toolsList={EDITOR_TOOLS_LIST} onLayoutChange={setToolbarDock}/>}
+
+      <div style={{display:"flex",flex:1,overflow:"hidden",transition:"padding .25s ease",...toolbarPad}}>
         {/* PAGE THUMBNAILS */}
         {showPagePanel&&!focusMode&&<div style={{width:110,background:T.surface,borderRight:`1px solid ${T.border}`,display:"flex",flexDirection:"column",flexShrink:0}}>
           <div style={{padding:"8px 8px 6px",borderBottom:`1px solid ${T.border}`}}>
@@ -1917,23 +2154,28 @@ export default function EditorPage(){
           <div style={{flex:1,overflowY:"auto",padding:6,display:"flex",flexDirection:"column",gap:6}}>
             {Array.from({length:nb.pages_count||1},(_,i)=>{
               const pageData=pages.find(p=>p.page_number===i+1)
-              return<PageThumbnail key={i+1} pageData={pageData} pageNum={i+1} current={page===i+1} T={T} onClick={()=>setPage(i+1)}/>
+              return<PageThumbnail key={i+1} pageData={pageData} pageNum={i+1} current={page===i+1} T={T} onClick={()=>setPage(i+1)} onMenu={(e,n)=>setPageMenu({x:e.clientX,y:e.clientY,pageNum:n})}/>
             })}
           </div>
         </div>}
 
         {/* CANVAS */}
-        <div style={{flex:1,overflow:"hidden",background:T.bg,position:"relative",cursor:areaCursor}}
+        <div style={{flex:1,overflow:"hidden",background:focusMode?T.panel:T.bg,position:"relative",cursor:areaCursor,transition:"background .35s ease",touchAction:"none"}}
           id="canvas-area"
+          data-pan-tool={isPanMode?"1":"0"}
+          {...canvasHandlers}
           onMouseMove={e=>{
+            canvasHandlers.onMouseMove(e)
             if(libPending)setMousePos({x:e.clientX,y:e.clientY})
-            if(isPanMode&&isPanning.current&&panStart.current){setPanX(e.clientX-panStart.current.x);setPanY(e.clientY-panStart.current.y)}
             const r=document.getElementById("canvas-area")?.getBoundingClientRect()
-            if(r)broadcastCursor((e.clientX-r.left-panX)/zoom,(e.clientY-r.top-panY)/zoom)
+            if(r){
+              const pt=screenToPage({sx:e.clientX-r.left,sy:e.clientY-r.top,viewW:r.width,viewH:r.height,pageW:PW,pageH:PH,zoom,panX,panY})
+              broadcastCursor(pt.x,pt.y)
+              if(tool==="eraser"&&!readOnly)setEraserCursor({x:e.clientX-r.left,y:e.clientY-r.top})
+              else if(eraserCursor)setEraserCursor(null)
+            }
           }}
-          onMouseDown={e=>{if(libPending){handleCanvasAreaClick(e);return};if(isPanMode){isPanning.current=true;setPanActive(true);panStart.current={x:e.clientX-panX,y:e.clientY-panY}}}}
-          onMouseUp={()=>{isPanning.current=false;setPanActive(false)}}
-          onMouseLeave={()=>{isPanning.current=false;setPanActive(false)}}
+          onMouseDown={e=>{if(libPending){handleCanvasAreaClick(e);return}}}
           onKeyDown={e=>{if(e.key==="Escape")setLibPending(null)}}
           tabIndex={0}>
 
@@ -1943,6 +2185,13 @@ export default function EditorPage(){
             if(!r)return null
             const sc=3.78/50,elW=(libPending.fw||libPending.w)*sc*zoom,elH=libPending.h*sc*zoom
             return<div style={{position:"absolute",left:mousePos.x-r.left-elW/2,top:mousePos.y-r.top-elH/2,zIndex:50,opacity:.55,pointerEvents:"none",transform:`scale(${zoom})`,transformOrigin:"top left"}}>{renderEl(libPending,1/50)}</div>
+          })()}
+
+          {/* Eraser cursor preview */}
+          {tool==="eraser"&&!readOnly&&eraserCursor&&(()=>{
+            const d=Math.max(4,eraserPx*zoom)
+            const big=d>18
+            return<div style={{position:"absolute",left:eraserCursor.x-(big?d/2:3),top:eraserCursor.y-(big?d/2:3),width:big?d:6,height:big?d:6,borderRadius:"50%",border:"2px solid rgba(233,69,96,.9)",background:big?"rgba(233,69,96,.18)":"rgba(233,69,96,.55)",pointerEvents:"none",zIndex:70,boxSizing:"border-box"}}/>
           })()}
 
           {/* Collab cursors */}
@@ -1955,33 +2204,36 @@ export default function EditorPage(){
             </div>
           })}
 
-          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:infiniteMode?-1500:-(fmt.w/2),marginTop:infiniteMode?-1500:-(fmt.h/2)}}>
+          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:infiniteMode?-1500:-(fmt.w/2),marginTop:infiniteMode?-1500:-(fmt.h/2),willChange:"transform"}}>
             <div style={{width:PW,height:PH,position:"relative",boxShadow:infiniteMode?"none":"0 4px 40px rgba(0,0,0,.2)",background:infiniteMode?(pageColor||T.paper):"none"}}>
               {infiniteMode&&<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={3000}height={3000}><defs><pattern id="inf-grid"width={37.8}height={37.8}patternUnits="userSpaceOnUse"><path d={`M 37.8 0 L 0 0 0 37.8`}fill="none"stroke={gridColor||T.grid}strokeWidth={.6}/></pattern></defs><rect width={3000}height={3000}fill={`url(#inf-grid)`}/></svg>}
               {!infiniteMode&&<Paper tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={fmt.w} PH={fmt.h}/>}
 
               {/* Imported images */}
-              {importedImages.map(img=>(
-                <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,zIndex:3,cursor:tool==="eraser"?"default":"move",userSelect:"none",pointerEvents:tool==="eraser"?"none":"auto"}}
-                  onMouseDown={e=>{e.stopPropagation();const ox=e.clientX/zoom-img.x,oy=e.clientY/zoom-img.y;const mm=ev=>setImportedImages(p=>p.map(i=>i.id===img.id?{...i,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:i));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
+              {importedImages.map(img=>{
+                const imgSel=selectedObjects.images.includes(img.id)
+                return(
+                <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,zIndex:3,cursor:readOnly||(tool==="eraser"&&!eraserAuto)?"default":"move",userSelect:"none",pointerEvents:eraserAuto?"none":"auto",outline:imgSel?"2px solid #c8622a":"none",outlineOffset:2}}
+                  onMouseDown={e=>{if(readOnly)return;e.stopPropagation();setSelectedObjects({placed:[],images:[img.id]});const ox=e.clientX/zoom-img.x,oy=e.clientY/zoom-img.y;const mm=ev=>setImportedImages(p=>p.map(i=>i.id===img.id?{...i,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:i));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
                   <img src={img.src}alt=""style={{width:img.w,height:img.h,display:"block",opacity:.88,pointerEvents:"none"}}/>
-                  <button onClick={()=>setImportedImages(p=>p.filter(i=>i.id!==img.id))}style={{position:"absolute",top:-8,right:-8,width:18,height:18,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontWeight:700}}>×</button>
+                  {!readOnly&&<button onClick={()=>setImportedImages(p=>p.filter(i=>i.id!==img.id))}style={{position:"absolute",top:-8,right:-8,width:18,height:18,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontWeight:700}}>×</button>}
                 </div>
-              ))}
+              )})}
 
               {/* Structural elements */}
               {placed.map(item=>{
-                const sel=selected===item.id
-                return<div key={item.id}style={{position:"absolute",left:item.x,top:item.y,cursor:readOnly||isPanMode||tool==="eraser"?"default":"move",pointerEvents:tool==="eraser"?"none":"all",userSelect:"none",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,zIndex:sel?12:10}}
-                  onMouseDown={e=>{if(readOnly||isPanMode)return;e.stopPropagation();setSelected(item.id);const ox=e.clientX/zoom-item.x,oy=e.clientY/zoom-item.y;const mm=ev=>setPlaced(p=>p.map(e=>e.id===item.id?{...e,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:e));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
+                const sel=selected===item.id||selectedObjects.placed.includes(item.id)
+                return<div key={item.id}style={{position:"absolute",left:item.x,top:item.y,cursor:readOnly||(tool==="eraser"&&!eraserAuto)?"default":"move",pointerEvents:eraserAuto?"none":"all",userSelect:"none",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,zIndex:sel?12:10}}
+                  onMouseDown={e=>{if(readOnly)return;e.stopPropagation();setSelected(item.id);setSelectedObjects({placed:[item.id],images:[]});const ox=e.clientX/zoom-item.x,oy=e.clientY/zoom-item.y;const mm=ev=>setPlaced(p=>p.map(e=>e.id===item.id?{...e,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:e));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
                   {item.el.type==="sym"?renderSym(item.el,1/50):renderEl(item.el,1/50)}
-                  {sel&&!readOnly&&<button onClick={()=>{setPlaced(p=>p.filter(e=>e.id!==item.id));setSelected(null)}}style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,zIndex:20}}>×</button>}
+                  {sel&&!readOnly&&<button onClick={()=>{pushAction({type:"element_removed",detail:item.el?.l||"élément"});setPlaced(p=>p.filter(e=>e.id!==item.id));setSelected(null)}}style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,zIndex:20}}>×</button>}
                 </div>
               })}
 
               {/* Ruler */}
-              {showRuler&&<div style={{position:"absolute",top:0,left:0,right:0,height:24,background:T.surface,borderBottom:`1px solid ${T.border}`,zIndex:15,opacity:.9}}>
-                <svg width={794}height={24}style={{display:"block"}}>{Array.from({length:80},(_,i)=>{const x=i*10,big=i%10===0,med=i%5===0;return<g key={i}><line x1={x}y1={24}x2={x}y2={big?5:med?10:17}stroke={T.muted}strokeWidth={big?1:.5}/>{big&&<text x={x+2}y={8}fontSize={6}fill={T.muted}fontFamily="monospace">{i*(unitSys==="metric"?10:1)}{unitSys==="metric"?"mm":"\"" }</text>}</g>})}</svg>
+              {showRuler&&<div style={{position:"absolute",left:rulerPos.x,top:rulerPos.y,width:Math.min(PW,1180),height:28,background:T.surface,border:`1px solid ${T.border}`,zIndex:20,opacity:.95,borderRadius:4,boxShadow:"0 2px 10px rgba(0,0,0,.12)"}}onMouseDown={e=>{if(e.target.closest("[data-ruler-handle]")){e.stopPropagation();setRulerDrag({ox:e.clientX-rulerPos.x,oy:e.clientY-rulerPos.y})}}}>
+                <div data-ruler-handle style={{position:"absolute",left:0,top:0,width:22,height:28,cursor:rulerDrag?"grabbing":"grab",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:T.muted,borderRight:`1px solid ${T.border}`,userSelect:"none"}}>⠿</div>
+                <svg width={Math.min(PW,1158)}height={24}style={{marginLeft:22,display:"block"}}>{Array.from({length:Math.ceil(Math.min(PW,1158)/10)},(_,i)=>{const x=i*10,big=i%10===0,med=i%5===0;return<g key={i}><line x1={x}y1={24}x2={x}y2={big?5:med?10:17}stroke={T.muted}strokeWidth={big?1:.5}/>{big&&<text x={x+2}y={8}fontSize={6}fill={T.muted}fontFamily="monospace">{i*(unitSys==="metric"?10:1)}{unitSys==="metric"?"mm":"\""}</text>}</g>})}</svg>
               </div>}
 
               {/* Cartouche architectural */}
@@ -1996,8 +2248,8 @@ export default function EditorPage(){
                 </div>
               )}
 
-              {!readOnly&&!isPanMode&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} onStroke={onStroke} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId}/>}
-              {canvasSelection&&!readOnly&&!isPanMode&&(
+              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone}/>}
+              {canvasSelection&&!readOnly&&(
                 <FloatingSelectionToolbar
                   T={T}
                   bounds={canvasSelection.bounds}
@@ -2010,9 +2262,11 @@ export default function EditorPage(){
                   onClose={()=>{window.__clearSelection?.();setCanvasSelection(null)}}
                 />
               )}
-              {(readOnly||isPanMode)&&<canvas ref={cRef}width={fmt.w}height={fmt.h}style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:1,pointerEvents:"none",zIndex:5}}/>}
+              {readOnly&&<canvas ref={cRef}width={fmt.w}height={fmt.h}style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:1,pointerEvents:"none",zIndex:5}}/>}
             </div>
           </div>
+
+          {showMinimap&&<CanvasMinimap T={T} pageW={PW} pageH={PH} viewW={viewSize.w} viewH={viewSize.h} zoom={zoom} panX={panX} panY={panY} onPanChange={handleMinimapPan} getStrokes={()=>window.__getStrokes?.()||[]} placed={placed} importedImages={importedImages} revision={canvasRevision} paperColor={pageColor||T.paper}/>}
         </div>
 
         {/* CALQUES — style Procreate */}
@@ -2116,7 +2370,7 @@ export default function EditorPage(){
               <div key={el.id}
                 onClick={()=>setLibPending(libPending?.id===el.id?null:el)}
                 draggable
-                onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc,x=(e.clientX-r.left-panX)/zoom-elW/2,y=(e.clientY-r.top-panY)/zoom-elH/2;setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,x),y:Math.max(0,y)}]);setLibPending(null)}}
+                onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc;const pt=screenToPage({sx:e.clientX-r.left,sy:e.clientY-r.top,viewW:r.width,viewH:r.height,pageW:PW,pageH:PH,zoom,panX,panY});setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,pt.x-elW/2),y:Math.max(0,pt.y-elH/2)}]);pushAction({type:"element_placed",detail:el.l});setLibPending(null)}}
                 style={{padding:"5px 7px",borderRadius:8,border:`1px solid ${libPending?.id===el.id?T.accent:T.border}`,background:libPending?.id===el.id?`${T.accent}10`:T.bg,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}
                 onMouseEnter={e=>{if(libPending?.id!==el.id)e.currentTarget.style.borderColor=T.accent}}
                 onMouseLeave={e=>{if(libPending?.id!==el.id)e.currentTarget.style.borderColor=T.border}}>
@@ -2132,7 +2386,7 @@ export default function EditorPage(){
       </div>
 
       {/* BOTTOM BAR */}
-      <div style={{height:32,background:T.surface,borderTop:`1px solid ${T.border}`,display:"flex",alignItems:"center",padding:"0 10px",gap:8,zIndex:20}}>
+      <div style={{height:focusMode?0:32,overflow:"hidden",opacity:focusMode?0:1,pointerEvents:focusMode?"none":"auto",transition:"height .35s ease, opacity .28s ease",background:T.surface,borderTop:focusMode?"none":`1px solid ${T.border}`,display:"flex",alignItems:"center",padding:"0 10px",gap:8,zIndex:20,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",gap:4}}>
           <button onClick={()=>setPage(p=>Math.max(1,p-1))}disabled={page===1}style={{background:"none",border:"none",color:page===1?T.border:T.muted,cursor:page===1?"default":"pointer",fontSize:12}}>‹</button>
           <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{page}/{nb.pages_count||1}</span>
@@ -2141,7 +2395,7 @@ export default function EditorPage(){
         </div>
         <div style={{width:1,height:12,background:T.border}}/>
         <div style={{display:"flex",gap:3,alignItems:"center"}}>
-          {[["↑",()=>setPanY(p=>p+80)],["↓",()=>setPanY(p=>p-80)],["←",()=>setPanX(p=>p+80)],["→",()=>setPanX(p=>p-80)],["⊙",()=>{setPanX(0);setPanY(0)}]].map(([l,fn])=>(
+          {[["↑",()=>setPan(panX,panY+80)],["↓",()=>setPan(panX,panY-80)],["←",()=>setPan(panX+80,panY)],["→",()=>setPan(panX-80,panY)],["⊙",resetViewport]].map(([l,fn])=>(
             <button key={l}onClick={fn}style={{width:20,height:20,borderRadius:4,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:9}}>{l}</button>
           ))}
         </div>
@@ -2161,8 +2415,10 @@ export default function EditorPage(){
     const r=document.getElementById("canvas-area")?.getBoundingClientRect()
     if(!r)return
     const sc=3.78/50,elW=(libPending.fw||libPending.w)*sc,elH=libPending.h*sc
-    const x=(e.clientX-r.left-panX)/zoom-elW/2,y=(e.clientY-r.top-panY)/zoom-elH/2
+    const pt=screenToPage({sx:e.clientX-r.left,sy:e.clientY-r.top,viewW:r.width,viewH:r.height,pageW:PW,pageH:PH,zoom,panX,panY})
+    const x=pt.x-elW/2,y=pt.y-elH/2
     setPlaced(p=>[...p,{id:Date.now(),el:libPending,x:Math.max(0,x),y:Math.max(0,y)}])
+    pushAction({type:"element_placed",detail:libPending.l})
     setLibPending(null)
   }
 }

@@ -2,17 +2,14 @@
 import { useEffect, useRef } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import useAppStore from '@/stores/useAppStore'
 import LibraryPage from '@/pages/LibraryPage'
 import EditorPage from '@/pages/EditorPage'
 import AuthPage from '@/pages/AuthPage'
 import MoodboardPage from '@/pages/MoodboardPage'
 import Notifications from '@/components/Notifications'
-import { BACKGROUNDS } from '@/lib/backgrounds'
-import { getGoogleFontHref } from '@/lib/fontUtils'
-import { buildGlobalThemeCSS } from '@/theme/globalStyles'
-
-const SYSTEM_FONTS = "https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+import AppBackground from '@/components/AppBackground'
+import { GLOBAL_ANIM_OPACITY } from '@/config/appearance'
+import { useGlobalAppearance } from '@/hooks/useAppearance'
 
 /* ── Particle helpers ──────────────────────────────────────── */
 function mkParticle(W, H, anim, T) {
@@ -208,9 +205,9 @@ function ThemeAnimation({ T, animType, animSpeed }) {
     }
     window.addEventListener('resize', onResize)
     return () => { cancelAnimationFrame(frameRef.current); window.removeEventListener('resize', onResize) }
-  }, [T.id, anim])
+  }, [T.id, T.accent, T.a2, T.a3, anim, animType])
 
-  return <canvas ref={canvasRef} style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:1, opacity:.55 }}/>
+  return <canvas ref={canvasRef} style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:1, opacity: GLOBAL_ANIM_OPACITY }}/>
 }
 
 function ProtectedRoute({ children }) {
@@ -224,67 +221,22 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
-  const { getTheme, animationsEnabled, animType, animSpeed, bgId, customBg, appFont, appearanceMode } = useAppStore()
-  const T = getTheme()
-  const bg = bgId ? BACKGROUNDS.find(b => b.id === bgId) : null
-
-  useEffect(() => {
-    // Global appearance class on root
-    const root = document.documentElement
-    const cls = ['forma-light','forma-soft-gray','forma-dark','forma-black']
-    cls.forEach(c => root.classList.remove(c))
-    root.classList.add(`forma-${appearanceMode || 'light'}`)
-
-    if (!document.getElementById('forma-system-fonts')) {
-      const link = document.createElement('link')
-      link.id = 'forma-system-fonts'; link.href = SYSTEM_FONTS; link.rel = 'stylesheet'
-      document.head.appendChild(link)
-    }
-    let themeLink = document.getElementById('forma-theme-font')
-    if (!themeLink) {
-      themeLink = document.createElement('link')
-      themeLink.id = 'forma-theme-font'; themeLink.rel = 'stylesheet'
-      document.head.appendChild(themeLink)
-    }
-    themeLink.href = `https://fonts.googleapis.com/css2?family=${T.fontUrl}&display=swap`
-
-    const appFontHref = appFont ? getGoogleFontHref(appFont) : null
-    let appFontLink = document.getElementById('forma-app-font')
-    if (appFontHref) {
-      if (!appFontLink) {
-        appFontLink = document.createElement('link')
-        appFontLink.id = 'forma-app-font'; appFontLink.rel = 'stylesheet'
-        document.head.appendChild(appFontLink)
-      }
-      appFontLink.href = appFontHref
-    } else if (appFontLink) {
-      appFontLink.remove()
-    }
-
-    let style = document.getElementById('forma-global-style')
-    if (!style) {
-      style = document.createElement('style')
-      style.id = 'forma-global-style'
-      document.head.appendChild(style)
-    }
-    style.textContent = buildGlobalThemeCSS(T, appFont || T.font)
-  }, [T.bg, T.ink, T.border, T.surface, T.panel, T.fontUrl, T.font, T.accent, appFont, appearanceMode])
+  const {
+    T,
+    animationsEnabled,
+    animSpeed,
+    resolvedAnim,
+    background,
+  } = useGlobalAppearance()
 
   return (
     <BrowserRouter>
-      {customBg ? (
-        <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0, opacity:.1, overflow:'hidden' }}>
-          <img src={customBg} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
-        </div>
-      ) : bg ? (
-        <div
-          style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0, opacity:.1, color:T.accent, overflow:'hidden' }}
-          dangerouslySetInnerHTML={{ __html: bg.svg.replace('<svg ', '<svg style="width:100%;height:100%;position:absolute;top:0;left:0;" preserveAspectRatio="xMidYMid slice" ') }}
-        />
-      ) : null}
-      {animationsEnabled && <ThemeAnimation T={T} animType={animType} animSpeed={animSpeed} />}
+      <AppBackground background={background} accent={T.accent} />
+      {animationsEnabled && (
+        <ThemeAnimation T={T} animType={resolvedAnim} animSpeed={animSpeed} />
+      )}
       <Notifications />
-      <Routes>
+      <Routes key={`${T.id}-${T.bg}`}>
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/" element={<ProtectedRoute><LibraryPage /></ProtectedRoute>} />
         <Route path="/editor/:id" element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />

@@ -6,9 +6,12 @@ import { THEMES } from "@/lib/themes"
 import FocusPanel from "@/components/FocusPanel"
 import { BACKGROUNDS } from '@/lib/backgrounds'
 import { APP_FONT_CHOICES } from "@/lib/fontUtils"
-import { APPEARANCE_MODES } from "@/lib/appearance"
+import { APPEARANCE_MODES, applyAppearanceToTheme } from "@/lib/appearance"
+import { optionCardStyle, optionChipStyle, optionPanelStyle } from "@/config/appearance"
 import UnitConverter from "@/components/UnitConverter"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
+import BrandLogo, { ThemePreviewThumb } from "@/components/BrandLogo"
+import { useTheme } from "@/hooks/useAppearance"
 import GlassButton from "@/components/ui/GlassButton"
 import GlassPanel from "@/components/ui/GlassPanel"
 import ModalOverlay from "@/components/ui/ModalOverlay"
@@ -156,7 +159,7 @@ const SPEED_OPTIONS = [
   {v:3,   l:'Frénétique'},
 ]
 
-function ThemePicker({current, onChange, onClose}) {
+function ThemePicker({ onClose }) {
   const {
     themeId,
     setTheme,
@@ -192,11 +195,12 @@ function ThemePicker({current, onChange, onClose}) {
   const [draftCustomBg, setDraftCustomBg] = useState(customBg)
   const [draftAppFont, setDraftAppFont] = useState(appFont || "")
 
-  const draftTheme = THEMES.find(t => t.id === draftThemeId) || THEMES[0]
-  const T = current || THEMES[0]
+  const draftBaseTheme = THEMES.find(t => t.id === draftThemeId) || THEMES[0]
+  const T = applyAppearanceToTheme(draftBaseTheme, draftAppearanceMode || "light")
   const ink = T.ink
   const muted = T.muted
-  const accent = draftTheme.accent || T.accent
+  const accent = T.accent
+  const draftTheme = draftBaseTheme
 
   const handleCustomBg = (e) => {
     const f = e.target.files?.[0]; if (!f) return
@@ -221,7 +225,6 @@ function ThemePicker({current, onChange, onClose}) {
     if (draftAnimType !== animType || draftAnimSpeed !== animSpeed || draftAnimationsEnabled !== animationsEnabled) addNotification("Animation appliquée", "success")
     if ((draftAppFont || "") !== (appFont || "")) addNotification("Police appliquée", "success")
 
-    onChange?.(draftTheme)
     onClose?.()
   }
 
@@ -244,9 +247,34 @@ function ThemePicker({current, onChange, onClose}) {
         style={{ padding: 22, width: 600, maxWidth: "95vw", maxHeight: "88vh", overflowY: "auto" }}
         ref={modalRef}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 19, color: ink }}>Ambiance</div>
-          <button onClick={onClose} className="forma-btn-glass" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: muted, padding: "2px 6px" }}>×</button>
+        <div style={{ position: "relative", marginBottom: 14 }}>
+          <button
+            onClick={onClose}
+            className="forma-btn-glass"
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: 22,
+              color: muted,
+              padding: "2px 6px",
+              zIndex: 1,
+            }}
+          >
+            ×
+          </button>
+          <BrandLogo
+            src={draftTheme.img}
+            alt={draftTheme.n}
+            size="md"
+            subtitle="Ambiance · Thèmes & personnalisation"
+            accent={accent}
+            ink={ink}
+            muted={muted}
+          />
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 14 }}>
@@ -273,19 +301,13 @@ function ThemePicker({current, onChange, onClose}) {
         {tab==="theme"&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
             {THEMES.map(th=>(
-              <button key={th.id} onClick={()=>setDraftThemeId(th.id)}
-                style={{padding:0,border:`2px solid ${draftThemeId===th.id?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:13,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
-                onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"}
-                onMouseLeave={e=>e.currentTarget.style.transform="none"}>
-                <div style={{height:80,background:`linear-gradient(135deg,${th.panel},${th.surface})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
-                  {th.img?<img src={th.img} alt={th.n} style={{width:64,height:64,borderRadius:10,objectFit:"cover",boxShadow:"0 2px 10px rgba(0,0,0,.3)"}}/>:<span style={{fontSize:28}}>{th.e}</span>}
-                  <div style={{position:"absolute",bottom:4,right:6,fontSize:9,color:th.surface+"cc",fontFamily:"'Syne',sans-serif",fontWeight:700}}>{th.n}</div>
-                </div>
-                <div style={{padding:"5px 10px",background:th.bg,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                  <div style={{display:"flex",gap:3}}>{[th.accent,th.a2,th.a3].map((c,i)=><div key={i}style={{width:10,height:10,borderRadius:3,background:c}}/>)}</div>
-                  {draftThemeId===th.id&&<div style={{fontSize:9,color:th.accent,fontWeight:800}}>✓ Prévu</div>}
-                </div>
-              </button>
+              <ThemePreviewThumb
+                key={th.id}
+                theme={th}
+                selected={draftThemeId===th.id}
+                onSelect={()=>setDraftThemeId(th.id)}
+                selectedLabel="✓ Prévu"
+              />
             ))}
           </div>
         )}
@@ -299,22 +321,13 @@ function ThemePicker({current, onChange, onClose}) {
               {APPEARANCE_MODES.map(m => {
                 const active = (draftAppearanceMode || "light") === m.id
                 return (
-                  <button key={m.id} onClick={()=>setDraftAppearanceMode(m.id)}
-                    style={{
-                      padding:"12px 12px",
-                      borderRadius:12,
-                      border:`1px solid ${active ? "#c8622a" : "#e8e8e8"}`,
-                      background: active ? "#c8622a18" : "#f8f8f8",
-                      cursor:"pointer",
-                      textAlign:"left",
-                      transition:"all .15s"
-                    }}>
+                  <button key={m.id} onClick={()=>setDraftAppearanceMode(m.id)} style={optionCardStyle(T, active)}>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10}}>
                       <div>
-                        <div style={{fontSize:12,fontWeight:900,color:active?"#c8622a":ink}}>{m.label}</div>
+                        <div style={{fontSize:12,fontWeight:900,color:active?T.accent:ink}}>{m.label}</div>
                         <div style={{fontSize:10,color:muted,marginTop:2}}>{m.desc}</div>
                       </div>
-                      {active && <div style={{fontSize:11,fontWeight:900,color:"#c8622a"}}>✓</div>}
+                      {active && <div style={{fontSize:11,fontWeight:900,color:T.accent}}>✓</div>}
                     </div>
                   </button>
                 )
@@ -325,14 +338,14 @@ function ThemePicker({current, onChange, onClose}) {
 
         {tab==="animation"&&(
           <div style={{display:"flex",flexDirection:"column",gap:16}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 16px",background:"#f8f8f8",borderRadius:13}}>
+            <div style={optionPanelStyle(T)}>
               <div>
                 <div style={{fontWeight:700,fontSize:13,color:ink}}>Animations de fond</div>
                 <div style={{fontSize:11,color:muted,marginTop:2}}>Particules animées en arrière-plan</div>
               </div>
               <button onClick={()=>setDraftAnimationsEnabled(!draftAnimationsEnabled)}
-                style={{width:44,height:24,borderRadius:12,background:draftAnimationsEnabled?"#c8622a":"#ddd",border:"none",cursor:"pointer",position:"relative",transition:"background .2s"}}>
-                <div style={{position:"absolute",top:2,left:draftAnimationsEnabled?22:2,width:20,height:20,borderRadius:"50%",background:"#fff",transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/>
+                style={{width:44,height:24,borderRadius:12,background:draftAnimationsEnabled?T.accent:T.border,border:"none",cursor:"pointer",position:"relative",transition:"background .2s"}}>
+                <div style={{position:"absolute",top:2,left:draftAnimationsEnabled?22:2,width:20,height:20,borderRadius:"50%",background:T.surface,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/>
               </button>
             </div>
 
@@ -342,10 +355,9 @@ function ThemePicker({current, onChange, onClose}) {
                 {ANIM_TYPES.map(({id,emoji,label})=>{
                   const active = draftAnimType===id
                   return (
-                    <button key={id||'none'} onClick={()=>setDraftAnimType(id)}
-                      style={{padding:"10px 6px",borderRadius:10,border:`1px solid ${active?"#c8622a":"#e8e8e8"}`,background:active?"#c8622a18":"#f8f8f8",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s"}}>
+                    <button key={id||'none'} onClick={()=>setDraftAnimType(id)} style={optionChipStyle(T, active)}>
                       <div style={{fontSize:18}}>{emoji}</div>
-                      <div style={{fontSize:9,fontWeight:active?700:400,color:active?"#c8622a":muted,textAlign:"center",lineHeight:1.2}}>{label}</div>
+                      <div style={{fontSize:9,fontWeight:active?700:400,color:active?T.accent:muted,textAlign:"center",lineHeight:1.2}}>{label}</div>
                     </button>
                   )
                 })}
@@ -353,7 +365,7 @@ function ThemePicker({current, onChange, onClose}) {
               <div style={{fontSize:10,color:muted,marginTop:8}}>
                 {draftAnimType===''
                   ? `Suit le thème prévu · ${ANIM_TYPES.find(a=>a.id===(draftTheme?.anim||'fireflies'))?.label||'Lucioles'}`
-                  : <span>Animation indépendante du thème · <button onClick={()=>setDraftAnimType('')} style={{background:"none",border:"none",color:"#c8622a",cursor:"pointer",fontSize:10,padding:0,fontFamily:"inherit"}}>Revenir au défaut</button></span>
+                  : <span>Animation indépendante du thème · <button onClick={()=>setDraftAnimType('')} style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:10,padding:0,fontFamily:"inherit"}}>Revenir au défaut</button></span>
                 }
               </div>
             </div>
@@ -363,8 +375,8 @@ function ThemePicker({current, onChange, onClose}) {
               <div style={{display:"flex",gap:6}}>
                 {SPEED_OPTIONS.map(({v,l})=>(
                   <button key={v} onClick={()=>setDraftAnimSpeed(v)}
-                    style={{flex:1,padding:"8px 4px",borderRadius:9,border:`1px solid ${draftAnimSpeed===v?"#c8622a":"#e8e8e8"}`,background:draftAnimSpeed===v?"#c8622a18":"#f8f8f8",cursor:"pointer",fontSize:10,fontWeight:draftAnimSpeed===v?700:400,color:draftAnimSpeed===v?"#c8622a":muted,transition:"all .15s"}}>
-                    {l}
+                    style={{...optionChipStyle(T, draftAnimSpeed===v), flex:1, padding:"8px 4px", flexDirection:"row", justifyContent:"center"}}>
+                    <span style={{fontSize:10,fontWeight:draftAnimSpeed===v?700:400,color:draftAnimSpeed===v?T.accent:muted}}>{l}</span>
                   </button>
                 ))}
               </div>
@@ -374,42 +386,43 @@ function ThemePicker({current, onChange, onClose}) {
 
         {tab==="fond"&&(
           <div style={{display:"flex",flexDirection:"column",gap:12}}>
-            <div style={{fontSize:11,color:muted}}>Fond en filigrane (très basse opacité) derrière l'interface.</div>
+            <div style={{fontSize:11,color:muted}}>Fond en filigrane derrière l'interface (visible après validation).</div>
+            {(draftBgId||draftCustomBg)&&(
+              <div style={{height:48,borderRadius:10,border:`1px solid ${T.border}`,overflow:"hidden",position:"relative",background:T.surface,color:T.accent}}>
+                {draftCustomBg
+                  ?<img src={draftCustomBg} alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.55}}/>
+                  :<div style={{width:"100%",height:"100%",opacity:.7}} dangerouslySetInnerHTML={{__html:(BACKGROUNDS.find(b=>b.id===draftBgId)?.svg||'').replace('<svg ','<svg style="width:100%;height:100%;" preserveAspectRatio="xMidYMid slice" ')}}/>}
+              </div>
+            )}
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
               <button onClick={()=>{setDraftBgId('');setDraftCustomBg('')}}
-                style={{padding:0,border:`2px solid ${draftBgId===''&&!draftCustomBg?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
-                onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"}
-                onMouseLeave={e=>e.currentTarget.style.transform="none"}>
-                <div style={{height:70,background:"#f4f4f4",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  <div style={{fontSize:22,color:"#ccc"}}>✕</div>
+                style={{padding:0,border:`2px solid ${draftBgId===''&&!draftCustomBg?T.accent:T.border}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}>
+                <div style={{height:70,background:T.bg,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  <div style={{fontSize:22,color:muted}}>✕</div>
                 </div>
-                <div style={{padding:"5px 8px",background:"#f8f8f8",textAlign:"center"}}>
-                  <div style={{fontSize:10,fontWeight:draftBgId===''&&!draftCustomBg?700:400,color:draftBgId===''&&!draftCustomBg?"#c8622a":"#666"}}>Aucun fond</div>
+                <div style={{padding:"5px 8px",background:T.surface,textAlign:"center",borderTop:`1px solid ${T.border}`}}>
+                  <div style={{fontSize:10,fontWeight:draftBgId===''&&!draftCustomBg?700:400,color:draftBgId===''&&!draftCustomBg?T.accent:muted}}>Aucun fond</div>
                 </div>
               </button>
-              <label style={{padding:0,border:`2px solid ${draftCustomBg?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s",display:"block"}}
-                onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"}
-                onMouseLeave={e=>e.currentTarget.style.transform="none"}>
-                <div style={{height:70,background:draftCustomBg?"#f0f0f0":"#f4f4f4",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+              <label style={{padding:0,border:`2px solid ${draftCustomBg?T.accent:T.border}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s",display:"block"}}>
+                <div style={{height:70,background:T.bg,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
                   {draftCustomBg
                     ?<img src={draftCustomBg} alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.7}}/>
-                    :<div style={{fontSize:22,color:"#bbb"}}>📷</div>}
+                    :<div style={{fontSize:22,color:muted}}>📷</div>}
                 </div>
-                <div style={{padding:"5px 8px",background:"#f8f8f8",textAlign:"center"}}>
-                  <div style={{fontSize:10,fontWeight:draftCustomBg?700:400,color:draftCustomBg?"#c8622a":"#666"}}>{draftCustomBg?"Ma photo ✓":"Ma photo"}</div>
+                <div style={{padding:"5px 8px",background:T.surface,textAlign:"center",borderTop:`1px solid ${T.border}`}}>
+                  <div style={{fontSize:10,fontWeight:draftCustomBg?700:400,color:draftCustomBg?T.accent:muted}}>{draftCustomBg?"Ma photo ✓":"Ma photo"}</div>
                 </div>
                 <input type="file" accept="image/*" style={{display:"none"}} onChange={handleCustomBg}/>
               </label>
               {BACKGROUNDS.map(b=>(
                 <button key={b.id} onClick={()=>{setDraftBgId(b.id); setDraftCustomBg('')}}
-                  style={{padding:0,border:`2px solid ${draftBgId===b.id?"#c8622a":"rgba(128,128,128,.25)"}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}
-                  onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"}
-                  onMouseLeave={e=>e.currentTarget.style.transform="none"}>
-                  <div style={{height:70,overflow:"hidden",position:"relative",background:"#f0f0f0",color:"#999"}}
+                  style={{padding:0,border:`2px solid ${draftBgId===b.id?T.accent:T.border}`,borderRadius:11,overflow:"hidden",cursor:"pointer",background:"none",transition:"all .15s"}}>
+                  <div style={{height:70,overflow:"hidden",position:"relative",background:T.bg,color:T.accent}}
                     dangerouslySetInnerHTML={{__html:b.svg.replace('<svg ','<svg style="width:100%;height:100%;position:absolute;top:0;left:0;" preserveAspectRatio="xMidYMid slice" ')}}/>
-                  <div style={{padding:"5px 8px",background:"#f8f8f8"}}>
-                    <div style={{fontSize:10,fontWeight:draftBgId===b.id?700:400,color:draftBgId===b.id?"#c8622a":"#444",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.n}</div>
-                    <div style={{fontSize:8,color:"#888",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.sub}</div>
+                  <div style={{padding:"5px 8px",background:T.surface,borderTop:`1px solid ${T.border}`}}>
+                    <div style={{fontSize:10,fontWeight:draftBgId===b.id?700:400,color:draftBgId===b.id?T.accent:ink,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.n}</div>
+                    <div style={{fontSize:8,color:muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.sub}</div>
                   </div>
                 </button>
               ))}
@@ -426,26 +439,16 @@ function ThemePicker({current, onChange, onClose}) {
               {APP_FONT_CHOICES.map(f => {
                 const active = (draftAppFont || "") === (f.id || "")
                 return (
-                  <button key={f.id || "default"} onClick={()=>setDraftAppFont(f.id)}
-                    style={{
-                      padding:"12px 12px",
-                      borderRadius:12,
-                      border:`1px solid ${active ? "#c8622a" : "#e8e8e8"}`,
-                      background: active ? "#c8622a18" : "#f8f8f8",
-                      cursor:"pointer",
-                      display:"flex",
-                      alignItems:"center",
-                      justifyContent:"space-between",
-                      gap:10,
-                      transition:"all .15s"
-                    }}>
-                    <div style={{display:"flex",flexDirection:"column",alignItems:"flex-start",gap:2}}>
-                      <div style={{fontSize:12,fontWeight:800,color:active?"#c8622a":ink}}>{f.label}</div>
-                      <div style={{fontSize:10,color:muted,fontFamily: f.id ? `'${f.id}', sans-serif` : "inherit"}}>
-                        Aa Bb Cc 0123
+                  <button key={f.id || "default"} onClick={()=>setDraftAppFont(f.id)} style={optionCardStyle(T, active)}>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,width:"100%"}}>
+                      <div style={{display:"flex",flexDirection:"column",alignItems:"flex-start",gap:2}}>
+                        <div style={{fontSize:12,fontWeight:800,color:active?T.accent:ink}}>{f.label}</div>
+                        <div style={{fontSize:10,color:muted,fontFamily: f.id ? `'${f.id}', var(--app-font), sans-serif` : "var(--app-font)"}}>
+                          Aa Bb Cc 0123
+                        </div>
                       </div>
+                      {active && <div style={{fontSize:11,fontWeight:900,color:T.accent}}>✓</div>}
                     </div>
-                    {active && <div style={{fontSize:11,fontWeight:900,color:"#c8622a"}}>✓</div>}
                   </button>
                 )
               })}
@@ -459,9 +462,8 @@ function ThemePicker({current, onChange, onClose}) {
 
 export default function LibraryPage() {
   const navigate = useNavigate()
-  const {getTheme, setActiveNotebook, spotifyUrl, setSpotifyUrl} = useAppStore()
-  const [localTheme, setLocalTheme] = useState(null)
-  const T = localTheme || getTheme()
+  const { setActiveNotebook, spotifyUrl, setSpotifyUrl } = useAppStore()
+  const { T } = useTheme()
   const [showFocus, setShowFocus] = useState(false)
   const [showSpotify, setShowSpotify] = useState(false)
   const [spotifyInput, setSpotifyInput] = useState(spotifyUrl||"")
@@ -622,7 +624,6 @@ export default function LibraryPage() {
     setShowNewSubject(false); setSubjName(""); setSubjEmoji("⭐"); setSubjColor("#c8622a")
   }
 
-  const changeTheme = th => { setLocalTheme(th) }
   const logout = async () => { await supabase.auth.signOut(); setUserId(null); setUserName(""); setNotebooks([]) }
 
   const saveProfile = async () => {
@@ -638,7 +639,7 @@ export default function LibraryPage() {
   const avatarLetter = userName ? userName.charAt(0).toUpperCase() : "?"
 
   return (
-    <div style={{minHeight:"100vh", background:T.bg, fontFamily:"'Nunito',sans-serif", color:T.ink, position:"relative", zIndex:2}}>
+    <div style={{minHeight:"100vh", background:T.bg, fontFamily:"var(--app-font)", color:T.ink, position:"relative", zIndex:2}}>
       <style>{`
         @keyframes cardIn { from { opacity:0; transform:translateY(14px) scale(.97); } to { opacity:1; transform:none; } }
         @keyframes shimmer { from { background-position: -200% center; } to { background-position: 200% center; } }
@@ -651,7 +652,7 @@ export default function LibraryPage() {
         .nb-card:nth-child(1){animation-delay:0ms} .nb-card:nth-child(2){animation-delay:30ms} .nb-card:nth-child(3){animation-delay:60ms} .nb-card:nth-child(4){animation-delay:90ms} .nb-card:nth-child(5){animation-delay:120ms} .nb-card:nth-child(6){animation-delay:150ms}
       `}</style>
 
-      {showTheme && <ThemePicker current={T} onChange={changeTheme} onClose={() => setShowTheme(false)}/>}
+      {showTheme && <ThemePicker onClose={() => setShowTheme(false)}/>}
 
       {/* FOCUS PANEL */}
       {showFocus && <FocusPanel T={T} onClose={() => setShowFocus(false)} spotifyIframeRef={spotifyIframeRef}/>}
@@ -1002,13 +1003,21 @@ export default function LibraryPage() {
 
       {/* NOT LOGGED IN */}
       {!userId && !loading && (
-        <div style={{textAlign:"center",padding:"90px 0"}}>
-          <img src={T.img} alt={T.n} style={{width:72,height:72,borderRadius:20,objectFit:"cover",margin:"0 auto 14px",display:"block",boxShadow:`0 8px 28px ${T.accent}44`}}/>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:24,color:T.ink,marginBottom:8}}>Bienvenue sur Forma</div>
-          <div style={{fontSize:14,color:T.muted,marginBottom:28}}>Le carnet de conception pour architectes & designers</div>
-          <button onClick={() => navigate("/auth")} style={{padding:"12px 26px",borderRadius:12,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:`0 4px 14px ${T.accent}44`}}>
-            Se connecter / Créer un compte
-          </button>
+        <div style={{ padding: "90px 22px" }}>
+          <BrandLogo
+            src={T.img}
+            alt={T.n}
+            size="lg"
+            subtitle="Le carnet de conception pour architectes & designers"
+            accent={T.accent}
+            ink={T.ink}
+            muted={T.muted}
+          />
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 28 }}>
+            <button onClick={() => navigate("/auth")} style={{padding:"12px 26px",borderRadius:12,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:`0 4px 14px ${T.accent}44`}}>
+              Se connecter / Créer un compte
+            </button>
+          </div>
         </div>
       )}
 

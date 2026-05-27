@@ -1,12 +1,11 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
+import { useTheme } from '@/hooks/useAppearance'
 
 export default function AuthPage() {
   const navigate = useNavigate()
-  const { getTheme } = useAppStore()
-  const T = getTheme()
+  const { T } = useTheme()
   const [mode, setMode] = useState("login") // login | signup
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -39,14 +38,14 @@ export default function AuthPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: T.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Nunito',sans-serif", padding: 20 }}>
+    <div style={{ minHeight: "100vh", background: T.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--app-font)", padding: 20 }}>
       <div style={{ background: T.surface, borderRadius: 20, padding: 32, width: 400, maxWidth: "100%", boxShadow: "0 20px 60px rgba(0,0,0,.12)", border: `1px solid ${T.border}` }}>
 
         {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
           <img src={T.img} alt={T.n} style={{ width: 44, height: 44, borderRadius: 12, objectFit: "cover", boxShadow: `0 4px 14px ${T.accent}44` }}/>
           <div>
-            <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: T.ink }}>Forma</div>
+            <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 22, color: T.ink }} className="forma-brand-title">Forma</div>
             <div style={{ fontSize: 11, color: T.muted }}>Carnet de conception · Architecture & Design</div>
           </div>
         </div>

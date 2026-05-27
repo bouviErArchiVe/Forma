@@ -96,7 +96,7 @@ function shapeSvg(p, type) {
   return `${base}${cross}${shape}</svg>`
 }
 
-const SHAPE_TOOLS = new Set(['line', 'rect', 'circle', 'arrow', 'dimline', 'cloud'])
+const SHAPE_TOOLS = new Set(['line', 'rect', 'circle', 'arrow', 'shape-arrow', 'dimline', 'cloud'])
 
 /**
  * @param {string} tool — id outil FORMA
@@ -116,6 +116,7 @@ export function getToolCursor(tool, opts = {}) {
   let url
   switch (tool) {
     case 'select':
+    case 'arrow':
       url = makeCursor(panning ? grabSvg(p) : handSvg(p), 10, panning ? 12 : 10, panning ? 'grabbing' : 'grab')
       break
     case 'pen':
