@@ -1,6 +1,8 @@
 import { categoryIcon, categoryLabel, FLB_DARK } from '@/lib/formalibrary/constants'
 
-export default function LibraryPreview({ item, onClose, onToggleFavorite, onDelete }) {
+export default function LibraryPreview({
+  item, onClose, onToggleFavorite, onDelete, onOpen, onRead, onAnnotate, onRename,
+}) {
   if (!item) {
     return (
       <div style={{
@@ -13,6 +15,7 @@ export default function LibraryPreview({ item, onClose, onToggleFavorite, onDele
   }
 
   const preview = item.previewUrl || item.dataUrl
+  const canPreview = !!(preview || item.textContent)
 
   return (
     <div style={{
@@ -65,7 +68,11 @@ export default function LibraryPreview({ item, onClose, onToggleFavorite, onDele
       </div>
 
       <div style={{ padding: 12, borderTop: `1px solid ${FLB_DARK.border}`, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        <Btn onClick={onToggleFavorite}>{item.favorite ? '★ Retirer' : '☆ Favori'}</Btn>
+        {canPreview && <Btn primary onClick={() => onOpen?.(item)}>Ouvrir</Btn>}
+        {canPreview && <Btn onClick={() => onRead?.(item)}>Lire</Btn>}
+        {canPreview && <Btn onClick={() => onAnnotate?.(item)}>Annoter</Btn>}
+        <Btn onClick={() => onRename?.(item)}>Renommer</Btn>
+        <Btn onClick={onToggleFavorite}>{item.favorite ? '★ Retiré' : '☆ Favori'}</Btn>
         {preview && <Btn onClick={() => { const a = document.createElement('a'); a.href = preview; a.download = item.name; a.click() }}>Télécharger</Btn>}
         <Btn muted onClick={onDelete}>Supprimer</Btn>
       </div>
@@ -73,12 +80,14 @@ export default function LibraryPreview({ item, onClose, onToggleFavorite, onDele
   )
 }
 
-function Btn({ children, onClick, muted }) {
+function Btn({ children, onClick, muted, primary }) {
   return (
     <button type="button" onClick={onClick} style={{
       padding: '6px 10px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
-      border: `1px solid ${FLB_DARK.border}`, background: muted ? 'transparent' : FLB_DARK.surface,
-      color: muted ? FLB_DARK.muted : FLB_DARK.ink,
+      border: `1px solid ${FLB_DARK.border}`,
+      background: primary ? FLB_DARK.accent : muted ? 'transparent' : FLB_DARK.surface,
+      color: primary ? '#1a1e28' : muted ? FLB_DARK.muted : FLB_DARK.ink,
+      fontWeight: primary ? 700 : 400,
     }}>
       {children}
     </button>

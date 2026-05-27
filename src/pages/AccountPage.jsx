@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import useAppStore from '@/stores/useAppStore'
 import GlassPanel from '@/components/ui/GlassPanel'
+import BrandLogo from '@/components/BrandLogo'
 import { rgbaFromHex } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
 import SyncSettingsSection from '@/components/sync/SyncSettingsSection'
@@ -681,7 +682,9 @@ export default function AccountPage() {
   return (
     <div className="forma-page-shell" style={{ display: 'flex', minHeight: '100vh' }}>
       <aside style={{ width: 240, borderRight: `1px solid ${T.border}`, background: T.surface, padding: '20px 12px', flexShrink: 0 }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: T.muted, cursor: 'pointer', fontSize: 13, marginBottom: 16 }}>← Bibliothèque</button>
+        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginBottom: 16 }}>
+          <BrandLogo T={T} size="sm" showText={false} />
+        </button>
         <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, color: T.ink, marginBottom: 20, padding: '0 8px' }}>Mon compte</div>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {NAV.map((item) => (

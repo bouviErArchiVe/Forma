@@ -43,7 +43,7 @@ export default function FormulasPage() {
   const { favorites, recent, lengthUnit, setLengthUnit, toggleFavorite, touchRecent } = useFormulaPrefs()
 
   const [collapsed, setCollapsed] = useState(false)
-  const [categoryId, setCategoryId] = useState('stairs')
+  const [categoryId, setCategoryId] = useState('structures')
   const [search, setSearch] = useState('')
   const [activeFormulaId, setActiveFormulaId] = useState(null)
   const [notebooks, setNotebooks] = useState([])
@@ -124,10 +124,9 @@ export default function FormulasPage() {
         top: 0,
         zIndex: 20,
       }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: T.accent, fontWeight: 600 }}>
-          ← Accueil
+        <button type="button" onClick={() => navigate('/')} title="Accueil Forma" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <BrandLogo T={T} size={28} />
         </button>
-        <BrandLogo T={T} size={28} />
         <div style={{ flex: 1, minWidth: 160 }}>
           <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>Formules</div>
           <div style={{ fontSize: 11, color: T.muted }}>Calculateurs intégrés · {listedFormulas.length} formules</div>

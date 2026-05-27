@@ -127,10 +127,9 @@ export default function ProformaPage() {
         gap: 14,
         flexWrap: 'wrap',
       }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: PF_DARK.accent, fontWeight: 600 }}>
-          ← Accueil
+        <button type="button" onClick={() => navigate('/')} title="Accueil Forma" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={PF_DARK.accent} />
         </button>
-        <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={PF_DARK.accent} />
         <div style={{ flex: 1 }}>
           <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20 }}>Proforma</div>
           <div style={{ fontSize: 10, color: PF_DARK.muted }}>Dessin de précision professionnel</div>

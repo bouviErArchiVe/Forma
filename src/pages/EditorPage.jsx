@@ -428,6 +428,28 @@ function Paper({gridStyle,tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
   </svg>
 }
 
+function smoothStrokePoints(pts, amount = 0.32) {
+  if (!pts?.length || pts.length < 3 || amount <= 0) return pts
+  const dedup = [pts[0]]
+  for (let i = 1; i < pts.length; i += 1) {
+    const p = pts[i]
+    const last = dedup[dedup.length - 1]
+    if (Math.hypot(p.x - last.x, p.y - last.y) > 1.2) dedup.push(p)
+  }
+  if (dedup.length < 3) return dedup
+  const sm = [dedup[0]]
+  for (let i = 1; i < dedup.length; i += 1) {
+    const prev = sm[sm.length - 1]
+    const cur = dedup[i]
+    sm.push({
+      x: prev.x + (cur.x - prev.x) * (1 - amount),
+      y: prev.y + (cur.y - prev.y) * (1 - amount),
+      p: cur.p,
+    })
+  }
+  return sm
+}
+
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */
 function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest,canvasTextFont,canvasZIndex=5}){
   const drawing=useRef(false)
@@ -885,6 +907,10 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       shape.current.end=ep
       return
     }
+    if (["pen", "highlight"].includes(tool)) {
+      const last = cur.current[cur.current.length - 1]
+      if (last && Math.hypot(p.x - last.x, p.y - last.y) < 1.5) return
+    }
     cur.current.push(p)
 
     if(tool==="eraser"){
@@ -1009,7 +1035,9 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
         const last=strokes.current[strokes.current.length-1]
         logAction("erase_draw",{stroke:last})
       } else if(tool!=="eraser"){
-        pushStroke({pts:[...cur.current],color,size,tool})
+        const rawPts=[...cur.current]
+        const pts=(tool==="pen"||tool==="highlight")&&rawPts.length>2?smoothStrokePoints(rawPts):rawPts
+        pushStroke({pts,color,size,tool})
         const last=strokes.current[strokes.current.length-1]
         logAction(tool==="highlight"?"stroke_highlight":"stroke_pen",{stroke:last})
       }

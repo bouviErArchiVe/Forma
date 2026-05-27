@@ -13,7 +13,7 @@ import { countOpenPins } from '@/lib/formareview/model'
 import {
   listSessions, getSession, saveSession, createAndSaveSession, deleteSession, autosaveSession,
 } from '@/lib/formareview/persistence'
-import { importFiles } from '@/lib/formareview/import'
+import { importFiles, importFromLibraryItem } from '@/lib/formareview/import'
 
 export default function FormaReviewPage() {
   const navigate = useNavigate()
@@ -32,6 +32,24 @@ export default function FormaReviewPage() {
   const refresh = useCallback(() => setSessions(listSessions()), [])
 
   useEffect(() => { refresh() }, [refresh])
+
+  useEffect(() => {
+    const pending = sessionStorage.getItem('formareview-pending-library')
+    if (!pending) return
+    sessionStorage.removeItem('formareview-pending-library')
+    let item
+    try { item = JSON.parse(pending) } catch { return }
+    if (!item?.dataUrl && !item?.previewUrl) return
+    const s = createAndSaveSession(`Révision — ${item.name || 'Document'}`, { mode: 'plans' })
+    const page = importFromLibraryItem(item)
+    const full = { ...s, pages: [page], updatedAt: Date.now() }
+    saveSession(full)
+    refresh()
+    setSession(JSON.parse(JSON.stringify(full)))
+    setSelectedPageId(page.id)
+    setView('editor')
+    addNotification('Document ouvert dans FormaReview', 'success')
+  }, [refresh, addNotification])
 
   useEffect(() => {
     if (!session) return undefined
@@ -196,7 +214,7 @@ export default function FormaReviewPage() {
         <Btn onClick={() => fileRef.current?.click()} disabled={busy}>
           {busy ? '…' : '+ Pages'}
         </Btn>
-        <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={(e) => handleImportPages(e.target.files)} />
+        <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf" multiple style={{ display: 'none' }} onChange={(e) => handleImportPages(e.target.files)} />
       </header>
 
       <ReviewToolbar

@@ -211,10 +211,9 @@ export default function SheetsPage() {
         padding: '14px 20px', borderBottom: `1px solid ${T.border}`, background: T.surface,
         display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', position: 'sticky', top: 0, zIndex: 20,
       }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: T.accent, fontWeight: 600 }}>
-          ← Accueil
+        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <BrandLogo T={T} size={28} />
         </button>
-        <BrandLogo T={T} size={28} />
         <div style={{ flex: 1, minWidth: 160 }}>
           <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18 }}>FormaTab</div>
           <div style={{ fontSize: 11, color: T.muted }}>FormaTab · {listed.length} tableau{listed.length !== 1 ? 'x' : ''}</div>

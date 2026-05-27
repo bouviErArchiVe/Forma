@@ -21,7 +21,7 @@ export const MODULES = {
   formaReview: { name: 'FormaReview', route: '/formareview' },
   formaPresent: { name: 'FormaPresent', route: '/formapresent' },
   formaLibrary: { name: 'FormaLibrary', route: '/formalibrary' },
-  formaAI: { name: 'FormaAI', route: null },
+  formaAI: { name: 'FormaAI', route: '/formaai' },
   fTheme: { name: 'FTheme', route: null },
   fMoodboard: { name: 'FMoodboard', route: '/fmoodboard', legacyRoute: '/moodboard' },
   fPause: { name: 'FPause', route: '/fpause', legacyRoute: '/games' },

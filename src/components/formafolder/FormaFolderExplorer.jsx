@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import BrandLogo from '@/components/BrandLogo'
 import useAppStore from '@/stores/useAppStore'
 import { getFolderAncestors, buildFolderTree, canCreateChildFolder } from '@/lib/folders/tree'
 import { getFolderStats } from '@/lib/folders/stats'
@@ -235,7 +236,9 @@ export default function FormaFolderExplorer({
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: showHeader ? '100vh' : 420, background: FF_DARK.bg, color: FF_DARK.ink }}>
       {showHeader && (
         <header style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderBottom: `1px solid ${FF_DARK.border}`, background: FF_DARK.surface }}>
-          <button type="button" onClick={() => navigate('/')} style={btnSm}>← Bibliothèque</button>
+          <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+            <BrandLogo size="sm" showText={false} />
+          </button>
           <h1 style={{ margin: 0, fontSize: 17, flex: 1 }}>FormaFolder</h1>
           <span style={{ fontSize: 11, color: FF_DARK.muted }}>Explorateur central</span>
         </header>

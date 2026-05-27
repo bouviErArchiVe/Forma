@@ -73,10 +73,9 @@ export default function GamesPage() {
         gap: 14,
         flexWrap: 'wrap',
       }}>
-        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: T.accent, fontWeight: 600 }}>
-          ← Accueil
+        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <BrandLogo T={T} size={26} />
         </button>
-        <BrandLogo T={T} size={26} />
         <div style={{ flex: 1 }}>
           <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>FPause</div>
           <div style={{ fontSize: 11, color: T.muted }}>Mini-jeux · détente rapide</div>

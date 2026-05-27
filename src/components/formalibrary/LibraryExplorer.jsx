@@ -81,22 +81,32 @@ export default function LibraryExplorer({
   }, [selectedItem, onDeleteItem, addNotification])
 
   const handleOpenItem = useCallback((item) => {
+    setSelectedId(item.id)
     if (item.refModule && item.refId) {
       const routes = { doc: '/formadoc', sheet: '/formatab', proforma: '/proforma' }
       const route = routes[item.refModule]
       if (route) { navigate(route); return }
     }
-    if (item.dataUrl || item.previewUrl) {
-      const url = item.previewUrl || item.dataUrl
-      if (item.mimeType?.includes('pdf') || item.category === 'pdf') {
-        window.open(url, '_blank')
-      } else {
-        setSelectedId(item.id)
-      }
-      return
-    }
-    setSelectedId(item.id)
   }, [navigate])
+
+  const handleReadItem = useCallback((item) => {
+    setSelectedId(item.id)
+    const url = item.previewUrl || item.dataUrl
+    if (url) window.open(url, '_blank')
+  }, [])
+
+  const handleAnnotateItem = useCallback((item) => {
+    sessionStorage.setItem('formareview-pending-library', JSON.stringify(item))
+    navigate('/formareview')
+    addNotification?.('Ouverture dans FormaReview…', 'success')
+  }, [navigate, addNotification])
+
+  const handleRenameItem = useCallback((item) => {
+    const name = prompt('Nouveau nom :', item.name)
+    if (!name?.trim() || name.trim() === item.name) return
+    onSaveItem({ ...item, name: name.trim(), updatedAt: Date.now() })
+    addNotification?.('Fichier renommé', 'success')
+  }, [onSaveItem, addNotification])
 
   const runImport = async (files) => {
     if (!files?.length) return
@@ -137,8 +147,8 @@ export default function LibraryExplorer({
         draggable
         onDragStart={() => setDragItemId(item.id)}
         onDragEnd={() => { setDragItemId(null); setDropTargetId(null) }}
-        onClick={() => setSelectedId(item.id)}
-        onDoubleClick={() => handleOpenItem(item)}
+        onClick={() => handleOpenItem(item)}
+        onDoubleClick={() => handleReadItem(item)}
         style={{
           padding: 10, borderRadius: 10, cursor: 'pointer',
           background: isSel ? `${FLB_DARK.accent}22` : FLB_DARK.panel,
@@ -274,6 +284,10 @@ export default function LibraryExplorer({
         onClose={() => setSelectedId(null)}
         onToggleFavorite={handleToggleFavorite}
         onDelete={handleDelete}
+        onOpen={handleOpenItem}
+        onRead={handleReadItem}
+        onAnnotate={handleAnnotateItem}
+        onRename={handleRenameItem}
       />
 
       {globalDrag && (

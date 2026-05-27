@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import BrandLogo from '@/components/BrandLogo'
 import { PF_DARK } from '@/lib/proforma/constants'
 import { useProformaEditor } from '@/hooks/useProformaEditor'
 import ProformaCanvas from './ProformaCanvas'
@@ -10,6 +12,7 @@ import { exportProformaPng, exportProformaPdf, downloadBlob, downloadDataUrl } f
 import { formatLabel } from '@/lib/pageFormats'
 
 export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, addNotification }) {
+  const navigate = useNavigate()
   const [panels, setPanels] = useState({ layers: true, colors: true, props: true })
   const [viewSize, setViewSize] = useState({ w: 0, h: 0 })
   const [vp, setVp] = useState({ zoom: 1 })
@@ -65,7 +68,10 @@ export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, 
         background: PF_DARK.panel,
         flexShrink: 0,
       }}>
-        <button type="button" onClick={onBack} style={headerBtn}>← Bibliothèque</button>
+        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <BrandLogo size="sm" showText={false} />
+        </button>
+        <button type="button" onClick={onBack} style={headerBtn}>← Projets</button>
         <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15 }}>
           Proforma
         </div>

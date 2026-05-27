@@ -16,6 +16,7 @@ export default function ProformaCanvas({
   const viewportRef = useRef(null)
   const canvasRef = useRef(null)
   const rafRef = useRef(null)
+  const docCacheRef = useRef({ key: '', canvas: null })
   const [viewSize, setViewSize] = useState({ w: 0, h: 0 })
 
   const allowPan = panToolActive || editor.tool === 'hand'
@@ -97,12 +98,17 @@ export default function ProformaCanvas({
     ctx.rotate(((doc.viewRotation || 0) * Math.PI) / 180)
     ctx.translate(-doc.width / 2, -doc.height / 2)
 
-    const off = document.createElement('canvas')
-    off.width = doc.width
-    off.height = doc.height
-    const octx = off.getContext('2d')
-    renderDocument(octx, doc)
-    if (doc.showGrid) drawGrid(octx, doc)
+    const cacheKey = `${doc.updatedAt || 0}-${doc.strokes?.length || 0}-${doc.showGrid}-${doc.width}-${doc.height}-${doc.viewRotation || 0}`
+    let off = docCacheRef.current.key === cacheKey ? docCacheRef.current.canvas : null
+    if (!off) {
+      off = document.createElement('canvas')
+      off.width = doc.width
+      off.height = doc.height
+      const octx = off.getContext('2d')
+      renderDocument(octx, doc)
+      if (doc.showGrid) drawGrid(octx, doc)
+      docCacheRef.current = { key: cacheKey, canvas: off }
+    }
     ctx.drawImage(off, 0, 0)
 
     const live = editor.getLiveStroke?.()
