@@ -1,5 +1,5 @@
 // src/App.jsx
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import ErrorBoundary from '@/components/ErrorBoundary'
@@ -12,6 +12,7 @@ import FormulasPage from '@/pages/FormulasPage'
 import SheetsPage from '@/pages/SheetsPage'
 import DocsPage from '@/pages/DocsPage'
 import ProformaPage from '@/pages/ProformaPage'
+const FormatcalPage = lazy(() => import('@/pages/FormatcalPage'))
 import GamesPage from '@/pages/GamesPage'
 import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="/sheets" element={<ProtectedRoute><ErrorBoundary title="Erreur tableur"><SheetsPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/docs" element={<ProtectedRoute><ErrorBoundary title="Erreur documents"><DocsPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/proforma" element={<ProtectedRoute><ErrorBoundary title="Erreur PROFORMA"><ProformaPage /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/formatcal" element={<ProtectedRoute><ErrorBoundary title="Erreur FORMATCAL"><Suspense fallback={<AppLoading />}><FormatcalPage /></Suspense></ErrorBoundary></ProtectedRoute>} />
           <Route path="/games" element={<ProtectedRoute><ErrorBoundary title="Erreur jeux"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/translate" element={<ProtectedRoute><ErrorBoundary title="Erreur traduction scan"><TranslateScanPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/account" element={<ProtectedRoute><ErrorBoundary title="Erreur compte"><AccountPage /></ErrorBoundary></ProtectedRoute>} />
