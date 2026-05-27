@@ -53,7 +53,7 @@ import {
   PROFILE_TYPES,
   renderWlsSvg,
 } from "@/lib/structuralProfiles"
-import { screenToPage } from "@/lib/viewport"
+import { screenToPage, pageToScreen } from "@/lib/viewport"
 import { useCanvasViewport } from "@/hooks/useCanvasViewport"
 import { PAGE_FORMATS, resolvePageDimensions } from "@/lib/pageFormats"
 import { computeRotatedBounds } from "@/lib/pageRotation"
@@ -373,7 +373,7 @@ function renderEl(el,sc=1/50,sx=1,sy=1){
 
 /* ══ PAPER ════════════════════════════════════════════ */
 function Paper({gridStyle,tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
-  const effective=gridStyle||tmpl||"grid10"
+  const effective=gridStyle??tmpl??"grid10"
   const W=PW,H=PH,L=[]
   let bg=pageColor||T.paper,gc=gridColor||T.grid,pl=gridColor||T.pline
   const grid=(gap,col,sw)=>{for(let x=0;x<=W;x+=gap)L.push(<line key={`v${x}${sw}`}x1={x}y1={0}x2={x}y2={H}stroke={col}strokeWidth={sw}/>);for(let y=0;y<=H;y+=gap)L.push(<line key={`h${y}${sw}`}x1={0}y1={y}x2={W}y2={y}stroke={col}strokeWidth={sw}/>)}
@@ -1454,6 +1454,8 @@ export default function EditorPage(){
   const formulaNoteInsertedRef=useRef(false)
   const saveNowRef=useRef(()=>{})
   const scheduleSaveRef=useRef(()=>{})
+  const goToPageRef=useRef(async()=>{})
+  const lastFitKeyRef=useRef("")
   useEffect(()=>{ placedRef.current = placed }, [placed])
   useEffect(()=>{ importedRef.current = importedImages }, [importedImages])
   useEffect(()=>{
@@ -1572,6 +1574,52 @@ export default function EditorPage(){
   saveNowRef.current=saveNow
   scheduleSaveRef.current=scheduleSave
 
+  const goToPage=useCallback(async(num)=>{
+    if(num<1||num>pagesCount||num===page)return
+    await saveNow()
+    setPage(num)
+  },[page,pagesCount,saveNow])
+  goToPageRef.current=goToPage
+
+  const documentPage=useMemo(()=>({
+    w:displayW,
+    h:displayH,
+    page,
+    pageCount:pagesCount,
+    onPrev:()=>{if(page>1)goToPageRef.current(page-1)},
+    onNext:()=>{if(page<pagesCount)goToPageRef.current(page+1)},
+  }),[displayW,displayH,page,pagesCount])
+
+  const{
+    zoom,panX,panY,panActive,spacePan,
+    setPan,zoomBy,resetViewport,fitToPage,canvasHandlers,
+  }=useCanvasViewport({
+    viewW:viewSize.w,
+    viewH:viewSize.h,
+    enabled:!readOnly,
+    allowPan:!readOnly,
+    documentPage,
+  })
+  const pageFitKey=`${page}-${pageFormat}-${pageRotation}-${infiniteMode}-${displayW}x${displayH}`
+  const prevViewRef=useRef({w:0,h:0})
+  useEffect(()=>{
+    if(!viewSize.w||!viewSize.h||!displayW||!displayH)return
+    const pageChanged=lastFitKeyRef.current!==pageFitKey
+    const viewReady=prevViewRef.current.w===0&&viewSize.w>0
+    prevViewRef.current=viewSize
+    if(pageChanged||viewReady){
+      lastFitKeyRef.current=pageFitKey
+      fitToPage(displayW,displayH)
+    }
+  },[pageFitKey,viewSize.w,viewSize.h,displayW,displayH,fitToPage])
+
+  const toPageCoords=useCallback((sx,sy,viewW,viewH)=>screenToPage({
+    sx,sy,viewW,viewH,
+    pageW:displayW,pageH:displayH,
+    zoom,panX,panY,
+    offsetX:rotLayout.offsetX,offsetY:rotLayout.offsetY,
+  }),[displayW,displayH,zoom,panX,panY,rotLayout.offsetX,rotLayout.offsetY])
+
   useEffect(() => {
     if (tool !== 'eraser') return
     setSelected(null)
@@ -1612,15 +1660,6 @@ export default function EditorPage(){
     return "Prêt"
   },[saveStatus,lastSavedAt])
 
-  const{
-    zoom,panX,panY,panActive,spacePan,
-    setPan,zoomBy,resetViewport,canvasHandlers,
-  }=useCanvasViewport({
-    viewW:viewSize.w,
-    viewH:viewSize.h,
-    enabled:!readOnly,
-    allowPan:!readOnly,
-  })
   const metricLib=useMemo(()=>{
     const base={...LIB_METRIC,"⚙️ Profilés EU":euProfilesAsLibItems()}
     const custom=(customProfiles||[]).map(customProfileToLibEntry)
@@ -2070,12 +2109,6 @@ export default function EditorPage(){
   },[pageMenu,page,pages,nb.template,buildCurrentPageMeta])
 
   const onStroke=useCallback(()=>{setCanvasRevision(r=>r+1);scheduleSave()},[scheduleSave])
-
-  const goToPage=useCallback(async(num)=>{
-    if(num===page)return
-    await saveNow()
-    setPage(num)
-  },[page,saveNow])
 
   // Page versioning (localStorage, 20 versions max per page)
   const HIST_KEY=`forma_hist_${nb.id}_${page}`
@@ -2580,7 +2613,7 @@ export default function EditorPage(){
             if(libPending)setMousePos({x:e.clientX,y:e.clientY})
             const r=document.getElementById("canvas-area")?.getBoundingClientRect()
             if(r){
-              const pt=screenToPage({sx:e.clientX-r.left,sy:e.clientY-r.top,viewW:r.width,viewH:r.height,pageW:PW,pageH:PH,zoom,panX,panY})
+              const pt=toPageCoords(e.clientX-r.left,e.clientY-r.top,r.width,r.height)
               broadcastCursor(pt.x,pt.y)
               if(tool==="eraser"&&!readOnly)setEraserCursor({x:e.clientX-r.left,y:e.clientY-r.top})
               else if(eraserCursor)setEraserCursor(null)
@@ -2609,14 +2642,21 @@ export default function EditorPage(){
           {collabCursors.map((c,i)=>{
             const r=document.getElementById("canvas-area")?.getBoundingClientRect()
             if(!r)return null
-            return<div key={c.userId}style={{position:"absolute",left:c.x*zoom+panX,top:c.y*zoom+panY,zIndex:60,pointerEvents:"none"}}>
+            const pt=pageToScreen({
+              px:c.x,py:c.y,
+              viewW:r.width,viewH:r.height,
+              pageW:displayW,pageH:displayH,
+              zoom,panX,panY,
+              offsetX:rotLayout.offsetX,offsetY:rotLayout.offsetY,
+            })
+            return<div key={c.userId}style={{position:"absolute",left:pt.sx,top:pt.sy,zIndex:60,pointerEvents:"none"}}>
               <div style={{width:12,height:12,background:COLLAB_COLORS[i%6],clipPath:"polygon(0 0,100% 30%,40% 40%,30% 100%)"}}/>
               <div style={{position:"absolute",top:12,left:8,background:COLLAB_COLORS[i%6],color:"#fff",fontSize:9,padding:"2px 5px",borderRadius:6,whiteSpace:"nowrap",fontWeight:600}}>{c.userName||"?"}</div>
             </div>
           })}
 
-          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:infiniteMode?-1500:-(displayW/2),marginTop:infiniteMode?-1500:-(displayH/2),willChange:"transform",overflow:"visible"}}>
-            <div style={{width:displayW,height:displayH,position:"relative",overflow:"visible"}}>
+          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:-(displayW/2),marginTop:-(displayH/2),willChange:"transform",overflow:"hidden"}}>
+            <div style={{width:displayW,height:displayH,position:"relative",overflow:"hidden",background:"transparent"}}>
               <div style={{
                 width:PW,
                 height:PH,
@@ -2625,8 +2665,9 @@ export default function EditorPage(){
                 top:rotLayout.offsetY,
                 transform:pageRotation?`rotate(${pageRotation}deg)`:"none",
                 transformOrigin:`${PW/2}px ${PH/2}px`,
-                background:infiniteMode?(pageColor||T.paper):"transparent",
-                boxShadow:infiniteMode?"none":"0 4px 40px rgba(0,0,0,.12)",
+                background:infiniteMode?(pageColor||T.paper):(pageColor||T.paper),
+                boxShadow:infiniteMode?"none":"0 4px 24px rgba(0,0,0,.10)",
+                overflow:"hidden",
               }}>
               {infiniteMode&&<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={3000}height={3000}><defs><pattern id="inf-grid"width={37.8}height={37.8}patternUnits="userSpaceOnUse"><path d={`M 37.8 0 L 0 0 0 37.8`}fill="none"stroke={gridColor||T.grid}strokeWidth={.6}/></pattern></defs><rect width={3000}height={3000}fill={`url(#inf-grid)`}/></svg>}
               {!infiniteMode&&<Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={PW} PH={PH}/>}
@@ -2682,18 +2723,6 @@ export default function EditorPage(){
                 <svg width={Math.min(PW,1158)}height={24}style={{marginLeft:22,display:"block",pointerEvents:"none"}}>{Array.from({length:Math.ceil(Math.min(PW,1158)/10)},(_,i)=>{const x=i*10,big=i%10===0,med=i%5===0;return<g key={i}><line x1={x}y1={24}x2={x}y2={big?5:med?10:17}stroke={T.muted}strokeWidth={big?1:.5}/>{big&&<text x={x+2}y={8}fontSize={6}fill={T.muted}fontFamily="monospace">{i*(unitSys==="metric"?10:1)}{unitSys==="metric"?"mm":"\""}</text>}</g>})}</svg>
               </div>}
 
-              {/* Cartouche architectural */}
-              {["plan","elevation","section","detail"].includes(nb.template)&&(
-                <div style={{position:"absolute",bottom:12,left:24,right:24,height:78,pointerEvents:"none",zIndex:6}}>
-                  <div style={{position:"absolute",left:6,bottom:28,fontSize:7,fontFamily:"monospace",color:T.pline}}>PROJET</div>
-                  <div style={{position:"absolute",left:6,bottom:8,fontSize:10,fontFamily:"'Syne',sans-serif",fontWeight:700,color:T.pline}}>{nb.title}</div>
-                  <div style={{position:"absolute",left:298,bottom:28,fontSize:7,fontFamily:"monospace",color:T.pline}}>N° PLANCHE</div>
-                  <div style={{position:"absolute",left:298,bottom:8,fontSize:9,color:T.pline}}>{page.toString().padStart(2,"0")}</div>
-                  <div style={{position:"absolute",left:548,bottom:28,fontSize:7,fontFamily:"monospace",color:T.pline}}>ÉCHELLE</div>
-                  <div style={{position:"absolute",left:548,bottom:8,fontSize:9,color:T.pline}}>{scale}</div>
-                </div>
-              )}
-
               {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={eraserActive?15:5}/>}
               {!eraserActive&&canvasSelection?.shapeBounds&&canvasSelection.count===1&&!textEdit&&(
                 <ShapeTransformHandles
@@ -2732,6 +2761,7 @@ export default function EditorPage(){
                   T={T}
                   bounds={canvasSelection.bounds}
                   count={canvasSelection.count}
+                  pageW={PW}
                   showShapeOpts={!!canvasSelection.shapeBounds&&canvasSelection.primaryShapeType!=="text"}
                   showTextFont={canvasSelection.count===1&&canvasSelection.primaryShapeType==="text"}
                   showRotation={canvasSelection.count===1&&!!canvasSelection.shapeBounds}
@@ -2862,7 +2892,7 @@ export default function EditorPage(){
           <div style={{padding:4,display:"flex",flexDirection:"column",gap:3}}>
             {libItems.map(el=>(
               <div key={el.id} onClick={()=>setLibPending(libPending?.id===el.id?null:el)} draggable
-                onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc;const pt=screenToPage({sx:e.clientX-r.left,sy:e.clientY-r.top,viewW:r.width,viewH:r.height,pageW:PW,pageH:PH,zoom,panX,panY});setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,pt.x-elW/2),y:Math.max(0,pt.y-elH/2)}]);pushAction({type:"element_placed",detail:el.l});setLibPending(null);scheduleSave()}}
+                onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc;const pt=toPageCoords(e.clientX-r.left,e.clientY-r.top,r.width,r.height);setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,pt.x-elW/2),y:Math.max(0,pt.y-elH/2)}]);pushAction({type:"element_placed",detail:el.l});setLibPending(null);scheduleSave()}}
                 style={{padding:"5px 7px",borderRadius:8,border:`1px solid ${libPending?.id===el.id?T.accent:T.border}`,background:libPending?.id===el.id?`${T.accent}10`:T.bg,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
                 <div style={{width:28,height:28,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>{el.type==="sym"?renderSym(el,1/300):renderEl(el,1/300)}</div>
                 <div style={{flex:1,minWidth:0}}>
@@ -2908,7 +2938,7 @@ export default function EditorPage(){
     const r=document.getElementById("canvas-area")?.getBoundingClientRect()
     if(!r)return
     const sc=3.78/50,elW=(libPending.fw||libPending.w)*sc,elH=libPending.h*sc
-    const pt=screenToPage({sx:e.clientX-r.left,sy:e.clientY-r.top,viewW:r.width,viewH:r.height,pageW:PW,pageH:PH,zoom,panX,panY})
+    const pt=toPageCoords(e.clientX-r.left,e.clientY-r.top,r.width,r.height)
     const x=pt.x-elW/2,y=pt.y-elH/2
     setPlaced(p=>[...p,{id:Date.now(),el:libPending,x:Math.max(0,x),y:Math.max(0,y)}])
     pushAction({type:"element_placed",detail:libPending.l})

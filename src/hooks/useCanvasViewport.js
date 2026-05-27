@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { clampZoom, zoomAtPoint, ZOOM_DEFAULT, ZOOM_MIN, ZOOM_MAX } from '@/lib/viewport'
+import { clampZoom, zoomAtPoint, ZOOM_DEFAULT, ZOOM_MIN, ZOOM_MAX, computeFitZoom, clampDocumentPan } from '@/lib/viewport'
+import { getViewportInPage } from '@/lib/minimap'
 
 const INERTIA_FRICTION = 0.91
 const INERTIA_MIN = 0.35
@@ -16,6 +17,7 @@ export function useCanvasViewport({
   initialZoom = ZOOM_DEFAULT,
   minZoom = ZOOM_MIN,
   maxZoom = ZOOM_MAX,
+  documentPage = null,
 } = {}) {
   const [zoom, setZoom] = useState(initialZoom)
   const [panX, setPanX] = useState(0)
@@ -30,6 +32,26 @@ export function useCanvasViewport({
   const lastPan = useRef({ t: 0, x: 0, y: 0, vx: 0, vy: 0 })
   const inertiaRaf = useRef(null)
   const spaceDown = useRef(false)
+  const docRef = useRef(documentPage)
+  docRef.current = documentPage
+
+  const clampToPage = useCallback(
+    (next) => {
+      const doc = docRef.current
+      if (!doc?.w || !doc?.h || !viewW || !viewH) return next
+      const clamped = clampDocumentPan({
+        panX: next.panX,
+        panY: next.panY,
+        zoom: next.zoom,
+        viewW,
+        viewH,
+        pageW: doc.w,
+        pageH: doc.h,
+      })
+      return { ...next, ...clamped }
+    },
+    [viewW, viewH],
+  )
 
   const stopInertia = useCallback(() => {
     if (inertiaRaf.current) {
@@ -39,14 +61,15 @@ export function useCanvasViewport({
   }, [])
 
   const apply = useCallback(
-    (next) => {
+    (next, { clamp = true } = {}) => {
       const z = clampZoom(next.zoom, minZoom, maxZoom)
-      vpRef.current = { zoom: z, panX: next.panX, panY: next.panY }
-      setZoom(z)
-      setPanX(next.panX)
-      setPanY(next.panY)
+      const merged = clamp ? clampToPage({ ...next, zoom: z }) : { ...next, zoom: z }
+      vpRef.current = { zoom: merged.zoom, panX: merged.panX, panY: merged.panY }
+      setZoom(merged.zoom)
+      setPanX(merged.panX)
+      setPanY(merged.panY)
     },
-    [minZoom, maxZoom]
+    [minZoom, maxZoom, clampToPage],
   )
 
   const zoomBy = useCallback(
@@ -69,6 +92,15 @@ export function useCanvasViewport({
     stopInertia()
     apply({ zoom: initialZoom, panX: 0, panY: 0 })
   }, [apply, initialZoom, stopInertia])
+
+  const fitToPage = useCallback(
+    (pageW, pageH, padding = 48) => {
+      stopInertia()
+      const z = computeFitZoom({ viewW, viewH, pageW, pageH, padding })
+      apply({ zoom: z, panX: 0, panY: 0 }, { clamp: false })
+    },
+    [apply, viewW, viewH, stopInertia],
+  )
 
   const startInertia = useCallback(() => {
     stopInertia()
@@ -179,7 +211,29 @@ export function useCanvasViewport({
         return
       }
 
-      // Scroll = pan (trackpad deux doigts)
+      // Scroll = pan (trackpad deux doigts) ou changement de page aux bords
+      const doc = docRef.current
+      if (doc?.w && doc?.h && (doc.onPrev || doc.onNext)) {
+        const vp = getViewportInPage({
+          pageW: doc.w,
+          pageH: doc.h,
+          viewW: r.width,
+          viewH: r.height,
+          zoom: v.zoom,
+          panX: v.panX,
+          panY: v.panY,
+        })
+        const edge = Math.max(12, 40 / v.zoom)
+        if (e.deltaY > 0 && vp.y2 >= doc.h - edge && doc.page < doc.pageCount) {
+          doc.onNext?.()
+          return
+        }
+        if (e.deltaY < 0 && vp.y1 <= edge && doc.page > 1) {
+          doc.onPrev?.()
+          return
+        }
+      }
+
       apply({ ...v, panX: v.panX - e.deltaX, panY: v.panY - e.deltaY })
     }
 
@@ -259,6 +313,7 @@ export function useCanvasViewport({
     setPan,
     zoomBy,
     resetViewport,
+    fitToPage,
     canvasHandlers,
     viewportRef: vpRef,
   }

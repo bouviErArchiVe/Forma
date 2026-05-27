@@ -8,6 +8,7 @@ export default function FloatingSelectionToolbar({
   T,
   bounds,
   count,
+  pageW = 794,
   showShapeOpts,
   showTextFont,
   showRotation,
@@ -27,7 +28,7 @@ export default function FloatingSelectionToolbar({
   if (!bounds || !count) return null
 
   const top = Math.max(8, bounds.y1 - (showShapeOpts || showTextFont || showRotation ? 96 : 52))
-  const left = Math.min(Math.max(8, bounds.x1), 794 - 300)
+  const left = Math.min(Math.max(8, bounds.x1), pageW - 300)
 
   return (
     <GlassPanel
