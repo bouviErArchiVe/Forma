@@ -77,7 +77,7 @@ function CanvasImg({ img, selected, T, onSelect, onUpdate, onDelete, onBringToFr
 
   const handleMouseDown = (e, mode) => {
     e.stopPropagation()
-    if (!selected) { onSelect(); return }
+    if (!selected) onSelect()
     onBringToFront()
     const startX = e.clientX, startY = e.clientY
     const ox = img.x, oy = img.y, ow = img.w, oh = img.h, orot = img.rotation
@@ -285,7 +285,13 @@ export default function MoodboardPage() {
       const { url, nw, nh, name } = await readFile(f)
       const w = 260, h = Math.round(nh / nw * w)
       const existingCount = boardImages(activeId).length
-      addImage(activeId, { id: mkId(), url, name, w, h, nw, nh, x: 40 + (existingCount % 4) * 20, y: 40 + (existingCount % 4) * 20 })
+      const col = existingCount % 5
+      const row = Math.floor(existingCount / 5)
+      addImage(activeId, {
+        id: mkId(), url, name, w, h, nw, nh,
+        x: 40 + col * (w + 24),
+        y: 40 + row * (h + 24),
+      })
     }
   }
 
@@ -294,7 +300,14 @@ export default function MoodboardPage() {
     try {
       const { url, nw, nh, name } = await loadUrl(urlVal)
       const w = 260, h = Math.round(nh / nw * w)
-      addImage(activeId, { id: mkId(), url, name, w, h, nw, nh })
+      const existingCount = boardImages(activeId).length
+      const col = existingCount % 5
+      const row = Math.floor(existingCount / 5)
+      addImage(activeId, {
+        id: mkId(), url, name, w, h, nw, nh,
+        x: 40 + col * (w + 24),
+        y: 40 + row * (h + 24),
+      })
       setUrlVal(''); setShowUrlInput(false)
     } catch { alert('Impossible de charger cette image') }
   }
@@ -523,7 +536,7 @@ export default function MoodboardPage() {
                   backgroundImage: `radial-gradient(circle, ${T.accent}33 1px, transparent 1px)`,
                   backgroundSize: '28px 28px' }}>
                 {dragOver && <div style={{ position: 'absolute', inset: 0, background: `${T.accent}22`, border: `3px dashed ${T.accent}`, zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}><span style={{ fontSize: 60 }}>📁</span></div>}
-                {displayImages.map(img => (
+                {[...displayImages].sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0)).map(img => (
                   <CanvasImg key={img.id} img={img} T={T}
                     selected={selectedImgId === img.id}
                     onSelect={() => setSelectedImgId(img.id)}

@@ -17,24 +17,31 @@ async function renderAllPages(project) {
 }
 
 export async function exportCombinedPdf(project) {
-  const rendered = await renderAllPages(project)
-  if (!rendered.length) throw new Error('Aucune page à exporter')
+  const { pages, settings } = project
+  if (!pages?.length) throw new Error('Aucune page à exporter')
 
-  const first = rendered[0].page
-  const wMm = pxToMm(first.width)
-  const hMm = pxToMm(first.height)
-  const pdf = new jsPDF({
-    orientation: first.width > first.height ? 'landscape' : 'portrait',
-    unit: 'mm',
-    format: [wMm, hMm],
-  })
-
-  for (let i = 0; i < rendered.length; i += 1) {
-    const { page, png } = rendered[i]
-    const pw = pxToMm(page.width)
-    const ph = pxToMm(page.height)
-    if (i > 0) pdf.addPage([pw, ph], page.width > page.height ? 'landscape' : 'portrait')
-    pdf.addImage(png, 'PNG', 0, 0, pw, ph)
+  let pdf = null
+  for (let i = 0; i < pages.length; i += 1) {
+    const page = pages[i]
+    const num = settings?.pageNumbers ? i + 1 : null
+    let png
+    try {
+      png = await pageToDataUrl(page, { format: 'png', pageNumber: num })
+    } catch (err) {
+      throw new Error(`Page ${i + 1} (« ${page.name || 'sans titre'} ») : ${err?.message || 'format non supporté'}`)
+    }
+    const wMm = pxToMm(page.width)
+    const hMm = pxToMm(page.height)
+    if (i === 0) {
+      pdf = new jsPDF({
+        orientation: page.width > page.height ? 'landscape' : 'portrait',
+        unit: 'mm',
+        format: [wMm, hMm],
+      })
+    } else {
+      pdf.addPage([wMm, hMm], page.width > page.height ? 'landscape' : 'portrait')
+    }
+    pdf.addImage(png, 'PNG', 0, 0, wMm, hMm)
   }
 
   if (project.name) pdf.setProperties({ title: project.name })

@@ -146,7 +146,6 @@ export default function FormaCombinePage() {
           </button>
           <h1 style={{ margin: 0, fontSize: 18, flex: 1 }}>FormaCombine</h1>
           <Btn onClick={handleNew}>+ Nouveau</Btn>
-          <Btn onClick={() => navigate('/')}>Bibliothèque</Btn>
         </header>
         <main style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
           <p style={{ color: FCMB_DARK.muted, marginBottom: 20 }}>
@@ -179,8 +178,10 @@ export default function FormaCombinePage() {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FCMB_DARK.bg, color: FCMB_DARK.ink }}>
       <header style={headerStyle}>
+        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <BrandLogo size="sm" showText={false} />
+        </button>
         <Btn onClick={handleBack}>← Projets</Btn>
-        <Btn onClick={() => navigate('/')}>Accueil</Btn>
         <input
           value={project?.name || ''}
           onChange={(e) => updateProject({ name: e.target.value })}

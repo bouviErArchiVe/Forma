@@ -213,7 +213,11 @@ const useAppStore = create(
 
       // ── Collab cursors ────────────────────────────────────
       remoteCursors: [],
-      setRemoteCursors: (cursors) => set({ remoteCursors: cursors }),
+      setRemoteCursors: (cursorsOrFn) => set((s) => ({
+        remoteCursors: typeof cursorsOrFn === 'function'
+          ? cursorsOrFn(Array.isArray(s.remoteCursors) ? s.remoteCursors : [])
+          : (Array.isArray(cursorsOrFn) ? cursorsOrFn : []),
+      })),
 
       // ── Ambiance ─────────────────────────────────────────
       animationsEnabled: true,

@@ -271,10 +271,6 @@ export default function FormaFolderExplorer({
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={selectStyle}>
               {TYPE_FILTERS.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
             </select>
-            <select value={mfFilter} onChange={(e) => setMfFilter(e.target.value)} style={selectStyle}>
-              <option value="">MasterFormat — tous</option>
-              {MASTERFORMAT_SECTIONS.map((s) => <option key={s.code} value={s.code}>{s.label}</option>)}
-            </select>
             <input value={tagFilter} onChange={(e) => setTagFilter(e.target.value)} placeholder="Tag…" style={{ ...inputStyle, maxWidth: 100 }} />
             {FOLDER_VIEWS.map((v) => (
               <button key={v.id} type="button" onClick={() => setFolderView(v.id)} style={{ ...btnSm, borderColor: folderView === v.id ? FF_DARK.accent : FF_DARK.border, background: folderView === v.id ? `${FF_DARK.accent}18` : FF_DARK.panel }}>{v.icon}</button>
@@ -305,7 +301,7 @@ export default function FormaFolderExplorer({
               ) : folderView === 'details' ? (
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                   <thead><tr style={{ borderBottom: `1px solid ${FF_DARK.border}` }}>
-                    {['', 'Nom', 'Type', 'Modifié', 'Pages', 'Taille', 'MasterFormat'].map((h) => <th key={h} style={{ padding: 8, textAlign: 'left', color: FF_DARK.muted }}>{h}</th>)}
+                    {['', 'Nom', 'Type', 'Modifié', 'Pages', 'Taille'].map((h) => <th key={h} style={{ padding: 8, textAlign: 'left', color: FF_DARK.muted }}>{h}</th>)}
                   </tr></thead>
                   <tbody>
                     {items.map((item) => (
@@ -316,7 +312,6 @@ export default function FormaFolderExplorer({
                         <td style={{ padding: 8, color: FF_DARK.muted }}>{formatNotebookDate(item.updatedAt)}</td>
                         <td style={{ padding: 8, color: FF_DARK.muted }}>{item.pageCount || item.stats?.pageCount || '—'}</td>
                         <td style={{ padding: 8, color: FF_DARK.muted }}>{item.bytes ? formatBytes(item.bytes) : item.stats?.sizeLabel || '—'}</td>
-                        <td style={{ padding: 8, color: FF_DARK.muted }}>{masterFormatLabel(item.masterFormat)}</td>
                       </tr>
                     ))}
                   </tbody>

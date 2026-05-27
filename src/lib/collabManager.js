@@ -103,8 +103,10 @@ export function createCollabChannel({
 
   channel
     .on('presence', { event: 'sync' }, () => {
-      const state = channel.presenceState()
-      pushCursors(Object.values(state).flat())
+      try {
+        const state = channel.presenceState()
+        pushCursors(Object.values(state).flat())
+      } catch { onCursors?.([]) }
     })
     .on('broadcast', { event: 'cursor' }, ({ payload }) => {
       pushCursors(payload)

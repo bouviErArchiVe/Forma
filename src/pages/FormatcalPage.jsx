@@ -130,17 +130,29 @@ export default function FormatcalPage() {
         height: 52,
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 12,
         padding: '0 16px',
         borderBottom: `1px solid ${FC_DARK.border}`,
         background: FC_DARK.panel,
         flexShrink: 0,
+      }}>
+        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={FC_DARK.accent} />
+        </button>
+        <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>FormatCal</div>
+      </header>
+
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '8px 16px',
+        borderBottom: `1px solid ${FC_DARK.border}`,
+        background: FC_DARK.surface,
+        flexShrink: 0,
         flexWrap: 'wrap',
       }}>
-        <button type="button" onClick={() => navigate('/')} style={navBtn}>← Accueil</button>
-        <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={FC_DARK.accent} />
-        <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>FormatCal</div>
-        <div style={{ flex: 1, minWidth: 120, fontSize: 13, fontWeight: 600, color: FC_DARK.muted }}>{navLabel}</div>
+        <div style={{ flex: 1, minWidth: 160, fontSize: 13, fontWeight: 600, color: FC_DARK.ink }}>{navLabel}</div>
         <button type="button" onClick={() => shiftCursor('prev')} style={navBtn} title="Précédent">‹</button>
         <button type="button" onClick={goToday} style={{ ...navBtn, color: FC_DARK.accent, fontWeight: 700 }}>Aujourd'hui</button>
         <button type="button" onClick={() => shiftCursor('next')} style={navBtn} title="Suivant">›</button>
@@ -149,17 +161,15 @@ export default function FormatcalPage() {
             key={v}
             type="button"
             onClick={() => setView(v)}
-            style={{ ...navBtn, color: view === v ? FC_DARK.accent : FC_DARK.muted, fontWeight: view === v ? 800 : 600, border: `1px solid ${view === v ? FC_DARK.accent : FC_DARK.border}`, borderRadius: 6, padding: '4px 8px' }}
+            style={{ ...navBtn, color: view === v ? FC_DARK.accent : FC_DARK.muted, fontWeight: view === v ? 800 : 600, border: `1px solid ${view === v ? FC_DARK.accent : FC_DARK.border}`, borderRadius: 6, padding: '4px 10px' }}
           >
             {v === 'day' ? 'Jour' : v === 'week' ? 'Semaine' : v === 'month' ? 'Mois' : 'Année'}
           </button>
         ))}
-        <select value={view} onChange={(e) => setView(e.target.value)} style={selectStyle}>
-          {FC_VIEWS.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
-        </select>
-        <button type="button" onClick={handleExportIcs} style={navBtn}>ICS</button>
-        <button type="button" onClick={handleExportPdf} style={navBtn}>PDF</button>
-      </header>
+        <button type="button" onClick={handleExportIcs} style={{ ...navBtn, border: `1px solid ${FC_DARK.border}`, borderRadius: 6, padding: '4px 10px' }}>ICS</button>
+        <button type="button" onClick={handleExportPdf} style={{ ...navBtn, border: `1px solid ${FC_DARK.border}`, borderRadius: 6, padding: '4px 10px' }}>PDF</button>
+        <button type="button" onClick={() => openNew()} style={{ ...navBtn, background: FC_DARK.accent, color: '#fff', borderRadius: 6, padding: '4px 12px', fontWeight: 700 }}>+ Événement</button>
+      </div>
 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <FormatcalSidebar

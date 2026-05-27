@@ -1,7 +1,7 @@
 import { cellKey, defaultStyle, parseCellKey } from './cells'
 
 const DEFAULT_ROWS = 20
-const DEFAULT_COLS = 8
+const DEFAULT_COLS = 39
 const DEFAULT_ROW_H = 28
 const DEFAULT_COL_W = 96
 

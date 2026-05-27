@@ -218,7 +218,7 @@ export default function EditorTopBar({
             ☰
           </button>
         )}
-        {collabCursors.length > 0 && (
+        {Array.isArray(collabCursors) && collabCursors.length > 0 && (
           <div style={{ display: 'flex', gap: 2, marginLeft: 4 }}>
             {collabCursors.map((c, i) => (
               <div

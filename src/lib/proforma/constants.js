@@ -28,6 +28,6 @@ export const PF_PRESETS = [
   { id: 'technical', label: 'Dessin technique', formatId: 'a2', bgColor: '#ffffff', grid: 'arch' },
   { id: 'detail', label: 'Détail constructif', formatId: 'a3', bgColor: '#ffffff', grid: 'grid10' },
   { id: 'annotation', label: 'Annotations', formatId: 'a4', bgColor: '#f5f7fa', grid: 'grid5' },
-  { id: 'pixel', label: 'Pixel précis', formatId: 'square', bgColor: '#ffffff', grid: 'grid5', tool: 'pencil_pixel' },
+  { id: 'pixel', label: 'Pixel précis', formatId: 'square', bgColor: '#ffffff', grid: 'grid5', tool: 'pencil_fine' },
   { id: 'infinite', label: 'Canvas infini', formatId: 'infinite', bgColor: '#1a1d26', grid: 'dotted', dark: true },
 ]

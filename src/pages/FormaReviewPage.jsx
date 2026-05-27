@@ -128,7 +128,6 @@ export default function FormaReviewPage() {
             <BrandLogo size="sm" showText={false} />
           </button>
           <h1 style={{ margin: 0, fontSize: 18, flex: 1 }}>FormaReview</h1>
-          <Btn onClick={() => navigate('/')}>Bibliothèque</Btn>
         </header>
 
         <div style={{ padding: '24px 32px', maxWidth: 960, margin: '0 auto' }}>
@@ -187,6 +186,9 @@ export default function FormaReviewPage() {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FRV_DARK.bg, color: FRV_DARK.ink }}>
       <header style={headerStyle}>
+        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <BrandLogo size="sm" showText={false} />
+        </button>
         <Btn onClick={handleBack}>← Retour</Btn>
         <h1 style={{ margin: 0, fontSize: 16, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {session?.title}
@@ -195,7 +197,6 @@ export default function FormaReviewPage() {
           {busy ? '…' : '+ Pages'}
         </Btn>
         <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={(e) => handleImportPages(e.target.files)} />
-        <Btn onClick={() => navigate('/')}>Accueil</Btn>
       </header>
 
       <ReviewToolbar

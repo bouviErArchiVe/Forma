@@ -165,7 +165,6 @@ export default function FormaPresentPage() {
             <BrandLogo size="sm" showText={false} />
           </button>
           <h1 style={{ margin: 0, fontSize: 18, flex: 1 }}>FormaPresent</h1>
-          <Btn onClick={() => navigate('/')}>Bibliothèque</Btn>
         </header>
 
         <div style={{ padding: '24px 32px', maxWidth: 960, margin: '0 auto' }}>
@@ -224,6 +223,9 @@ export default function FormaPresentPage() {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FPR_DARK.bg, color: FPR_DARK.ink }}>
       <header style={headerStyle}>
+        <button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <BrandLogo size="sm" showText={false} />
+        </button>
         <Btn onClick={handleBack}>← Retour</Btn>
         <input
           value={deck?.title || ''}
@@ -249,7 +251,6 @@ export default function FormaPresentPage() {
           <option value="html">HTML (navigateur / PowerPoint)</option>
           <option value="slides">PNG individuels</option>
         </select>
-        <Btn onClick={() => navigate('/')}>Accueil</Btn>
       </header>
 
       <PresentToolbar

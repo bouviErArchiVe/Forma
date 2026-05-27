@@ -19,6 +19,7 @@ export function useProformaEditor(doc, setDoc, { viewportRef, viewSize, onAutosa
   const [brush, setBrush] = useState(toolBrushSettings(PF_DEFAULT_TOOL))
   const [history, setHistory] = useState({ past: [], future: [] })
   const [cursorPage, setCursorPage] = useState(null)
+  const [strokeFrame, setStrokeFrame] = useState(0)
 
   const drawing = useRef(null)
   const zoneErase = useRef(null)
@@ -169,11 +170,13 @@ export function useProformaEditor(doc, setDoc, { viewportRef, viewSize, onAutosa
 
     if (selectRect.current && pt) {
       selectRect.current = { ...selectRect.current, current: pt }
+      setStrokeFrame((f) => f + 1)
       return
     }
 
     if (zoneErase.current && pt) {
       zoneErase.current = { ...zoneErase.current, current: pt }
+      setStrokeFrame((f) => f + 1)
       return
     }
 
@@ -199,6 +202,7 @@ export function useProformaEditor(doc, setDoc, { viewportRef, viewSize, onAutosa
       } else {
         drawing.current = { ...d, pts: [...d.pts, { x: pt.x, y: pt.y, p: e.pressure || 0.5 }] }
       }
+      setStrokeFrame((f) => f + 1)
     }
   }, [pageFromEvent, tool, brush, commitDoc])
 
@@ -259,6 +263,7 @@ export function useProformaEditor(doc, setDoc, { viewportRef, viewSize, onAutosa
     brush,
     setBrush,
     cursorPage,
+    strokeFrame,
     history,
     undo,
     redo,

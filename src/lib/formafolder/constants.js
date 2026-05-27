@@ -7,9 +7,6 @@ export const FF_DARK = {
 
 export const FOLDER_MODES = [
   { id: 'general', label: 'Général', icon: '📁' },
-  { id: 'technique', label: 'Technique', icon: '🔧' },
-  { id: 'normes', label: 'Normes', icon: '📜' },
-  { id: 'masterformat', label: 'MasterFormat', icon: '🏗' },
   { id: 'fiches', label: 'Fiches techniques', icon: '📋' },
 ]
 

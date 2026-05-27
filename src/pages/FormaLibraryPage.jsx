@@ -112,7 +112,6 @@ export default function FormaLibraryPage() {
         <span style={{ fontSize: 11, color: FLB_DARK.muted }}>
           Textures · Matériaux · Normes · PDF · Références
         </span>
-        <button type="button" onClick={() => navigate('/')} style={headerBtn}>Bibliothèque</button>
       </header>
 
       <LibraryExplorer

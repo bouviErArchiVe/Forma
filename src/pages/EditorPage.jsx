@@ -2911,7 +2911,7 @@ export default function EditorPage(){
           })()}
 
           {/* Collab cursors */}
-          {notebookCollab.remoteCursors.map((c,i)=>{
+          {(Array.isArray(notebookCollab.remoteCursors) ? notebookCollab.remoteCursors : []).map((c,i)=>{
             const r=document.getElementById("canvas-area")?.getBoundingClientRect()
             if(!r)return null
             const pt=pageToScreen({
@@ -3188,7 +3188,7 @@ export default function EditorPage(){
         </div>
         <div style={{width:1,height:12,background:T.border}}/>
         <div style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{tool} · {formatDimension(tool==="eraser"?eraserMm:sizeMm,unitSys)} · {scale} · {Math.round(zoom*100)}%</div>
-        {notebookCollab.remoteCursors.length>0&&<div style={{fontSize:9,color:"#4ade80"}}>🟢 {notebookCollab.remoteCursors.length}</div>}
+        {(Array.isArray(notebookCollab.remoteCursors) ? notebookCollab.remoteCursors : []).length>0&&<div style={{fontSize:9,color:"#4ade80"}}>🟢 {notebookCollab.remoteCursors.length}</div>}
         <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:4}}>
           <div style={{width:5,height:5,borderRadius:"50%",background:saveStatus==="synced"||saveStatus==="saved_local"||saveStatus==="saved"?"#4ade80":saveStatus==="syncing_cloud"?"#6b9fd4":saveStatus==="saving"?"#f5a623":saveStatus==="dirty"?"#f5a623":saveStatus==="offline"?"#8b95a8":saveStatus==="error"?"#e94560":"#888"}}/>
           <span style={{fontSize:8,color:T.muted}}>{saveLabel}</span>

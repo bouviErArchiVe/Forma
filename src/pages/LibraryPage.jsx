@@ -1305,7 +1305,9 @@ export default function LibraryPage() {
         <div className="forma-library-header-inner">
           {/* Logo + title + tools */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <img src={T.img} alt={T.n} style={{ width: 38, height: 38, borderRadius: TOKENS.radius.sm, objectFit: "cover", boxShadow: `0 4px 16px ${T.accent}44`, flexShrink: 0 }} />
+            <button type="button" onClick={() => navigate('/')} title="Accueil Forma" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0 }}>
+              <img src={T.img} alt={T.n} style={{ width: 38, height: 38, borderRadius: TOKENS.radius.sm, objectFit: "cover", boxShadow: `0 4px 16px ${T.accent}44`, display: 'block' }} />
+            </button>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                 <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: T.ink, lineHeight: 1 }}>{BRAND.appName}</div>
@@ -1332,7 +1334,7 @@ export default function LibraryPage() {
             </GlassButton>
           </div>
 
-          {/* Right actions */}
+          {/* Right actions — bandeau outils uniquement */}
           <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
             {userId && (
               <NotificationBell
@@ -1342,42 +1344,6 @@ export default function LibraryPage() {
                 onClick={() => { setShowNotifications(v => !v); setShowProfilePanel(false) }}
               />
             )}
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formules.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📐 {MODULES.formules.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaTab.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📊 {MODULES.formaTab.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaDoc.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📄 {MODULES.formaDoc.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.proforma.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              ✏ {MODULES.proforma.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formatCal.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📅 {MODULES.formatCal.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaFolder.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📁 {MODULES.formaFolder.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaCombine.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📎 {MODULES.formaCombine.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaReview.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              💬 {MODULES.formaReview.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaPresent.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📽 {MODULES.formaPresent.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaLibrary.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              📚 {MODULES.formaLibrary.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.fMoodboard.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              🎭 {MODULES.fMoodboard.name}
-            </GlassButton>
-            <GlassButton T={T} size="md" onClick={() => setShowTheme(true)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              {T.e || "🎨"} {MODULES.fTheme.name}
-            </GlassButton>
             {userId ? (
               <GlassButton T={T} size="md" onClick={logout}>Déconnexion</GlassButton>
             ) : (
@@ -1400,18 +1366,6 @@ export default function LibraryPage() {
                 {!collab.profile?.avatar_url && avatarLetter}
               </div>
             )}
-            <button
-              onClick={() => setShowNew(true)}
-              className="forma-btn-glass"
-              style={{
-                padding: "8px 16px", borderRadius: TOKENS.radius.sm,
-                background: `linear-gradient(135deg,${T.accent},${T.a2})`,
-                border: "none", color: "#fff", fontWeight: 700, fontSize: 12,
-                cursor: "pointer", boxShadow: `0 3px 14px ${T.accent}44`, letterSpacing: 0.2,
-              }}
-            >
-              + Nouveau
-            </button>
           </div>
         </div>
       </div>
@@ -1484,6 +1438,7 @@ export default function LibraryPage() {
                 { e: '📽', l: MODULES.formaPresent.name, action: () => navigate(MODULES.formaPresent.route) },
                 { e: '📚', l: MODULES.formaLibrary.name, action: () => navigate(MODULES.formaLibrary.route) },
                 { e: '✦', l: MODULES.formaAI.name, action: () => window.dispatchEvent(new CustomEvent('forma:open-ai')) },
+                { e: '🔍', l: 'Recherche globale', action: () => window.dispatchEvent(new CustomEvent('forma:open-search')) },
                 { e: '🌐', l: 'Traduction', action: () => navigate('/translate') },
                 { e: '🎮', l: MODULES.fPause.name, action: () => navigate(MODULES.fPause.route) },
                 { e: '🎨', l: MODULES.fTheme.name, action: () => setShowTheme(true) },

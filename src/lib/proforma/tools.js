@@ -29,7 +29,7 @@ export const PF_TOOLS = {
   pencil_technical: { id: 'pencil_technical', group: 'pencil', label: 'Technique', icon: '✎', ...base, size: 1.8, hardness: 0.95, smoothing: 0.15 },
   pencil_arch: { id: 'pencil_arch', group: 'pencil', label: 'Architectural', icon: '📐', ...base, size: 2, hardness: 0.85, smoothing: 0.25 },
   pencil_fine: { id: 'pencil_fine', group: 'pencil', label: 'Fin', icon: '·', ...base, size: 1, hardness: 1, smoothing: 0.1 },
-  pencil_pixel: { id: 'pencil_pixel', group: 'pencil', label: 'Pixel', icon: '▦', ...base, size: 1, hardness: 1, smoothing: 0, spacing: 1 },
+  pencil_pixel: { id: 'pencil_pixel', group: 'pencil', label: 'Pixel', icon: '▦', ...base, size: 1, hardness: 1, smoothing: 0, spacing: 0.15, vector: true },
 
   brush_simple: { id: 'brush_simple', group: 'brush', label: 'Simple', icon: '🖌', ...base, size: 8, hardness: 0.5, smoothing: 0.5 },
   brush_dry: { id: 'brush_dry', group: 'brush', label: 'Sec', icon: '🖍', ...base, size: 10, hardness: 0.35, opacity: 0.75, spacing: 0.35 },

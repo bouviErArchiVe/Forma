@@ -122,13 +122,8 @@ export default function ProformaCanvas({
   }, [doc, viewSize, viewport, editor])
 
   useEffect(() => {
-    const loop = () => {
-      paint()
-      rafRef.current = requestAnimationFrame(loop)
-    }
-    rafRef.current = requestAnimationFrame(loop)
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [paint])
+    paint()
+  }, [paint, editor?.strokeFrame])
 
   const eraserActive = isEraserTool(editor.tool)
   const eraserDef = getToolDef(editor.tool)
