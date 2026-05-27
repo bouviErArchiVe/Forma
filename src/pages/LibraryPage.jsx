@@ -4,7 +4,9 @@ import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
 import { safeJsonParse, safeGetLocalStorage } from "@/lib/storage"
 import { THEMES } from "@/lib/themes"
+import { BRAND } from "@/config/branding"
 import FocusPanel from "@/components/FocusPanel"
+import SpotifyLibraryPanel from "@/components/SpotifyLibraryPanel"
 import { BACKGROUNDS } from '@/lib/backgrounds'
 import { APP_FONT_CHOICES } from "@/lib/fontUtils"
 import { APPEARANCE_MODES, applyAppearanceToTheme } from "@/lib/appearance"
@@ -466,11 +468,22 @@ function ThemePicker({ onClose }) {
 
 export default function LibraryPage() {
   const navigate = useNavigate()
-  const { setActiveNotebook, spotifyUrl, setSpotifyUrl, addNotification, libraryView, setLibraryView, librarySort, setLibrarySort } = useAppStore()
+  const {
+    setActiveNotebook,
+    spotifyLinks,
+    activeSpotifyId,
+    addSpotifyLink,
+    removeSpotifyLink,
+    setActiveSpotifyLink,
+    addNotification,
+    libraryView,
+    setLibraryView,
+    librarySort,
+    setLibrarySort,
+  } = useAppStore()
   const { T } = useTheme()
   const [showFocus, setShowFocus] = useState(false)
   const [showSpotify, setShowSpotify] = useState(false)
-  const [spotifyInput, setSpotifyInput] = useState(spotifyUrl||"")
   const spotifyIframeRef = useRef(null)
 
   const [notebooks, setNotebooks] = useState([])
@@ -938,42 +951,18 @@ export default function LibraryPage() {
       {showFocus && <FocusPanel T={T} onClose={() => setShowFocus(false)} spotifyIframeRef={spotifyIframeRef}/>}
 
       {/* SPOTIFY WIDGET */}
-      {showSpotify && (
-        <div style={{position:"fixed",bottom:72,left:24,zIndex:190,background:T.surface,borderRadius:18,boxShadow:`0 12px 40px rgba(0,0,0,.22)`,border:`1px solid ${T.border}`,overflow:"hidden",width:320}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",borderBottom:`1px solid ${T.border}`}}>
-            <div style={{display:"flex",alignItems:"center",gap:7}}>
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="#1db954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-              <span style={{fontSize:12,fontWeight:700,color:T.ink}}>Spotify</span>
-            </div>
-            <button onClick={() => setShowSpotify(false)} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:16}}>×</button>
-          </div>
-          {spotifyUrl ? (
-            <iframe ref={spotifyIframeRef}
-              src={spotifyUrl.replace("open.spotify.com/","open.spotify.com/embed/").replace(/[?#].*/,"")+"?utm_source=generator&theme=0"}
-              width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy" style={{display:"block"}}/>
-          ) : (
-            <div style={{padding:16}}>
-              <div style={{fontSize:11,color:T.muted,marginBottom:8}}>Colle un lien Spotify (playlist, album, morceau)</div>
-              <div style={{display:"flex",gap:6}}>
-                <input value={spotifyInput} onChange={e=>setSpotifyInput(e.target.value)}
-                  placeholder="https://open.spotify.com/playlist/..."
-                  style={{flex:1,padding:"7px 10px",borderRadius:8,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:11,outline:"none"}}
-                  onKeyDown={e=>{if(e.key==="Enter"&&spotifyInput.trim()){setSpotifyUrl(spotifyInput.trim())}}}/>
-                <button onClick={()=>{if(spotifyInput.trim())setSpotifyUrl(spotifyInput.trim())}}
-                  style={{padding:"7px 12px",borderRadius:8,background:"#1db954",border:"none",color:"#fff",fontWeight:700,fontSize:11,cursor:"pointer"}}>
-                  OK
-                </button>
-              </div>
-            </div>
-          )}
-          {spotifyUrl && (
-            <div style={{padding:"6px 12px",display:"flex",justifyContent:"flex-end"}}>
-              <button onClick={()=>{setSpotifyUrl("");setSpotifyInput("")}} style={{fontSize:10,color:T.muted,background:"none",border:"none",cursor:"pointer"}}>Changer de lien</button>
-            </div>
-          )}
-        </div>
-      )}
+      <SpotifyLibraryPanel
+        T={T}
+        open={showSpotify}
+        onClose={() => setShowSpotify(false)}
+        links={spotifyLinks}
+        activeId={activeSpotifyId}
+        onSelect={setActiveSpotifyLink}
+        onAdd={(url, label) => addSpotifyLink(url, label)}
+        onRemove={removeSpotifyLink}
+        onNotify={addNotification}
+        iframeRef={spotifyIframeRef}
+      />
 
       {/* CALCULATOR PANEL */}
       <CalculatorDrawer
@@ -1040,7 +1029,7 @@ export default function LibraryPage() {
 
       {/* FLOATING BUTTONS — Spotify + Focus */}
       <div style={{position:"fixed",bottom:24,left:24,zIndex:180,display:"flex",gap:8}}>
-        <button onClick={()=>setShowSpotify(v=>!v)} title="Spotify"
+        <button onClick={()=>setShowSpotify(v=>!v)} title="Bibliothèque Spotify"
           style={{width:44,height:44,borderRadius:"50%",background:showSpotify?"#1db954":T.surface,border:`1px solid ${showSpotify?"#1db954":T.border}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 3px 14px rgba(0,0,0,.15)",transition:"all .2s"}}>
           <svg width={18} height={18} viewBox="0 0 24 24" fill={showSpotify?"#fff":"#1db954"}><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
         </button>
@@ -1290,12 +1279,12 @@ export default function LibraryPage() {
             <img src={T.img} alt={T.n} style={{ width: 38, height: 38, borderRadius: TOKENS.radius.sm, objectFit: "cover", boxShadow: `0 4px 16px ${T.accent}44`, flexShrink: 0 }} />
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: T.ink, lineHeight: 1 }}>Forma</div>
+                <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: T.ink, lineHeight: 1 }}>{BRAND.appName}</div>
                 {notebooks.length > 0 && (
                   <div style={{ padding: "2px 7px", borderRadius: 20, background: `${T.accent}18`, border: `1px solid ${T.accent}44`, fontSize: 10, fontWeight: 700, color: T.accent, lineHeight: 1.4 }}>{notebooks.length}</div>
                 )}
               </div>
-              <div style={{ fontSize: 9, color: T.muted, marginTop: 1 }}>{userId ? `✓ ${userName}` : "Non connecté"}</div>
+              <div style={{ fontSize: 9, color: T.muted, marginTop: 1 }}>{userId ? `par ${BRAND.ecosystemName} · ${userName}` : `par ${BRAND.ecosystemName} · Non connecté`}</div>
             </div>
             <GlassButton T={T} active={showCalc} onClick={() => setShowCalc(v => !v)} title="Calculatrice"
               className="forma-tap-target"
@@ -1378,7 +1367,7 @@ export default function LibraryPage() {
             src={T.img}
             alt={T.n}
             size="lg"
-            subtitle="Le carnet de conception pour architectes & designers"
+            subtitle={`${BRAND.description} · par ${BRAND.ecosystemName}`}
             accent={T.accent}
             ink={T.ink}
             muted={T.muted}

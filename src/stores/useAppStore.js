@@ -1,5 +1,5 @@
-// src/stores/useAppStore.js
 import { create } from 'zustand'
+import { normalizeSpotifyUrl, spotifyLinkLabel, SPOTIFY_LINK_MAX } from '@/lib/spotifyLinks'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { THEMES } from '@/lib/themes'
 import { applyAppearanceToTheme } from '@/lib/appearance'
@@ -181,8 +181,34 @@ const useAppStore = create(
       setBgId: (v) => set({ bgId: v }),
       customBg: '',           // data URL or '' for user-uploaded background
       setCustomBg: (v) => set({ customBg: v }),
-      spotifyUrl: '',
-      setSpotifyUrl: (v) => set({ spotifyUrl: v }),
+      spotifyLinks: [],
+      activeSpotifyId: null,
+      addSpotifyLink: (url, label = '') => {
+        const normalized = normalizeSpotifyUrl(url)
+        if (!normalized) return false
+        const state = get()
+        if (state.spotifyLinks.length >= SPOTIFY_LINK_MAX) return false
+        if (state.spotifyLinks.some((l) => l.url === normalized)) return false
+        const id = String(Date.now())
+        const link = { id, url: normalized, label: (label || '').trim() || spotifyLinkLabel(normalized) }
+        set({
+          spotifyLinks: [...state.spotifyLinks, link],
+          activeSpotifyId: id,
+        })
+        return true
+      },
+      removeSpotifyLink: (id) => set((s) => {
+        const links = s.spotifyLinks.filter((l) => l.id !== id)
+        let activeSpotifyId = s.activeSpotifyId
+        if (activeSpotifyId === id) activeSpotifyId = links[0]?.id ?? null
+        return { spotifyLinks: links, activeSpotifyId }
+      }),
+      setActiveSpotifyLink: (id) => set({ activeSpotifyId: id }),
+      getActiveSpotifyUrl: () => {
+        const s = get()
+        const link = s.spotifyLinks.find((l) => l.id === s.activeSpotifyId) || s.spotifyLinks[0]
+        return link?.url ?? ''
+      },
 
       // ── Notifications ─────────────────────────────────────
       notifications: [],
@@ -195,6 +221,17 @@ const useAppStore = create(
     {
       name: 'forma-store',
       storage: createJSONStorage(createSafePersistStorage),
+      merge: (persisted, current) => {
+        const merged = { ...current, ...persisted }
+        const legacyUrl = persisted?.spotifyUrl
+        const links = Array.isArray(persisted?.spotifyLinks) ? persisted.spotifyLinks : []
+        if (legacyUrl && links.length === 0) {
+          const id = String(Date.now())
+          merged.spotifyLinks = [{ id, url: legacyUrl, label: spotifyLinkLabel(legacyUrl) }]
+          merged.activeSpotifyId = persisted?.activeSpotifyId || id
+        }
+        return merged
+      },
       partialize: (state) => ({
         themeId: state.themeId,
         appFont: state.appFont,
@@ -215,7 +252,8 @@ const useAppStore = create(
         animSpeed: state.animSpeed,
         bgId: state.bgId,
         customBg: typeof state.customBg === 'string' ? state.customBg.slice(0, 400000) : '',
-        spotifyUrl: state.spotifyUrl,
+        spotifyLinks: state.spotifyLinks,
+        activeSpotifyId: state.activeSpotifyId,
         easterEggsEnabled: state.easterEggsEnabled,
         translationSourceLang: state.translationSourceLang,
         translationTargetLang: state.translationTargetLang,
