@@ -9,6 +9,8 @@ import { listDecks } from '@/lib/formapresent/persistence'
 import { listSessions as listReview } from '@/lib/formareview/persistence'
 import { loadLocalFoldersForScope } from '@/lib/folderPersistence'
 import { listAssets } from '@/lib/formafolder/assets'
+import { listAllItems as listLibraryItems } from '@/lib/formalibrary/persistence'
+import { categoryLabel } from '@/lib/formalibrary/constants'
 import { FORMULAS } from '@/data/formulas'
 import { safeGetLocalStorage, safeJsonParse } from '@/lib/storage'
 
@@ -187,6 +189,24 @@ export function buildSearchIndex({ force = false } = {}) {
       text: [a.name, a.textContent, ...(a.tags || []), a.type].filter(Boolean).join(' '),
       route: '/formafolder',
       updatedAt: a.updatedAt,
+    })
+  }
+
+  // FormaLibrary
+  for (const item of listLibraryItems()) {
+    items.push({
+      id: `flb:${item.id}`,
+      source: 'library',
+      type: item.category || 'reference',
+      title: item.name || 'Ressource',
+      text: [
+        item.textContent,
+        ...(item.tags || []),
+        categoryLabel(item.category),
+      ].filter(Boolean).join(' '),
+      route: `/formalibrary?item=${item.id}`,
+      meta: { itemId: item.id, category: item.category },
+      updatedAt: item.updatedAt,
     })
   }
 
