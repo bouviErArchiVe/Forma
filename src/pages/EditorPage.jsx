@@ -1779,10 +1779,23 @@ export default function EditorPage(){
     if(custom.length)base["⭐ Mes profils"]=custom
     return base
   },[customProfiles])
-  const curLib=libMode==="symbols"?SYMBOLS_LIB:libMode==="metric"?metricLib:LIB_IMPERIAL
+  const getLibForMode=useCallback((mode)=>{
+    if(mode==="symbols")return SYMBOLS_LIB
+    if(mode==="metric")return metricLib
+    return LIB_IMPERIAL
+  },[metricLib])
+  const curLib=getLibForMode(libMode)
   const libCats=Object.keys(curLib)
-  const libItems=useMemo(()=>{const items=curLib[libCat]||[];return libSearch?items.filter(e=>e.l.toLowerCase().includes(libSearch.toLowerCase())):items},[libCat,libSearch,curLib,libMode])
-  useEffect(()=>{const cats=Object.keys(libMode==="metric"?metricLib:LIB_IMPERIAL);if(!cats.includes(libCat))setLibCat(cats[0])},[libMode,metricLib,libCat])
+  const libItems=useMemo(()=>{
+    const items=curLib[libCat]||[]
+    if(!libSearch)return items
+    const q=libSearch.toLowerCase()
+    return items.filter(e=>e.l.toLowerCase().includes(q))
+  },[libCat,libSearch,curLib])
+  useEffect(()=>{
+    const cats=Object.keys(getLibForMode(libMode))
+    if(cats.length&&!cats.includes(libCat))setLibCat(cats[0])
+  },[libMode,libCat,getLibForMode])
 
   // Load page + all pages for thumbnails
   useEffect(()=>{
@@ -2961,7 +2974,7 @@ export default function EditorPage(){
         <DraggablePanel T={T} id="editor-library" title="Bibliothèque" open={showLib} onClose={()=>setShowLib(false)} width={280} defaultSide="right">
           <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
             {[["metric","📏 mm"],["imperial","📐 in"],["symbols","🏠 Sym."]].map(([m,l],i,arr)=>(
-              <button key={m} type="button" onClick={()=>{setLibMode(m);setLibCat(Object.keys(m==="symbols"?SYMBOLS_LIB:m==="metric"?metricLib:LIB_IMPERIAL)[0])}}
+              <button key={m} type="button" onClick={()=>{setLibMode(m);setLibSearch("");setLibCat(Object.keys(getLibForMode(m))[0]||"")}}
                 style={{flex:1,padding:"5px 0",border:"none",background:libMode===m?`${T.accent}18`:T.bg,color:libMode===m?T.accent:T.muted,cursor:"pointer",fontSize:10,fontWeight:libMode===m?700:400,borderRight:i<arr.length-1?`1px solid ${T.border}`:"none"}}>{l}</button>
             ))}
           </div>
@@ -2996,14 +3009,18 @@ export default function EditorPage(){
           )}
           <div style={{overflowX:"auto",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
             <div style={{display:"flex",gap:3,padding:"4px 5px",whiteSpace:"nowrap"}}>
-              {libCats.map(c=><button key={c} type="button" onClick={()=>setLibCat(c)} style={{padding:"2px 5px",borderRadius:10,border:`1px solid ${libCat===c?T.accent:T.border}`,background:libCat===c?`${T.accent}15`:T.bg,color:libCat===c?T.accent:T.muted,fontSize:8,cursor:"pointer",whiteSpace:"nowrap"}}>{c}</button>)}
+              {libCats.map(c=><button key={c} type="button" onClick={(e)=>{e.stopPropagation();setLibCat(c);setLibPending(null)}} style={{padding:"2px 5px",borderRadius:10,border:`1px solid ${libCat===c?T.accent:T.border}`,background:libCat===c?`${T.accent}15`:T.bg,color:libCat===c?T.accent:T.muted,fontSize:8,cursor:"pointer",whiteSpace:"nowrap"}}>{c}</button>)}
             </div>
           </div>
           <div style={{padding:"3px 6px",borderBottom:`1px solid ${T.border}`,background:`${T.accent}05`,flexShrink:0}}>
             <div style={{fontSize:8,color:T.muted,textAlign:"center"}}>{libPending?`📍 Clic feuille → "${libPending.l}"`:"Clic = sélect · glisser aussi"}</div>
           </div>
-          <div style={{padding:4,display:"flex",flexDirection:"column",gap:3}}>
-            {libItems.map(el=>(
+          <div style={{padding:4,display:"flex",flexDirection:"column",gap:3,flex:1,minHeight:0,overflow:"auto"}}>
+            {libItems.length===0?(
+              <div style={{padding:"20px 12px",textAlign:"center",color:T.muted,fontSize:10,lineHeight:1.5}}>
+                {libSearch?`Aucun objet pour « ${libSearch} ».`:"Aucun objet dans cette catégorie."}
+              </div>
+            ):libItems.map(el=>(
               <div key={el.id} onClick={()=>setLibPending(libPending?.id===el.id?null:el)} draggable
                 onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc;const pt=toPageCoords(e.clientX-r.left,e.clientY-r.top,r.width,r.height);setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,pt.x-elW/2),y:Math.max(0,pt.y-elH/2)}]);pushAction({type:"element_placed",detail:el.l});setLibPending(null);scheduleSave()}}
                 style={{padding:"5px 7px",borderRadius:8,border:`1px solid ${libPending?.id===el.id?T.accent:T.border}`,background:libPending?.id===el.id?`${T.accent}10`:T.bg,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
