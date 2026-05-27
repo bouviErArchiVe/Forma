@@ -167,7 +167,7 @@ export default function CalculatorDrawer({
             fontSize: 10,
             lineHeight: 1.35,
           }}>
-            Mode étendu: historique + (à venir) surface/volume/pente/angle/fractions.
+            Mode étendu : historique des calculs récents.
           </div>
         )}
       </div>

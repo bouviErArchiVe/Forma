@@ -133,6 +133,19 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     .forma-tool-btn:hover { transform: translateY(-1px); }
     .forma-tool-btn:active { transform: scale(.97); }
 
+    .forma-editor-topbar {
+      transition: opacity .28s ease, min-height .35s ease;
+    }
+    .forma-toolbar-group {
+      flex-shrink: 0;
+    }
+    @media (max-width: 900px) {
+      .forma-editor-topbar {
+        max-height: 88px;
+        overflow-y: auto;
+      }
+    }
+
     .forma-glass-divider {
       width: 1px;
       align-self: stretch;

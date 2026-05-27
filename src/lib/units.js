@@ -51,3 +51,21 @@ export function convertValue(value, categoryId, fromUnitId, toUnitId) {
   return rounded
 }
 
+/** Mesure dessin → réalité selon l'échelle (ex. 1:50) */
+export function convertDrawingScale(value, fromUnitId, scaleStr) {
+  const v = parseFloat(String(value || ""))
+  if (!isFinite(v)) return null
+  const lengthUnits = UNITS_BY_CATEGORY.length || []
+  const fu = lengthUnits.find((u) => u.id === fromUnitId)
+  if (!fu) return null
+  const drawingMm = fu.toBase(v) * 1000
+  const scParts = String(scaleStr || "1:50").split(":").map(Number)
+  const scFactor = scParts.length === 2 && scParts[0] > 0 ? scParts[1] / scParts[0] : 50
+  const realMm = drawingMm * scFactor
+  return {
+    mm: Math.round(realMm * 100) / 100,
+    cm: Math.round(realMm / 10 * 100) / 100,
+    m: Math.round(realMm / 1000 * 1000) / 1000,
+  }
+}
+

@@ -115,7 +115,10 @@ export function pageDisplayName(pageNum, meta) {
   return name || `Page ${pageNum}`
 }
 
-export function orientationFromFormat(formatId) {
+export function orientationFromFormat(formatId, customMm) {
+  if (formatId === 'custom' && customMm?.w && customMm?.h) {
+    return customMm.w > customMm.h ? 'landscape' : 'portrait'
+  }
   const f = getFormatById(formatId)
   return f.w > f.h ? 'landscape' : 'portrait'
 }

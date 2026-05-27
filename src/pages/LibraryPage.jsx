@@ -712,6 +712,7 @@ export default function LibraryPage() {
       {showConverter && (
         <UnitConverter
           T={T}
+          variant="float"
           value={convValue}
           setValue={setConvValue}
           category={convCategory}

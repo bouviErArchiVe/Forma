@@ -16,12 +16,25 @@ import FloatingToolsToolbar, { EDITOR_TOOLS_LIST } from "@/components/FloatingTo
 import HistoryPanel from "@/components/HistoryPanel"
 import { buildActionEntry } from "@/lib/actionHistory"
 import PageContextMenu from "@/components/PageContextMenu"
+import EditorTopBar from "@/components/EditorTopBar"
+import CalculatorDrawer from "@/components/CalculatorDrawer"
+import UnitConverter from "@/components/UnitConverter"
 import BrandLogo, { ThemePreviewThumb } from "@/components/BrandLogo"
 import { useTheme } from "@/hooks/useAppearance"
 import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from "@/lib/favorites"
 import { loadEraserSettings, saveEraserSettings, ERASER_MODES } from "@/lib/eraserSettings"
 import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/lib/canvasHitTest"
 import { screenToPage } from "@/lib/viewport"
+import { PAGE_FORMATS, resolvePageDimensions } from "@/lib/pageFormats"
+import {
+  parsePageElements,
+  serializePageElements,
+  defaultGridStyle,
+  GRID_STYLES,
+  PAGE_COLORS,
+  GRID_COLORS,
+  pageDisplayName,
+} from "@/lib/pageSettings"
 
 /* ══ PALETTES ═══════════════════════════════════════════ */
 const CPAL={
@@ -103,17 +116,6 @@ function formatDimension(mm, unitSystem) {
   if (mm >= 10) return `${Math.round(mm) / 10}cm`
   return `${mm}mm`
 }
-const PAGE_FORMATS=[
-  {id:"a4p",  l:"A4 Portrait",    w:794,  h:1123,desc:"210×297mm"},
-  {id:"a4l",  l:"A4 Paysage",     w:1123, h:794, desc:"297×210mm"},
-  {id:"a3p",  l:"A3 Portrait",    w:1123, h:1587,desc:"297×420mm"},
-  {id:"a5p",  l:"A5 Portrait",    w:559,  h:794, desc:"148×210mm"},
-  {id:"ltr",  l:'Letter 8½×11"',  w:816,  h:1056,desc:'8.5×11"'},
-  {id:"ltrl", l:'Letter 11×8½"',  w:1056, h:816, desc:'11×8.5"'},
-  {id:"lgl",  l:'Legal 8½×14"',   w:816,  h:1344,desc:'8.5×14"'},
-  {id:"tbl",  l:'Tabloid 11×17"', w:1056, h:1632,desc:'11×17"'},
-  {id:"sq",   l:"Carré 210×210",  w:794,  h:794, desc:"210×210mm"},
-]
 
 /* ══ STRUCTURAL LIBRARY ════════════════════════════════ */
 const LIB_METRIC={
@@ -319,21 +321,6 @@ function renderSym(el,sc=1/50){
   return<div style={{width:W,height:H,background:"#f0f0f0",border:"1px solid #ccc",fontSize:8,display:"flex",alignItems:"center",justifyContent:"center"}}>{el.l}</div>
 }
 
-const PAGE_COLORS=[
-  {id:"white",c:"#ffffff",l:"Blanc"},{id:"cream",c:"#fdf6ed",l:"Crème"},
-  {id:"yellow",c:"#fffff0",l:"Jaune"},{id:"blue",c:"#f0f8ff",l:"Bleu ciel"},
-  {id:"green",c:"#f0fff4",l:"Menthe"},{id:"pink",c:"#fff0f5",l:"Rose"},
-  {id:"gray",c:"#f5f5f5",l:"Gris"},{id:"dark",c:"#1c2128",l:"Ardoise"},
-  {id:"kraft",c:"#f4ede0",l:"Kraft"},{id:"navy",c:"#0d1b2a",l:"Marine"},
-  {id:"black",c:"#000000",l:"Noir"},
-]
-const GRID_COLORS=[
-  {id:"blue",c:"rgba(61,107,140,.12)",l:"Bleu"},{id:"gray",c:"rgba(0,0,0,.08)",l:"Gris"},
-  {id:"red",c:"rgba(200,50,50,.1)",l:"Rouge"},{id:"green",c:"rgba(50,150,50,.1)",l:"Vert"},
-  {id:"orange",c:"rgba(200,98,42,.1)",l:"Orange"},{id:"purple",c:"rgba(124,58,237,.1)",l:"Violet"},
-  {id:"white",c:"rgba(255,255,255,.15)",l:"Blanc"},
-]
-
 /* ══ RENDER ════════════════════════════════════════════ */
 function renderEl(el,sc=1/50){
   const px=sc*3.78,W=Math.max((el.fw||el.w)*px,4),H=Math.max(el.h*px,4),t=(el.t||6)*px
@@ -352,18 +339,34 @@ function renderEl(el,sc=1/50){
 }
 
 /* ══ PAPER ════════════════════════════════════════════ */
-function Paper({tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
-  const W=PW,H=PH,L=[],bg=pageColor||T.paper,gc=gridColor||T.grid,pl=gridColor||T.pline
+function Paper({gridStyle,tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
+  const effective=gridStyle||tmpl||"grid10"
+  const W=PW,H=PH,L=[]
+  let bg=pageColor||T.paper,gc=gridColor||T.grid,pl=gridColor||T.pline
   const grid=(gap,col,sw)=>{for(let x=0;x<=W;x+=gap)L.push(<line key={`v${x}${sw}`}x1={x}y1={0}x2={x}y2={H}stroke={col}strokeWidth={sw}/>);for(let y=0;y<=H;y+=gap)L.push(<line key={`h${y}${sw}`}x1={0}y1={y}x2={W}y2={y}stroke={col}strokeWidth={sw}/>)}
-  if(tmpl==="grid5"){grid(18.9,gc,.5);grid(94.5,pl,.9)}
-  if(tmpl==="grid10"){grid(37.8,gc,.5);grid(189,pl,.9)}
-  if(tmpl==="math"){grid(28.35,gc,.5);grid(141.75,pl,.9)}
-  if(tmpl==="dotted"){for(let x=26;x<W;x+=26)for(let y=26;y<H;y+=26)L.push(<circle key={`d${x}${y}`}cx={x}cy={y}r={1}fill={gc}opacity={.5}/>)}
-  if(tmpl==="lined"){for(let y=72;y<H;y+=28)L.push(<line key={`l${y}`}x1={52}y1={y}x2={W-52}y2={y}stroke={gc}strokeWidth={.9}/>);L.push(<line key="lm"x1={90}y1={0}x2={90}y2={H}stroke="rgba(200,80,80,.15)"strokeWidth={1}/>)}
-  if(tmpl==="cornell"){for(let y=80;y<H-100;y+=28)L.push(<line key={`cl${y}`}x1={200}y1={y}x2={W-48}y2={y}stroke={gc}strokeWidth={.9}/>);L.push(<line key="cv"x1={190}y1={70}x2={190}y2={H-100}stroke="rgba(200,80,80,.2)"strokeWidth={1}/>);L.push(<line key="ch"x1={40}y1={H-100}x2={W-40}y2={H-100}stroke="rgba(200,80,80,.2)"strokeWidth={1}/>)}
-  if(tmpl==="isometric"){const s=37.8;for(let i=-H;i<W+H;i+=s){L.push(<line key={`a${i}`}x1={i}y1={0}x2={i+H}y2={H}stroke={gc}strokeWidth={.5}/>);L.push(<line key={`b${i}`}x1={i}y1={0}x2={i-H}y2={H}stroke={gc}strokeWidth={.5}/>)}}
-  if(["plan","elevation","section","detail"].includes(tmpl)){grid(37.8,gc,.5);grid(189,pl,.9);L.push(<rect key="tb"x={20}y={H-92}width={W-40}height={82}fill="none"stroke={pl}strokeWidth={1}/>);L.push(<rect key="b1"x={12}y={12}width={W-24}height={H-24}fill="none"stroke={pl}strokeWidth={1.5}/>)}
-  if(tmpl==="music"){for(let y=80;y<H-60;y+=70)for(let s=0;s<5;s++)L.push(<line key={`ms${y}${s}`}x1={40}y1={y+s*9}x2={W-40}y2={y+s*9}stroke={gc}strokeWidth={.9}/>)}
+  if(effective==="blueprint"){
+    bg=pageColor||"#dceefb"
+    gc=gridColor||"rgba(0,80,160,.25)"
+    pl=gridColor||"rgba(0,80,160,.45)"
+    grid(37.8,gc,.5);grid(189,pl,.9)
+  }else if(effective==="sketch"){
+    bg=pageColor||"#faf6ef"
+    gc=gridColor||"rgba(60,50,40,.07)"
+    const step=22
+    for(let i=-H;i<W+H;i+=step){
+      L.push(<line key={`ska${i}`}x1={i}y1={0}x2={i+H*.55}y2={H}stroke={gc}strokeWidth={.35}/>)
+      L.push(<line key={`skb${i}`}x1={i}y1={H}x2={i+H*.55}y2={0}stroke={gc}strokeWidth={.35}/>)
+    }
+    grid(37.8,gc,.35)
+  }else if(effective==="grid5"){grid(18.9,gc,.5);grid(94.5,pl,.9)}
+  else if(effective==="grid10"){grid(37.8,gc,.5);grid(189,pl,.9)}
+  else if(effective==="math"){grid(28.35,gc,.5);grid(141.75,pl,.9)}
+  else if(effective==="dotted"){for(let x=26;x<W;x+=26)for(let y=26;y<H;y+=26)L.push(<circle key={`d${x}${y}`}cx={x}cy={y}r={1}fill={gc}opacity={.5}/>)}
+  else if(effective==="lined"){for(let y=72;y<H;y+=28)L.push(<line key={`l${y}`}x1={52}y1={y}x2={W-52}y2={y}stroke={gc}strokeWidth={.9}/>);L.push(<line key="lm"x1={90}y1={0}x2={90}y2={H}stroke="rgba(200,80,80,.15)"strokeWidth={1}/>)}
+  else if(effective==="cornell"){for(let y=80;y<H-100;y+=28)L.push(<line key={`cl${y}`}x1={200}y1={y}x2={W-48}y2={y}stroke={gc}strokeWidth={.9}/>);L.push(<line key="cv"x1={190}y1={70}x2={190}y2={H-100}stroke="rgba(200,80,80,.2)"strokeWidth={1}/>);L.push(<line key="ch"x1={40}y1={H-100}x2={W-40}y2={H-100}stroke="rgba(200,80,80,.2)"strokeWidth={1}/>)}
+  else if(effective==="isometric"){const s=37.8;for(let i=-H;i<W+H;i+=s){L.push(<line key={`a${i}`}x1={i}y1={0}x2={i+H}y2={H}stroke={gc}strokeWidth={.5}/>);L.push(<line key={`b${i}`}x1={i}y1={0}x2={i-H}y2={H}stroke={gc}strokeWidth={.5}/>)}}
+  else if(["plan","elevation","section","detail"].includes(effective)){grid(37.8,gc,.5);grid(189,pl,.9);L.push(<rect key="tb"x={20}y={H-92}width={W-40}height={82}fill="none"stroke={pl}strokeWidth={1}/>);L.push(<rect key="b1"x={12}y={12}width={W-24}height={H-24}fill="none"stroke={pl}strokeWidth={1.5}/>)}
+  else if(effective==="music"){for(let y=80;y<H-60;y+=70)for(let s=0;s<5;s++)L.push(<line key={`ms${y}${s}`}x1={40}y1={y+s*9}x2={W-40}y2={y+s*9}stroke={gc}strokeWidth={.9}/>)}
   const gradId=`pg-${T.id}`
   return<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={W}height={H}>
     <defs>
@@ -379,7 +382,7 @@ function Paper({tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
 }
 
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */
-function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone}){
+function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123}){
   const drawing=useRef(false)
   const strokes=useRef([])   // committed strokes
   const history=useRef([])   // for multi-level undo (copy of strokes at each commit)
@@ -1022,7 +1025,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 
   const navTool=tool==="arrow"||tool==="select"
   const cursor=navTool?"default":getToolCursor(tool,{selectionActive,dark:cursorDark})
-  return<canvas ref={cRef}width={794}height={1123}
+  return<canvas ref={cRef}width={pageW}height={pageH}
     style={{position:"absolute",inset:0,width:"100%",height:"100%",cursor,touchAction:"none",zIndex:5,pointerEvents:navTool?"none":"auto"}}
     onPointerDown={dn}onPointerMove={mv}onPointerUp={up}onPointerLeave={up}/>
 }
@@ -1121,12 +1124,14 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
 }
 
 /* ══ PAGE THUMBNAIL ═══════════════════════════════════ */
-function PageThumbnail({pageData,pageNum,current,T,onClick,onMenu}){
+function PageThumbnail({pageData,pageNum,current,T,onClick,onMenu,notebookTemplate}){
   const ref=useRef()
+  const meta=parsePageElements(pageData?.elements,notebookTemplate)
+  const label=pageDisplayName(pageNum,meta)
   useEffect(()=>{
     if(!ref.current||!pageData)return
     const ctx=ref.current.getContext("2d")
-    ctx.fillStyle="#fff";ctx.fillRect(0,0,100,141)
+    ctx.fillStyle=meta.pageColor||"#fff";ctx.fillRect(0,0,100,141)
     if(pageData.canvas_data){
       try{
         const strokes=typeof pageData.canvas_data==="string"?JSON.parse(pageData.canvas_data):pageData.canvas_data||[]
@@ -1142,12 +1147,12 @@ function PageThumbnail({pageData,pageNum,current,T,onClick,onMenu}){
         ctx.globalAlpha=1
       }catch{}
     }
-  },[pageData])
+  },[pageData,meta.pageColor])
   return(
     <div style={{position:"relative",padding:4,borderRadius:8,border:`2px solid ${current?T.accent:T.border}`,background:current?`${T.accent}10`:T.bg,transition:"all .15s"}}>
       <div onClick={onClick}style={{cursor:"pointer"}}>
         <canvas ref={ref}width={100}height={141}style={{display:"block",width:80,height:113,borderRadius:4}}/>
-        <div style={{fontSize:9,color:current?T.accent:T.muted,textAlign:"center",marginTop:3,fontFamily:"monospace"}}>{pageNum}</div>
+        <div style={{fontSize:8,color:current?T.accent:T.muted,textAlign:"center",marginTop:3,fontFamily:"var(--app-font)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:84}}title={label}>{label}</div>
       </div>
       <button type="button"onClick={e=>{e.stopPropagation();onMenu?.(e,pageNum)}}title="Options page"style={{position:"absolute",top:2,right:2,width:18,height:18,borderRadius:4,border:`1px solid ${T.border}`,background:T.surface,color:T.muted,cursor:"pointer",fontSize:10,lineHeight:1,padding:0}}>⋯</button>
     </div>
@@ -1199,13 +1204,17 @@ function ThemePicker({current,onChange,onClose}){
   )
 }
 
-function PageSettings({T,pageColor,setPageColor,gridColor,setGridColor,onClose}){
+function PageSettings({T,pageColor,setPageColor,gridColor,setGridColor,gridStyle,setGridStyle,onClose}){
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",backdropFilter:"blur(6px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
-      <div style={{background:T.surface,borderRadius:16,padding:22,width:360,maxWidth:"94vw",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
+      <div style={{background:T.surface,borderRadius:16,padding:22,width:360,maxWidth:"94vw",maxHeight:"88vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
           <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,color:T.ink}}>🎨 Style de page</div>
           <button onClick={onClose}style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:20}}>×</button>
+        </div>
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>GRILLE / PAPIER</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{GRID_STYLES.map(g=><button key={g.id}type="button"onClick={()=>setGridStyle(g.id)}title={g.desc}style={{padding:"4px 8px",borderRadius:7,border:`1px solid ${gridStyle===g.id?T.accent:T.border}`,background:gridStyle===g.id?`${T.accent}18`:T.bg,color:gridStyle===g.id?T.accent:T.ink,cursor:"pointer",fontSize:9}}>{g.label}</button>)}</div>
         </div>
         <div style={{marginBottom:14}}>
           <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>FOND</div>
@@ -1323,16 +1332,17 @@ export default function EditorPage(){
   const[showCalc,setShowCalc]=useState(false)
   const[showTimer,setShowTimer]=useState(false)
   const[showConv,setShowConv]=useState(false)
-  const[calcExpr,setCalcExpr]=useState("")
-  const[calcResult,setCalcResult]=useState("")
+  const[calcDisplay,setCalcDisplay]=useState("0")
   const[calcHistory,setCalcHistory]=useState([])
+  const[calcCompact,setCalcCompact]=useState(false)
+  const[convValue,setConvValue]=useState("")
+  const[convCategory,setConvCategory]=useState("length")
+  const[convFromUnit,setConvFromUnit]=useState("mm")
+  const[convToUnit,setConvToUnit]=useState("m")
   const[timerSec,setTimerSec]=useState(25*60)
   const[timerRunning,setTimerRunning]=useState(false)
   const[timerMode,setTimerMode]=useState("work")
   const timerRef=useRef(null)
-  const[convVal,setConvVal]=useState("")
-  const[convFrom,setConvFrom]=useState("mm")
-  const[convMode,setConvMode]=useState("unit")
   const[showFlash,setShowFlash]=useState(false)
   const[flashCards,setFlashCards]=useState([])
   const[flashQ,setFlashQ]=useState("")
@@ -1346,6 +1356,9 @@ export default function EditorPage(){
   const[infiniteMode,setInfiniteMode]=useState(false)
   const[pageFormat,setPageFormat]=useState("a4p")
   const[nextPageFmt,setNextPageFmt]=useState("a4p")
+  const[customPageMm,setCustomPageMm]=useState({w:210,h:297})
+  const[pageGridStyle,setPageGridStyle]=useState(()=>defaultGridStyle("plan"))
+  const[pageName,setPageName]=useState("")
   const[viewSize,setViewSize]=useState({w:0,h:0})
   const[canvasRevision,setCanvasRevision]=useState(0)
   const[toolbarDock,setToolbarDock]=useState("top")
@@ -1398,9 +1411,32 @@ export default function EditorPage(){
       }
     }
   }, [selected])
-  const fmt=PAGE_FORMATS.find(f=>f.id===pageFormat)||PAGE_FORMATS[0]
-  const PW=infiniteMode?3000:fmt.w
-  const PH=infiniteMode?3000:fmt.h
+  const pageDims=resolvePageDimensions(pageFormat,customPageMm)
+  const PW=infiniteMode?3000:pageDims.w
+  const PH=infiniteMode?3000:pageDims.h
+
+  const applyPageMetaToState=useCallback(meta=>{
+    setPageFormat(meta.format||"a4p")
+    setCustomPageMm(meta.customMm||{w:210,h:297})
+    setPlaced(meta.items||[])
+    setPageColor(meta.pageColor??null)
+    setGridColor(meta.gridColor??null)
+    setPageGridStyle(meta.gridStyle||defaultGridStyle(nb.template))
+    setInfiniteMode(!!meta.infinite)
+    setPageName(meta.name||"")
+    setNextPageFmt(meta.format||"a4p")
+  },[nb.template])
+
+  const buildCurrentPageMeta=useCallback(()=>serializePageElements({
+    format:pageFormat,
+    customMm:customPageMm,
+    items:placed,
+    pageColor,
+    gridColor,
+    gridStyle:pageGridStyle,
+    infinite:infiniteMode,
+    name:pageName,
+  }),[pageFormat,customPageMm,placed,pageColor,gridColor,pageGridStyle,infiniteMode,pageName])
 
   const{
     zoom,panX,panY,panActive,spacePan,
@@ -1430,7 +1466,8 @@ export default function EditorPage(){
           setLayers(norm.layers)
           setActiveLayerId(norm.activeLayerId)
           if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
-          if(pg.elements){const rawEl=typeof pg.elements==="string"?JSON.parse(pg.elements):pg.elements;if(rawEl&&!Array.isArray(rawEl)&&rawEl.format){setPageFormat(rawEl.format);setNextPageFmt(rawEl.format);setPlaced(rawEl.items||[])}else{setPlaced(Array.isArray(rawEl)?rawEl:[])}}
+          const meta=parsePageElements(pg.elements,nb.template)
+          applyPageMetaToState(meta)
         }else{
           const{data:np}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:page,user_id:session.user.id}]).select().single()
           if(np){
@@ -1447,7 +1484,7 @@ export default function EditorPage(){
       }catch{}
     }
     load()
-  },[nb.id,page])
+  },[nb.id,page,applyPageMetaToState])
 
   // Add new page
   const addPage=async()=>{
@@ -1455,12 +1492,13 @@ export default function EditorPage(){
       const{data:{session}}=await supabase.auth.getSession()
       if(!session?.user)return
       const newNum=(nb.pages_count||1)+1
-      const{data:np,error}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,elements:JSON.stringify({format:nextPageFmt,items:[]})}]).select().single()
+      const newMeta=serializePageElements({format:nextPageFmt,customMm:customPageMm,items:[],gridStyle:pageGridStyle||defaultGridStyle(nb.template)})
+      const{data:np,error}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,elements:JSON.stringify(newMeta)}]).select().single()
       if(error||!np)return
       await supabase.from("notebooks").update({pages_count:newNum}).eq("id",nb.id)
       updateNotebook(nb.id,{pages_count:newNum})
       setPages(p=>[...p,np].sort((a,b)=>a.page_number-b.page_number))
-      setPageFormat(nextPageFmt)
+      applyPageMetaToState(parsePageElements(newMeta,nb.template))
       setPage(newNum)
       pushAction({type:"page_bg",detail:`Page ${newNum} créée`})
     }catch(e){console.error(e)}
@@ -1508,16 +1546,15 @@ export default function EditorPage(){
     }))
   },[])
 
-  // Duplicate page
-  const duplicatePage=async()=>{
-    if(!pageId)return
+  // Duplicate page (optionally from a specific page number)
+  const duplicatePageByNum=async(sourcePageNum=page)=>{
     try{
       const{data:{session}}=await supabase.auth.getSession()
       if(!session?.user)return
-      const{data:current}=await supabase.from("pages").select("*").eq("id",pageId).single()
-      if(!current)return
+      const src=pages.find(p=>p.page_number===sourcePageNum)
+      if(!src)return
       const newNum=(nb.pages_count||1)+1
-      await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,canvas_data:current.canvas_data,elements:current.elements}])
+      await supabase.from("pages").insert([{notebook_id:nb.id,page_number:newNum,user_id:session.user.id,canvas_data:src.canvas_data,elements:src.elements}])
       await supabase.from("notebooks").update({pages_count:newNum}).eq("id",nb.id)
       updateNotebook(nb.id,{pages_count:newNum})
       const{data:allPgs}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).order("page_number")
@@ -1525,6 +1562,7 @@ export default function EditorPage(){
       setPage(newNum)
     }catch{}
   }
+  const duplicatePage=()=>duplicatePageByNum(page)
 
   // Realtime
   useEffect(()=>{
@@ -1549,16 +1587,8 @@ export default function EditorPage(){
     try{const{data:{session}}=await supabase.auth.getSession();if(!session?.user)return;realtimeChannel.current.send({type:"broadcast",event:"cursor",payload:{userId:session.user.id,userName:session.user.user_metadata?.full_name||session.user.email||"?",x,y,color}})}catch{}
   },[color])
 
-  // Calculator
-  const evalCalcExpr=expr=>{try{const r=Function('"use strict";return('+expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-')+')')();return isFinite(r)&&!isNaN(r)?String(Math.round(r*100000)/100000):"Erreur"}catch{return"Erreur"}}
-  const handleCalcBtn=btn=>{
-    if(btn==="C"){setCalcExpr("");setCalcResult("");return}
-    if(btn==="CE"){setCalcExpr(e=>e.slice(0,-1));return}
-    if(btn==="±"){setCalcExpr(e=>e.startsWith("-")?e.slice(1):"-"+e);return}
-    if(btn==="="){const r=evalCalcExpr(calcExpr);setCalcResult(r);if(r!=="Erreur"){setCalcHistory(h=>[...h,`${calcExpr} = ${r}`]);setCalcExpr(r)}return}
-    const op=btn==="÷"?"/":btn==="×"?"*":btn==="−"?"-":btn
-    setCalcExpr(e=>e+op)
-  }
+  // Calculator — handled by CalculatorDrawer component
+
   // Timer
   useEffect(()=>{
     if(!timerRunning){clearInterval(timerRef.current);return}
@@ -1588,11 +1618,12 @@ export default function EditorPage(){
       const{data:{session}}=await supabase.auth.getSession()
       if(!session?.user)return
       setSaveStatus("saving")
-      await supabase.from("pages").update({canvas_data:serializeCanvasData(strokes,layers,activeLayerId),elements:JSON.stringify({format:pageFormat,items:placed}),updated_at:new Date().toISOString()}).eq("id",pageId)
+      await supabase.from("pages").update({canvas_data:serializeCanvasData(strokes,layers,activeLayerId),elements:JSON.stringify(buildCurrentPageMeta()),updated_at:new Date().toISOString()}).eq("id",pageId)
+      setPages(prev=>prev.map(p=>p.id===pageId?{...p,elements:JSON.stringify(buildCurrentPageMeta())}:p))
       await supabase.from("notebooks").update({updated_at:new Date().toISOString()}).eq("id",nb.id)
       setSaveStatus("saved");setTimeout(()=>setSaveStatus("idle"),2000)
     }catch{setSaveStatus("error");setTimeout(()=>setSaveStatus("idle"),3000)}
-  },[pageId,placed,nb.id,readOnly,layers,activeLayerId])
+  },[pageId,nb.id,readOnly,layers,activeLayerId,buildCurrentPageMeta])
 
   const requestSave=useCallback(()=>{
     if(saveTimer.current)clearTimeout(saveTimer.current)
@@ -1637,8 +1668,38 @@ export default function EditorPage(){
     setActionLog([])
     try{localStorage.removeItem(ACTION_KEY)}catch{}
   },[ACTION_KEY])
-  const setPageColorLogged=useCallback(c=>{setPageColor(c);pushAction({type:"page_bg",color:c,detail:c||"défaut"})},[pushAction])
-  const setGridColorLogged=useCallback(c=>{setGridColor(c);pushAction({type:"page_grid",color:c,detail:c||"défaut"})},[pushAction])
+  const setPageColorLogged=useCallback(c=>{setPageColor(c);pushAction({type:"page_bg",color:c,detail:c||"défaut"});requestSave()},[pushAction,requestSave])
+  const setGridColorLogged=useCallback(c=>{setGridColor(c);pushAction({type:"page_grid",color:c,detail:c||"défaut"});requestSave()},[pushAction,requestSave])
+  const setPageGridStyleLogged=useCallback(s=>{setPageGridStyle(s);pushAction({type:"page_grid",detail:s});requestSave()},[pushAction,requestSave])
+
+  const applyPageSettings=useCallback(async(pageNum,partial)=>{
+    if(pageNum===page){
+      if(partial.format!==undefined){setPageFormat(partial.format);setNextPageFmt(partial.format)}
+      if(partial.customMm)setCustomPageMm(partial.customMm)
+      if(partial.pageColor!==undefined)setPageColor(partial.pageColor)
+      if(partial.gridColor!==undefined)setGridColor(partial.gridColor)
+      if(partial.gridStyle!==undefined)setPageGridStyle(partial.gridStyle)
+      if(partial.infinite!==undefined)setInfiniteMode(!!partial.infinite)
+      if(partial.name!==undefined)setPageName(partial.name)
+      requestSave()
+      return
+    }
+    const pg=pages.find(p=>p.page_number===pageNum)
+    if(!pg)return
+    try{
+      const merged=serializePageElements({...parsePageElements(pg.elements,nb.template),...partial})
+      const elementsStr=JSON.stringify(merged)
+      await supabase.from("pages").update({elements:elementsStr,updated_at:new Date().toISOString()}).eq("id",pg.id)
+      setPages(prev=>prev.map(p=>p.id===pg.id?{...p,elements:elementsStr}:p))
+    }catch{}
+  },[page,pages,nb.template,requestSave])
+
+  const pageMenuMeta=useMemo(()=>{
+    if(!pageMenu)return null
+    if(pageMenu.pageNum===page)return buildCurrentPageMeta()
+    const pg=pages.find(p=>p.page_number===pageMenu.pageNum)
+    return parsePageElements(pg?.elements,nb.template)
+  },[pageMenu,page,pages,nb.template,buildCurrentPageMeta])
 
   const onStroke=useCallback(s=>{setCanvasRevision(r=>r+1);if(saveTimer.current)clearTimeout(saveTimer.current);saveTimer.current=setTimeout(()=>save(s),1500)},[save])
 
@@ -1773,6 +1834,7 @@ export default function EditorPage(){
   const SCALES_M=["1:1","1:2","1:5","1:10","1:20","1:50","1:100","1:200","1:500","1:1000"]
   const SCALES_I=['1/4"=1\'','3/16"=1\'','1/8"=1\'','3/32"=1\'','1"=10\'','1"=20\'','1"=40\'','1"=100\'']
   const COLLAB_COLORS=["#e94560","#2196f3","#4ade80","#f5a623","#a855f7","#00bcd4"]
+  const calcDrawerW=showCalc?(calcCompact?320:420):0
   const toolbarPad=useMemo(()=>({
     paddingTop:!focusMode&&toolbarDock==="top"?36:0,
     paddingBottom:!focusMode&&toolbarDock==="bottom"?36:0,
@@ -1791,9 +1853,9 @@ export default function EditorPage(){
           <button onClick={()=>setShowPresent(false)}style={{padding:"8px 16px",borderRadius:10,background:"rgba(233,69,96,.3)",border:"none",color:"#fff",cursor:"pointer",fontSize:13}}>✕ Quitter</button>
         </div>
         <div style={{transform:"scale(0.9)",transformOrigin:"center",boxShadow:"0 20px 80px rgba(0,0,0,.8)"}}>
-          <div style={{width:fmt.w,height:fmt.h,position:"relative",background:"#fff"}}>
-            <Paper tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={fmt.w} PH={fmt.h}/>
-            <canvas ref={cRef}width={fmt.w}height={fmt.h}style={{position:"absolute",inset:0,width:"100%",height:"100%"}}/>
+          <div style={{width:pageDims.w,height:pageDims.h,position:"relative",background:"#fff"}}>
+            <Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={pageDims.w} PH={pageDims.h}/>
+            <canvas ref={cRef}width={pageDims.w}height={pageDims.h}style={{position:"absolute",inset:0,width:"100%",height:"100%"}}/>
           </div>
         </div>
       </div>
@@ -1802,36 +1864,42 @@ export default function EditorPage(){
 
   return(
     <div style={{display:"flex",flexDirection:"column",height:"100vh",background:T.bg,fontFamily:"var(--app-font)",overflow:"hidden",color:T.ink,position:"relative",zIndex:2}}>
-      {showPageSettings&&<PageSettings T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} onClose={()=>setShowPageSettings(false)}/>}
+      {showPageSettings&&<PageSettings T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} onClose={()=>setShowPageSettings(false)}/>}
       {showTheme&&<ThemePicker current={T} onChange={th=>setTheme(th.id)} onClose={()=>setShowTheme(false)}/>}
       {showShare&&<ShareModal T={T} nbId={nb.id} nbTitle={nb.title} onClose={()=>setShowShare(false)}/>}
-      {pageMenu&&<PageContextMenu T={T} pageNum={pageMenu.pageNum} x={pageMenu.x} y={pageMenu.y} pageFormats={PAGE_FORMATS} currentFormat={pageMenu.pageNum===page?pageFormat:nextPageFmt} onClose={()=>setPageMenu(null)} onSetFormat={fmtId=>{if(pageMenu.pageNum===page)setPageFormat(fmtId);else setNextPageFmt(fmtId);setPageMenu(null)}} onDuplicate={()=>{setPage(pageMenu.pageNum);duplicatePage();setPageMenu(null)}} onDelete={()=>{deletePage(pageMenu.pageNum);setPageMenu(null)}} onOpenSettings={()=>{setPage(pageMenu.pageNum);setShowPageSettings(true);setPageMenu(null)}} canDelete={(nb.pages_count||1)>1}/>}
+      {pageMenu&&pageMenuMeta&&<PageContextMenu T={T} pageNum={pageMenu.pageNum} x={pageMenu.x} y={pageMenu.y} meta={pageMenuMeta} onClose={()=>setPageMenu(null)} onApply={partial=>applyPageSettings(pageMenu.pageNum,partial)} onDuplicate={()=>duplicatePageByNum(pageMenu.pageNum)} onDelete={()=>deletePage(pageMenu.pageNum)} canDelete={(nb.pages_count||1)>1}/>}
 
-      {/* ── CALCULATRICE ──────────────────────────────── */}
-      {!focusMode&&showCalc&&<div style={{position:"fixed",bottom:72,right:showTimer?280:20,width:232,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:90,overflow:"hidden",userSelect:"none"}}>
-        <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:"#fff"}}>🔢 Calculatrice</span>
-          <button onClick={()=>setShowCalc(false)} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:18,lineHeight:1}}>×</button>
-        </div>
-        <div style={{padding:"8px 10px 4px",background:T.panel+"bb",textAlign:"right"}}>
-          <div style={{fontSize:10,color:"#888",fontFamily:"monospace",minHeight:14,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{calcExpr||"0"}</div>
-          <div style={{fontSize:26,color:calcResult==="Erreur"?"#e94560":T.ink,fontFamily:"'JetBrains Mono',monospace",fontWeight:700,lineHeight:1.2}}>{calcResult||"0"}</div>
-        </div>
-        <div style={{padding:"6px 8px",display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:4}}>
-          {[["C","CE","(","÷"],["7","8","9","×"],["4","5","6","−"],["1","2","3","+"],["%","0",".","="]].flat().map(btn=>(
-            <button key={btn} onClick={()=>handleCalcBtn(btn)} style={{padding:"10px 0",borderRadius:8,border:"none",cursor:"pointer",fontFamily:"'JetBrains Mono',monospace",fontWeight:600,fontSize:13,
-              background:btn==="="?T.accent:["÷","×","−","+"].includes(btn)?T.accent+"33":["C"].includes(btn)?"rgba(233,69,96,.25)":T.bg,
-              color:btn==="="?"#fff":["÷","×","−","+"].includes(btn)?T.accent:btn==="C"?"#e94560":T.ink,
-              transition:"opacity .1s"}}
-              onMouseDown={e=>e.currentTarget.style.opacity=".6"} onMouseUp={e=>e.currentTarget.style.opacity="1"}>
-              {btn}
-            </button>
-          ))}
-        </div>
-        {calcHistory.length>0&&<div style={{borderTop:`1px solid ${T.border}`,padding:"4px 10px 6px",maxHeight:72,overflowY:"auto"}}>
-          {calcHistory.slice(-4).reverse().map((h,i)=><div key={i} style={{fontSize:9,color:T.muted,fontFamily:"monospace",padding:"1px 0"}}>{h}</div>)}
-        </div>}
-      </div>}
+      {!focusMode&&(
+        <CalculatorDrawer
+          T={T}
+          open={showCalc}
+          onClose={()=>setShowCalc(false)}
+          compact={calcCompact}
+          setCompact={setCalcCompact}
+          display={calcDisplay}
+          setDisplay={setCalcDisplay}
+          history={calcHistory}
+          setHistory={setCalcHistory}
+        />
+      )}
+      {!focusMode&&(
+        <UnitConverter
+          T={T}
+          open={showConv}
+          onClose={()=>setShowConv(false)}
+          stackOffset={calcDrawerW}
+          value={convValue}
+          setValue={setConvValue}
+          category={convCategory}
+          setCategory={setConvCategory}
+          fromUnit={convFromUnit}
+          setFromUnit={setConvFromUnit}
+          toUnit={convToUnit}
+          setToUnit={setConvToUnit}
+          scale={scale}
+          setScale={setScale}
+        />
+      )}
 
       {/* ── POMODORO ──────────────────────────────────── */}
       {!focusMode&&showTimer&&<div style={{position:"fixed",bottom:72,right:20,width:220,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:89,overflow:"hidden",userSelect:"none"}}>
@@ -1867,104 +1935,9 @@ export default function EditorPage(){
         </div>
       </div>}
 
-      {/* ── CONVERTISSEUR ─────────────────────────────── */}
-      {!focusMode&&showConv&&(()=>{
-        const TO_MM={mm:1,cm:10,m:1000,ft:304.8,in:25.4}
-        const UNITS=["mm","cm","m","ft","in"]
-        const base=parseFloat(convVal)*TO_MM[convFrom]
-        const scParts=scale.split(":").map(Number)
-        const scFactor=scParts.length===2&&scParts[0]>0?scParts[1]/scParts[0]:50
-        const scaleRes=isNaN(base)?null:{
-          real_mm:Math.round(base*scFactor*100)/100,
-          real_cm:Math.round(base*scFactor/10*100)/100,
-          real_m:Math.round(base*scFactor/1000*1000)/1000,
-        }
-        const offset=20+(showTimer?240:0)+(showCalc?252:0)
-        return(
-        <div style={{position:"fixed",bottom:72,right:offset,width:238,maxHeight:"min(70vh, 420px)",background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:88,overflow:"hidden",userSelect:"none",display:"flex",flexDirection:"column"}}>
-          <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
-            <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:"#fff"}}>📐 Convertisseur</span>
-            <button onClick={()=>setShowConv(false)} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:18,lineHeight:1}}>×</button>
-          </div>
-          {/* Mode tabs */}
-          <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,flexShrink:0}}>
-            {[["unit","Unités"],["scale","Échelle"]].map(([m,l])=>(
-              <button key={m} onClick={()=>setConvMode(m)} style={{flex:1,padding:"6px 0",border:"none",cursor:"pointer",fontSize:10,fontWeight:convMode===m?700:400,background:convMode===m?`${T.accent}15`:T.bg,color:convMode===m?T.accent:T.muted}}>
-                {l}
-              </button>
-            ))}
-          </div>
-          <div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:8,overflowY:"auto",flex:1,minHeight:0}}>
-            {/* Input */}
-            <div style={{display:"flex",gap:6}}>
-              <input value={convVal} onChange={e=>setConvVal(e.target.value.replace(/[^0-9.,]/g,""))} placeholder="0"
-                style={{flex:1,padding:"7px 10px",borderRadius:8,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:16,fontFamily:"'JetBrains Mono',monospace",fontWeight:700,outline:"none",textAlign:"right"}}
-                onFocus={e=>e.target.style.borderColor=T.accent}
-                onBlur={e=>e.target.style.borderColor=T.border}/>
-              <select value={convFrom} onChange={e=>setConvFrom(e.target.value)}
-                style={{padding:"7px 8px",borderRadius:8,border:`1px solid ${T.border}`,background:T.bg,color:T.accent,fontSize:12,fontWeight:700,outline:"none",cursor:"pointer",fontFamily:"'JetBrains Mono',monospace"}}>
-                {UNITS.map(u=><option key={u} value={u}>{u}</option>)}
-              </select>
-            </div>
-
-            {convMode==="unit"&&(
-              <div style={{display:"flex",flexDirection:"column",gap:4}}>
-                {UNITS.filter(u=>u!==convFrom).map(u=>{
-                  const val=isNaN(base)?"-":String(Math.round(base/TO_MM[u]*100000)/100000)
-                  return(
-                    <div key={u} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"5px 9px",borderRadius:8,background:T.bg,border:`1px solid ${T.border}`}}>
-                      <span style={{fontSize:9,color:T.muted,fontFamily:"monospace",minWidth:20}}>{u}</span>
-                      <span style={{fontSize:14,color:T.ink,fontFamily:"'JetBrains Mono',monospace",fontWeight:600}}>{val}</span>
-                      <button onClick={()=>{setConvFrom(u);setConvVal(val==="- "?"":val)}}
-                        style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:9,padding:"2px 4px"}}>↩</button>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            {convMode==="scale"&&(
-              <div style={{display:"flex",flexDirection:"column",gap:4}}>
-                <div style={{fontSize:9,color:T.muted,textAlign:"center"}}>Échelle active : <strong style={{color:T.accent}}>{scale}</strong></div>
-                {scaleRes?(
-                  <>
-                    <div style={{padding:"7px 9px",borderRadius:8,background:`${T.accent}10`,border:`1px solid ${T.accent}33`,display:"flex",justifyContent:"space-between"}}>
-                      <span style={{fontSize:9,color:T.muted}}>Réalité (mm)</span>
-                      <span style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:T.ink,fontSize:13}}>{scaleRes.real_mm}</span>
-                    </div>
-                    <div style={{padding:"7px 9px",borderRadius:8,background:T.bg,border:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between"}}>
-                      <span style={{fontSize:9,color:T.muted}}>Réalité (cm)</span>
-                      <span style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:T.ink,fontSize:13}}>{scaleRes.real_cm}</span>
-                    </div>
-                    <div style={{padding:"7px 9px",borderRadius:8,background:T.bg,border:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between"}}>
-                      <span style={{fontSize:9,color:T.muted}}>Réalité (m)</span>
-                      <span style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:T.accent,fontSize:13}}>{scaleRes.real_m}</span>
-                    </div>
-                    <div style={{fontSize:8,color:T.muted,textAlign:"center",marginTop:2}}>
-                      {convVal||"0"}{convFrom} dessin → {scaleRes.real_m}m réel
-                    </div>
-                  </>
-                ):(
-                  <div style={{textAlign:"center",color:T.muted,fontSize:11,padding:"10px 0"}}>Entrez une valeur</div>
-                )}
-                {/* Quick scale presets */}
-                <div style={{display:"flex",flexWrap:"wrap",gap:3,marginTop:2}}>
-                  {["1:20","1:50","1:100","1:200","1:500"].map(s=>(
-                    <button key={s} onClick={()=>setScale(s)}
-                      style={{padding:"3px 7px",borderRadius:6,background:scale===s?`${T.accent}18`:T.bg,border:`1px solid ${scale===s?T.accent:T.border}`,color:scale===s?T.accent:T.muted,cursor:"pointer",fontSize:9}}>
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )})()}
-
       {/* ── FLASHCARDS ────────────────────────────────── */}
       {!focusMode&&showFlash&&(()=>{
-        const flashOffset=20+(showTimer?240:0)+(showCalc?252:0)+(showConv?258:0)
+        const flashOffset=20+(showTimer?240:0)
         const card=flashCards[flashIdx]
         return(
         <div style={{position:"fixed",bottom:72,right:flashOffset,width:280,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:87,overflow:"hidden",userSelect:"none"}}>
@@ -2079,58 +2052,60 @@ export default function EditorPage(){
       </div>}
       {readOnly&&!focusMode&&<div style={{position:"fixed",top:60,left:"50%",transform:"translateX(-50%)",zIndex:50,background:"rgba(233,69,96,.9)",color:"#fff",padding:"6px 14px",borderRadius:20,fontSize:11,fontWeight:700}}>🔒 Mode lecture seule</div>}
 
-      {/* TOP BAR */}
-      <div style={{minHeight:focusMode?0:46,overflow:"hidden",opacity:focusMode?0:1,pointerEvents:focusMode?"none":"auto",transition:"height .35s ease, opacity .28s ease",display:"flex",flexWrap:"wrap",alignItems:"center",padding:"4px 10px",gap:5,flexShrink:0,zIndex:TOKENS.zIndex.toolbar,...glassStyle(T,{variant:"toolbar",border:false})}}>
-        <button onClick={()=>navigate("/")}style={{background:"none",border:"none",color:"#888",cursor:"pointer",fontSize:11,padding:"4px 7px",borderRadius:7}}>← Retour</button>
-        <div style={{width:1,height:20,background:"#ffffff14"}}/>
-        <div style={{fontFamily:"'Syne',sans-serif",fontWeight:600,fontSize:12,color:"#ddd",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:180}}>{nb.title}</div>
-        {collabCursors.length>0&&<div style={{display:"flex",gap:2}}>{collabCursors.map((c,i)=><div key={c.userId}title={c.userName}style={{width:20,height:20,borderRadius:"50%",background:COLLAB_COLORS[i%6],display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:700,color:"#fff",border:"2px solid rgba(255,255,255,.3)"}}>{(c.userName||"?")[0].toUpperCase()}</div>)}</div>}
-        <div style={{display:"flex",flexWrap:"wrap",gap:4,alignItems:"center",marginLeft:"auto"}}>
-          {saveStatus==="saving"&&<span style={{fontSize:9,color:"#f5a623"}}>⏳</span>}
-          {saveStatus==="saved"&&<span style={{fontSize:9,color:"#4ade80"}}>✓</span>}
-          <div style={{display:"flex",borderRadius:6,overflow:"hidden",border:"1px solid #ffffff14"}}>
-            <button onClick={()=>{setUnitSys("metric");setScale("1:50")}}style={{padding:"3px 7px",background:unitSys==="metric"?"rgba(200,98,42,.4)":"transparent",border:"none",color:unitSys==="metric"?"#fff":"#777",cursor:"pointer",fontSize:9}}>mm</button>
-            <button onClick={()=>{setUnitSys("imperial");setScale('1/4"=1\'')}}style={{padding:"3px 7px",background:unitSys==="imperial"?"rgba(200,98,42,.4)":"transparent",border:"none",color:unitSys==="imperial"?"#fff":"#777",cursor:"pointer",fontSize:9}}>in</button>
-          </div>
-          <select value={scale}onChange={e=>setScale(e.target.value)}style={{padding:"3px 5px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0c",color:"#aaa",fontSize:9,outline:"none",cursor:"pointer"}}>
-            {(unitSys==="metric"?SCALES_M:SCALES_I).map(s=><option key={s}value={s}>{s}</option>)}
-          </select>
-          <div style={{display:"flex",alignItems:"center",gap:2,background:"#ffffff0a",borderRadius:6,padding:"0 6px",border:"1px solid #ffffff10"}}>
-            <button onClick={()=>zoomBy(1/1.1,{x:viewSize.w/2,y:viewSize.h/2})}style={{background:"none",border:"none",color:"#aaa",cursor:"pointer",fontSize:13}}>−</button>
-            <span style={{color:"#666",fontSize:9,minWidth:26,textAlign:"center"}}>{Math.round(zoom*100)}%</span>
-            <button onClick={()=>zoomBy(1.1,{x:viewSize.w/2,y:viewSize.h/2})}style={{background:"none",border:"none",color:"#aaa",cursor:"pointer",fontSize:13}}>+</button>
-          </div>
-          {/* Quick action buttons */}
-          {[
-            [()=>setShowLib(v=>!v),"🏗",showLib,"Bibliothèque"],
-            [()=>setShowPagePanel(v=>!v),"📋",showPagePanel,"Pages"],
-            [()=>setShowPageSettings(true),"🎨","","Fond/Grille"],
-            [()=>setShowTheme(true),"✨","","Thème"],
-            [()=>setShowLayers(v=>!v),"⊞",showLayers,"Calques"],
-            [()=>setShowRuler(v=>!v),"📏",showRuler,"Règle"],
-          ].map(([fn,label,active,title],i)=>(
-            <button key={i}onClick={fn}title={title}style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${active?T.accent:"#ffffff14"}`,background:active?`${T.accent}22`:"#ffffff0a",color:active?T.accent:"#888",cursor:"pointer",fontSize:10}}>{label}</button>
-          ))}
-          <button onClick={()=>setInfiniteMode(v=>!v)}title="Canvas infini"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${infiniteMode?"#00ffcc":"#ffffff14"}`,background:infiniteMode?"rgba(0,255,204,.15)":"#ffffff0a",color:infiniteMode?"#00ffcc":"#888",cursor:"pointer",fontSize:9}}>∞{infiniteMode?"✓":""}</button>
-          <button onClick={()=>setShowHistory(v=>!v)}title="Historique actions + versions"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showHistory?T.accent:"#ffffff14"}`,background:showHistory?`${T.accent}22`:"#ffffff0a",color:showHistory?T.accent:"#888",cursor:"pointer",fontSize:10}}>🕐{actionLog.length>0?actionLog.length:""}</button>
-          <button onClick={()=>setPencilOnly(v=>!v)}title="Mode Apple Pencil — bloque le doigt"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${pencilOnly?"#a855f7":"#ffffff14"}`,background:pencilOnly?"rgba(168,85,247,.2)":"#ffffff0a",color:pencilOnly?"#a855f7":"#888",cursor:"pointer",fontSize:9}}>✏️{pencilOnly?"✓":""}</button>
-          <button onClick={()=>setReadOnly(v=>!v)}title="Mode lecture seule"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${readOnly?"#e94560":"#ffffff14"}`,background:readOnly?"rgba(233,69,96,.2)":"#ffffff0a",color:readOnly?"#e94560":"#888",cursor:"pointer",fontSize:10}}>🔒</button>
-          <button onClick={()=>setShowPresent(true)}title="Mode présentation"style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#888",cursor:"pointer",fontSize:10}}>📽</button>
-          <button onClick={()=>setShowCalc(v=>!v)}title="Calculatrice"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showCalc?T.accent:"#ffffff14"}`,background:showCalc?`${T.accent}22`:"#ffffff0a",color:showCalc?T.accent:"#888",cursor:"pointer",fontSize:10}}>🔢</button>
-          <button onClick={()=>setShowConv(v=>!v)}title="Convertisseur"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showConv?T.accent:"#ffffff14"}`,background:showConv?`${T.accent}22`:"#ffffff0a",color:showConv?T.accent:"#888",cursor:"pointer",fontSize:10}}>📐</button>
-          <button onClick={()=>setShowTimer(v=>!v)}title="Pomodoro"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showTimer?"#4ade80":"#ffffff14"}`,background:showTimer?"rgba(74,222,128,.15)":"#ffffff0a",color:showTimer?"#4ade80":"#888",cursor:"pointer",fontSize:10}}>{timerRunning?`⏱${String(Math.floor(timerSec/60)).padStart(2,'0')}:${String(timerSec%60).padStart(2,'0')}`:"⏱"}</button>
-          <button onClick={()=>setShowFlash(v=>!v)}title={`Flashcards (${flashCards.length})`}style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${showFlash?"#a855f7":"#ffffff14"}`,background:showFlash?"rgba(168,85,247,.2)":"#ffffff0a",color:showFlash?"#a855f7":"#888",cursor:"pointer",fontSize:10}}>🃏{flashCards.length>0?flashCards.length:""}</button>
-          <button onClick={toggleFocusMode}title="Mode focus (F)"style={{padding:"3px 7px",borderRadius:6,border:`1px solid ${focusMode?"#a855f7":"#ffffff14"}`,background:focusMode?"rgba(168,85,247,.2)":"#ffffff0a",color:focusMode?"#a855f7":"#888",cursor:"pointer",fontSize:10}}>⛶</button>
-          <button onClick={()=>setShowShare(true)}style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#88c",cursor:"pointer",fontSize:9}}>🤝</button>
-          <label title="Importer image"style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#888",cursor:"pointer",fontSize:9}}>
-            📎<input type="file"accept="image/*"style={{display:"none"}}onChange={handleImport}/>
-          </label>
-          <button onClick={exportPNG}disabled={exporting}title="Exporter PNG 2x"style={{padding:"3px 7px",borderRadius:6,border:"1px solid rgba(74,222,128,.3)",background:"rgba(74,222,128,.1)",color:"#4ade80",cursor:"pointer",fontSize:9}}>{exporting?"⏳":"⬇️"}</button>
-          <button onClick={()=>window.__undo?.()}style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#aaa",cursor:"pointer",fontSize:11}}>↩</button>
-          <button onClick={()=>window.__redo?.()}style={{padding:"3px 7px",borderRadius:6,border:"1px solid #ffffff14",background:"#ffffff0a",color:"#aaa",cursor:"pointer",fontSize:11}}>↪</button>
-          <button onClick={()=>window.__clear?.()}style={{padding:"3px 7px",borderRadius:6,border:"1px solid rgba(233,69,96,.3)",background:"rgba(233,69,96,.1)",color:"#e94560",cursor:"pointer",fontSize:9}}>🗑</button>
-        </div>
-      </div>
+      <EditorTopBar
+        T={T}
+        focusMode={focusMode}
+        nb={nb}
+        navigate={navigate}
+        collabCursors={collabCursors}
+        collabColors={COLLAB_COLORS}
+        saveStatus={saveStatus}
+        unitSys={unitSys}
+        setUnitSys={setUnitSys}
+        scale={scale}
+        setScale={setScale}
+        scalesM={SCALES_M}
+        scalesI={SCALES_I}
+        zoom={zoom}
+        zoomBy={zoomBy}
+        viewSize={viewSize}
+        showLib={showLib}
+        setShowLib={setShowLib}
+        showPagePanel={showPagePanel}
+        setShowPagePanel={setShowPagePanel}
+        setShowPageSettings={setShowPageSettings}
+        showLayers={showLayers}
+        setShowLayers={setShowLayers}
+        showRuler={showRuler}
+        setShowRuler={setShowRuler}
+        infiniteMode={infiniteMode}
+        applyPageSettings={applyPageSettings}
+        page={page}
+        showHistory={showHistory}
+        setShowHistory={setShowHistory}
+        actionLogLength={actionLog.length}
+        pencilOnly={pencilOnly}
+        setPencilOnly={setPencilOnly}
+        readOnly={readOnly}
+        setReadOnly={setReadOnly}
+        setShowPresent={setShowPresent}
+        showCalc={showCalc}
+        setShowCalc={setShowCalc}
+        showConv={showConv}
+        setShowConv={setShowConv}
+        showTimer={showTimer}
+        setShowTimer={setShowTimer}
+        timerRunning={timerRunning}
+        timerSec={timerSec}
+        showFlash={showFlash}
+        setShowFlash={setShowFlash}
+        flashCardsLength={flashCards.length}
+        toggleFocusMode={toggleFocusMode}
+        setShowShare={setShowShare}
+        handleImport={handleImport}
+        exportPNG={exportPNG}
+        exporting={exporting}
+      />
 
       {!focusMode&&tool==="eraser"&&<EraserOptionsPanel T={T} settings={eraserSettings} setSettings={setEraserSettings} unitSys={unitSys} formatDimension={formatDimension}/>}
 
@@ -2154,7 +2129,7 @@ export default function EditorPage(){
           <div style={{flex:1,overflowY:"auto",padding:6,display:"flex",flexDirection:"column",gap:6}}>
             {Array.from({length:nb.pages_count||1},(_,i)=>{
               const pageData=pages.find(p=>p.page_number===i+1)
-              return<PageThumbnail key={i+1} pageData={pageData} pageNum={i+1} current={page===i+1} T={T} onClick={()=>setPage(i+1)} onMenu={(e,n)=>setPageMenu({x:e.clientX,y:e.clientY,pageNum:n})}/>
+              return<PageThumbnail key={i+1} pageData={pageData} pageNum={i+1} current={page===i+1} T={T} notebookTemplate={nb.template} onClick={()=>setPage(i+1)} onMenu={(e,n)=>setPageMenu({x:e.clientX,y:e.clientY,pageNum:n})}/>
             })}
           </div>
         </div>}
@@ -2204,10 +2179,10 @@ export default function EditorPage(){
             </div>
           })}
 
-          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:infiniteMode?-1500:-(fmt.w/2),marginTop:infiniteMode?-1500:-(fmt.h/2),willChange:"transform"}}>
+          <div style={{transform:`translate(${panX}px,${panY}px) scale(${zoom})`,transformOrigin:"center center",position:"absolute",top:"50%",left:"50%",marginLeft:infiniteMode?-1500:-(pageDims.w/2),marginTop:infiniteMode?-1500:-(pageDims.h/2),willChange:"transform"}}>
             <div style={{width:PW,height:PH,position:"relative",boxShadow:infiniteMode?"none":"0 4px 40px rgba(0,0,0,.2)",background:infiniteMode?(pageColor||T.paper):"none"}}>
               {infiniteMode&&<svg style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0}}width={3000}height={3000}><defs><pattern id="inf-grid"width={37.8}height={37.8}patternUnits="userSpaceOnUse"><path d={`M 37.8 0 L 0 0 0 37.8`}fill="none"stroke={gridColor||T.grid}strokeWidth={.6}/></pattern></defs><rect width={3000}height={3000}fill={`url(#inf-grid)`}/></svg>}
-              {!infiniteMode&&<Paper tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={fmt.w} PH={fmt.h}/>}
+              {!infiniteMode&&<Paper gridStyle={pageGridStyle} tmpl={nb.template||"plan"} T={T} pageColor={pageColor} gridColor={gridColor} PW={pageDims.w} PH={pageDims.h}/>}
 
               {/* Imported images */}
               {importedImages.map(img=>{
@@ -2248,7 +2223,7 @@ export default function EditorPage(){
                 </div>
               )}
 
-              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone}/>}
+              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone}/>}
               {canvasSelection&&!readOnly&&(
                 <FloatingSelectionToolbar
                   T={T}
@@ -2262,7 +2237,7 @@ export default function EditorPage(){
                   onClose={()=>{window.__clearSelection?.();setCanvasSelection(null)}}
                 />
               )}
-              {readOnly&&<canvas ref={cRef}width={fmt.w}height={fmt.h}style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:1,pointerEvents:"none",zIndex:5}}/>}
+              {readOnly&&<canvas ref={cRef}width={pageDims.w}height={pageDims.h}style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:1,pointerEvents:"none",zIndex:5}}/>}
             </div>
           </div>
 
