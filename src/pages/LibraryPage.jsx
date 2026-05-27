@@ -24,6 +24,9 @@ import { glassStyle, rgbaFromHex } from "@/theme/glass"
 import { TOKENS } from "@/theme/tokens"
 import { serializePageElements, defaultPageMeta } from "@/lib/pageSettings"
 import { serializeCanvasData, DEFAULT_LAYERS, defaultActiveLayerId } from "@/lib/layers"
+import CoverPattern from "@/components/CoverPattern"
+import NotebookLibraryItem from "@/components/NotebookLibraryItem"
+import { LIBRARY_VIEWS, LIBRARY_SORTS, sortNotebooks, groupNotebooksByMonth } from "@/lib/libraryViews"
 import {
   loadLocalNotebooks,
   upsertLocalNotebook,
@@ -84,48 +87,6 @@ const saveRecent = (id) => {
 }
 
 function timeAgo(d){const m=Math.floor((Date.now()-new Date(d).getTime())/60000);if(m<1)return"À l'instant";if(m<60)return`Il y a ${m}min`;const h=Math.floor(m/60);if(h<24)return`Il y a ${h}h`;const days=Math.floor(h/24);if(days===1)return"Hier";return new Date(d).toLocaleDateString("fr-FR")}
-
-function CoverPattern({tmpl, color}) {
-  const c = color + "28"
-  const L = []
-  if (tmpl === "lined") {
-    for (let y = 22; y < 130; y += 18) L.push(<line key={y} x1={10} y1={y} x2={190} y2={y} stroke={c} strokeWidth={1}/>)
-  } else if (["grid5","plan","math","detail"].includes(tmpl)) {
-    for (let x = 0; x < 200; x += 20) L.push(<line key={`v${x}`} x1={x} y1={0} x2={x} y2={130} stroke={c} strokeWidth={.7}/>)
-    for (let y = 0; y < 130; y += 20) L.push(<line key={`h${y}`} x1={0} y1={y} x2={200} y2={y} stroke={c} strokeWidth={.7}/>)
-  } else if (tmpl === "grid10") {
-    for (let x = 0; x < 200; x += 30) L.push(<line key={`v${x}`} x1={x} y1={0} x2={x} y2={130} stroke={c} strokeWidth={.7}/>)
-    for (let y = 0; y < 130; y += 30) L.push(<line key={`h${y}`} x1={0} y1={y} x2={200} y2={y} stroke={c} strokeWidth={.7}/>)
-  } else if (tmpl === "dotted") {
-    for (let x = 15; x < 200; x += 22) for (let y = 15; y < 130; y += 22) L.push(<circle key={`${x},${y}`} cx={x} cy={y} r={1.8} fill={c}/>)
-  } else if (tmpl === "cornell") {
-    L.push(<line key="v" x1={50} y1={10} x2={50} y2={115} stroke={c} strokeWidth={1.2}/>)
-    for (let y = 25; y < 115; y += 18) L.push(<line key={y} x1={55} y1={y} x2={190} y2={y} stroke={c} strokeWidth={1}/>)
-  } else if (tmpl === "isometric") {
-    for (let i = -200; i < 400; i += 28) {
-      L.push(<line key={`a${i}`} x1={i} y1={0} x2={i + 130} y2={130} stroke={c} strokeWidth={.6}/>)
-      L.push(<line key={`b${i}`} x1={i} y1={0} x2={i - 130} y2={130} stroke={c} strokeWidth={.6}/>)
-    }
-  } else if (["elevation","section"].includes(tmpl)) {
-    for (let x = 0; x < 200; x += 28) L.push(<line key={`v${x}`} x1={x} y1={0} x2={x} y2={130} stroke={c} strokeWidth={.6}/>)
-    for (let y = 0; y < 130; y += 28) L.push(<line key={`h${y}`} x1={0} y1={y} x2={200} y2={y} stroke={c} strokeWidth={.6}/>)
-    L.push(<rect key="tb" x={10} y={100} width={180} height={22} fill="none" stroke={c} strokeWidth={1}/>)
-    L.push(<rect key="b" x={5} y={5} width={190} height={120} fill="none" stroke={c} strokeWidth={1.5}/>)
-  } else if (tmpl === "mindmap") {
-    L.push(<circle key="c" cx={100} cy={65} r={22} fill="none" stroke={c} strokeWidth={2}/>)
-    ;[[40,22],[160,22],[180,65],[155,108],[45,108],[20,65]].forEach(([x,y],i) => {
-      L.push(<line key={`b${i}`} x1={100} y1={65} x2={x} y2={y} stroke={c} strokeWidth={1}/>)
-      L.push(<circle key={`n${i}`} cx={x} cy={y} r={11} fill="none" stroke={c} strokeWidth={1.2}/>)
-    })
-  } else if (tmpl === "music") {
-    for (let y = 20; y < 110; y += 38) for (let s = 0; s < 5; s++) L.push(<line key={`m${y}${s}`} x1={15} y1={y + s * 6} x2={185} y2={y + s * 6} stroke={c} strokeWidth={.9}/>)
-  }
-  return (
-    <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}} viewBox="0 0 200 130" preserveAspectRatio="xMidYMid slice">
-      {L}
-    </svg>
-  )
-}
 
 function StatChip({e, v, l, tab, activeTab, setActiveTab, T, action}) {
   const isActive = tab && activeTab === tab
@@ -477,7 +438,7 @@ function ThemePicker({ onClose }) {
 
 export default function LibraryPage() {
   const navigate = useNavigate()
-  const { setActiveNotebook, spotifyUrl, setSpotifyUrl, addNotification } = useAppStore()
+  const { setActiveNotebook, spotifyUrl, setSpotifyUrl, addNotification, libraryView, setLibraryView, librarySort, setLibrarySort } = useAppStore()
   const { T } = useTheme()
   const [showFocus, setShowFocus] = useState(false)
   const [showSpotify, setShowSpotify] = useState(false)
@@ -583,6 +544,11 @@ export default function LibraryPage() {
     return ms && msj && mf && mstar
   }), [notebooks, search, subjFilt, folderFilt, activeTab])
 
+  const sortedFiltered = useMemo(
+    () => sortNotebooks(filtered, librarySort, subjects),
+    [filtered, librarySort, subjects],
+  )
+
   const open = nb => {
     saveRecent(nb.id)
     setRecentIds(JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"))
@@ -678,6 +644,27 @@ export default function LibraryPage() {
     if (isLocalNotebookId(id)) deleteLocalNotebook(id)
     if (userId && !isLocalNotebookId(id)) await supabase.from("notebooks").delete().eq("id", id)
   }
+
+  const renderNotebook = useCallback((nb, view = libraryView) => {
+    const subject = subjects.find(s => s.id === nb.subject) || subjects[0]
+    const template = TEMPLATES.find(t => t.id === nb.template) || TEMPLATES[0]
+    const folder = folders.find(f => f.id === nb.folder_id)
+    return (
+      <NotebookLibraryItem
+        key={nb.id}
+        T={T}
+        nb={nb}
+        subject={subject}
+        template={template}
+        folder={folder}
+        view={view}
+        onOpen={() => open(nb)}
+        onStar={(e) => toggleStar(nb.id, e)}
+        onAssign={(e) => { e.stopPropagation(); setShowFolderAssign(nb.id) }}
+        onDelete={(e) => deleteNB(nb.id, e)}
+      />
+    )
+  }, [subjects, folders, T, libraryView, toggleStar])
 
   const assignFolder = async (nbId, folderId) => {
     setNotebooks(ns => ns.map(n => n.id === nbId ? {...n, folder_id:folderId||null} : n))
@@ -1395,74 +1382,105 @@ export default function LibraryPage() {
                 )}
               </div>
             ) : (
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:14}}>
-                {filtered.map(nb => {
-                  const s = subjects.find(s => s.id === nb.subject) || subjects[0]
-                  const t = TEMPLATES.find(t => t.id === nb.template) || TEMPLATES[0]
-                  const f = folders.find(f => f.id === nb.folder_id)
-                  return (
-                    <div key={nb.id} className="nb-card" onClick={() => open(nb)} style={{
-                      borderRadius:16,
-                      background:T.surface,
-                      border:`1px solid ${T.border}`,
-                      overflow:"hidden",
-                      cursor:"pointer",
-                      boxShadow:"0 2px 8px rgba(0,0,0,.06)"
-                    }}>
-                      {/* COVER */}
-                      <div style={{
-                        height:130,
-                        position:"relative",
-                        overflow:"hidden",
-                        background:`linear-gradient(145deg,${s.c}25,${s.c}08)`
-                      }}>
-                        {/* Left spine */}
-                        <div style={{position:"absolute",left:0,top:0,bottom:0,width:6,background:`linear-gradient(to bottom,${s.c},${s.c}aa)`}}/>
+              <>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                    {LIBRARY_VIEWS.map((v) => (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => setLibraryView(v.id)}
+                        title={v.label}
+                        style={{
+                          padding: "6px 12px",
+                          borderRadius: 8,
+                          border: `1px solid ${libraryView === v.id ? T.accent : T.border}`,
+                          background: libraryView === v.id ? `${T.accent}15` : T.bg,
+                          color: libraryView === v.id ? T.accent : T.muted,
+                          fontSize: 11,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 5,
+                        }}
+                      >
+                        <span>{v.icon}</span>
+                        <span>{v.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <select
+                    value={librarySort}
+                    onChange={(e) => setLibrarySort(e.target.value)}
+                    style={{
+                      padding: "6px 10px",
+                      borderRadius: 8,
+                      border: `1px solid ${T.border}`,
+                      background: T.surface,
+                      color: T.ink,
+                      fontSize: 11,
+                      cursor: "pointer",
+                      outline: "none",
+                    }}
+                  >
+                    {LIBRARY_SORTS.map((s) => (
+                      <option key={s.id} value={s.id}>{s.label}</option>
+                    ))}
+                  </select>
+                </div>
 
-                        {/* Template pattern overlay */}
-                        <CoverPattern tmpl={nb.template} color={s.c}/>
-
-                        {/* Star button */}
-                        <button className="star-btn" onClick={e => toggleStar(nb.id, e)} style={{
-                          position:"absolute",top:8,right:8,
-                          background:"rgba(255,255,255,.15)",backdropFilter:"blur(4px)",
-                          border:"none",borderRadius:8,padding:"4px 6px",cursor:"pointer",
-                          fontSize:14,color:nb.starred?"#f5a623":"rgba(255,255,255,.5)"
-                        }}>★</button>
-
-                        {/* Folder badge */}
-                        {f && <div style={{position:"absolute",bottom:7,left:12,fontSize:9,color:T.ink+"66",background:"rgba(255,255,255,.2)",borderRadius:4,padding:"1px 5px",backdropFilter:"blur(4px)"}}>{f.e} {f.n}</div>}
-
-                        {/* Center emoji */}
+                {libraryView === "timeline" ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                    {groupNotebooksByMonth(sortedFiltered).map((group) => (
+                      <div key={group.key}>
                         <div style={{
-                          position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",
-                          paddingLeft:6
+                          fontSize: 11,
+                          fontWeight: 700,
+                          color: T.muted,
+                          letterSpacing: 0.6,
+                          textTransform: "capitalize",
+                          marginBottom: 10,
+                          paddingLeft: 4,
                         }}>
-                          <div style={{fontSize:40,filter:"drop-shadow(0 2px 6px rgba(0,0,0,.15))"}}>{s.e}</div>
+                          {group.label}
+                        </div>
+                        <div style={{
+                          position: "relative",
+                          paddingLeft: 20,
+                          borderLeft: `2px solid ${T.border}`,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 8,
+                        }}>
+                          {group.items.map((nb) => (
+                            <div key={nb.id} style={{ position: "relative" }}>
+                              <div style={{
+                                position: "absolute",
+                                left: -25,
+                                top: 14,
+                                width: 10,
+                                height: 10,
+                                borderRadius: "50%",
+                                background: T.accent,
+                                border: `2px solid ${T.surface}`,
+                              }} />
+                              {renderNotebook(nb, "timeline")}
+                            </div>
+                          ))}
                         </div>
                       </div>
-
-                      {/* INFO SECTION */}
-                      <div style={{padding:"10px 12px 10px 14px"}}>
-                        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:4,marginBottom:6}}>
-                          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:T.ink,lineHeight:1.35,flex:1,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{nb.title}</div>
-                        </div>
-                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                          <div style={{display:"flex",gap:5,alignItems:"center",flexWrap:"wrap"}}>
-                            <div style={{padding:"2px 7px",borderRadius:12,background:s.c+"20",color:s.c,fontSize:9,fontWeight:700,letterSpacing:.3}}>{s.l}</div>
-                            <div style={{fontSize:9,color:T.muted}}>{t.i} {nb.pages_count||1}p</div>
-                          </div>
-                          <div className="nb-btn-action" style={{display:"flex",gap:2}}>
-                            <button onClick={e => {e.stopPropagation(); setShowFolderAssign(nb.id)}} style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:11,padding:"2px 4px",borderRadius:4}} title="Dossier">📁</button>
-                            <button onClick={e => deleteNB(nb.id, e)} style={{background:"none",border:"none",color:"#e94560",cursor:"pointer",fontSize:11,padding:"2px 4px",borderRadius:4}} title="Supprimer">🗑</button>
-                          </div>
-                        </div>
-                        <div style={{fontSize:8,color:T.muted,marginTop:4}}>{timeAgo(nb.updated_at)}</div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+                    ))}
+                  </div>
+                ) : libraryView === "list" ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {sortedFiltered.map((nb) => renderNotebook(nb, "list"))}
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 14 }}>
+                    {sortedFiltered.map((nb) => renderNotebook(nb, "grid"))}
+                  </div>
+                )}
+              </>
             )}
           </>}
         </div>

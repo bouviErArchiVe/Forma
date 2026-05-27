@@ -2,7 +2,7 @@ import GlassPanel from '@/components/ui/GlassPanel'
 import GlassButton from '@/components/ui/GlassButton'
 import { TOKENS } from '@/theme/tokens'
 import { rgbaFromHex } from '@/theme/glass'
-import { CANVAS_TEXT_FONTS, canvasFontCss } from '@/lib/fontUtils'
+import TextFontPicker from '@/components/TextFontPicker'
 
 export default function FloatingSelectionToolbar({
   T,
@@ -134,27 +134,7 @@ export default function FloatingSelectionToolbar({
       </div>
 
       {showTextFont && (
-        <select
-          value={textFont || 'Patrick Hand'}
-          onChange={(e) => onFont?.(e.target.value)}
-          title="Police du texte"
-          style={{
-            width: '100%',
-            padding: '5px 6px',
-            borderRadius: TOKENS.radius.sm,
-            border: `1px solid ${rgbaFromHex(T.border, 0.45)}`,
-            background: rgbaFromHex(T.bg, 0.4),
-            color: T.ink,
-            fontSize: 10,
-            fontFamily: canvasFontCss(textFont),
-          }}
-        >
-          {CANVAS_TEXT_FONTS.map((f) => (
-            <option key={f.id} value={f.id} style={{ fontFamily: canvasFontCss(f.id) }}>
-              {f.label}
-            </option>
-          ))}
-        </select>
+        <TextFontPicker T={T} value={textFont} onChange={onFont} compact />
       )}
 
       {showRotation && count === 1 && (

@@ -8,7 +8,7 @@ import {
   pagePointFromMinimap,
 } from '@/lib/minimap'
 
-const SC = 3.78 / 50
+import { getPlacedSize } from '@/lib/placedElements'
 
 export default function CanvasMinimap({
   T,
@@ -66,9 +66,7 @@ export default function CanvasMinimap({
     })
 
     placed.forEach((item) => {
-      const el = item.el || {}
-      const ew = (el.fw || el.w || 0) * SC
-      const eh = (el.h || 0) * SC
+      const { w: ew, h: eh } = getPlacedSize(item)
       ctx.fillStyle = `${T.accent || '#c8622a'}55`
       ctx.strokeStyle = T.accent || '#c8622a'
       ctx.lineWidth = 0.75

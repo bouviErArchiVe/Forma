@@ -2,7 +2,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { THEMES } from '@/lib/themes'
-import { applyAppearanceToTheme } from '@/lib/appearance'
+import { normalizeCanvasTextFont } from '@/lib/fontUtils'
 
 const useAppStore = create(
   persist(
@@ -27,7 +27,12 @@ const useAppStore = create(
 
       // ── Canvas text font (outil Texte dans l'éditeur) ─────
       canvasTextFont: 'Patrick Hand',
-      setCanvasTextFont: (canvasTextFont) => set({ canvasTextFont }),
+      setCanvasTextFont: (canvasTextFont) => set({ canvasTextFont: normalizeCanvasTextFont(canvasTextFont) }),
+
+      libraryView: 'grid',
+      setLibraryView: (libraryView) => set({ libraryView: ['grid', 'list', 'timeline'].includes(libraryView) ? libraryView : 'grid' }),
+      librarySort: 'updated',
+      setLibrarySort: (librarySort) => set({ librarySort }),
 
       // ── Notebooks ────────────────────────────────────────
       notebooks: [],
@@ -163,6 +168,8 @@ const useAppStore = create(
         themeId: state.themeId,
         appFont: state.appFont,
         canvasTextFont: state.canvasTextFont,
+        libraryView: state.libraryView,
+        librarySort: state.librarySort,
         appearanceMode: state.appearanceMode,
         unitSystem: state.unitSystem,
         scale: state.scale,

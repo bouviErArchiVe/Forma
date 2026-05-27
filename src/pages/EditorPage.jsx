@@ -5,9 +5,10 @@ import { supabase } from "@/lib/supabase"
 import { THEMES } from "@/lib/themes"
 import FloatingSelectionToolbar from "@/components/FloatingSelectionToolbar"
 import CanvasTextEditor from "@/components/CanvasTextEditor"
+import TextFontPicker from "@/components/TextFontPicker"
 import ShapeTransformHandles from "@/components/ShapeTransformHandles"
 import { drawShapeStroke, shapeStylePayload, getShapeBounds, isTransformableShape, resizeShapeBox, SHAPE_TYPES } from "@/lib/shapeStroke"
-import { CANVAS_TEXT_FONTS, canvasFontCss, ensureCanvasTextFontsLoaded } from "@/lib/fontUtils"
+import { canvasFontCss, ensureCanvasTextFontsLoaded, preloadCanvasFont } from "@/lib/fontUtils"
 import { glassStyle } from "@/theme/glass"
 import { TOKENS } from "@/theme/tokens"
 import { getToolCursor, getPlacementCursor, isDarkSurface } from "@/theme/cursors"
@@ -42,6 +43,7 @@ import { useTheme } from "@/hooks/useAppearance"
 import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from "@/lib/favorites"
 import { loadEraserSettings, saveEraserSettings, ERASER_MODES } from "@/lib/eraserSettings"
 import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/lib/canvasHitTest"
+import { getPlacedSize, getPlacedLocalBounds, resizePlacedItem } from "@/lib/placedElements"
 import { screenToPage } from "@/lib/viewport"
 import { useCanvasViewport } from "@/hooks/useCanvasViewport"
 import { PAGE_FORMATS, resolvePageDimensions } from "@/lib/pageFormats"
@@ -308,8 +310,8 @@ const SYMBOLS_LIB={
   ],
 }
 
-function renderSym(el,sc=1/50){
-  const px=sc*3.78,W=Math.max(el.w*px,4),H=Math.max(el.h*px,4)
+function renderSym(el,sc=1/50,sx=1,sy=1){
+  const px=sc*3.78,W=Math.max(el.w*px*sx,4),H=Math.max(el.h*px*sy,4)
   const w="#d4b896",ws="#8B6914",sa="#d0e8f0",ss="#4a90b8",el2="#fffce0",es="#c8aa00",gr="#7dba84",gs="#2d6a4f"
   const s=el.sym
   if(s==="chair")return<svg width={W}height={H}style={{display:"block"}}viewBox="0 0 100 100"><rect x={15}y={45}width={70}height={45}rx={6}fill={w}stroke={ws}strokeWidth={2}/><rect x={15}y={8}width={70}height={34}rx={5}fill={w}stroke={ws}strokeWidth={2}/><rect x={17}y={50}width={5}height={38}rx={2}fill={ws}/><rect x={78}y={50}width={5}height={38}rx={2}fill={ws}/></svg>
@@ -343,12 +345,12 @@ function renderSym(el,sc=1/50){
 }
 
 /* ══ RENDER ════════════════════════════════════════════ */
-function renderEl(el,sc=1/50){
-  const px=sc*3.78,W=Math.max((el.fw||el.w)*px,4),H=Math.max(el.h*px,4),t=(el.t||6)*px
+function renderEl(el,sc=1/50,sx=1,sy=1){
+  const px=sc*3.78,W=Math.max((el.fw||el.w)*px*sx,4),H=Math.max(el.h*px*sy,4),t=(el.t||6)*px*Math.min(sx,sy)
   if(["wood","glulam","clt"].includes(el.type)){const c=el.type==="wood"?"#c8a96a":el.type==="glulam"?"#b8904a":"#d4b896";return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill={c}stroke="#8B6914"strokeWidth={.8}/>{[.25,.5,.75].map(r=><line key={r}x1={W*r}y1={0}x2={W*r}y2={H}stroke="#a07820"strokeWidth={.4}strokeDasharray="3,4"/>)}</svg>}
   if(el.type==="hss")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="#607d8b"stroke="#37474f"strokeWidth={1}/><rect x={t}y={t}width={Math.max(W-2*t,1)}height={Math.max(H-2*t,1)}fill="white"stroke="#546e7a"strokeWidth={.5}/></svg>
-  if(el.type==="Ibeam"){const fw=(el.fw||el.w)*px,ft2=(el.ft||5)*px,wt2=(el.wt||4)*px;return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={(fw-wt2)/2}y={ft2}width={wt2}height={Math.max(H-2*ft2,1)}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
-  if(el.type==="channel"){const fw=(el.fw||el.w)*px,ft2=(el.ft||5)*px,wt2=(el.wt||4)*px;return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={ft2}width={wt2}height={H-2*ft2}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
+  if(el.type==="Ibeam"){const fw=(el.fw||el.w)*px*sx,ft2=(el.ft||5)*px*sy,wt2=(el.wt||4)*px*Math.min(sx,sy);return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={(fw-wt2)/2}y={ft2}width={wt2}height={Math.max(H-2*ft2,1)}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
+  if(el.type==="channel"){const fw=(el.fw||el.w)*px*sx,ft2=(el.ft||5)*px*sy,wt2=(el.wt||4)*px*Math.min(sx,sy);return<svg width={fw}height={H}style={{display:"block"}}><rect x={0}y={0}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={ft2}width={wt2}height={H-2*ft2}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/><rect x={0}y={H-ft2}width={fw}height={ft2}fill="#546e7a"stroke="#37474f"strokeWidth={.8}/></svg>}
   if(el.type==="angle"){const t2=t*.8;return<svg width={W}height={H}style={{display:"block"}}><polygon points={`0,0 ${t2},0 ${t2},${H-t2} ${W},${H-t2} ${W},${H} 0,${H}`}fill="#607d8b"stroke="#37474f"strokeWidth={.8}/></svg>}
   if(["conc","concB"].includes(el.type))return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="#c0c0c0"stroke="#888"strokeWidth={1}/><line x1={0}y1={0}x2={W}y2={H}stroke="#aaa"strokeWidth={.6}/><line x1={W}y1={0}x2={0}y2={H}stroke="#aaa"strokeWidth={.6}/></svg>
   if(el.type==="concR")return<svg width={W}height={H}style={{display:"block"}}><circle cx={W/2}cy={H/2}r={Math.min(W,H)/2-1}fill="#c0c0c0"stroke="#888"strokeWidth={1}/></svg>
@@ -1080,6 +1082,11 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
   const isEraser=tool==="eraser"
   const isShapeTool=["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)
   const isTextTool=tool==="text"
+  const prevToolRef=useRef(tool)
+  useEffect(()=>{
+    if(tool==="text"&&prevToolRef.current!=="text")setCollapsed(false)
+    prevToolRef.current=tool
+  },[tool])
 
   useEffect(()=>{
     if(!showWheel||!wheelRef.current)return
@@ -1172,16 +1179,7 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
         {isTextTool&&setCanvasTextFont&&(
           <div style={{borderTop:`1px solid ${T.border}`,paddingTop:8,display:"flex",flexDirection:"column",gap:6}}>
             <div style={{fontSize:8,color:T.muted,fontWeight:700}}>POLICE TEXTE</div>
-            <select
-              value={canvasTextFont||"Patrick Hand"}
-              onChange={e=>setCanvasTextFont(e.target.value)}
-              style={{width:"100%",padding:"4px 6px",borderRadius:7,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontSize:10,outline:"none",cursor:"pointer",fontFamily:canvasFontCss(canvasTextFont)}}
-            >
-              {CANVAS_TEXT_FONTS.map(f=>(
-                <option key={f.id}value={f.id}style={{fontFamily:canvasFontCss(f.id)}}>{f.label}</option>
-              ))}
-            </select>
-            <div style={{fontSize:11,color:T.ink,fontFamily:canvasFontCss(canvasTextFont),lineHeight:1.3,padding:"4px 0"}}>Aa — échantillon manuscrit</div>
+            <TextFontPicker T={T} value={canvasTextFont} onChange={setCanvasTextFont}/>
           </div>
         )}
         <div>
@@ -1207,6 +1205,17 @@ function PageThumbnail({pageData,pageNum,current,T,onClick,onMenu,notebookTempla
         const strokes=typeof pageData.canvas_data==="string"?JSON.parse(pageData.canvas_data):pageData.canvas_data||[]
         const sc=100/794
         strokes.forEach(s=>{
+          if(!s.pts&&!s.text)return
+          if(s.shapeType==="text"||s.tool==="text"){
+            const fs=Math.max((s.size||4)*3,14)*sc
+            ctx.font=`${fs}px ${canvasFontCss(s.fontFamily)}`
+            ctx.fillStyle=s.color||"#000"
+            ctx.globalAlpha=s.opacity??1
+            ctx.textBaseline="alphabetic"
+            ctx.fillText(s.text||"",(s.pts?.[0]?.x||0)*sc,(s.pts?.[0]?.y||0)*sc)
+            ctx.globalAlpha=1
+            return
+          }
           if(!s.pts||s.pts.length<2)return
           ctx.beginPath();ctx.strokeStyle=s.color||"#000";ctx.lineWidth=Math.max(s.size*sc,.5);ctx.lineCap="round"
           ctx.globalAlpha=s.tool==="highlight"?.4:1
@@ -1274,28 +1283,22 @@ function ThemePicker({current,onChange,onClose}){
   )
 }
 
-function PageSettings({T,pageColor,setPageColor,gridColor,setGridColor,gridStyle,setGridStyle,onClose}){
+function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridStyle,setGridStyle,onClose}){
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",backdropFilter:"blur(6px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
-      <div style={{background:T.surface,borderRadius:16,padding:22,width:360,maxWidth:"94vw",maxHeight:"88vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.25)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,color:T.ink}}>🎨 Style de page</div>
-          <button onClick={onClose}style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:20}}>×</button>
-        </div>
-        <div style={{marginBottom:14}}>
-          <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>GRILLE / PAPIER</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{GRID_STYLES.map(g=><button key={g.id}type="button"onClick={()=>setGridStyle(g.id)}title={g.desc}style={{padding:"4px 8px",borderRadius:7,border:`1px solid ${gridStyle===g.id?T.accent:T.border}`,background:gridStyle===g.id?`${T.accent}18`:T.bg,color:gridStyle===g.id?T.accent:T.ink,cursor:"pointer",fontSize:9}}>{g.label}</button>)}</div>
-        </div>
-        <div style={{marginBottom:14}}>
-          <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>FOND</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:7}}>{PAGE_COLORS.map(pc=><button key={pc.id}onClick={()=>setPageColor(pc.c)}title={pc.l}style={{width:34,height:34,borderRadius:8,background:pc.c,border:`2px solid ${pageColor===pc.c?T.accent:T.border}`,cursor:"pointer",outline:pc.c==="#ffffff"?`1px solid ${T.border}`:"none"}}/>)}</div>
-        </div>
-        <div style={{marginBottom:16}}>
-          <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>QUADRILLAGE</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:7}}>{GRID_COLORS.map(gc=><button key={gc.id}onClick={()=>setGridColor(gc.c)}title={gc.l}style={{width:34,height:34,borderRadius:8,background:"#fff",border:`2px solid ${gridColor===gc.c?T.accent:T.border}`,cursor:"pointer",position:"relative",overflow:"hidden"}}><svg width={34}height={34}style={{position:"absolute",inset:0}}>{[6,14,22,30].map(x=><line key={`v${x}`}x1={x}y1={0}x2={x}y2={34}stroke={gc.c}strokeWidth={1}/>)}{[6,14,22,30].map(y=><line key={`h${y}`}x1={0}y1={y}x2={34}y2={y}stroke={gc.c}strokeWidth={1}/>)}</svg></button>)}</div>
-        </div>
-        <button onClick={onClose}style={{width:"100%",padding:11,borderRadius:10,background:T.accent,border:"none",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}}>Appliquer ✓</button>
+    <div style={{padding:"12px 14px 16px",display:"flex",flexDirection:"column",gap:14}}>
+      <div>
+        <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>GRILLE / PAPIER</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{GRID_STYLES.map(g=><button key={g.id}type="button"onClick={()=>setGridStyle(g.id)}title={g.desc}style={{padding:"4px 8px",borderRadius:7,border:`1px solid ${gridStyle===g.id?T.accent:T.border}`,background:gridStyle===g.id?`${T.accent}18`:T.bg,color:gridStyle===g.id?T.accent:T.ink,cursor:"pointer",fontSize:9}}>{g.label}</button>)}</div>
       </div>
+      <div>
+        <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>FOND</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:7}}>{PAGE_COLORS.map(pc=><button key={pc.id}onClick={()=>setPageColor(pc.c)}title={pc.l}style={{width:34,height:34,borderRadius:8,background:pc.c,border:`2px solid ${pageColor===pc.c?T.accent:T.border}`,cursor:"pointer",outline:pc.c==="#ffffff"?`1px solid ${T.border}`:"none"}}/>)}</div>
+      </div>
+      <div>
+        <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>QUADRILLAGE</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:7}}>{GRID_COLORS.map(gc=><button key={gc.id}onClick={()=>setGridColor(gc.c)}title={gc.l}style={{width:34,height:34,borderRadius:8,background:"#fff",border:`2px solid ${gridColor===gc.c?T.accent:T.border}`,cursor:"pointer",position:"relative",overflow:"hidden"}}><svg width={34}height={34}style={{position:"absolute",inset:0}}>{[6,14,22,30].map(x=><line key={`v${x}`}x1={x}y1={0}x2={x}y2={34}stroke={gc.c}strokeWidth={1}/>)}{[6,14,22,30].map(y=><line key={`h${y}`}x1={0}y1={y}x2={34}y2={y}stroke={gc.c}strokeWidth={1}/>)}</svg></button>)}</div>
+      </div>
+      <button type="button" onClick={onClose} style={{width:"100%",padding:11,borderRadius:10,background:T.accent,border:"none",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}}>Appliquer ✓</button>
     </div>
   )
 }
@@ -1309,6 +1312,7 @@ export default function EditorPage(){
   const { user } = useAuth()
   const collab = useCollaboration()
   useEffect(()=>{ensureCanvasTextFontsLoaded()},[])
+  useEffect(()=>{preloadCanvasFont(canvasTextFont)},[canvasTextFont])
   const nb=activeNotebook||{id:"1",title:"Carnet",subject:"arch",template:"plan",pages_count:1}
 
   useEffect(()=>{
@@ -1456,13 +1460,11 @@ export default function EditorPage(){
       }
     }
 
-    // Structural elements (bounding box from mm -> px at 1/50)
-    const sc = 3.78/50
+    // Structural elements
     const els = placedRef.current || []
     if(els.length){
       const hitIds = els.filter(it => {
-        const w = (it.el?.fw || it.el?.w || 0) * sc
-        const h = (it.el?.h || 0) * sc
+        const { w, h } = getPlacedSize(it)
         return distPointToRect(p, it.x, it.y, w, h) <= r + 3
       }).map(i => i.id)
       if(hitIds.length){
@@ -1482,6 +1484,18 @@ export default function EditorPage(){
   const displayW=infiniteMode?PW:rotLayout.boxW
   const displayH=infiniteMode?PH:rotLayout.boxH
   const pagesCount=useMemo(()=>Math.max(nb.pages_count||1,pages.length||1),[nb.pages_count,pages.length])
+
+  const selectedPlacedItem=useMemo(()=>{
+    if(readOnly) return null
+    const ids=selectedObjects.placed.length?selectedObjects.placed:(selected?[selected]:[])
+    if(ids.length!==1) return null
+    return placed.find(p=>p.id===ids[0])||null
+  },[readOnly,selectedObjects.placed,selected,placed])
+
+  const selectedPlacedBounds=useMemo(
+    ()=>(selectedPlacedItem?getPlacedLocalBounds(selectedPlacedItem):null),
+    [selectedPlacedItem],
+  )
 
   const applyPageMetaToState=useCallback(meta=>{
     setPageFormat(meta.format||"a4")
@@ -1863,7 +1877,13 @@ export default function EditorPage(){
     scheduleSave()
   }
 
-  const handleCanvasSelection=useCallback(info=>setCanvasSelection(info?.active?info:null),[])
+  const handleCanvasSelection=useCallback(info=>{
+    setCanvasSelection(info?.active?info:null)
+    if(info?.active){
+      setSelected(null)
+      setSelectedObjects({placed:[],images:[]})
+    }
+  },[])
 
   const pagePointToScreen=useCallback((px,py)=>{
     const canvas=cRef.current
@@ -2090,7 +2110,8 @@ export default function EditorPage(){
     return()=>{window.removeEventListener("pointermove",onMove);window.removeEventListener("pointerup",onUp)}
   },[rulerDrag,zoom,nb.id,rulerRotation,rulerLocked])
   const isPanMode=tool==="hand"||spacePan
-  const eraserAuto=tool==="eraser"&&eraserSettings.mode==="auto"
+  const eraserActive=tool==="eraser"&&!readOnly
+  const eraserAuto=eraserActive&&eraserSettings.mode==="auto"
   const cursorDark=useMemo(()=>isDarkSurface(T),[T])
   const showMinimap=useMemo(()=>!focusMode&&!showPresent&&shouldShowMinimap({pageW:displayW,pageH:displayH,viewW:viewSize.w,viewH:viewSize.h,zoom,panX,panY}),[focusMode,showPresent,displayW,displayH,viewSize,zoom,panX,panY])
   const handleMinimapPan=useCallback((x,y)=>setPan(x,y),[setPan])
@@ -2135,7 +2156,11 @@ export default function EditorPage(){
 
   return(
     <div className="forma-page-shell" style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
-      {showPageSettings&&<PageSettings T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} onClose={()=>setShowPageSettings(false)}/>}
+      {!focusMode&&showPageSettings&&(
+        <DraggablePanel T={T} id="editor-page-settings" title="Style de page" open onClose={()=>setShowPageSettings(false)} defaultSide="left" width={320}>
+          <PageSettingsBody T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} onClose={()=>setShowPageSettings(false)}/>
+        </DraggablePanel>
+      )}
       {showShare&&(
         <ShareModal
           T={T}
@@ -2189,6 +2214,7 @@ export default function EditorPage(){
           edit={textEdit}
           onCommit={handleTextCommit}
           onCancel={handleTextCancel}
+          onFontChange={setCanvasTextFont}
         />
       )}
 
@@ -2476,7 +2502,7 @@ export default function EditorPage(){
               {importedImages.map(img=>{
                 const imgSel=selectedObjects.images.includes(img.id)
                 return(
-                <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,zIndex:3,cursor:readOnly||(tool==="eraser"&&!eraserAuto)?"default":"move",userSelect:"none",pointerEvents:eraserAuto?"none":"auto",outline:imgSel?"2px solid #c8622a":"none",outlineOffset:2}}
+                <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,zIndex:3,cursor:readOnly||eraserActive?"default":"move",userSelect:"none",pointerEvents:eraserActive?"none":"auto",outline:imgSel?"2px solid #c8622a":"none",outlineOffset:2}}
                   onMouseDown={e=>{if(readOnly)return;e.stopPropagation();setSelectedObjects({placed:[],images:[img.id]});const ox=e.clientX/zoom-img.x,oy=e.clientY/zoom-img.y;const mm=ev=>setImportedImages(p=>p.map(i=>i.id===img.id?{...i,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:i));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
                   <img src={img.src}alt=""style={{width:img.w,height:img.h,display:"block",opacity:.88,pointerEvents:"none"}}/>
                   {!readOnly&&<button onClick={()=>setImportedImages(p=>p.filter(i=>i.id!==img.id))}style={{position:"absolute",top:-8,right:-8,width:18,height:18,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontWeight:700}}>×</button>}
@@ -2486,12 +2512,29 @@ export default function EditorPage(){
               {/* Structural elements */}
               {placed.map(item=>{
                 const sel=selected===item.id||selectedObjects.placed.includes(item.id)
-                return<div key={item.id}style={{position:"absolute",left:item.x,top:item.y,cursor:readOnly||(tool==="eraser"&&!eraserAuto)?"default":"move",pointerEvents:eraserAuto?"none":"all",userSelect:"none",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,zIndex:sel?12:10}}
-                  onMouseDown={e=>{if(readOnly)return;e.stopPropagation();setSelected(item.id);setSelectedObjects({placed:[item.id],images:[]});const ox=e.clientX/zoom-item.x,oy=e.clientY/zoom-item.y;const mm=ev=>setPlaced(p=>p.map(e=>e.id===item.id?{...e,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:e));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
-                  {item.el.type==="sym"?renderSym(item.el,1/50):renderEl(item.el,1/50)}
-                  {sel&&!readOnly&&<button onClick={()=>{pushAction({type:"element_removed",detail:item.el?.l||"élément"});setPlaced(p=>p.filter(e=>e.id!==item.id));setSelected(null)}}style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,zIndex:20}}>×</button>}
+                const sx=item.scaleX??1,sy=item.scaleY??1,rot=item.rotation||0
+                const { w, h } = getPlacedSize(item)
+                return(
+                <div key={item.id}style={{
+                  position:"absolute",
+                  left:item.x,
+                  top:item.y,
+                  width:w,
+                  height:h,
+                  cursor:readOnly||eraserActive?"default":"move",
+                  pointerEvents:eraserActive?"none":"all",
+                  userSelect:"none",
+                  zIndex:sel?12:10,
+                  transform:rot?`rotate(${rot}deg)`:"none",
+                  transformOrigin:"center center",
+                }}
+                  onMouseDown={e=>{if(readOnly)return;e.stopPropagation();window.__clearSelection?.();setCanvasSelection(null);setSelected(item.id);setSelectedObjects({placed:[item.id],images:[]});const ox=e.clientX/zoom-item.x,oy=e.clientY/zoom-item.y;const mm=ev=>setPlaced(p=>p.map(e=>e.id===item.id?{...e,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:e));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu);scheduleSave()};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
+                  <div style={{width:"100%",height:"100%",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,pointerEvents:"none"}}>
+                    {item.el.type==="sym"?renderSym(item.el,1/50,sx,sy):renderEl(item.el,1/50,sx,sy)}
+                  </div>
+                  {sel&&!readOnly&&<button onClick={()=>{pushAction({type:"element_removed",detail:item.el?.l||"élément"});setPlaced(p=>p.filter(e=>e.id!==item.id));setSelected(null);scheduleSave()}}style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,zIndex:20}}>×</button>}
                 </div>
-              })}
+              )})}
 
               {/* Ruler */}
               {showRuler&&<div style={{position:"absolute",left:rulerPos.x,top:rulerPos.y,width:Math.min(PW,1180),height:28,background:T.surface,border:`1px solid ${T.border}`,zIndex:20,opacity:.95,borderRadius:4,boxShadow:"0 2px 10px rgba(0,0,0,.12)",transform:`rotate(${rulerRotation}deg)`,transformOrigin:"left center",touchAction:"none"}}>
@@ -2524,8 +2567,28 @@ export default function EditorPage(){
                   canvasEl={cRef.current}
                   pageW={PW}
                   pageH={PH}
+                  showSideHandles={false}
                   onResize={(x1,y1,x2,y2)=>{window.__resizeSelectedShape?.(x1,y1,x2,y2);scheduleSave()}}
                   onRotate={(deg)=>{window.__setSelectionRotation?.(deg);scheduleSave()}}
+                />
+              )}
+              {selectedPlacedItem&&selectedPlacedBounds&&!textEdit&&(
+                <ShapeTransformHandles
+                  T={T}
+                  bounds={selectedPlacedBounds}
+                  rotation={selectedPlacedItem.rotation||0}
+                  canvasEl={cRef.current}
+                  pageW={PW}
+                  pageH={PH}
+                  showSideHandles
+                  onResize={(x1,y1,x2,y2)=>{
+                    setPlaced(p=>p.map(it=>it.id===selectedPlacedItem.id?resizePlacedItem(it,x1,y1,x2,y2,{lockRatio:false}):it))
+                    scheduleSave()
+                  }}
+                  onRotate={(deg)=>{
+                    setPlaced(p=>p.map(it=>it.id===selectedPlacedItem.id?{...it,rotation:deg}:it))
+                    scheduleSave()
+                  }}
                 />
               )}
               {canvasSelection&&!readOnly&&(

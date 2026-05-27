@@ -1,18 +1,24 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TOKENS } from '@/theme/tokens'
 import { glassStyle, rgbaFromHex } from '@/theme/glass'
+import { canvasFontCss, preloadCanvasFont } from '@/lib/fontUtils'
+import TextFontPicker from '@/components/TextFontPicker'
 
-export default function CanvasTextEditor({ T, edit, onCommit, onCancel }) {
+export default function CanvasTextEditor({ T, edit, onCommit, onCancel, onFontChange }) {
   const ref = useRef(null)
+  const [font, setFont] = useState(edit?.fontFamily || 'Patrick Hand')
 
   useEffect(() => {
     if (!edit) return
+    const next = edit.fontFamily || 'Patrick Hand'
+    setFont(next)
+    preloadCanvasFont(next)
     const t = setTimeout(() => {
       ref.current?.focus()
       ref.current?.select()
     }, 30)
     return () => clearTimeout(t)
-  }, [edit?.key])
+  }, [edit?.key, edit?.fontFamily])
 
   if (!edit?.screen) return null
 
@@ -24,7 +30,13 @@ export default function CanvasTextEditor({ T, edit, onCommit, onCancel }) {
       onCancel?.()
       return
     }
-    onCommit?.({ ...edit, text })
+    onCommit?.({ ...edit, text, fontFamily: font })
+  }
+
+  const handleFont = (id) => {
+    setFont(id)
+    onFontChange?.(id)
+    preloadCanvasFont(id)
   }
 
   return (
@@ -34,14 +46,18 @@ export default function CanvasTextEditor({ T, edit, onCommit, onCancel }) {
         left: edit.screen.x,
         top: edit.screen.y - fs,
         zIndex: TOKENS.zIndex.modal + 2,
-        minWidth: 120,
-        maxWidth: 'min(420px, 88vw)',
+        minWidth: 200,
+        maxWidth: 'min(360px, 92vw)',
         ...glassStyle(T, { variant: 'float' }),
-        padding: 6,
+        padding: 8,
         boxShadow: TOKENS.shadow.panel,
       }}
       onPointerDown={(e) => e.stopPropagation()}
     >
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 8, fontWeight: 700, color: T.muted, marginBottom: 4 }}>POLICE</div>
+        <TextFontPicker T={T} value={font} onChange={handleFont} compact />
+      </div>
       <textarea
         ref={ref}
         defaultValue={edit.text || ''}
@@ -62,7 +78,7 @@ export default function CanvasTextEditor({ T, edit, onCommit, onCancel }) {
           background: rgbaFromHex(T.bg, 0.55),
           color: edit.color || T.ink,
           fontSize: fs,
-          fontFamily: canvasFontCss(edit.fontFamily),
+          fontFamily: canvasFontCss(font),
           lineHeight: 1.35,
           padding: '6px 8px',
           outline: 'none',

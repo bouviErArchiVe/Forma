@@ -46,8 +46,23 @@ const CANVAS_FONT_PARTS = [
 ]
 
 export function canvasFontCss(fontId) {
-  const id = fontId || 'Nunito'
+  const id = fontId || 'Patrick Hand'
   return `'${id}', sans-serif`
+}
+
+export function normalizeCanvasTextFont(fontId) {
+  const id = fontId || 'Patrick Hand'
+  return CANVAS_TEXT_FONTS.some((f) => f.id === id) ? id : 'Patrick Hand'
+}
+
+/** Précharge une police canvas (évite le flash sans-serif au premier tracé). */
+export function preloadCanvasFont(fontId) {
+  if (typeof document === 'undefined') return Promise.resolve()
+  const id = normalizeCanvasTextFont(fontId)
+  ensureCanvasTextFontsLoaded()
+  const sample = `16px ${canvasFontCss(id)}`
+  if (document.fonts?.load) return document.fonts.load(sample).catch(() => {})
+  return Promise.resolve()
 }
 
 export function getCanvasFontsHref() {

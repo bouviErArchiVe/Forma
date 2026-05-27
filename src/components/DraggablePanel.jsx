@@ -25,18 +25,21 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n))
 }
 
-function dockStyle(mode, width, panelHeight) {
+function dockStyle(mode, width, panelHeight, dockSizes) {
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800
   const h = vh - TOP_BAR - BOTTOM_BAR
+  const topH = dockSizes?.top ?? Math.min(280, h * 0.45)
+  const bottomH = dockSizes?.bottom ?? Math.min(280, h * 0.45)
+  const sideW = dockSizes?.left ?? width
   switch (mode) {
     case 'left':
-      return { position: 'fixed', left: 0, top: TOP_BAR, width, height: h, zIndex: TOKENS.zIndex.float }
+      return { position: 'fixed', left: 0, top: TOP_BAR, width: sideW, height: h, zIndex: TOKENS.zIndex.float }
     case 'top':
-      return { position: 'fixed', left: 0, top: TOP_BAR, right: 0, height: Math.min(280, h * 0.45), zIndex: TOKENS.zIndex.float }
+      return { position: 'fixed', left: 0, top: TOP_BAR, right: 0, height: topH, zIndex: TOKENS.zIndex.float }
     case 'bottom':
-      return { position: 'fixed', left: 0, bottom: BOTTOM_BAR, right: 0, height: Math.min(280, h * 0.45), zIndex: TOKENS.zIndex.float }
+      return { position: 'fixed', left: 0, bottom: BOTTOM_BAR, right: 0, height: bottomH, zIndex: TOKENS.zIndex.float }
     case 'right':
-      return { position: 'fixed', right: 0, top: TOP_BAR, width, height: h, zIndex: TOKENS.zIndex.float }
+      return { position: 'fixed', right: 0, top: TOP_BAR, width: dockSizes?.right ?? width, height: h, zIndex: TOKENS.zIndex.float }
     default:
       return {
         position: 'fixed',
@@ -75,6 +78,10 @@ export default function DraggablePanel({
   resizable = true,
   zIndexOffset = 0,
   dockOnRelease = false,
+  variant = 'panel',
+  dockSizes,
+  onLayoutChange,
+  hideClose = false,
 }) {
   const [layout, setLayout] = useState(() => loadLayout(id, defaultSide, width))
   const [dragging, setDragging] = useState(false)
@@ -85,8 +92,11 @@ export default function DraggablePanel({
   const persistLayout = useCallback((next, { save = true } = {}) => {
     setLayout(next)
     layoutRef.current = next
-    if (save) saveLayout(id, next)
-  }, [id])
+    if (save) {
+      saveLayout(id, next)
+      onLayoutChange?.(next)
+    }
+  }, [id, onLayoutChange])
 
   const startDrag = useCallback((e) => {
     e.preventDefault()
@@ -138,6 +148,10 @@ export default function DraggablePanel({
     }
   }, [dragging, width, height, persistLayout, dockOnRelease])
 
+  useEffect(() => {
+    onLayoutChange?.(layoutRef.current)
+  }, [onLayoutChange])
+
   const startResize = useCallback((e) => {
     e.preventDefault()
     e.stopPropagation()
@@ -179,9 +193,11 @@ export default function DraggablePanel({
   }
 
   const isFloat = layout.mode === 'float'
+  const isToolbar = variant === 'toolbar'
+  const isVertical = layout.mode === 'left' || layout.mode === 'right'
   const panelW = layout.w || width
-  const shell = dockStyle(layout.mode, panelW, height)
-  shell.zIndex = (shell.zIndex || TOKENS.zIndex.float) + zIndexOffset
+  const shell = dockStyle(layout.mode, panelW, height, dockSizes)
+  shell.zIndex = (shell.zIndex || (isToolbar ? TOKENS.zIndex.toolbar : TOKENS.zIndex.float)) + zIndexOffset
   if (isFloat) {
     shell.left = layout.x ?? 16
     shell.top = layout.y ?? TOP_BAR + 8
@@ -193,7 +209,14 @@ export default function DraggablePanel({
       key={mode}
       type="button"
       title={`Ancrer ${label}`}
-      onClick={() => persistLayout({ ...layout, mode, w: panelW })}
+      onClick={() => {
+        const dockW = mode === 'left'
+          ? (dockSizes?.left ?? width)
+          : mode === 'right'
+            ? (dockSizes?.right ?? width)
+            : panelW
+        persistLayout({ ...layout, mode, w: dockW })
+      }}
       style={{
         background: layout.mode === mode ? `${T.accent}22` : 'transparent',
         border: 'none',
@@ -217,30 +240,43 @@ export default function DraggablePanel({
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        border: `1px solid ${rgbaFromHex(T.border, 0.45)}`,
-        boxShadow: TOKENS.shadow.panel,
-        ...glassStyle(T, { variant: 'panel', blur: TOKENS.blur.lg, opacity: 0.96 }),
+        border: isToolbar && !isFloat ? 'none' : `1px solid ${rgbaFromHex(T.border, 0.45)}`,
+        boxShadow: isToolbar && !isFloat ? 'none' : (isToolbar ? TOKENS.shadow.toolbar : TOKENS.shadow.panel),
+        borderRadius: isToolbar && !isFloat ? 0 : undefined,
+        ...glassStyle(T, { variant: isToolbar ? 'toolbar' : 'panel', blur: isToolbar ? TOKENS.blur.md : TOKENS.blur.lg, opacity: isToolbar ? 0.94 : 0.96 }),
       }}
     >
       <div
         onPointerDown={startDrag}
         style={{
           cursor: dragging ? 'grabbing' : 'grab',
-          padding: '8px 10px',
-          borderBottom: `1px solid ${rgbaFromHex(T.border, 0.35)}`,
+          padding: isToolbar ? (isVertical ? '8px 6px' : '6px 10px') : '8px 10px',
+          borderBottom: isToolbar ? 'none' : `1px solid ${rgbaFromHex(T.border, 0.35)}`,
           display: 'flex',
+          flexDirection: isToolbar && isVertical ? 'column' : 'row',
           alignItems: 'center',
-          gap: 6,
+          gap: isToolbar ? 4 : 6,
           touchAction: 'none',
           userSelect: 'none',
           flexShrink: 0,
+          flex: isToolbar ? 1 : undefined,
+          minHeight: 0,
+          minWidth: 0,
+          overflow: isToolbar ? 'auto' : undefined,
         }}
       >
-        <span style={{ fontSize: 11, color: T.muted }}>⠿</span>
-        <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 11, color: T.accent, flex: 1 }}>
-          {title}
-        </div>
-        <div style={{ display: 'flex', gap: 2 }}>
+        <span style={{ fontSize: 11, color: T.muted, flexShrink: 0 }}>⠿</span>
+        {title ? (
+          <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 11, color: T.accent, flexShrink: 0 }}>
+            {title}
+          </div>
+        ) : null}
+        {isToolbar ? (
+          <div style={{ flex: 1, minWidth: 0, minHeight: 0, display: 'flex', flexDirection: isVertical ? 'column' : 'row', alignItems: 'center', gap: 4, overflow: 'auto' }}>
+            {children}
+          </div>
+        ) : null}
+        <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
           {dockBtn('left', '◧')}
           {dockBtn('right', '◨')}
           {dockBtn('top', '▔')}
@@ -248,11 +284,11 @@ export default function DraggablePanel({
           {dockBtn('float', '⧉')}
         </div>
         {headerExtra}
-        {onClose && (
+        {onClose && !hideClose && (
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted, fontSize: 16, lineHeight: 1, padding: '0 2px' }}>×</button>
         )}
       </div>
-      <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>{children}</div>
+      {!isToolbar && <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>{children}</div>}
       {resizable && isFloat && (
         <div
           onPointerDown={startResize}

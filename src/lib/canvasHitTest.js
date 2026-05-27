@@ -1,12 +1,10 @@
 /** Hit-test objets canvas (bibliothèque, images) pour lasso / sélection */
 
-const SC = 3.78 / 50
+import { getPlacedBounds } from '@/lib/placedElements'
 
 export function bboxPlaced(item) {
-  const el = item.el || {}
-  const w = (el.fw || el.w || 0) * SC
-  const h = (el.h || 0) * SC
-  return { x1: item.x, y1: item.y, x2: item.x + w, y2: item.y + h }
+  const b = getPlacedBounds(item)
+  return { x1: b.x1, y1: b.y1, x2: b.x2, y2: b.y2 }
 }
 
 export function bboxImage(img) {
