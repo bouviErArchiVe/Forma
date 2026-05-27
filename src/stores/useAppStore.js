@@ -34,6 +34,9 @@ const useAppStore = create(
       librarySort: 'updated',
       setLibrarySort: (librarySort) => set({ librarySort }),
 
+      pendingFormulaNote: null,
+      setPendingFormulaNote: (pendingFormulaNote) => set({ pendingFormulaNote }),
+
       // ── Notebooks ────────────────────────────────────────
       notebooks: [],
       setNotebooks: (notebooks) => set({ notebooks }),

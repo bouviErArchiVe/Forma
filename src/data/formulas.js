@@ -1,0 +1,621 @@
+import { computeBlondel } from '@/lib/formulas/blondel'
+import * as areas from '@/lib/formulas/areas'
+import * as volumes from '@/lib/formulas/volumes'
+import * as slopes from '@/lib/formulas/slopes'
+import * as scales from '@/lib/formulas/scales'
+import * as stairs from '@/lib/formulas/stairs'
+import * as roof from '@/lib/formulas/roof'
+import * as materials from '@/lib/formulas/materials'
+import * as accessibility from '@/lib/formulas/accessibility'
+import * as light from '@/lib/formulas/light'
+
+export const FORMULA_CATEGORIES = [
+  { id: 'all', label: 'Toutes', icon: '📚' },
+  { id: 'stairs', label: 'Escaliers', icon: '🪜' },
+  { id: 'areas', label: 'Surfaces', icon: '📐' },
+  { id: 'volumes', label: 'Volumes', icon: '📦' },
+  { id: 'slopes', label: 'Pentes', icon: '📈' },
+  { id: 'scales', label: 'Échelles', icon: '🔍' },
+  { id: 'structures', label: 'Structures simples', icon: '🏗' },
+  { id: 'light', label: 'Lumière / ouverture', icon: '💡' },
+  { id: 'accessibility', label: 'Accessibilité', icon: '♿' },
+  { id: 'roof', label: 'Toitures', icon: '🏠' },
+  { id: 'materials', label: 'Matériaux', icon: '🧱' },
+  { id: 'conversion', label: 'Conversion rapide', icon: '⚡' },
+]
+
+/** @typedef {{ key: string, label: string, type?: string, placeholder?: string, step?: number, min?: number, unit?: string, options?: {value:string,label:string}[] }} FormulaField */
+
+/**
+ * @typedef {Object} FormulaDef
+ * @property {string} id
+ * @property {string} categoryId
+ * @property {string} title
+ * @property {string} icon
+ * @property {string} description
+ * @property {string} formulaText
+ * @property {string[]} tags
+ * @property {{ id: string, label: string }[]} [modes]
+ * @property {string} [defaultMode]
+ * @property {(mode: string) => FormulaField[]} fieldsForMode
+ * @property {(mode: string, values: Record<string, string>, opts?: { lengthUnit?: string }) => object} compute
+ */
+
+/** @type {FormulaDef[]} */
+export const FORMULAS = [
+  {
+    id: 'blondel',
+    categoryId: 'stairs',
+    title: 'Loi de Blondel',
+    icon: '⚖️',
+    description: 'Vérifie le confort d\'un escalier : 2H + G doit être entre 60 et 64 cm.',
+    formulaText: '2H + G = 60 à 64 cm',
+    tags: ['blondel', 'escalier', 'marche', 'giron', 'confort'],
+    modes: [
+      { id: 'height-steps', label: 'Hauteur + marches' },
+      { id: 'step-tread', label: 'H + G' },
+      { id: 'height-length', label: 'Hauteur + longueur' },
+    ],
+    defaultMode: 'height-steps',
+    fieldsForMode: (mode) => {
+      if (mode === 'step-tread') {
+        return [
+          { key: 'stepHeight', label: 'Hauteur de marche (H)', type: 'number', unit: 'length', step: 0.1 },
+          { key: 'tread', label: 'Giron (G)', type: 'number', unit: 'length', step: 0.1 },
+        ]
+      }
+      if (mode === 'height-length') {
+        return [
+          { key: 'totalHeight', label: 'Hauteur totale à franchir', type: 'number', unit: 'length', step: 1 },
+          { key: 'availableLength', label: 'Longueur disponible', type: 'number', unit: 'length', step: 1 },
+        ]
+      }
+      return [
+        { key: 'totalHeight', label: 'Hauteur totale à franchir', type: 'number', unit: 'length', step: 1 },
+        { key: 'steps', label: 'Nombre de marches', type: 'number', step: 1, min: 1 },
+      ]
+    },
+    compute: (mode, values, opts) => computeBlondel(mode, values, opts?.lengthUnit || 'cm'),
+  },
+  {
+    id: 'stair-slope',
+    categoryId: 'stairs',
+    title: 'Pente escalier',
+    icon: '📐',
+    description: 'Calcule la pente et l\'angle d\'un escalier.',
+    formulaText: 'pente % = (H / L) × 100',
+    tags: ['escalier', 'pente'],
+    fieldsForMode: () => [
+      { key: 'totalHeight', label: 'Hauteur totale', type: 'number', unit: 'length' },
+      { key: 'totalRun', label: 'Longueur horizontale', type: 'number', unit: 'length' },
+    ],
+    compute: (mode, values, opts) => stairs.stairSlope(values, opts?.lengthUnit),
+  },
+  {
+    id: 'stair-steps',
+    categoryId: 'stairs',
+    title: 'Nombre de marches',
+    icon: '🔢',
+    description: 'Estime le nombre de marches selon une hauteur de marche cible.',
+    formulaText: 'n = hauteur totale / H cible',
+    tags: ['escalier', 'marches'],
+    fieldsForMode: () => [
+      { key: 'totalHeight', label: 'Hauteur totale', type: 'number', unit: 'length' },
+      { key: 'targetStepHeight', label: 'H cible (déf. 17 cm)', type: 'number', unit: 'length', placeholder: '17' },
+    ],
+    compute: (mode, values, opts) => stairs.stairStepCount(values, opts?.lengthUnit),
+  },
+  {
+    id: 'stair-developed',
+    categoryId: 'stairs',
+    title: 'Longueur développée',
+    icon: '↔️',
+    description: 'Longueur horizontale de l\'escalier.',
+    formulaText: 'L = G × (n − 1)',
+    tags: ['escalier', 'longueur'],
+    fieldsForMode: () => [
+      { key: 'steps', label: 'Nombre de marches', type: 'number', step: 1 },
+      { key: 'tread', label: 'Giron (G)', type: 'number', unit: 'length' },
+    ],
+    compute: (mode, values, opts) => stairs.stairDevelopedLength(values, opts?.lengthUnit),
+  },
+  {
+    id: 'area-rect',
+    categoryId: 'areas',
+    title: 'Rectangle',
+    icon: '▭',
+    description: 'Surface et périmètre d\'un rectangle.',
+    formulaText: 'S = L × l',
+    tags: ['surface', 'rectangle'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number', step: 0.01 },
+      { key: 'width', label: 'Largeur (m)', type: 'number', step: 0.01 },
+    ],
+    compute: (_, v) => areas.areaRectangle(v),
+  },
+  {
+    id: 'area-triangle',
+    categoryId: 'areas',
+    title: 'Triangle',
+    icon: '△',
+    description: 'Surface d\'un triangle.',
+    formulaText: 'S = (b × h) / 2',
+    tags: ['surface', 'triangle'],
+    fieldsForMode: () => [
+      { key: 'base', label: 'Base (m)', type: 'number' },
+      { key: 'height', label: 'Hauteur (m)', type: 'number' },
+    ],
+    compute: (_, v) => areas.areaTriangle(v),
+  },
+  {
+    id: 'area-circle',
+    categoryId: 'areas',
+    title: 'Cercle',
+    icon: '○',
+    description: 'Surface et circonférence.',
+    formulaText: 'S = π × (D/2)²',
+    tags: ['surface', 'cercle'],
+    fieldsForMode: () => [{ key: 'diameter', label: 'Diamètre (m)', type: 'number' }],
+    compute: (_, v) => areas.areaCircle(v),
+  },
+  {
+    id: 'area-trapezoid',
+    categoryId: 'areas',
+    title: 'Trapèze',
+    icon: '⏢',
+    description: 'Surface d\'un trapèze.',
+    formulaText: 'S = ((B + b) / 2) × h',
+    tags: ['surface', 'trapèze'],
+    fieldsForMode: () => [
+      { key: 'baseA', label: 'Grande base (m)', type: 'number' },
+      { key: 'baseB', label: 'Petite base (m)', type: 'number' },
+      { key: 'height', label: 'Hauteur (m)', type: 'number' },
+    ],
+    compute: (_, v) => areas.areaTrapezoid(v),
+  },
+  {
+    id: 'area-room',
+    categoryId: 'areas',
+    title: 'Surface pièce',
+    icon: '🏠',
+    description: 'Surface au sol d\'une pièce rectangulaire.',
+    formulaText: 'S = L × l',
+    tags: ['pièce', 'surface'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number' },
+      { key: 'width', label: 'Largeur (m)', type: 'number' },
+    ],
+    compute: (_, v) => areas.areaRoom(v),
+  },
+  {
+    id: 'area-wall',
+    categoryId: 'areas',
+    title: 'Surface mur',
+    icon: '🧱',
+    description: 'Surface murale nette après ouvertures.',
+    formulaText: 'S nette = L × h − ouvertures',
+    tags: ['mur', 'surface'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur mur (m)', type: 'number' },
+      { key: 'height', label: 'Hauteur (m)', type: 'number' },
+      { key: 'openings', label: 'Ouvertures (m²)', type: 'number', placeholder: '0' },
+    ],
+    compute: (_, v) => areas.areaWall(v),
+  },
+  {
+    id: 'area-floor',
+    categoryId: 'areas',
+    title: 'Surface plancher',
+    icon: '🪵',
+    description: 'Surface plancher avec marge de perte.',
+    formulaText: 'S commande = S × (1 + perte%)',
+    tags: ['plancher', 'surface'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number' },
+      { key: 'width', label: 'Largeur (m)', type: 'number' },
+      { key: 'waste', label: 'Perte (%)', type: 'number', placeholder: '10' },
+    ],
+    compute: (_, v) => areas.areaFloor(v),
+  },
+  {
+    id: 'vol-box',
+    categoryId: 'volumes',
+    title: 'Parallélépipède',
+    icon: '📦',
+    description: 'Volume d\'un cube ou pavé droit.',
+    formulaText: 'V = L × l × h',
+    tags: ['volume', 'cube'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number' },
+      { key: 'width', label: 'Largeur (m)', type: 'number' },
+      { key: 'height', label: 'Hauteur (m)', type: 'number' },
+    ],
+    compute: (_, v) => volumes.volumeBox(v),
+  },
+  {
+    id: 'vol-cylinder',
+    categoryId: 'volumes',
+    title: 'Cylindre',
+    icon: '🛢',
+    description: 'Volume d\'un cylindre.',
+    formulaText: 'V = π × r² × h',
+    tags: ['volume', 'cylindre'],
+    fieldsForMode: () => [
+      { key: 'diameter', label: 'Diamètre (m)', type: 'number' },
+      { key: 'height', label: 'Hauteur (m)', type: 'number' },
+    ],
+    compute: (_, v) => volumes.volumeCylinder(v),
+  },
+  {
+    id: 'vol-concrete',
+    categoryId: 'volumes',
+    title: 'Volume béton',
+    icon: '🏗',
+    description: 'Volume de béton et estimation de sacs.',
+    formulaText: 'V = L × l × épaisseur',
+    tags: ['béton', 'volume'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number' },
+      { key: 'width', label: 'Largeur (m)', type: 'number' },
+      { key: 'thickness', label: 'Épaisseur (m)', type: 'number', step: 0.01 },
+    ],
+    compute: (_, v) => volumes.volumeConcrete(v),
+  },
+  {
+    id: 'vol-excavation',
+    categoryId: 'volumes',
+    title: 'Volume excavation',
+    icon: '⛏',
+    description: 'Volume de terre avec gonflement.',
+    formulaText: 'V évacué = V × (1 + gonflement%)',
+    tags: ['terrassement', 'volume'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number' },
+      { key: 'width', label: 'Largeur (m)', type: 'number' },
+      { key: 'depth', label: 'Profondeur (m)', type: 'number' },
+      { key: 'swell', label: 'Gonflement (%)', type: 'number', placeholder: '15' },
+    ],
+    compute: (_, v) => volumes.volumeExcavation(v),
+  },
+  {
+    id: 'vol-room',
+    categoryId: 'volumes',
+    title: 'Volume pièce',
+    icon: '📐',
+    description: 'Volume intérieur d\'une pièce.',
+    formulaText: 'V = L × l × h',
+    tags: ['pièce', 'volume'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number' },
+      { key: 'width', label: 'Largeur (m)', type: 'number' },
+      { key: 'height', label: 'Hauteur (m)', type: 'number' },
+    ],
+    compute: (_, v) => volumes.volumeRoom(v),
+  },
+  {
+    id: 'slope-pct-deg',
+    categoryId: 'slopes',
+    title: 'Pente % → degrés',
+    icon: '📈',
+    description: 'Convertit une pente en pourcentage en angle.',
+    formulaText: 'angle = arctan(pente%)',
+    tags: ['pente', 'degrés'],
+    fieldsForMode: () => [{ key: 'percent', label: 'Pente (%)', type: 'number', step: 0.1 }],
+    compute: (_, v) => slopes.slopePercentToDegrees(v),
+  },
+  {
+    id: 'slope-deg-pct',
+    categoryId: 'slopes',
+    title: 'Degrés → pente %',
+    icon: '📉',
+    description: 'Convertit un angle en pente.',
+    formulaText: 'pente% = tan(angle) × 100',
+    tags: ['pente', 'degrés'],
+    fieldsForMode: () => [{ key: 'degrees', label: 'Angle (°)', type: 'number', step: 0.1 }],
+    compute: (_, v) => slopes.slopeDegreesToPercent(v),
+  },
+  {
+    id: 'slope-ramp',
+    categoryId: 'slopes',
+    title: 'Calcul rampe',
+    icon: '♿',
+    description: 'Pente d\'une rampe avec verdict accessibilité.',
+    formulaText: 'pente% = (H / L) × 100',
+    tags: ['rampe', 'pente'],
+    fieldsForMode: () => [
+      { key: 'rise', label: 'Dénivelé (m)', type: 'number', step: 0.01 },
+      { key: 'run', label: 'Longueur horizontale (m)', type: 'number', step: 0.01 },
+    ],
+    compute: (_, v) => slopes.slopeRamp(v),
+  },
+  {
+    id: 'scale-drawing-real',
+    categoryId: 'conversion',
+    title: 'Dessin → réel',
+    icon: '📏',
+    description: 'Convertit une mesure sur plan en dimension réelle.',
+    formulaText: 'réel = mesure × facteur échelle',
+    tags: ['échelle', 'plan', '1:50', '1:100'],
+    fieldsForMode: () => [
+      { key: 'drawing', label: 'Mesure sur plan', type: 'number', step: 0.1 },
+      { key: 'fromUnit', label: 'Unité plan', type: 'select', options: [
+        { value: 'mm', label: 'mm' }, { value: 'cm', label: 'cm' }, { value: 'm', label: 'm' },
+      ] },
+      { key: 'scale', label: 'Échelle', type: 'select', options: [
+        { value: '1:20', label: '1:20' }, { value: '1:50', label: '1:50' },
+        { value: '1:100', label: '1:100' }, { value: '1:200', label: '1:200' },
+      ] },
+    ],
+    compute: (_, v) => scales.scaleDrawingToReal(v),
+  },
+  {
+    id: 'scale-real-drawing',
+    categoryId: 'scales',
+    title: 'Réel → dessin',
+    icon: '✏️',
+    description: 'Dimension réelle à reporter sur le plan.',
+    formulaText: 'plan = réel × (1 / facteur)',
+    tags: ['échelle', 'plan'],
+    fieldsForMode: () => [
+      { key: 'real', label: 'Longueur réelle (m)', type: 'number', step: 0.01 },
+      { key: 'toUnit', label: 'Unité plan', type: 'select', options: [
+        { value: 'mm', label: 'mm' }, { value: 'cm', label: 'cm' },
+      ] },
+      { key: 'scale', label: 'Échelle', type: 'select', options: [
+        { value: '1:20', label: '1:20' }, { value: '1:50', label: '1:50' },
+        { value: '1:100', label: '1:100' }, { value: '1:200', label: '1:200' },
+      ] },
+    ],
+    compute: (_, v) => scales.scaleRealToDrawing(v),
+  },
+  {
+    id: 'scale-factor',
+    categoryId: 'scales',
+    title: 'Facteur d\'échelle',
+    icon: '🔢',
+    description: 'Facteur de conversion pour une échelle donnée.',
+    formulaText: '1:50 → ×50',
+    tags: ['échelle', 'facteur'],
+    fieldsForMode: () => [{
+      key: 'scale', label: 'Échelle', type: 'select', options: [
+        { value: '1:20', label: '1:20' }, { value: '1:50', label: '1:50' },
+        { value: '1:100', label: '1:100' }, { value: '1:200', label: '1:200' },
+      ],
+    }],
+    compute: (_, v) => scales.scaleFactor(v),
+  },
+  {
+    id: 'roof-pitch',
+    categoryId: 'roof',
+    title: 'Pente toiture',
+    icon: '🏠',
+    description: 'Pente et angle de toiture.',
+    formulaText: 'pente% = (montée / portée) × 100',
+    tags: ['toiture', 'pente'],
+    fieldsForMode: () => [
+      { key: 'rise', label: 'Montée (m)', type: 'number' },
+      { key: 'run', label: 'Portée horizontale (m)', type: 'number' },
+    ],
+    compute: (_, v) => roof.roofPitch(v),
+  },
+  {
+    id: 'roof-ridge',
+    categoryId: 'roof',
+    title: 'Hauteur faîtage',
+    icon: '⛰',
+    description: 'Hauteur au faîtage selon portée et pente.',
+    formulaText: 'H = (portée/2) × pente%',
+    tags: ['toiture', 'faîtage'],
+    fieldsForMode: () => [
+      { key: 'span', label: 'Portée totale (m)', type: 'number' },
+      { key: 'pitchPercent', label: 'Pente (%)', type: 'number' },
+    ],
+    compute: (_, v) => roof.roofRidgeHeight(v),
+  },
+  {
+    id: 'roof-rafter',
+    categoryId: 'roof',
+    title: 'Longueur rampant',
+    icon: '📐',
+    description: 'Longueur de chevron / rampant.',
+    formulaText: 'L = √(a² + b²)',
+    tags: ['toiture', 'rampant'],
+    fieldsForMode: () => [
+      { key: 'span', label: 'Portée (m)', type: 'number' },
+      { key: 'pitchPercent', label: 'Pente (%)', type: 'number' },
+      { key: 'overhang', label: 'Débord (m)', type: 'number', placeholder: '0' },
+    ],
+    compute: (_, v) => roof.roofRafterLength(v),
+  },
+  {
+    id: 'roof-surface',
+    categoryId: 'roof',
+    title: 'Surface toiture',
+    icon: '📦',
+    description: 'Surface réelle de couverture incluant la pente.',
+    formulaText: 'S = emprise × facteur pente',
+    tags: ['toiture', 'surface'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number' },
+      { key: 'width', label: 'Largeur (m)', type: 'number' },
+      { key: 'pitchPercent', label: 'Pente (%)', type: 'number', placeholder: '30' },
+    ],
+    compute: (_, v) => roof.roofSurface(v),
+  },
+  {
+    id: 'mat-tiles',
+    categoryId: 'materials',
+    title: 'Quantité carrelage',
+    icon: '🔲',
+    description: 'Nombre de carreaux avec marge de perte.',
+    formulaText: 'n = surface / surface carreau',
+    tags: ['carrelage', 'matériaux'],
+    fieldsForMode: () => [
+      { key: 'area', label: 'Surface (m²)', type: 'number' },
+      { key: 'tileWidth', label: 'Largeur carreau (mm)', type: 'number' },
+      { key: 'tileHeight', label: 'Hauteur carreau (mm)', type: 'number' },
+      { key: 'waste', label: 'Perte (%)', type: 'number', placeholder: '10' },
+    ],
+    compute: (_, v) => materials.materialTiles(v),
+  },
+  {
+    id: 'mat-paint',
+    categoryId: 'materials',
+    title: 'Quantité peinture',
+    icon: '🎨',
+    description: 'Litres de peinture selon rendement et couches.',
+    formulaText: 'L = (S × couches) / rendement',
+    tags: ['peinture', 'matériaux'],
+    fieldsForMode: () => [
+      { key: 'area', label: 'Surface (m²)', type: 'number' },
+      { key: 'coverage', label: 'Rendement (m²/L)', type: 'number', placeholder: '10' },
+      { key: 'coats', label: 'Couches', type: 'number', placeholder: '2' },
+    ],
+    compute: (_, v) => materials.materialPaint(v),
+  },
+  {
+    id: 'mat-concrete',
+    categoryId: 'materials',
+    title: 'Béton m³',
+    icon: '🏗',
+    description: 'Volume de béton pour dalle ou semelle.',
+    formulaText: 'V = L × l × h',
+    tags: ['béton', 'matériaux'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number' },
+      { key: 'width', label: 'Largeur (m)', type: 'number' },
+      { key: 'thickness', label: 'Épaisseur (m)', type: 'number', step: 0.01 },
+    ],
+    compute: (_, v) => materials.materialConcrete(v),
+  },
+  {
+    id: 'mat-baseboard',
+    categoryId: 'materials',
+    title: 'Longueur plinthes',
+    icon: '📏',
+    description: 'Métrage linéaire de plinthes.',
+    formulaText: 'L = périmètre − ouvertures',
+    tags: ['plinthes', 'matériaux'],
+    fieldsForMode: () => [
+      { key: 'perimeter', label: 'Périmètre (m)', type: 'number' },
+      { key: 'openings', label: 'Ouvertures (m)', type: 'number', placeholder: '0' },
+    ],
+    compute: (_, v) => materials.materialBaseboard(v),
+  },
+  {
+    id: 'mat-drywall',
+    categoryId: 'materials',
+    title: 'Surface gypse',
+    icon: '🧱',
+    description: 'Nombre de panneaux de gypse.',
+    formulaText: 'panneaux = S / surface panneau',
+    tags: ['gypse', 'matériaux'],
+    fieldsForMode: () => [
+      { key: 'area', label: 'Surface (m²)', type: 'number' },
+      { key: 'sheetArea', label: 'Surface panneau (m²)', type: 'number', placeholder: '2.88' },
+      { key: 'waste', label: 'Perte (%)', type: 'number', placeholder: '10' },
+    ],
+    compute: (_, v) => materials.materialDrywall(v),
+  },
+  {
+    id: 'access-ramp-slope',
+    categoryId: 'accessibility',
+    title: 'Pente rampe PMR',
+    icon: '♿',
+    description: 'Vérifie la pente d\'une rampe (réf. 5 %).',
+    formulaText: 'pente max courante ≈ 5 %',
+    tags: ['accessibilité', 'rampe'],
+    fieldsForMode: () => [
+      { key: 'rise', label: 'Dénivelé (m)', type: 'number', step: 0.01 },
+      { key: 'run', label: 'Longueur (m)', type: 'number', step: 0.01 },
+      { key: 'maxPercent', label: 'Pente max (%)', type: 'number', placeholder: '5' },
+    ],
+    compute: (_, v) => accessibility.accessRampSlope(v),
+  },
+  {
+    id: 'access-ramp-length',
+    categoryId: 'accessibility',
+    title: 'Longueur rampe min.',
+    icon: '↔️',
+    description: 'Longueur minimale pour une pente donnée.',
+    formulaText: 'L = H × 100 / pente%',
+    tags: ['accessibilité', 'rampe'],
+    fieldsForMode: () => [
+      { key: 'rise', label: 'Hauteur à franchir (m)', type: 'number', step: 0.01 },
+      { key: 'maxPercent', label: 'Pente max (%)', type: 'number', placeholder: '5' },
+    ],
+    compute: (_, v) => accessibility.accessRampLength(v),
+  },
+  {
+    id: 'access-clear-height',
+    categoryId: 'accessibility',
+    title: 'Hauteur franchie',
+    icon: '📏',
+    description: 'Vérifie la hauteur libre minimale.',
+    formulaText: 'H libre ≥ 2,05 m (réf.)',
+    tags: ['accessibilité', 'hauteur'],
+    fieldsForMode: () => [
+      { key: 'floorHeight', label: 'Hauteur libre (m)', type: 'number', step: 0.01 },
+      { key: 'minClear', label: 'Minimum (m)', type: 'number', placeholder: '2.05' },
+    ],
+    compute: (_, v) => accessibility.accessClearHeight(v),
+  },
+  {
+    id: 'light-window-ratio',
+    categoryId: 'light',
+    title: 'Ratio fenêtre / pièce',
+    icon: '💡',
+    description: 'Pourcentage de vitrage par rapport à la surface de la pièce.',
+    formulaText: 'ratio = S vitrée / S pièce',
+    tags: ['lumière', 'fenêtre'],
+    fieldsForMode: () => [
+      { key: 'roomArea', label: 'Surface pièce (m²)', type: 'number' },
+      { key: 'windowArea', label: 'Surface vitrée (m²)', type: 'number' },
+      { key: 'minPercent', label: 'Réf. min (%)', type: 'number', placeholder: '17' },
+    ],
+    compute: (_, v) => light.lightWindowRatio(v),
+  },
+  {
+    id: 'light-opening-pct',
+    categoryId: 'light',
+    title: 'Pourcentage ouverture',
+    icon: '🪟',
+    description: 'Part d\'ouverture sur un mur.',
+    formulaText: '% = S ouverture / S mur',
+    tags: ['ouverture', 'mur'],
+    fieldsForMode: () => [
+      { key: 'wallArea', label: 'Surface mur (m²)', type: 'number' },
+      { key: 'openingArea', label: 'Surface ouverture (m²)', type: 'number' },
+    ],
+    compute: (_, v) => light.lightOpeningPercent(v),
+  },
+  {
+    id: 'light-min-glazing',
+    categoryId: 'light',
+    title: 'Surface vitrée minimale',
+    icon: '☀️',
+    description: 'Surface vitrée cible selon un ratio.',
+    formulaText: 'S min = S pièce × ratio%',
+    tags: ['lumière', 'vitrage'],
+    fieldsForMode: () => [
+      { key: 'roomArea', label: 'Surface pièce (m²)', type: 'number' },
+      { key: 'minPercent', label: 'Ratio cible (%)', type: 'number', placeholder: '17' },
+    ],
+    compute: (_, v) => light.lightMinGlazing(v),
+  },
+]
+
+export function getFormulaById(id) {
+  return FORMULAS.find((f) => f.id === id) || null
+}
+
+export function filterFormulas({ categoryId = 'all', search = '', favorites = [] }) {
+  const q = search.trim().toLowerCase()
+  return FORMULAS.filter((f) => {
+    if (categoryId !== 'all' && f.categoryId !== categoryId && categoryId !== 'favorites' && categoryId !== 'recent') return false
+    if (categoryId === 'favorites' && !favorites.includes(f.id)) return false
+    if (!q) return true
+    const hay = [f.title, f.description, f.formulaText, ...(f.tags || [])].join(' ').toLowerCase()
+    return hay.includes(q)
+  })
+}

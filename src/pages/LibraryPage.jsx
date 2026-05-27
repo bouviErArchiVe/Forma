@@ -1020,6 +1020,9 @@ export default function LibraryPage() {
                 onClick={() => { setShowNotifications(v => !v); setShowAccountMenu(false) }}
               />
             )}
+            <GlassButton T={T} size="md" onClick={() => navigate("/formulas")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              📐 Formules
+            </GlassButton>
             <GlassButton T={T} size="md" onClick={() => navigate("/moodboard")} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               🎭 Moodboard
             </GlassButton>
@@ -1099,6 +1102,7 @@ export default function LibraryPage() {
               {e:"🔗", v:"",               l:"partage",   tab:null, action:()=>navigate("/account/sharing")},
               {e:"📂", v:(collab.sharedFolders.owned?.length||0)+(collab.sharedFolders.member?.length||0), l:"partagés", tab:null, action:()=>navigate("/account/folders")},
               {e:"🎭", v:"",               l:"moodboard", tab:null, action:()=>navigate("/moodboard")},
+              {e:"📐", v:"",               l:"formules",  tab:null, action:()=>navigate("/formulas")},
               {e:"🎨", v:"",               l:"thèmes",    tab:null, action:()=>setShowTheme(true)},
             ].map(s => (
               <StatChip key={s.l} e={s.e} v={s.v} l={s.l} tab={s.tab} activeTab={activeTab} setActiveTab={setActiveTab} T={T} action={s.action}/>

@@ -1307,7 +1307,7 @@ function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridS
 export default function EditorPage(){
   const navigate=useNavigate()
   const { id: routeNotebookId } = useParams()
-  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification}=useAppStore()
+  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote}=useAppStore()
   const{ T }=useTheme()
   const { user } = useAuth()
   const collab = useCollaboration()
@@ -1430,6 +1430,7 @@ export default function EditorPage(){
   const importedRef=useRef(importedImages)
   const skipPageLoadRef=useRef(false)
   const addingPageRef=useRef(false)
+  const formulaNoteInsertedRef=useRef(false)
   const saveNowRef=useRef(()=>{})
   useEffect(()=>{ placedRef.current = placed }, [placed])
   useEffect(()=>{ importedRef.current = importedImages }, [importedImages])
@@ -1537,6 +1538,28 @@ export default function EditorPage(){
     onNotebookTouch:()=>({title:nb.title,subject:nb.subject,pages_count:pagesCount}),
   })
   saveNowRef.current=saveNow
+
+  useEffect(() => { formulaNoteInsertedRef.current = false }, [nb.id])
+
+  useEffect(() => {
+    if (readOnly || !pendingFormulaNote || pendingFormulaNote.notebookId !== nb.id || formulaNoteInsertedRef.current) return
+    const timer = setTimeout(() => {
+      if (!window.__addTextStroke || formulaNoteInsertedRef.current) return
+      window.__addTextStroke({
+        x: Math.max(48, PW * 0.08),
+        y: Math.max(48, PH * 0.1),
+        text: pendingFormulaNote.text,
+        color,
+        size: sizePx,
+        fontFamily: canvasTextFont,
+      })
+      formulaNoteInsertedRef.current = true
+      setPendingFormulaNote(null)
+      scheduleSave()
+      addNotification('Calcul inséré depuis Formules', 'success')
+    }, 900)
+    return () => clearTimeout(timer)
+  }, [pendingFormulaNote, nb.id, readOnly, PW, PH, color, sizePx, canvasTextFont, setPendingFormulaNote, addNotification, scheduleSave])
 
   const saveLabel=useMemo(()=>{
     if(saveStatus==="dirty")return "Modifications en attente…"
