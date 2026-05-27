@@ -24,6 +24,13 @@ import { glassStyle, rgbaFromHex } from "@/theme/glass"
 import { TOKENS } from "@/theme/tokens"
 import { serializePageElements, defaultPageMeta } from "@/lib/pageSettings"
 import { serializeCanvasData, DEFAULT_LAYERS, defaultActiveLayerId } from "@/lib/layers"
+import {
+  loadLocalNotebooks,
+  upsertLocalNotebook,
+  deleteLocalNotebook,
+  saveLocalPages,
+  isLocalNotebookId,
+} from "@/lib/projectPersistence"
 
 const DEFAULT_SUBJECTS=[
   {id:"arch",    l:"Architecture",    c:"#c8622a",e:"🏛",custom:false},
@@ -528,16 +535,27 @@ export default function LibraryPage() {
   useEffect(() => {
     const init = async () => {
       try {
+        const local = loadLocalNotebooks()
         const {data:{session}} = await supabase.auth.getSession()
         if (session?.user) {
           setUserId(session.user.id)
           const uname = session.user.user_metadata?.full_name || session.user.email || ""
           setUserName(uname)
-          loadNotebooks(session.user.id)
+          const {data, error} = await supabase.from("notebooks").select("*").eq("user_id", session.user.id).order("updated_at", {ascending:false})
+          if (error) throw error
+          const cloud = data || []
+          const merged = [...cloud]
+          local.forEach((ln) => {
+            if (!merged.some((n) => n.id === ln.id)) merged.push(ln)
+          })
+          merged.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))
+          setNotebooks(merged)
         } else {
-          setLoading(false)
+          setNotebooks(local)
         }
       } catch {
+        setNotebooks(loadLocalNotebooks())
+      } finally {
         setLoading(false)
       }
     }
@@ -575,8 +593,10 @@ export default function LibraryPage() {
   const toggleStar = async (id, e) => {
     e.stopPropagation()
     const nb = notebooks.find(n => n.id === id); if (!nb) return
-    setNotebooks(ns => ns.map(n => n.id === id ? {...n, starred:!n.starred} : n))
-    if (userId) await supabase.from("notebooks").update({starred:!nb.starred}).eq("id", id)
+    const next = { ...nb, starred: !nb.starred }
+    setNotebooks(ns => ns.map(n => n.id === id ? next : n))
+    if (isLocalNotebookId(id)) upsertLocalNotebook(next)
+    if (userId && !isLocalNotebookId(id)) await supabase.from("notebooks").update({ starred: next.starred }).eq("id", id)
   }
 
   const create = async () => {
@@ -599,8 +619,21 @@ export default function LibraryPage() {
       updated_at: now,
     }
 
-    const finishCreate = (notebook) => {
-      setNotebooks(p => [notebook, ...p])
+    const finishCreate = (notebook, { persistLocal = false } = {}) => {
+      if (persistLocal || isLocalNotebookId(notebook.id)) {
+        upsertLocalNotebook(notebook)
+        const pageMeta = serializePageElements(defaultPageMeta(notebook.template || newTmpl))
+        const emptyCanvas = serializeCanvasData([], DEFAULT_LAYERS, defaultActiveLayerId())
+        saveLocalPages(notebook.id, [{
+          id: `local-${notebook.id}-p1`,
+          page_number: 1,
+          notebook_id: notebook.id,
+          elements: JSON.stringify(pageMeta),
+          canvas_data: emptyCanvas,
+          updated_at: notebook.updated_at || now,
+        }])
+      }
+      setNotebooks(p => [notebook, ...p.filter(n => n.id !== notebook.id)])
       setShowNew(false)
       setNewTitle("")
       setNewTmpl("plan")
@@ -627,12 +660,12 @@ export default function LibraryPage() {
 
         finishCreate(data)
       } else {
-        finishCreate(localNb)
+        finishCreate(localNb, { persistLocal: true })
       }
     } catch (err) {
       console.error("Notebook creation error:", err)
       addNotification(err?.message || "Impossible de créer le carnet en ligne — mode local utilisé", "error")
-      finishCreate(localNb)
+      finishCreate(localNb, { persistLocal: true })
     } finally {
       setSaving(false)
     }
@@ -642,7 +675,8 @@ export default function LibraryPage() {
     e.stopPropagation()
     if (!confirm("Supprimer ce carnet définitivement ?")) return
     setNotebooks(ns => ns.filter(n => n.id !== id))
-    if (userId) await supabase.from("notebooks").delete().eq("id", id)
+    if (isLocalNotebookId(id)) deleteLocalNotebook(id)
+    if (userId && !isLocalNotebookId(id)) await supabase.from("notebooks").delete().eq("id", id)
   }
 
   const assignFolder = async (nbId, folderId) => {
