@@ -9,6 +9,7 @@ import AuthPage from '@/pages/AuthPage'
 import MoodboardPage from '@/pages/MoodboardPage'
 import FormulasPage from '@/pages/FormulasPage'
 import SheetsPage from '@/pages/SheetsPage'
+import DocsPage from '@/pages/DocsPage'
 import GamesPage from '@/pages/GamesPage'
 import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/moodboard" element={<ProtectedRoute><ErrorBoundary title="Erreur moodboard"><MoodboardPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/formulas" element={<ProtectedRoute><ErrorBoundary title="Erreur formules"><FormulasPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/sheets" element={<ProtectedRoute><ErrorBoundary title="Erreur tableur"><SheetsPage /></ErrorBoundary></ProtectedRoute>} />
+        <Route path="/docs" element={<ProtectedRoute><ErrorBoundary title="Erreur documents"><DocsPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/games" element={<ProtectedRoute><ErrorBoundary title="Erreur jeux"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/translate" element={<ProtectedRoute><ErrorBoundary title="Erreur traduction scan"><TranslateScanPage /></ErrorBoundary></ProtectedRoute>} />
         <Route path="/account" element={<ProtectedRoute><ErrorBoundary title="Erreur compte"><AccountPage /></ErrorBoundary></ProtectedRoute>} />

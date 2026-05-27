@@ -47,6 +47,7 @@ import { loadEraserSettings, saveEraserSettings, ERASER_MODES } from "@/lib/eras
 import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/lib/canvasHitTest"
 import { getPlacedSize, getPlacedLocalBounds, resizePlacedItem } from "@/lib/placedElements"
 import { renderSpreadsheetPlaced } from "@/components/spreadsheet/SpreadsheetPlacedView"
+import { renderDocPlaced } from "@/components/docs/DocPlacedView"
 import {
   euProfilesAsLibItems,
   customProfileToLibEntry,
@@ -370,6 +371,7 @@ function renderEl(el,sc=1/50,sx=1,sy=1){
   if(el.type==="doorD")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(200,160,80,.12)"stroke="#8b6f47"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#8b6f47"strokeWidth={.8}/></svg>
   if(el.type==="win")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(122,181,212,.25)"stroke="#4a90b8"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#4a90b8"strokeWidth={.8}/><line x1={0}y1={H/2}x2={W}y2={H/2}stroke="#4a90b8"strokeWidth={.8}/></svg>
   if(el.type==="spreadsheet")return renderSpreadsheetPlaced(el,sx,sy)
+  if(el.type==="document")return renderDocPlaced(el,sx,sy)
   return<div style={{width:W,height:H,background:"#ccc",border:"1px solid #999",fontSize:8,overflow:"hidden"}}>{el.l}</div>
 }
 
@@ -1368,7 +1370,7 @@ function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridS
 export default function EditorPage(){
   const navigate=useNavigate()
   const { id: routeNotebookId } = useParams()
-  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,pendingSpreadsheetInsert,setPendingSpreadsheetInsert,notebooks,customProfiles,addCustomProfile,removeCustomProfile}=useAppStore()
+  const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,pendingSpreadsheetInsert,setPendingSpreadsheetInsert,pendingDocInsert,setPendingDocInsert,notebooks,customProfiles,addCustomProfile,removeCustomProfile}=useAppStore()
   const{ T }=useTheme()
   const { user } = useAuth()
   const collab = useCollaboration()
@@ -1505,6 +1507,7 @@ export default function EditorPage(){
   const addingPageRef=useRef(false)
   const formulaNoteInsertedRef=useRef(false)
   const spreadsheetInsertedRef=useRef(false)
+  const docInsertedRef=useRef(false)
   const saveNowRef=useRef(()=>{})
   const scheduleSaveRef=useRef(()=>{})
   const goToPageRef=useRef(async()=>{})
@@ -1682,7 +1685,35 @@ export default function EditorPage(){
     window.__clearSelection?.()
   }, [tool])
 
-  useEffect(() => { formulaNoteInsertedRef.current = false; spreadsheetInsertedRef.current = false }, [nb.id])
+  useEffect(() => { formulaNoteInsertedRef.current = false; spreadsheetInsertedRef.current = false; docInsertedRef.current = false }, [nb.id])
+
+  useEffect(() => {
+    if (readOnly || !pendingDocInsert || pendingDocInsert.notebookId !== nb.id || docInsertedRef.current) return
+    const timer = setTimeout(() => {
+      if (docInsertedRef.current) return
+      const p = pendingDocInsert
+      const el = {
+        type: 'document',
+        docId: p.docId,
+        l: p.name || 'Document',
+        pw: p.w || 300,
+        ph: p.h || 220,
+        mode: p.mode || 'live',
+        imageSrc: p.imageSrc || null,
+      }
+      setPlaced(prev => [...prev, {
+        id: Date.now(),
+        el,
+        x: Math.max(48, PW * 0.08),
+        y: Math.max(48, PH * 0.14),
+      }])
+      docInsertedRef.current = true
+      setPendingDocInsert(null)
+      scheduleSave()
+      addNotification('Document inséré depuis Forma Docs', 'success')
+    }, 700)
+    return () => clearTimeout(timer)
+  }, [pendingDocInsert, nb.id, readOnly, PW, PH, setPendingDocInsert, addNotification, scheduleSave])
 
   useEffect(() => {
     if (readOnly || !pendingSpreadsheetInsert || pendingSpreadsheetInsert.notebookId !== nb.id || spreadsheetInsertedRef.current) return

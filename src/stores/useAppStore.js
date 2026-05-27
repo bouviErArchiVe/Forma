@@ -43,6 +43,9 @@ const useAppStore = create(
       pendingSpreadsheetInsert: null,
       setPendingSpreadsheetInsert: (pendingSpreadsheetInsert) => set({ pendingSpreadsheetInsert }),
 
+      pendingDocInsert: null,
+      setPendingDocInsert: (pendingDocInsert) => set({ pendingDocInsert }),
+
       easterEggsEnabled: true,
       setEasterEggsEnabled: (easterEggsEnabled) => set({ easterEggsEnabled }),
       easterEggBurst: null,
