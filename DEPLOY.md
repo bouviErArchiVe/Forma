@@ -1,4 +1,4 @@
-# 🚀 Guide de déploiement ArchNote — Étape par étape
+# 🚀 Guide de déploiement FORMA — Étape par étape
 
 ## Tout est gratuit. Ça prend environ 15 minutes.
 
@@ -8,7 +8,7 @@
 
 1. Va sur [github.com](https://github.com)
 2. Crée un compte gratuit
-3. Crée un nouveau repository appelé `archnote`
+3. Crée un nouveau repository appelé `forma`
 4. Mets-le en **Public** (requis pour Vercel gratuit)
 
 ---
@@ -16,7 +16,7 @@
 ## ÉTAPE 2 — Créer ton projet Supabase
 
 1. Va sur [supabase.com](https://supabase.com)
-2. **New Project** → choisis un nom (ex: `archnote`)
+2. **New Project** → choisis un nom (ex: `forma`)
 3. Note bien ton **mot de passe de base de données**
 4. Attends ~2 minutes que le projet se crée
 5. u&e&Pbgfeq-m5EJ
@@ -42,12 +42,12 @@
 ## ÉTAPE 3 — Uploader le code sur GitHub
 
 ```bash
-# Dans le dossier archnote/
+# Dans le dossier forma/
 git init
 git add .
-git commit -m "🏛 Initial ArchNote commit"
+git commit -m "🏛 Initial FORMA commit"
 git branch -M main
-git remote add origin https://github.com/TON_USERNAME/archnote.git
+git remote add origin https://github.com/TON_USERNAME/forma.git
 git push -u origin main
 ```
 
@@ -56,28 +56,28 @@ git push -u origin main
 ## ÉTAPE 4 — Déployer sur Vercel
 
 1. Va sur [vercel.com](https://vercel.com)
-2. **New Project** → importe ton repo GitHub `archnote`
+2. **New Project** → importe ton repo GitHub `forma`
 3. Framework Preset: **Vite**
 4. Dans **Environment Variables**, ajoute :
    - `VITE_SUPABASE_URL` = ton URL Supabase
    - `VITE_SUPABASE_ANON_KEY` = ta clé anon
 5. Clique **Deploy**
 
-🎉 En 2 minutes, ton app est en ligne à `archnote-xxx.vercel.app` !
+🎉 En 2 minutes, ton app est en ligne à `forma-xxx.vercel.app` !
 
 ---
 
 ## ÉTAPE 5 — Domaine personnalisé (optionnel, gratuit)
 
 ### Option A — Freenom (domaine .tk ou .ml gratuit)
-1. [freenom.com](https://freenom.com) → cherche `archnote.tk`
+1. [freenom.com](https://freenom.com) → cherche `forma.tk`
 2. Configure les DNS vers Vercel
 
 ### Option B — .app via GitHub Student Pack
 Si tu es étudiant, [education.github.com](https://education.github.com) donne des crédits chez Name.com
 
 ### Option C — reste sur vercel.app
-`archnote.vercel.app` c'est parfait pour commencer !
+`forma.vercel.app` c'est parfait pour commencer !
 
 ---
 
@@ -85,7 +85,7 @@ Si tu es étudiant, [education.github.com](https://education.github.com) donne d
 
 1. Ouvre ton URL dans **Safari** sur iPad
 2. Bouton Partager → **Sur l'écran d'accueil**
-3. L'icône ArchNote apparaît — c'est une PWA installée !
+3. L'icône FORMA apparaît — c'est une PWA installée !
 
 ---
 

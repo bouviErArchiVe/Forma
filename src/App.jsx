@@ -9,6 +9,8 @@ import AuthPage from '@/pages/AuthPage'
 import MoodboardPage from '@/pages/MoodboardPage'
 import Notifications from '@/components/Notifications'
 import { BACKGROUNDS } from '@/lib/backgrounds'
+import { getGoogleFontHref } from '@/lib/fontUtils'
+import { buildGlobalThemeCSS } from '@/theme/globalStyles'
 
 const SYSTEM_FONTS = "https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
 
@@ -222,11 +224,17 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
-  const { getTheme, animationsEnabled, animType, animSpeed, bgId, customBg } = useAppStore()
+  const { getTheme, animationsEnabled, animType, animSpeed, bgId, customBg, appFont, appearanceMode } = useAppStore()
   const T = getTheme()
   const bg = bgId ? BACKGROUNDS.find(b => b.id === bgId) : null
 
   useEffect(() => {
+    // Global appearance class on root
+    const root = document.documentElement
+    const cls = ['forma-light','forma-soft-gray','forma-dark','forma-black']
+    cls.forEach(c => root.classList.remove(c))
+    root.classList.add(`forma-${appearanceMode || 'light'}`)
+
     if (!document.getElementById('forma-system-fonts')) {
       const link = document.createElement('link')
       link.id = 'forma-system-fonts'; link.href = SYSTEM_FONTS; link.rel = 'stylesheet'
@@ -240,28 +248,27 @@ export default function App() {
     }
     themeLink.href = `https://fonts.googleapis.com/css2?family=${T.fontUrl}&display=swap`
 
+    const appFontHref = appFont ? getGoogleFontHref(appFont) : null
+    let appFontLink = document.getElementById('forma-app-font')
+    if (appFontHref) {
+      if (!appFontLink) {
+        appFontLink = document.createElement('link')
+        appFontLink.id = 'forma-app-font'; appFontLink.rel = 'stylesheet'
+        document.head.appendChild(appFontLink)
+      }
+      appFontLink.href = appFontHref
+    } else if (appFontLink) {
+      appFontLink.remove()
+    }
+
     let style = document.getElementById('forma-global-style')
     if (!style) {
       style = document.createElement('style')
       style.id = 'forma-global-style'
       document.head.appendChild(style)
     }
-    style.textContent = `
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      html, body { height: 100%; overflow: hidden; }
-      body { font-family: '${T.font}', sans-serif; -webkit-font-smoothing: antialiased; background: ${T.bg}; color: ${T.ink}; }
-      :root { --accent: ${T.accent}; }
-      #root { height: 100%; }
-      button, input, select, textarea { font-family: '${T.font}', sans-serif; }
-      ::-webkit-scrollbar { width: 5px; height: 5px; }
-      ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 3px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-      @keyframes spin { to { transform: rotate(360deg); } }
-      @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
-      .fade-up { animation: fadeUp .28s ease forwards; }
-    `
-  }, [T.bg, T.ink, T.border, T.fontUrl, T.font])
+    style.textContent = buildGlobalThemeCSS(T, appFont || T.font)
+  }, [T.bg, T.ink, T.border, T.surface, T.panel, T.fontUrl, T.font, T.accent, appFont, appearanceMode])
 
   return (
     <BrowserRouter>

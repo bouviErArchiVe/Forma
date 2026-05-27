@@ -3,6 +3,12 @@ import { useNavigate } from "react-router-dom"
 import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
 import { THEMES } from "@/lib/themes"
+import FloatingSelectionToolbar from "@/components/FloatingSelectionToolbar"
+import { glassStyle } from "@/theme/glass"
+import { TOKENS } from "@/theme/tokens"
+import { getToolCursor, getPlacementCursor, isDarkSurface } from "@/theme/cursors"
+import { normalizeCanvasData, serializeCanvasData, DEFAULT_LAYERS, defaultActiveLayerId, createLayer, reorderLayers, deleteLayer } from "@/lib/layers"
+import { collectSnapLines, snapDelta, snapPoint, drawSnapGuides } from "@/lib/snap"
 
 /* ══ PALETTES ═══════════════════════════════════════════ */
 const CPAL={
@@ -50,13 +56,35 @@ const mm2px=mm=>mm*3.78
 
 function formatDimension(mm, unitSystem) {
   if (unitSystem === 'imperial') {
-    const inches = mm / 25.4
-    if (inches >= 12) {
-      const feet = Math.floor(inches / 12)
-      const remIn = Math.round((inches % 12) * 100) / 100
-      return remIn > 0 ? `${feet}'-${remIn}"` : `${feet}'`
+    const totalIn = mm / 25.4
+    const snap = (v, den = 16) => Math.round(v * den) / den
+    const fmtIn = (inch) => {
+      const s = snap(inch, 16)
+      const whole = Math.floor(s + 1e-9)
+      const frac = s - whole
+      if (frac < 1e-9) return `${whole}`
+      const den = 16
+      let num = Math.round(frac * den)
+      let w = whole
+      if (num === den) { w += 1; num = 0 }
+      if (num === 0) return `${w}`
+      // reduce fraction
+      const gcd = (a,b)=>b?gcd(b,a%b):a
+      const g = gcd(num, den)
+      num /= g
+      const rden = den / g
+      return w > 0 ? `${w} ${num}/${rden}` : `${num}/${rden}`
     }
-    return `${Math.round(inches * 1000) / 1000}"`
+
+    if (totalIn >= 12) {
+      const feet = Math.floor(totalIn / 12)
+      const remIn = totalIn - feet * 12
+      const remTxt = fmtIn(remIn)
+      // If remainder snaps to 0, only show feet
+      if (remTxt === '0') return `${feet}'`
+      return `${feet}' - ${remTxt}"`
+    }
+    return `${fmtIn(totalIn)}"`
   }
   if (mm >= 1000) return `${Math.round(mm / 10) / 100}m`
   if (mm >= 10) return `${Math.round(mm) / 10}cm`
@@ -338,7 +366,7 @@ function Paper({tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
 }
 
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */
-function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys}){
+function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId}){
   const drawing=useRef(false)
   const strokes=useRef([])   // committed strokes
   const history=useRef([])   // for multi-level undo (copy of strokes at each commit)
@@ -349,6 +377,121 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
   const selBox=useRef(null)
   const selectedStrokes=useRef(new Set())
   const lassoRect=useRef(null)
+  const groupDrag=useRef(null)
+  const snapGuides=useRef([])
+  const eraseCooldown=useRef({t:0})
+  const onSelRef=useRef(onSelectionChange)
+  onSelRef.current=onSelectionChange
+  const layersRef=useRef(layers||[])
+  const activeLayerRef=useRef(activeLayerId)
+  useEffect(()=>{layersRef.current=layers||[]},[layers])
+  useEffect(()=>{activeLayerRef.current=activeLayerId},[activeLayerId])
+
+  const getLayerMap=()=>{
+    const m={}
+    ;(layersRef.current||[]).forEach(l=>{m[l.id]=l})
+    return m
+  }
+
+  const fallbackLayerId=()=>layersRef.current?.[0]?.id||"base"
+
+  const canUseActiveLayer=()=>{
+    const l=getLayerMap()[activeLayerRef.current]
+    return !!(l&&l.v&&!l.locked)
+  }
+
+  const strokeLayerId=s=>s.layerId||fallbackLayerId()
+
+  const pushStroke=stroke=>{
+    strokes.current.push({...stroke,layerId:activeLayerRef.current||fallbackLayerId()})
+  }
+
+  const drawSingleStroke=(ctx,s,layerOp)=>{
+    if(!s.pts||s.pts.length<2)return
+    ctx.beginPath();ctx.strokeStyle=s.color;ctx.lineWidth=s.size
+    ctx.lineCap="round";ctx.lineJoin="round"
+    const baseOp=(s.opacity??1)*layerOp
+    ctx.globalAlpha=s.tool==="highlight"?Math.min(baseOp,.4):baseOp
+    ctx.globalCompositeOperation=s.tool==="eraser"?"destination-out":"source-over"
+    if(s.shapeType==="line"||s.shapeType==="dimline"){
+      ctx.moveTo(s.pts[0].x,s.pts[0].y);ctx.lineTo(s.pts[1].x,s.pts[1].y);ctx.stroke()
+      if(s.shapeType==="dimline"){
+        const ang=Math.atan2(s.pts[1].y-s.pts[0].y,s.pts[1].x-s.pts[0].x)
+        const perp=ang+Math.PI/2,tick=8
+        ;[[s.pts[0],s.pts[1]]].forEach(([a,b])=>{
+          ctx.beginPath();ctx.moveTo(a.x-tick*Math.cos(perp)/2,a.y-tick*Math.sin(perp)/2);ctx.lineTo(a.x+tick*Math.cos(perp)/2,a.y+tick*Math.sin(perp)/2);ctx.stroke()
+          ctx.beginPath();ctx.moveTo(b.x-tick*Math.cos(perp)/2,b.y-tick*Math.sin(perp)/2);ctx.lineTo(b.x+tick*Math.cos(perp)/2,b.y+tick*Math.sin(perp)/2);ctx.stroke()
+        })
+        const distMm=Math.sqrt(Math.pow(s.pts[1].x-s.pts[0].x,2)+Math.pow(s.pts[1].y-s.pts[0].y,2))/3.78
+        const mx=(s.pts[0].x+s.pts[1].x)/2,my=(s.pts[0].y+s.pts[1].y)/2
+        ctx.font=`${Math.max(s.size*3,10)}px monospace`;ctx.fillStyle=s.color;ctx.globalAlpha=1
+        ctx.fillText(formatDimension(distMm,unitSys),mx+4,my-4)
+      }
+    }
+    else if(s.shapeType==="rect"){ctx.strokeRect(s.pts[0].x,s.pts[0].y,s.pts[1].x-s.pts[0].x,s.pts[1].y-s.pts[0].y)}
+    else if(s.shapeType==="circle"){const rx=Math.abs(s.pts[1].x-s.pts[0].x)/2,ry=Math.abs(s.pts[1].y-s.pts[0].y)/2;if(rx>0&&ry>0){ctx.ellipse((s.pts[0].x+s.pts[1].x)/2,(s.pts[0].y+s.pts[1].y)/2,rx,ry,0,0,Math.PI*2);ctx.stroke()}}
+    else if(s.shapeType==="arrow"){
+      const[a,b]=[s.pts[0],s.pts[1]],ang=Math.atan2(b.y-a.y,b.x-a.x),hs=Math.min(20,s.size*5+10)
+      ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()
+      ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-hs*Math.cos(ang-Math.PI/6),b.y-hs*Math.sin(ang-Math.PI/6));ctx.lineTo(b.x-hs*Math.cos(ang+Math.PI/6),b.y-hs*Math.sin(ang+Math.PI/6));ctx.closePath();ctx.fillStyle=s.color;ctx.fill()
+    }
+    else if(s.shapeType==="text"){
+      ctx.font=`${Math.max(s.size*3,14)}px Nunito, sans-serif`;ctx.fillStyle=s.color;ctx.globalAlpha=baseOp;ctx.globalCompositeOperation="source-over"
+      ctx.fillText(s.text||"",s.pts[0].x,s.pts[0].y)
+    }
+    else if(s.shapeType==="cloud"){
+      const[a,b]=[s.pts[0],s.pts[1]],W2=b.x-a.x,H2=b.y-a.y
+      ctx.strokeStyle=s.color;ctx.fillStyle=s.color+"22"
+      ctx.beginPath();ctx.roundRect(a.x,a.y,W2,H2,12);ctx.fill();ctx.stroke()
+      ctx.beginPath();ctx.moveTo(a.x+W2*.3,a.y+H2);ctx.lineTo(a.x+W2*.2,a.y+H2+15);ctx.lineTo(a.x+W2*.45,a.y+H2);ctx.fill()
+    }
+    else{
+      ctx.moveTo(s.pts[0].x,s.pts[0].y);s.pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke()
+    }
+    ctx.globalCompositeOperation="source-over"
+  }
+
+  const getSelectionBounds=()=>{
+    let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity,found=false
+    selectedStrokes.current.forEach(i=>{
+      const s=strokes.current[i]
+      if(!s?.pts?.length)return
+      found=true
+      s.pts.forEach(pt=>{x1=Math.min(x1,pt.x);y1=Math.min(y1,pt.y);x2=Math.max(x2,pt.x);y2=Math.max(y2,pt.y)})
+    })
+    if(!found)return null
+    return {x1,y1,x2,y2,cx:(x1+x2)/2,cy:(y1+y2)/2}
+  }
+
+  const pointInExpandedBounds=(p,b,pad=0)=>p.x>=b.x1-pad&&p.x<=b.x2+pad&&p.y>=b.y1-pad&&p.y<=b.y2+pad
+
+  const [selectionActive,setSelectionActive]=useState(false)
+
+  const notifySelection=useCallback(()=>{
+    const active=selectedStrokes.current.size>0
+    setSelectionActive(active)
+    if(!onSelRef.current)return
+    const b=getSelectionBounds()
+    if(!active||!b)onSelRef.current({active:false,count:0,bounds:null})
+    else onSelRef.current({active:true,count:selectedStrokes.current.size,bounds:b})
+  },[])
+
+  const tryStartGroupDrag=(p,e)=>{
+    if(selectedStrokes.current.size===0||["eraser","eyedropper","text"].includes(tool))return false
+    const b=getSelectionBounds()
+    if(!b||!pointInExpandedBounds(p,b,12))return false
+    groupDrag.current={
+      startP:p,
+      origBounds:getSelectionBounds(),
+      snapshots:[...selectedStrokes.current].map(i=>({i,pts:strokes.current[i].pts.map(pt=>({...pt}))})),
+      origLasso:lassoPath.current?lassoPath.current.map(pt=>({...pt})):null,
+      origRect:lassoRect.current?{...lassoRect.current}:null,
+    }
+    snapGuides.current=[]
+    drawing.current=true
+    e?.preventDefault?.()
+    return true
+  }
 
   const pointInPolygon=(pt,polygon)=>{
     let inside=false
@@ -362,52 +505,14 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
   const redraw=useCallback(()=>{
     const c=cRef.current;if(!c)return
     const ctx=c.getContext("2d");ctx.clearRect(0,0,794,1123)
-    strokes.current.forEach(s=>{
-      if(!s.pts||s.pts.length<2)return
-      ctx.beginPath();ctx.strokeStyle=s.color;ctx.lineWidth=s.size
-      ctx.lineCap="round";ctx.lineJoin="round"
-      ctx.globalAlpha=s.tool==="highlight"?.4:1
-      ctx.globalCompositeOperation=s.tool==="eraser"?"destination-out":"source-over"
-      if(s.shapeType==="line"||s.shapeType==="dimline"){
-        ctx.moveTo(s.pts[0].x,s.pts[0].y);ctx.lineTo(s.pts[1].x,s.pts[1].y);ctx.stroke()
-        // Dimension line ticks
-        if(s.shapeType==="dimline"){
-          const ang=Math.atan2(s.pts[1].y-s.pts[0].y,s.pts[1].x-s.pts[0].x)
-          const perp=ang+Math.PI/2,tick=8
-          ;[[s.pts[0],s.pts[1]]].forEach(([a,b])=>{
-            ctx.beginPath();ctx.moveTo(a.x-tick*Math.cos(perp)/2,a.y-tick*Math.sin(perp)/2);ctx.lineTo(a.x+tick*Math.cos(perp)/2,a.y+tick*Math.sin(perp)/2);ctx.stroke()
-            ctx.beginPath();ctx.moveTo(b.x-tick*Math.cos(perp)/2,b.y-tick*Math.sin(perp)/2);ctx.lineTo(b.x+tick*Math.cos(perp)/2,b.y+tick*Math.sin(perp)/2);ctx.stroke()
-          })
-          // Distance label
-          const distMm=Math.sqrt(Math.pow(s.pts[1].x-s.pts[0].x,2)+Math.pow(s.pts[1].y-s.pts[0].y,2))/3.78
-          const mx=(s.pts[0].x+s.pts[1].x)/2,my=(s.pts[0].y+s.pts[1].y)/2
-          ctx.font=`${Math.max(s.size*3,10)}px monospace`;ctx.fillStyle=s.color;ctx.globalAlpha=1
-          ctx.fillText(formatDimension(distMm,unitSys),mx+4,my-4)
-        }
-      }
-      else if(s.shapeType==="rect"){ctx.strokeRect(s.pts[0].x,s.pts[0].y,s.pts[1].x-s.pts[0].x,s.pts[1].y-s.pts[0].y)}
-      else if(s.shapeType==="circle"){const rx=Math.abs(s.pts[1].x-s.pts[0].x)/2,ry=Math.abs(s.pts[1].y-s.pts[0].y)/2;if(rx>0&&ry>0){ctx.ellipse((s.pts[0].x+s.pts[1].x)/2,(s.pts[0].y+s.pts[1].y)/2,rx,ry,0,0,Math.PI*2);ctx.stroke()}}
-      else if(s.shapeType==="arrow"){
-        const[a,b]=[s.pts[0],s.pts[1]],ang=Math.atan2(b.y-a.y,b.x-a.x),hs=Math.min(20,s.size*5+10)
-        ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()
-        ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-hs*Math.cos(ang-Math.PI/6),b.y-hs*Math.sin(ang-Math.PI/6));ctx.lineTo(b.x-hs*Math.cos(ang+Math.PI/6),b.y-hs*Math.sin(ang+Math.PI/6));ctx.closePath();ctx.fillStyle=s.color;ctx.fill()
-      }
-      else if(s.shapeType==="text"){
-        ctx.font=`${Math.max(s.size*3,14)}px Nunito, sans-serif`;ctx.fillStyle=s.color;ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over"
-        ctx.fillText(s.text||"",s.pts[0].x,s.pts[0].y)
-      }
-      else if(s.shapeType==="cloud"){
-        // Annotation cloud bubble
-        const[a,b]=[s.pts[0],s.pts[1]],W2=b.x-a.x,H2=b.y-a.y
-        const r=12,steps=Math.max(6,Math.ceil((2*(Math.abs(W2)+Math.abs(H2)))/r/2))
-        ctx.strokeStyle=s.color;ctx.fillStyle=s.color+"22"
-        ctx.beginPath();ctx.roundRect(a.x,a.y,W2,H2,r);ctx.fill();ctx.stroke()
-        // Tail
-        ctx.beginPath();ctx.moveTo(a.x+W2*.3,a.y+H2);ctx.lineTo(a.x+W2*.2,a.y+H2+15);ctx.lineTo(a.x+W2*.45,a.y+H2);ctx.fill()
-      }
-      else{
-        ctx.moveTo(s.pts[0].x,s.pts[0].y);s.pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke()
-      }
+    const layerMap=getLayerMap()
+    ;(layersRef.current||[]).forEach(layer=>{
+      if(!layer.v)return
+      const layerOp=layer.opacity??1
+      strokes.current.forEach(s=>{
+        if(strokeLayerId(s)!==layer.id)return
+        drawSingleStroke(ctx,s,layerOp)
+      })
     })
     // Lasso selection overlay
     if(lassoPath.current&&lassoPath.current.length>2){
@@ -427,6 +532,8 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     selectedStrokes.current.forEach(idx=>{
       const s=strokes.current[idx]
       if(!s?.pts||s.pts.length<2)return
+      const lm=getLayerMap()[strokeLayerId(s)]
+      if(!lm?.v)return
       ctx.save()
       ctx.strokeStyle="#2196f3"
       ctx.lineWidth=Math.max(s.size+4,6)
@@ -439,13 +546,109 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       ctx.stroke()
       ctx.restore()
     })
+    drawSnapGuides(ctx,snapGuides.current)
     ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1
-  },[cRef])
+  },[cRef,unitSys])
+
+  useEffect(()=>{redraw()},[layers,activeLayerId,redraw])
 
   const gP=e=>{
     const r=cRef.current.getBoundingClientRect()
     const src=e.touches?e.touches[0]:e
     return{x:(src.clientX-r.left)*(794/r.width),y:(src.clientY-r.top)*(1123/r.height)}
+  }
+
+  const distPointToSegment=(p,a,b)=>{
+    const vx=b.x-a.x,vy=b.y-a.y
+    const wx=p.x-a.x,wy=p.y-a.y
+    const c1=vx*wx+vy*wy
+    if(c1<=0)return Math.hypot(p.x-a.x,p.y-a.y)
+    const c2=vx*vx+vy*vy
+    if(c2<=c1)return Math.hypot(p.x-b.x,p.y-b.y)
+    const t=c1/c2
+    const px=a.x+t*vx,py=a.y+t*vy
+    return Math.hypot(p.x-px,p.y-py)
+  }
+
+  const rectDistance=(p,rx,ry,rw,rh)=>{
+    const cx=Math.max(rx,Math.min(p.x,rx+rw))
+    const cy=Math.max(ry,Math.min(p.y,ry+rh))
+    return Math.hypot(p.x-cx,p.y-cy)
+  }
+
+  const bboxOfStroke=(s)=>{
+    if(!s?.pts?.length)return null
+    const xs=s.pts.map(p=>p.x),ys=s.pts.map(p=>p.y)
+    const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys)
+    return {x:minX,y:minY,w:maxX-minX,h:maxY-minY}
+  }
+
+  const hitStroke=(s,p,r)=>{
+    if(!s?.pts?.length)return false
+    const pad=Math.max(r,(s.size||1)/2)+2
+    const bb=bboxOfStroke(s)
+    if(bb){
+      if(p.x < bb.x-pad || p.x > bb.x+bb.w+pad || p.y < bb.y-pad || p.y > bb.y+bb.h+pad) return false
+    }
+    const st=s.shapeType || s.tool
+    if(st==="rect"){
+      const a=s.pts[0],b=s.pts[1]
+      const rx=Math.min(a.x,b.x),ry=Math.min(a.y,b.y),rw=Math.abs(b.x-a.x),rh=Math.abs(b.y-a.y)
+      return rectDistance(p,rx,ry,rw,rh) <= pad
+    }
+    if(st==="circle"){
+      const a=s.pts[0],b=s.pts[1]
+      const cx=(a.x+b.x)/2,cy=(a.y+b.y)/2
+      const rx=Math.abs(b.x-a.x)/2,ry=Math.abs(b.y-a.y)/2
+      if(rx<1||ry<1)return false
+      // distance to ellipse border approx via normalized radius
+      const nx=(p.x-cx)/rx,ny=(p.y-cy)/ry
+      const d=Math.abs(Math.hypot(nx,ny)-1) * Math.max(rx,ry)
+      return d <= pad
+    }
+    if(st==="line"||st==="dimline"||st==="arrow"){
+      const a=s.pts[0],b=s.pts[1]||s.pts[s.pts.length-1]
+      return distPointToSegment(p,a,b) <= pad
+    }
+    if(st==="text"){
+      // Approx bbox for canvas text
+      const x=s.pts[0]?.x||0,y=s.pts[0]?.y||0
+      const h=Math.max((s.size||4)*3,14)
+      const w=Math.max(((s.text||"").length||1)*h*0.55, h)
+      return rectDistance(p,x,y-h,w,h*1.2) <= pad
+    }
+    if(st==="cloud"){
+      const a=s.pts[0],b=s.pts[1]
+      const rx=Math.min(a.x,b.x),ry=Math.min(a.y,b.y),rw=Math.abs(b.x-a.x),rh=Math.abs(b.y-a.y)
+      return rectDistance(p,rx,ry,rw,rh) <= pad
+    }
+    // Freehand polyline
+    const pts=s.pts
+    for(let i=1;i<pts.length;i++){
+      if(distPointToSegment(p,pts[i-1],pts[i]) <= pad) return true
+    }
+    return false
+  }
+
+  const eraseStrokesAt=(p,r)=>{
+    if(!strokes.current.length||!canUseActiveLayer()) return false
+    const activeId=activeLayerRef.current
+    const hit = new Set()
+    strokes.current.forEach((s,i)=>{ if(strokeLayerId(s)===activeId&&hitStroke(s,p,r)) hit.add(i) })
+    if(hit.size===0) return false
+    history.current.push(JSON.stringify(strokes.current))
+    if(history.current.length>50)history.current.shift()
+    strokes.current = strokes.current.filter((_,i)=>!hit.has(i))
+    // cleanup selection
+    if(selectedStrokes.current.size){
+      const nextSel=new Set()
+      let j=0
+      strokes.current.forEach((_,i)=>{ if(selectedStrokes.current.has(i)) nextSel.add(j); j++ })
+      selectedStrokes.current = nextSel
+    }
+    redraw()
+    if(onStroke)onStroke(strokes.current)
+    return true
   }
 
   // Smart shape detection (GoodNotes-style)
@@ -487,14 +690,33 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       return
     }
     if(tool==="text"){
+      if(!canUseActiveLayer())return
       const txt=prompt("Texte :")
-      if(txt){strokes.current.push({pts:[p,{x:p.x+1,y:p.y+1}],color,size,tool:"text",text:txt,shapeType:"text"});redraw();if(onStroke)onStroke(strokes.current)}
+      if(txt){pushStroke({pts:[p,{x:p.x+1,y:p.y+1}],color,size,tool:"text",text:txt,shapeType:"text"});redraw();if(onStroke)onStroke(strokes.current)}
       return
     }
-    if(tool==="lasso"){lassoPath.current=[p];drawing.current=true;return}
-    if(tool==="lasso-rect"){shape.current={start:p};drawing.current=true;return}
+    if(["pen","highlight","eraser","line","rect","circle","arrow","cloud","dimline"].includes(tool)&&!canUseActiveLayer())return
+    if(tool==="lasso"){
+      if(tryStartGroupDrag(p,e))return
+      selectedStrokes.current.clear();lassoRect.current=null;lassoPath.current=[p];notifySelection();drawing.current=true;return
+    }
+    if(tool==="lasso-rect"){
+      if(tryStartGroupDrag(p,e))return
+      selectedStrokes.current.clear();lassoPath.current=null;lassoRect.current=null;notifySelection();shape.current={start:p};drawing.current=true;return
+    }
+    if(!["eraser","eyedropper","text"].includes(tool)&&selectedStrokes.current.size>0){
+      if(tryStartGroupDrag(p,e))return
+      const b=getSelectionBounds()
+      if(b&&!pointInExpandedBounds(p,b,12)){
+        selectedStrokes.current.clear();lassoPath.current=null;lassoRect.current=null;notifySelection()
+      }
+    }
     e.preventDefault();drawing.current=true;cur.current=[p]
-    if(["line","rect","circle","arrow","cloud","dimline"].includes(tool)){shape.current={start:p};return}
+    if(["line","rect","circle","arrow","cloud","dimline"].includes(tool)){
+      const sp=snapPoint(p,strokes.current,new Set())
+      shape.current={start:{x:sp.x,y:sp.y}}
+      return
+    }
     // Hold timer for shape auto-correct
     if(tool==="pen"){
       holdTimer.current=setTimeout(()=>{
@@ -502,7 +724,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
           const detected=detectShape(cur.current)
           if(detected){
             // Replace current freehand with detected shape
-            strokes.current.push({...detected,color,size,tool})
+            pushStroke({...detected,color,size,tool})
             cur.current=[]
             drawing.current=false
             redraw()
@@ -518,6 +740,22 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     if(!drawing.current)return
     e.preventDefault()
     const p=gP(e),ctx=cRef.current.getContext("2d")
+    if(groupDrag.current){
+      const rawDx=p.x-groupDrag.current.startP.x,rawDy=p.y-groupDrag.current.startP.y
+      const exclude=new Set([...selectedStrokes.current])
+      const {xLines,yLines}=collectSnapLines(strokes.current,exclude)
+      const {dx,dy,guides}=snapDelta(rawDx,rawDy,groupDrag.current.origBounds,xLines,yLines)
+      snapGuides.current=guides
+      groupDrag.current.snapshots.forEach(({i,pts})=>{
+        strokes.current[i].pts=pts.map(pt=>({x:pt.x+dx,y:pt.y+dy}))
+      })
+      if(groupDrag.current.origLasso)lassoPath.current=groupDrag.current.origLasso.map(pt=>({x:pt.x+dx,y:pt.y+dy}))
+      if(groupDrag.current.origRect){
+        const r=groupDrag.current.origRect
+        lassoRect.current={x1:r.x1+dx,y1:r.y1+dy,x2:r.x2+dx,y2:r.y2+dy}
+      }
+      redraw();notifySelection();return
+    }
     if(tool==="lasso"){lassoPath.current=[...lassoPath.current,p];redraw();return}
     if(tool==="lasso-rect"&&shape.current){
       const s=shape.current.start
@@ -525,19 +763,24 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       redraw();return
     }
     if(["line","rect","circle","arrow","cloud","dimline"].includes(tool)&&shape.current){
+      const snapped=snapPoint(p,strokes.current,new Set())
+      snapGuides.current=snapped.guides
+      const ep={x:snapped.x,y:snapped.y}
       redraw()
       ctx.strokeStyle=color;ctx.lineWidth=size;ctx.lineCap="round"
       ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over"
       const s=shape.current.start
-      if(tool==="line"||tool==="dimline"){ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(p.x,p.y);ctx.stroke()}
-      else if(tool==="rect"){ctx.strokeRect(s.x,s.y,p.x-s.x,p.y-s.y)}
-      else if(tool==="circle"){const rx=Math.abs(p.x-s.x)/2,ry=Math.abs(p.y-s.y)/2;if(rx>0&&ry>0){ctx.beginPath();ctx.ellipse((s.x+p.x)/2,(s.y+p.y)/2,rx,ry,0,0,Math.PI*2);ctx.stroke()}}
+      if(tool==="line"||tool==="dimline"){ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(ep.x,ep.y);ctx.stroke()}
+      else if(tool==="rect"){ctx.strokeRect(s.x,s.y,ep.x-s.x,ep.y-s.y)}
+      else if(tool==="circle"){const rx=Math.abs(ep.x-s.x)/2,ry=Math.abs(ep.y-s.y)/2;if(rx>0&&ry>0){ctx.beginPath();ctx.ellipse((s.x+ep.x)/2,(s.y+ep.y)/2,rx,ry,0,0,Math.PI*2);ctx.stroke()}}
       else if(tool==="arrow"){
-        const ang=Math.atan2(p.y-s.y,p.x-s.x),hs=Math.min(20,size*5+10)
-        ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(p.x,p.y);ctx.stroke()
-        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-hs*Math.cos(ang-Math.PI/6),p.y-hs*Math.sin(ang-Math.PI/6));ctx.lineTo(p.x-hs*Math.cos(ang+Math.PI/6),p.y-hs*Math.sin(ang+Math.PI/6));ctx.closePath();ctx.fillStyle=color;ctx.fill()
+        const ang=Math.atan2(ep.y-s.y,ep.x-s.x),hs=Math.min(20,size*5+10)
+        ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(ep.x,ep.y);ctx.stroke()
+        ctx.beginPath();ctx.moveTo(ep.x,ep.y);ctx.lineTo(ep.x-hs*Math.cos(ang-Math.PI/6),ep.y-hs*Math.sin(ang-Math.PI/6));ctx.lineTo(ep.x-hs*Math.cos(ang+Math.PI/6),ep.y-hs*Math.sin(ang+Math.PI/6));ctx.closePath();ctx.fillStyle=color;ctx.fill()
       }
-      else if(tool==="cloud"){ctx.strokeStyle=color;ctx.fillStyle=color+"22";ctx.beginPath();ctx.roundRect&&ctx.roundRect(Math.min(s.x,p.x),Math.min(s.y,p.y),Math.abs(p.x-s.x),Math.abs(p.y-s.y),12);ctx.fill();ctx.stroke()}
+      else if(tool==="cloud"){ctx.strokeStyle=color;ctx.fillStyle=color+"22";ctx.beginPath();ctx.roundRect&&ctx.roundRect(Math.min(s.x,ep.x),Math.min(s.y,ep.y),Math.abs(ep.x-s.x),Math.abs(ep.y-s.y),12);ctx.fill();ctx.stroke()}
+      drawSnapGuides(ctx,snapGuides.current)
+      shape.current.end=ep
       return
     }
     cur.current.push(p)
@@ -547,10 +790,29 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     ctx.globalAlpha=tool==="highlight"?.4:1;ctx.globalCompositeOperation=tool==="eraser"?"destination-out":"source-over"
     ctx.moveTo(pts[pts.length-2].x,pts[pts.length-2].y);ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);ctx.stroke()
     ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1
+
+    if(tool==="eraser"){
+      const now=performance.now()
+      if(now-eraseCooldown.current.t>16){
+        eraseCooldown.current.t=now
+        eraseStrokesAt(p,eraserSize/2)
+        if(onEraseAt) onEraseAt(p, eraserSize/2)
+      }
+    }
   }
 
   const up=e=>{
     if(!drawing.current)return
+    if(groupDrag.current){
+      groupDrag.current=null
+      snapGuides.current=[]
+      drawing.current=false
+      history.current.push(JSON.stringify(strokes.current))
+      if(history.current.length>50)history.current.shift()
+      if(onStroke)onStroke(strokes.current)
+      notifySelection()
+      return
+    }
     drawing.current=false
     if(holdTimer.current){clearTimeout(holdTimer.current);holdTimer.current=null}
     if(tool==="lasso"){
@@ -558,13 +820,14 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       if(lassoPath.current&&lassoPath.current.length>3){
         const poly=[...lassoPath.current,lassoPath.current[0]]
         selectedStrokes.current=new Set()
+        const lm=getLayerMap()
         strokes.current.forEach((s,i)=>{
+          if(!lm[strokeLayerId(s)]?.v||lm[strokeLayerId(s)]?.locked)return
           if(s.pts&&s.pts.some(pt=>pointInPolygon(pt,poly)))selectedStrokes.current.add(i)
         })
-        // Keep lassoPath visible as selection contour
-        redraw()
+        redraw();notifySelection()
       }else{
-        lassoPath.current=null;redraw()
+        lassoPath.current=null;redraw();notifySelection()
       }
       return
     }
@@ -572,24 +835,28 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       // Lasso-rect complete — select strokes inside rect
       if(shape.current&&lassoRect.current){
         const lr=lassoRect.current
+        const lm=getLayerMap()
         selectedStrokes.current=new Set()
         strokes.current.forEach((s,i)=>{
+          if(!lm[strokeLayerId(s)]?.v||lm[strokeLayerId(s)]?.locked)return
           if(s.pts&&s.pts.some(pt=>pt.x>=lr.x1&&pt.x<=lr.x2&&pt.y>=lr.y1&&pt.y<=lr.y2))selectedStrokes.current.add(i)
         })
       }
-      shape.current=null;redraw()
+      shape.current=null;redraw();notifySelection()
       return
     }
     const p=gP(e)
     history.current.push(JSON.stringify(strokes.current)) // save for undo
     if(history.current.length>50)history.current.shift()
+    snapGuides.current=[]
     if(["line","rect","circle","arrow","cloud","dimline"].includes(tool)&&shape.current){
       const s=shape.current.start
-      const finalPts=tool==="cloud"?[{x:Math.min(s.x,p.x),y:Math.min(s.y,p.y)},{x:Math.max(s.x,p.x),y:Math.max(s.y,p.y)}]:[s,p]
-      strokes.current.push({pts:finalPts,color,size,tool,shapeType:tool})
+      const end=shape.current.end||p
+      const finalPts=tool==="cloud"?[{x:Math.min(s.x,end.x),y:Math.min(s.y,end.y)},{x:Math.max(s.x,end.x),y:Math.max(s.y,end.y)}]:[s,end]
+      pushStroke({pts:finalPts,color,size,tool,shapeType:tool})
       shape.current=null;redraw()
     } else if(cur.current.length>0){
-      strokes.current.push({pts:[...cur.current],color,size:tool==="eraser"?eraserSize:size,tool})
+      pushStroke({pts:[...cur.current],color,size:tool==="eraser"?eraserSize:size,tool})
     }
     cur.current=[]
     if(onStroke)onStroke(strokes.current)
@@ -605,22 +872,58 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     }
     window.__redo=()=>{} // future
     window.__clear=()=>{history.current.push(JSON.stringify(strokes.current));strokes.current=[];redraw();if(onStroke)onStroke(strokes.current)}
-    window.__loadStrokes=data=>{try{strokes.current=(typeof data==="string"?JSON.parse(data):data)||[];redraw()}catch{}}
+    window.__loadStrokes=data=>{try{const norm=normalizeCanvasData(data);strokes.current=norm.strokes;selectedStrokes.current.clear();redraw()}catch{}}
+    window.__getStrokes=()=>strokes.current
+    window.__setStrokes=st=>{strokes.current=st||[];redraw();if(onStroke)onStroke(strokes.current)}
+    window.__redraw=redraw
     window.__getCanvas=()=>cRef.current
-    window.__clearSelection=()=>{selectedStrokes.current.clear();lassoPath.current=null;lassoRect.current=null;redraw()}
+    window.__clearSelection=()=>{selectedStrokes.current.clear();lassoPath.current=null;lassoRect.current=null;redraw();notifySelection()}
     window.__deleteSelected=()=>{
       if(selectedStrokes.current.size===0)return
       history.current.push(JSON.stringify(strokes.current))
       strokes.current=strokes.current.filter((_,i)=>!selectedStrokes.current.has(i))
       selectedStrokes.current.clear()
-      lassoPath.current=null
-      redraw()
+      lassoPath.current=null;lassoRect.current=null
+      redraw();notifySelection()
       if(onStroke)onStroke(strokes.current)
     }
-  },[redraw])
+    window.__duplicateSelected=()=>{
+      if(selectedStrokes.current.size===0)return
+      history.current.push(JSON.stringify(strokes.current))
+      const newIndices=new Set(),offset={x:14,y:14}
+      ;[...selectedStrokes.current].sort((a,b)=>a-b).forEach(i=>{
+        const s=strokes.current[i]
+        const copy=JSON.parse(JSON.stringify(s))
+        copy.pts=copy.pts.map(pt=>({x:pt.x+offset.x,y:pt.y+offset.y}))
+        strokes.current.push(copy)
+        newIndices.add(strokes.current.length-1)
+      })
+      selectedStrokes.current=newIndices
+      const b=getSelectionBounds()
+      if(b)lassoRect.current={x1:b.x1+offset.x,y1:b.y1+offset.y,x2:b.x2+offset.x,y2:b.y2+offset.y}
+      redraw();notifySelection()
+      if(onStroke)onStroke(strokes.current)
+    }
+    window.__setSelectionColor=c=>{
+      if(selectedStrokes.current.size===0)return
+      selectedStrokes.current.forEach(i=>{strokes.current[i].color=c})
+      redraw();if(onStroke)onStroke(strokes.current)
+    }
+    window.__setSelectionSize=s=>{
+      if(selectedStrokes.current.size===0)return
+      selectedStrokes.current.forEach(i=>{strokes.current[i].size=s})
+      redraw();if(onStroke)onStroke(strokes.current)
+    }
+    window.__setSelectionOpacity=o=>{
+      if(selectedStrokes.current.size===0)return
+      selectedStrokes.current.forEach(i=>{strokes.current[i].opacity=o})
+      redraw();if(onStroke)onStroke(strokes.current)
+    }
+  },[redraw,notifySelection,onStroke])
 
+  const cursor=getToolCursor(tool,{selectionActive,dark:cursorDark})
   return<canvas ref={cRef}width={794}height={1123}
-    style={{position:"absolute",inset:0,width:"100%",height:"100%",cursor:tool==="eraser"?"cell":tool==="eyedropper"?"crosshair":tool==="lasso"?"cell":"crosshair",touchAction:"none",zIndex:5}}
+    style={{position:"absolute",inset:0,width:"100%",height:"100%",cursor,touchAction:"none",zIndex:5}}
     onPointerDown={dn}onPointerMove={mv}onPointerUp={up}onPointerLeave={up}/>
 }
 
@@ -658,14 +961,15 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
   const loadFav=f=>{if(!f)return;setColor(f.color);setSizeMm(f.sizeMm);if(f.tool)setTool(f.tool)}
 
   if(collapsed)return(
-    <div style={{position:"fixed",left:pos.x,top:pos.y,zIndex:100,cursor:"grab"}}onMouseDown={startDrag}>
+    <div style={{position:"fixed",left:pos.x,top:pos.y,zIndex:TOKENS.zIndex.float,cursor:"grab"}}onMouseDown={startDrag}>
       <div onClick={e=>{e.stopPropagation();setCollapsed(false)}}
-        style={{width:32,height:32,borderRadius:"50%",background:isEraser?"#eee":color,border:`3px solid white`,boxShadow:"0 2px 12px rgba(0,0,0,.4)",cursor:"pointer",outline:`2px solid ${T.accent}`}}/>
+        className="forma-animate-scale"
+        style={{width:36,height:36,borderRadius:"50%",background:isEraser?"#eee":color,border:`2px solid rgba(255,255,255,.55)`,boxShadow:TOKENS.shadow.float,cursor:"pointer",outline:`2px solid ${T.accent}`,backdropFilter:"blur(8px)"}}/>
     </div>
   )
 
   return(
-    <div style={{position:"fixed",left:pos.x,top:pos.y,zIndex:100,background:T.surface,border:`1px solid ${T.border}`,borderRadius:14,boxShadow:"0 8px 32px rgba(0,0,0,.25)",width:200,userSelect:"none"}}>
+    <div className="forma-animate-in" style={{position:"fixed",left:pos.x,top:pos.y,zIndex:TOKENS.zIndex.float,...glassStyle(T,{variant:"float"}),width:200,userSelect:"none"}}>
       <div onMouseDown={startDrag}style={{cursor:"grab",padding:"7px 11px 5px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.border}`}}>
         <div style={{fontSize:9,color:T.muted}}>⠿ OUTILS</div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
@@ -858,6 +1162,7 @@ export default function EditorPage(){
   const[panY,setPanY]=useState(0)
   const isPanning=useRef(false)
   const panStart=useRef(null)
+  const[panActive,setPanActive]=useState(false)
   const[showLib,setShowLib]=useState(false)
   const[libMode,setLibMode]=useState("metric")
   const[libCat,setLibCat]=useState("🪵 Bois Montants")
@@ -870,7 +1175,11 @@ export default function EditorPage(){
   const[page,setPage]=useState(1)
   const[showPagePanel,setShowPagePanel]=useState(false) // thumbnails
   const[showLayers,setShowLayers]=useState(false)
-  const[layers,setLayers]=useState([{id:"s",n:"Esquisse",v:true,locked:false},{id:"a",n:"Annotations",v:true,locked:false},{id:"st",n:"Structure",v:true,locked:false}])
+  const[layers,setLayers]=useState(()=>DEFAULT_LAYERS.map(l=>({...l})))
+  const[activeLayerId,setActiveLayerId]=useState(()=>defaultActiveLayerId())
+  const[renamingLayer,setRenamingLayer]=useState(null)
+  const[renameVal,setRenameVal]=useState("")
+  const[dragLayerIdx,setDragLayerIdx]=useState(null)
   const[showPageSettings,setShowPageSettings]=useState(false)
   const[pageColor,setPageColor]=useState(null)
   const[gridColor,setGridColor]=useState(null)
@@ -889,6 +1198,7 @@ export default function EditorPage(){
   const[readOnly,setReadOnly]=useState(false)
   const[showPresent,setShowPresent]=useState(false) // presentation mode
   const[focusMode,setFocusMode]=useState(false)
+  const[canvasSelection,setCanvasSelection]=useState(null)
   const[showCalc,setShowCalc]=useState(false)
   const[showTimer,setShowTimer]=useState(false)
   const[showConv,setShowConv]=useState(false)
@@ -917,6 +1227,43 @@ export default function EditorPage(){
 
   const sizePx=mm2px(sizeMm)
   const eraserPx=mm2px(eraserMm)
+  const placedRef=useRef(placed)
+  const importedRef=useRef(importedImages)
+  useEffect(()=>{ placedRef.current = placed }, [placed])
+  useEffect(()=>{ importedRef.current = importedImages }, [importedImages])
+
+  const distPointToRect=(p,rx,ry,rw,rh)=>{
+    const cx=Math.max(rx,Math.min(p.x,rx+rw))
+    const cy=Math.max(ry,Math.min(p.y,ry+rh))
+    return Math.hypot(p.x-cx,p.y-cy)
+  }
+
+  const eraseObjectsAt = useCallback((p, r) => {
+    if(!p) return
+    // Imported images (absolute page coords)
+    const imgs = importedRef.current || []
+    if(imgs.length){
+      const hitIds = imgs.filter(img => distPointToRect(p, img.x, img.y, img.w, img.h) <= r + 2).map(i => i.id)
+      if(hitIds.length){
+        setImportedImages(cur => cur.filter(i => !hitIds.includes(i.id)))
+      }
+    }
+
+    // Structural elements (bounding box from mm -> px at 1/50)
+    const sc = 3.78/50
+    const els = placedRef.current || []
+    if(els.length){
+      const hitIds = els.filter(it => {
+        const w = (it.el?.fw || it.el?.w || 0) * sc
+        const h = (it.el?.h || 0) * sc
+        return distPointToRect(p, it.x, it.y, w, h) <= r + 3
+      }).map(i => i.id)
+      if(hitIds.length){
+        setPlaced(cur => cur.filter(it => !hitIds.includes(it.id)))
+        if(selected && hitIds.includes(selected)) setSelected(null)
+      }
+    }
+  }, [selected])
   const fmt=PAGE_FORMATS.find(f=>f.id===pageFormat)||PAGE_FORMATS[0]
   const PW=infiniteMode?3000:fmt.w
   const PH=infiniteMode?3000:fmt.h
@@ -935,11 +1282,20 @@ export default function EditorPage(){
         const{data:pg}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).eq("page_number",page).single()
         if(pg){
           setPageId(pg.id)
-          if(pg.canvas_data&&window.__loadStrokes)window.__loadStrokes(pg.canvas_data)
+          const norm=normalizeCanvasData(pg.canvas_data||[])
+          setLayers(norm.layers)
+          setActiveLayerId(norm.activeLayerId)
+          if(window.__loadStrokes)window.__loadStrokes(norm.strokes)
           if(pg.elements){const rawEl=typeof pg.elements==="string"?JSON.parse(pg.elements):pg.elements;if(rawEl&&!Array.isArray(rawEl)&&rawEl.format){setPageFormat(rawEl.format);setNextPageFmt(rawEl.format);setPlaced(rawEl.items||[])}else{setPlaced(Array.isArray(rawEl)?rawEl:[])}}
         }else{
           const{data:np}=await supabase.from("pages").insert([{notebook_id:nb.id,page_number:page,user_id:session.user.id}]).select().single()
-          if(np){setPageId(np.id);if(window.__loadStrokes)window.__loadStrokes([])}
+          if(np){
+            setPageId(np.id)
+            const norm=normalizeCanvasData([])
+            setLayers(norm.layers)
+            setActiveLayerId(norm.activeLayerId)
+            if(window.__loadStrokes)window.__loadStrokes([])
+          }
         }
         // Load all pages for thumbnails
         const{data:allPgs}=await supabase.from("pages").select("*").eq("notebook_id",nb.id).order("page_number")
@@ -1043,12 +1399,39 @@ export default function EditorPage(){
       const{data:{session}}=await supabase.auth.getSession()
       if(!session?.user)return
       setSaveStatus("saving")
-      await supabase.from("pages").update({canvas_data:JSON.stringify(strokes),elements:JSON.stringify({format:pageFormat,items:placed}),updated_at:new Date().toISOString()}).eq("id",pageId)
+      await supabase.from("pages").update({canvas_data:serializeCanvasData(strokes,layers,activeLayerId),elements:JSON.stringify({format:pageFormat,items:placed}),updated_at:new Date().toISOString()}).eq("id",pageId)
       await supabase.from("notebooks").update({updated_at:new Date().toISOString()}).eq("id",nb.id)
       setSaveStatus("saved");setTimeout(()=>setSaveStatus("idle"),2000)
     }catch{setSaveStatus("error");setTimeout(()=>setSaveStatus("idle"),3000)}
-  },[pageId,placed,nb.id,readOnly])
+  },[pageId,placed,nb.id,readOnly,layers,activeLayerId])
 
+  const requestSave=useCallback(()=>{
+    if(saveTimer.current)clearTimeout(saveTimer.current)
+    saveTimer.current=setTimeout(()=>{
+      const s=window.__getStrokes?.()||[]
+      save(s)
+    },1500)
+  },[save])
+
+  const commitLayerRename=()=>{
+    if(renamingLayer&&renameVal.trim()){
+      setLayers(p=>p.map(x=>x.id===renamingLayer?{...x,n:renameVal.trim()}:x))
+      requestSave()
+    }
+    setRenamingLayer(null)
+  }
+
+  const handleDeleteLayer=id=>{
+    const st=window.__getStrokes?.()||[]
+    const r=deleteLayer(layers,id,st)
+    if(!r.removed)return
+    setLayers(r.layers)
+    window.__setStrokes?.(r.strokes)
+    if(activeLayerId===id)setActiveLayerId(r.activeFallback)
+    requestSave()
+  }
+
+  const handleCanvasSelection=useCallback(info=>setCanvasSelection(info?.active?info:null),[])
   const onStroke=useCallback(s=>{if(saveTimer.current)clearTimeout(saveTimer.current);saveTimer.current=setTimeout(()=>save(s),1500)},[save])
 
   // Page versioning (localStorage, 20 versions max per page)
@@ -1123,7 +1506,18 @@ export default function EditorPage(){
     return()=>window.removeEventListener("keydown",handleKey)
   },[])
 
+  useEffect(()=>{
+    window.__clearSelection?.()
+    setCanvasSelection(null)
+  },[page])
+
   const isPanMode=tool==="select"
+  const cursorDark=useMemo(()=>isDarkSurface(T),[T])
+  const areaCursor=useMemo(()=>{
+    if(libPending) return getPlacementCursor(cursorDark)
+    if(isPanMode) return getToolCursor("select",{dark:cursorDark,panning:panActive})
+    return "default"
+  },[libPending,isPanMode,panActive,cursorDark])
   const SCALES_M=["1:1","1:2","1:5","1:10","1:20","1:50","1:100","1:200","1:500","1:1000"]
   const SCALES_I=['1/4"=1\'','3/16"=1\'','1/8"=1\'','3/32"=1\'','1"=10\'','1"=20\'','1"=40\'','1"=100\'']
   const TOOLS_LIST=[
@@ -1419,7 +1813,7 @@ export default function EditorPage(){
       </div>}
 
       {/* FOCUS MODE — barre flottante */}
-      {focusMode&&<div style={{position:"fixed",bottom:20,left:"50%",transform:"translateX(-50%)",zIndex:200,background:T.panel,borderRadius:16,padding:"6px 10px",display:"flex",gap:4,alignItems:"center",boxShadow:"0 8px 32px rgba(0,0,0,.4)",border:`1px solid ${T.accent}22`}}>
+      {focusMode&&<div className="forma-animate-in" style={{position:"fixed",bottom:20,left:"50%",transform:"translateX(-50%)",zIndex:TOKENS.zIndex.modal,display:"flex",gap:4,alignItems:"center",padding:"8px 12px",...glassStyle(T,{variant:"float",blur:TOKENS.blur.lg})}}>
         {TOOLS_LIST.flatMap(g=>g.items).map(t=>(
           <button key={t.id} title={t.l} onClick={()=>setTool(t.id)}
             style={{padding:"5px 8px",borderRadius:8,border:`1px solid ${tool===t.id?T.accent:"transparent"}`,background:tool===t.id?`${T.accent}25`:"transparent",color:tool===t.id?T.accent:"#aaa",cursor:"pointer",fontSize:13}}>
@@ -1435,7 +1829,7 @@ export default function EditorPage(){
       {readOnly&&<div style={{position:"fixed",top:60,left:"50%",transform:"translateX(-50%)",zIndex:50,background:"rgba(233,69,96,.9)",color:"#fff",padding:"6px 14px",borderRadius:20,fontSize:11,fontWeight:700}}>🔒 Mode lecture seule</div>}
 
       {/* TOP BAR */}
-      <div style={{height:46,background:T.panel,display:"flex",alignItems:"center",padding:"0 10px",gap:5,flexShrink:0,boxShadow:"0 2px 16px rgba(0,0,0,.3)",zIndex:30}}>
+      <div style={{height:46,display:"flex",alignItems:"center",padding:"0 10px",gap:5,flexShrink:0,zIndex:TOKENS.zIndex.toolbar,...glassStyle(T,{variant:"toolbar",border:false})}}>
         <button onClick={()=>navigate("/")}style={{background:"none",border:"none",color:"#888",cursor:"pointer",fontSize:11,padding:"4px 7px",borderRadius:7}}>← Retour</button>
         <div style={{width:1,height:20,background:"#ffffff14"}}/>
         <div style={{flex:1,fontFamily:"'Syne',sans-serif",fontWeight:600,fontSize:12,color:"#ddd",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nb.title}</div>
@@ -1487,12 +1881,13 @@ export default function EditorPage(){
       </div>
 
       {/* TOOLS ROW */}
-      <div style={{height:focusMode?0:36,overflow:"hidden",background:T.surface,borderBottom:`1px solid ${T.border}`,display:"flex",alignItems:"center",padding:focusMode?"0":"0 10px",gap:4,flexShrink:0,overflowX:focusMode?"hidden":"auto",transition:"height .3s ease"}}>
+      <div style={{height:focusMode?0:36,overflow:"hidden",display:"flex",alignItems:"center",padding:focusMode?"0":"0 10px",gap:4,flexShrink:0,overflowX:focusMode?"hidden":"auto",transition:"height .3s ease",borderBottom:`1px solid ${T.border}44`,...glassStyle(T,{variant:"surface",opacity:0.55,blur:TOKENS.blur.sm,border:false,radius:0})}}>
         {TOOLS_LIST.map(grp=>(
           <div key={grp.g}style={{display:"flex",gap:2,paddingRight:6,marginRight:3,borderRight:`1px solid ${T.border}`,flexShrink:0}}>
             {grp.items.map(t=>(
               <button key={t.id}title={t.l}onClick={()=>setTool(t.id)}
-                style={{height:25,padding:"0 6px",borderRadius:6,border:`1px solid ${tool===t.id?T.accent:T.border}`,background:tool===t.id?`${T.accent}18`:T.bg,color:tool===t.id?T.accent:T.muted,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",gap:3,whiteSpace:"nowrap",flexShrink:0}}>
+                className="forma-tool-btn"
+                style={{height:25,padding:"0 6px",borderRadius:TOKENS.radius.sm,border:`1px solid ${tool===t.id?T.accent:T.border}`,background:tool===t.id?`${T.accent}18`:T.bg,color:tool===t.id?T.accent:T.muted,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",gap:3,whiteSpace:"nowrap",flexShrink:0}}>
                 <span>{t.i}</span><span style={{fontSize:8}}>{t.l}</span>
               </button>
             ))}
@@ -1528,7 +1923,7 @@ export default function EditorPage(){
         </div>}
 
         {/* CANVAS */}
-        <div style={{flex:1,overflow:"hidden",background:T.bg,position:"relative",cursor:libPending?"crosshair":isPanMode?"grab":"default"}}
+        <div style={{flex:1,overflow:"hidden",background:T.bg,position:"relative",cursor:areaCursor}}
           id="canvas-area"
           onMouseMove={e=>{
             if(libPending)setMousePos({x:e.clientX,y:e.clientY})
@@ -1536,8 +1931,9 @@ export default function EditorPage(){
             const r=document.getElementById("canvas-area")?.getBoundingClientRect()
             if(r)broadcastCursor((e.clientX-r.left-panX)/zoom,(e.clientY-r.top-panY)/zoom)
           }}
-          onMouseDown={e=>{if(libPending){handleCanvasAreaClick(e);return};if(isPanMode){isPanning.current=true;panStart.current={x:e.clientX-panX,y:e.clientY-panY}}}}
-          onMouseUp={()=>{isPanning.current=false}}
+          onMouseDown={e=>{if(libPending){handleCanvasAreaClick(e);return};if(isPanMode){isPanning.current=true;setPanActive(true);panStart.current={x:e.clientX-panX,y:e.clientY-panY}}}}
+          onMouseUp={()=>{isPanning.current=false;setPanActive(false)}}
+          onMouseLeave={()=>{isPanning.current=false;setPanActive(false)}}
           onKeyDown={e=>{if(e.key==="Escape")setLibPending(null)}}
           tabIndex={0}>
 
@@ -1566,7 +1962,7 @@ export default function EditorPage(){
 
               {/* Imported images */}
               {importedImages.map(img=>(
-                <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,zIndex:3,cursor:"move",userSelect:"none"}}
+                <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,zIndex:3,cursor:tool==="eraser"?"default":"move",userSelect:"none",pointerEvents:tool==="eraser"?"none":"auto"}}
                   onMouseDown={e=>{e.stopPropagation();const ox=e.clientX/zoom-img.x,oy=e.clientY/zoom-img.y;const mm=ev=>setImportedImages(p=>p.map(i=>i.id===img.id?{...i,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:i));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
                   <img src={img.src}alt=""style={{width:img.w,height:img.h,display:"block",opacity:.88,pointerEvents:"none"}}/>
                   <button onClick={()=>setImportedImages(p=>p.filter(i=>i.id!==img.id))}style={{position:"absolute",top:-8,right:-8,width:18,height:18,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontWeight:700}}>×</button>
@@ -1576,7 +1972,7 @@ export default function EditorPage(){
               {/* Structural elements */}
               {placed.map(item=>{
                 const sel=selected===item.id
-                return<div key={item.id}style={{position:"absolute",left:item.x,top:item.y,cursor:readOnly||isPanMode?"default":"move",pointerEvents:"all",userSelect:"none",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,zIndex:sel?12:10}}
+                return<div key={item.id}style={{position:"absolute",left:item.x,top:item.y,cursor:readOnly||isPanMode||tool==="eraser"?"default":"move",pointerEvents:tool==="eraser"?"none":"all",userSelect:"none",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,zIndex:sel?12:10}}
                   onMouseDown={e=>{if(readOnly||isPanMode)return;e.stopPropagation();setSelected(item.id);const ox=e.clientX/zoom-item.x,oy=e.clientY/zoom-item.y;const mm=ev=>setPlaced(p=>p.map(e=>e.id===item.id?{...e,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:e));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu)};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
                   {item.el.type==="sym"?renderSym(item.el,1/50):renderEl(item.el,1/50)}
                   {sel&&!readOnly&&<button onClick={()=>{setPlaced(p=>p.filter(e=>e.id!==item.id));setSelected(null)}}style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,zIndex:20}}>×</button>}
@@ -1600,51 +1996,93 @@ export default function EditorPage(){
                 </div>
               )}
 
-              {!readOnly&&!isPanMode&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} onStroke={onStroke} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys}/>}
+              {!readOnly&&!isPanMode&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} onStroke={onStroke} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId}/>}
+              {canvasSelection&&!readOnly&&!isPanMode&&(
+                <FloatingSelectionToolbar
+                  T={T}
+                  bounds={canvasSelection.bounds}
+                  count={canvasSelection.count}
+                  onDelete={()=>window.__deleteSelected?.()}
+                  onDuplicate={()=>window.__duplicateSelected?.()}
+                  onColor={c=>window.__setSelectionColor?.(c)}
+                  onSize={mm=>window.__setSelectionSize?.(mm2px(mm))}
+                  onOpacity={o=>window.__setSelectionOpacity?.(o)}
+                  onClose={()=>{window.__clearSelection?.();setCanvasSelection(null)}}
+                />
+              )}
               {(readOnly||isPanMode)&&<canvas ref={cRef}width={fmt.w}height={fmt.h}style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:1,pointerEvents:"none",zIndex:5}}/>}
             </div>
           </div>
         </div>
 
         {/* CALQUES — style Procreate */}
-        {showLayers&&!focusMode&&<div style={{width:180,background:T.surface,borderLeft:`1px solid ${T.border}`,display:"flex",flexDirection:"column",flexShrink:0}}>
+        {showLayers&&!focusMode&&<div style={{width:196,background:T.surface,borderLeft:`1px solid ${T.border}`,display:"flex",flexDirection:"column",flexShrink:0}}>
           <div style={{padding:"9px 12px 7px",borderBottom:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:11,color:T.accent,letterSpacing:.5}}>CALQUES</div>
-            <button onClick={()=>setLayers(p=>[...p,{id:Date.now(),n:`Calque ${p.length+1}`,v:true,locked:false,color:["#c8622a","#3d6b8c","#4a7c59","#a855f7","#e94560","#f5a623"][p.length%6]}])}
-              style={{background:T.accent,border:"none",cursor:"pointer",color:"#fff",fontSize:13,width:20,height:20,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>+</button>
+            <button onClick={()=>{
+              const nl=createLayer(layers.length,layers)
+              setLayers(p=>[...p,nl])
+              setActiveLayerId(nl.id)
+              requestSave()
+            }} style={{background:T.accent,border:"none",cursor:"pointer",color:"#fff",fontSize:13,width:20,height:20,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>+</button>
           </div>
           <div style={{flex:1,overflowY:"auto",padding:"6px 5px",display:"flex",flexDirection:"column",gap:3}}>
-            {layers.map((l,i)=>{
+            {[...layers].reverse().map(l=>{
+              const i=layers.findIndex(x=>x.id===l.id)
               const lc=l.color||T.accent
+              const isActive=activeLayerId===l.id
+              const strokeCount=(window.__getStrokes?.()||[]).filter(s=>(s.layerId||layers[0]?.id)===l.id).length
               return(
-              <div key={l.id} style={{borderRadius:10,background:T.bg,border:`1px solid ${l.v?lc+"44":T.border}`,overflow:"hidden",transition:"border-color .15s"}}>
+              <div key={l.id}
+                draggable
+                onDragStart={()=>setDragLayerIdx(i)}
+                onDragOver={e=>e.preventDefault()}
+                onDrop={()=>{
+                  if(dragLayerIdx===null||dragLayerIdx===i)return
+                  setLayers(p=>reorderLayers(p,dragLayerIdx,i))
+                  setDragLayerIdx(null)
+                  requestSave()
+                }}
+                onClick={()=>setActiveLayerId(l.id)}
+                style={{borderRadius:10,background:isActive?`${lc}14`:T.bg,border:`1px solid ${isActive?lc:l.v?lc+"44":T.border}`,overflow:"hidden",transition:"border-color .15s, background .15s",cursor:"pointer"}}>
                 <div style={{display:"flex",alignItems:"center",gap:6,padding:"7px 8px"}}>
-                  {/* Color swatch */}
+                  <div style={{fontSize:9,color:T.muted,opacity:.7,cursor:"grab",userSelect:"none"}}>⠿</div>
                   <div style={{width:10,height:10,borderRadius:3,background:l.v?lc:T.muted,flexShrink:0}}/>
-                  {/* Name */}
-                  <div style={{flex:1,fontSize:10,color:l.v?T.ink:T.muted,fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{l.n}</div>
-                  {/* Visibility */}
-                  <button onClick={()=>setLayers(p=>p.map((x,j)=>j===i?{...x,v:!x.v}:x))}
+                  {renamingLayer===l.id?(
+                    <input value={renameVal} autoFocus onChange={e=>setRenameVal(e.target.value)}
+                      onBlur={commitLayerRename}
+                      onKeyDown={e=>{if(e.key==="Enter")commitLayerRename();if(e.key==="Escape")setRenamingLayer(null)}}
+                      onClick={e=>e.stopPropagation()}
+                      style={{flex:1,minWidth:0,padding:"2px 4px",borderRadius:5,border:`1px solid ${T.accent}`,background:T.bg,color:T.ink,fontSize:10,outline:"none"}}/>
+                  ):(
+                    <div onDoubleClick={e=>{e.stopPropagation();setRenamingLayer(l.id);setRenameVal(l.n)}}
+                      style={{flex:1,fontSize:10,color:l.v?T.ink:T.muted,fontWeight:isActive?800:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                      {l.n}
+                    </div>
+                  )}
+                  <span style={{fontSize:8,color:T.muted,flexShrink:0}}>{strokeCount||""}</span>
+                  <button onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,v:!x.v}:x));requestSave()}}
                     style={{background:"none",border:"none",cursor:"pointer",color:l.v?lc:T.muted+"66",fontSize:11,padding:"0 2px",flexShrink:0}}>
                     {l.v?"◉":"○"}
                   </button>
-                  {/* Lock */}
-                  <button onClick={()=>setLayers(p=>p.map((x,j)=>j===i?{...x,locked:!x.locked}:x))}
+                  <button onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,locked:!x.locked}:x));requestSave()}}
                     style={{background:"none",border:"none",cursor:"pointer",color:l.locked?T.accent:T.muted+"66",fontSize:10,padding:"0 1px",flexShrink:0}}>
                     {l.locked?"🔒":"🔓"}
                   </button>
+                  {layers.length>1&&(
+                    <button onClick={e=>{e.stopPropagation();handleDeleteLayer(l.id)}}
+                      style={{background:"none",border:"none",cursor:"pointer",color:"#e94560",fontSize:10,padding:"0 1px",flexShrink:0}}>×</button>
+                  )}
                 </div>
-                {/* Opacity mini-bar (visual) */}
-                <div style={{height:2,background:T.border,margin:"0 8px 6px"}}>
-                  <div style={{height:"100%",width:l.v?"100%":"30%",background:lc,borderRadius:1,opacity:.6,transition:"width .3s"}}/>
+                <div style={{padding:"0 8px 6px",display:"flex",alignItems:"center",gap:6}} onClick={e=>e.stopPropagation()}>
+                  <input type="range" min="0.05" max="1" step="0.05" value={l.opacity??1}
+                    onChange={e=>setLayers(p=>p.map(x=>x.id===l.id?{...x,opacity:parseFloat(e.target.value)}:x))}
+                    onMouseUp={()=>requestSave()}
+                    style={{flex:1,accentColor:lc,height:4}}/>
+                  <span style={{fontSize:8,color:T.muted,minWidth:26,textAlign:"right"}}>{Math.round((l.opacity??1)*100)}%</span>
                 </div>
               </div>
             )})}
-            {/* Delete last custom layer */}
-            {layers.length>3&&<button onClick={()=>setLayers(p=>p.slice(0,-1))}
-              style={{padding:"4px",borderRadius:7,border:`1px dashed ${T.border}`,background:"none",color:T.muted,cursor:"pointer",fontSize:9,marginTop:2}}>
-              − Supprimer dernier calque
-            </button>}
           </div>
         </div>}
 

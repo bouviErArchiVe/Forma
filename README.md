@@ -1,15 +1,15 @@
-# ArchNote 🏛
+# FORMA
 
-> Smart notebook for architecture students — free & open source
+> Creative Spatial Thinking — free & open source
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/archnote)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/forma)
 
 ## 🚀 Démarrage rapide (5 minutes)
 
 ### 1. Clone & install
 ```bash
-git clone https://github.com/YOUR_USERNAME/archnote.git
-cd archnote
+git clone https://github.com/YOUR_USERNAME/forma.git
+cd forma
 npm install
 ```
 
@@ -69,8 +69,8 @@ vercel
 
 ## 📱 iPad / Apple Pencil
 
-ArchNote est optimisé pour iPad. Pour l'installer :
-1. Ouvre archnote.app dans Safari
+FORMA est optimisé pour iPad. Pour l'installer :
+1. Ouvre ton instance FORMA dans Safari
 2. Partager → **Sur l'écran d'accueil**
 3. L'app s'installe comme une app native
 

@@ -1,6 +1,6 @@
 # Ce que j'ai fait sur ton projet — à lire en premier
 
-Ce document explique le rangement effectué sur ArchNote. Rien n'a été
+Ce document explique le rangement effectué sur FORMA. Rien n'a été
 supprimé : tout ce qui a été retiré du projet a été déplacé dans le dossier
 `_archive/`.
 
@@ -16,9 +16,9 @@ sont maintenant dans `_archive/` :
 |--------------------------------|-----------------------------------------|
 | `temp_update/`                 | Copie partielle et ancienne du projet   |
 | `public/forma_update/`         | Copie en double, mal placée dans public/|
-| `archnotev9v14.patch`          | Vieux fichier de patch, inutile         |
-| `archnote/` (dossier vide)     | Dossier vide créé par erreur            |
-| `main`, `vite`, `archnote@1.0.0` | Fichiers vides créés par erreur       |
+| `old.patch`                   | Vieux fichier de patch, inutile         |
+| `old/` (dossier vide)         | Dossier vide créé par erreur            |
+| `main`, `vite`, `forma@1.0.0` | Fichiers vides créés par erreur         |
 
 Le vrai projet (`src/`, `public/themes/`, et tous les fichiers de config)
 n'a pas été touché : il était déjà bien rangé.
@@ -31,7 +31,7 @@ en avoir besoin. Je ne l'ai pas fait par précaution.
 Un skill sur mesure a été créé dans :
 
 ```
-.claude/skills/archnote-builder/
+.claude/skills/forma-builder/
   SKILL.md
   references/
     steel-profiles.md
@@ -88,7 +88,7 @@ Puis ouvre http://localhost:5173 dans ton navigateur.
 3. Demande **une seule fonctionnalité à la fois**, en étant précis sur le
    fichier concerné. Exemple :
    « Dans EditorPage.jsx, ajoute le sélecteur de police pour l'outil texte,
-   en suivant le skill archnote-builder et le NEXT_VERSION_PLAN.md. »
+   en suivant le skill forma-builder et le NEXT_VERSION_PLAN.md. »
 4. Teste dans le navigateur, puis passe à la fonctionnalité suivante.
 
 Évite les demandes larges du type « fais toute la refonte UI » : c'est ce qui

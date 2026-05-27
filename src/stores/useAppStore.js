@@ -2,6 +2,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { THEMES } from '@/lib/themes'
+import { applyAppearanceToTheme } from '@/lib/appearance'
 
 const useAppStore = create(
   persist(
@@ -13,7 +14,16 @@ const useAppStore = create(
       // ── Theme ────────────────────────────────────────────
       themeId: 'horizon',
       setTheme: (themeId) => set({ themeId }),
-      getTheme: () => THEMES.find(t => t.id === get().themeId) || THEMES[0],
+      appearanceMode: 'light',
+      setAppearanceMode: (appearanceMode) => set({ appearanceMode }),
+      getTheme: () => {
+        const base = THEMES.find(t => t.id === get().themeId) || THEMES[0]
+        return applyAppearanceToTheme(base, get().appearanceMode)
+      },
+
+      // ── Global font (app-wide override) ───────────────────
+      appFont: '',
+      setAppFont: (appFont) => set({ appFont }),
 
       // ── Notebooks ────────────────────────────────────────
       notebooks: [],
@@ -144,6 +154,8 @@ const useAppStore = create(
       name: 'forma-store',
       partialize: (state) => ({
         themeId: state.themeId,
+        appFont: state.appFont,
+        appearanceMode: state.appearanceMode,
         unitSystem: state.unitSystem,
         scale: state.scale,
         brushPreset: state.brushPreset,

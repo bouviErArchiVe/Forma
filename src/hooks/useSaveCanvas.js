@@ -20,7 +20,7 @@ export function useSaveCanvas(pageId) {
       console.warn('Auto-save failed (offline?):', err.message)
       // Store locally as fallback
       try {
-        localStorage.setItem(`archnote_page_${pageId}`, JSON.stringify({
+        localStorage.setItem(`forma_page_${pageId}`, JSON.stringify({
           canvasData: canvasRef.current.toDataURL('image/webp', 0.5),
           elements: placedElements,
           files: importedFiles,

@@ -1,6 +1,7 @@
 // src/hooks/useExportPDF.js
 import { useCallback } from 'react'
 import useAppStore from '@/stores/useAppStore'
+import { BRAND } from '@/config/branding'
 
 export function useExportPDF() {
   const { activeNotebook, activePage, scale, getTheme } = useAppStore()
@@ -10,7 +11,10 @@ export function useExportPDF() {
       const { default: jsPDF } = await import('jspdf')
       const { default: html2canvas } = await import('html2canvas')
 
-      const pageEl = document.getElementById('archnote-page')
+      const pageEl =
+        (canvasRef?.current && canvasRef.current.closest?.('[data-forma-page]')) ||
+        document.querySelector?.('[data-forma-page]') ||
+        document.getElementById('forma-page')
       if (!pageEl) throw new Error('Page element not found')
 
       const notification = document.createElement('div')
@@ -34,13 +38,13 @@ export function useExportPDF() {
 
       // Add metadata
       pdf.setProperties({
-        title: title || activeNotebook?.title || 'ArchNote Export',
-        author: 'ArchNote',
+        title: title || activeNotebook?.title || `${BRAND.name} Export`,
+        author: BRAND.name,
         subject: `Architecture notebook — ${scale}`,
-        creator: 'ArchNote — archnote.app'
+        creator: BRAND.name
       })
 
-      const filename = `${(title || activeNotebook?.title || 'archnote').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_p${activePage}.pdf`
+      const filename = `${(title || activeNotebook?.title || BRAND.shortName).replace(/[^a-z0-9]/gi, '_').toLowerCase()}_p${activePage}.pdf`
       pdf.save(filename)
 
       document.body.removeChild(notification)

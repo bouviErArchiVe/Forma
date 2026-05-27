@@ -1,4 +1,4 @@
-# ArchNote — Plan Version Suivante
+# FORMA — Plan Version Suivante
 _Généré le 2026-05-26 · Branch: claude/stoic-wright-3X38O_
 
 ---
@@ -185,9 +185,9 @@ _Généré le 2026-05-26 · Branch: claude/stoic-wright-3X38O_
 
 ## ⚠️ Notes techniques importantes
 
-1. **Push bloqué (403)** : Le push depuis ce conteneur échoue. L'utilisateur doit pusher depuis son Windows Git Bash (`~/Documents/ARCHNOTE/ArchNote_project`). Livraison via ZIP.
+1. **Push bloqué (403)** : Le push depuis ce conteneur échoue. L'utilisateur doit pusher depuis son Windows Git Bash (dossier projet). Livraison via ZIP.
 
-2. **Branche** : `claude/stoic-wright-3X38O` sur `bouviErArchiVe/archnote`
+2. **Branche** : `claude/stoic-wright-3X38O`
 
 3. **`framer-motion`** : Non installé. Pour les animations, utiliser CSS transitions + `@keyframes` (déjà présents dans le code).
 
