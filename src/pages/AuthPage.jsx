@@ -38,7 +38,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: T.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--app-font)", padding: 20 }}>
+    <div className="forma-page-shell" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div style={{ background: T.surface, borderRadius: 20, padding: 32, width: 400, maxWidth: "100%", boxShadow: "0 20px 60px rgba(0,0,0,.12)", border: `1px solid ${T.border}` }}>
 
         {/* Logo */}

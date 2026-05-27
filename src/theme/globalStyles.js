@@ -51,8 +51,8 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     #root {
       height: 100%;
       min-height: 100%;
-      background: ${T.bg};
-      color: ${T.ink};
+      background: transparent;
+      color: var(--forma-ink);
       font-family: var(--app-font);
     }
     button, input, select, textarea {
@@ -181,6 +181,46 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     .forma-brand-title {
       font-family: 'Syne', sans-serif;
       letter-spacing: 0;
+    }
+
+    #forma-app-root {
+      min-height: 100%;
+      height: 100%;
+      position: relative;
+      isolation: isolate;
+      background: var(--forma-bg);
+      color: var(--forma-ink);
+      font-family: var(--app-font);
+    }
+    .forma-app-content {
+      position: relative;
+      z-index: 2;
+      min-height: 100%;
+      height: 100%;
+    }
+    .forma-app-bg {
+      z-index: 0 !important;
+    }
+    .forma-app-animation {
+      z-index: 1 !important;
+    }
+    .forma-page-shell {
+      min-height: 100vh;
+      height: 100%;
+      background: transparent;
+      color: var(--forma-ink);
+      font-family: var(--app-font);
+      position: relative;
+    }
+    .forma-app-loading {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      background: var(--forma-bg);
+      color: var(--forma-muted);
+      font-family: var(--app-font);
     }
   `
 }

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import useAppStore from '@/stores/useAppStore'
+import { useTheme } from '@/hooks/useAppearance'
 import useMoodboardStore from '@/stores/useMoodboardStore'
 
 const EMOJIS = ['🌅','🎨','🏛','🌿','🌊','🔥','💎','🌙','⭐','🎭','🏙','🌸','🦋','🪨','🌈','🎯','📐','✏','🖼','🗺']
@@ -124,8 +124,7 @@ function CanvasImg({ img, selected, T, onSelect, onUpdate, onDelete, onBringToFr
 
 export default function MoodboardPage() {
   const navigate = useNavigate()
-  const { getTheme } = useAppStore()
-  const T = getTheme()
+  const { T } = useTheme()
   const { boards, images, addBoard, updateBoard, deleteBoard, archiveBoard, addImage, updateImage, deleteImage, toggleStar, bringToFront } = useMoodboardStore()
 
   const [collapsed, setCollapsed] = useState(false)
@@ -226,7 +225,7 @@ export default function MoodboardPage() {
   const cols = [0, 1, 2].map(col => displayImages.filter((_, i) => i % 3 === col))
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: T.bg, color: T.ink, fontFamily: `'${getTheme().font}',sans-serif`, position: 'relative', zIndex: 2 }}>
+    <div className="forma-page-shell" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
 
       {/* SIDEBAR */}
       <div style={SB}>

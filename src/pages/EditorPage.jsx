@@ -1949,7 +1949,7 @@ export default function EditorPage(){
   }
 
   return(
-    <div style={{display:"flex",flexDirection:"column",height:"100vh",background:T.bg,fontFamily:"var(--app-font)",overflow:"hidden",color:T.ink,position:"relative",zIndex:2}}>
+    <div className="forma-page-shell" style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
       {showPageSettings&&<PageSettings T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} onClose={()=>setShowPageSettings(false)}/>}
       {showTheme&&<ThemePicker current={T} onChange={th=>setTheme(th.id)} onClose={()=>setShowTheme(false)}/>}
       {showShare&&<ShareModal T={T} nbId={nb.id} nbTitle={nb.title} onClose={()=>setShowShare(false)}/>}

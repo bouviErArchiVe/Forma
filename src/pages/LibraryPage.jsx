@@ -247,7 +247,7 @@ function ThemePicker({ onClose }) {
         style={{ padding: 22, width: 600, maxWidth: "95vw", maxHeight: "88vh", overflowY: "auto" }}
         ref={modalRef}
       >
-        <div style={{ position: "relative", marginBottom: 14 }}>
+        <div style={{ position: "relative", marginBottom: 14, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", padding: "2px 40px 0", boxSizing: "border-box" }}>
           <button
             onClick={onClose}
             className="forma-btn-glass"
@@ -262,6 +262,7 @@ function ThemePicker({ onClose }) {
               color: muted,
               padding: "2px 6px",
               zIndex: 1,
+              lineHeight: 1,
             }}
           >
             ×
@@ -639,7 +640,7 @@ export default function LibraryPage() {
   const avatarLetter = userName ? userName.charAt(0).toUpperCase() : "?"
 
   return (
-    <div style={{minHeight:"100vh", background:T.bg, fontFamily:"var(--app-font)", color:T.ink, position:"relative", zIndex:2}}>
+    <div className="forma-page-shell">
       <style>{`
         @keyframes cardIn { from { opacity:0; transform:translateY(14px) scale(.97); } to { opacity:1; transform:none; } }
         @keyframes shimmer { from { background-position: -200% center; } to { background-position: 200% center; } }
