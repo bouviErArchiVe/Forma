@@ -1,10 +1,11 @@
 // src/stores/useAppStore.js
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { THEMES } from '@/lib/themes'
 import { applyAppearanceToTheme } from '@/lib/appearance'
 import { normalizeCanvasTextFont } from '@/lib/fontUtils'
 import { normalizeDictationLang } from '@/lib/speechRecognition'
+import { createSafePersistStorage } from '@/lib/storage'
 
 const useAppStore = create(
   persist(
@@ -193,6 +194,7 @@ const useAppStore = create(
     }),
     {
       name: 'forma-store',
+      storage: createJSONStorage(createSafePersistStorage),
       partialize: (state) => ({
         themeId: state.themeId,
         appFont: state.appFont,

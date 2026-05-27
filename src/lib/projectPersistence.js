@@ -1,4 +1,4 @@
-/** Persistance locale des carnets (mode hors-ligne / backup). */
+import { safeGetLocalStorage, safeJsonParse } from '@/lib/storage'
 
 const NOTEBOOKS_KEY = 'forma_local_notebooks_v1'
 
@@ -11,12 +11,8 @@ function pagesKey(nbId) {
 }
 
 export function loadLocalNotebooks() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(NOTEBOOKS_KEY) || '[]')
-    return Array.isArray(raw) ? raw : []
-  } catch {
-    return []
-  }
+  const raw = safeJsonParse(safeGetLocalStorage(NOTEBOOKS_KEY, '[]'), [])
+  return Array.isArray(raw) ? raw : []
 }
 
 export function saveLocalNotebooksList(notebooks) {
@@ -43,12 +39,8 @@ export function deleteLocalNotebook(id) {
 }
 
 export function loadLocalPages(nbId) {
-  try {
-    const raw = JSON.parse(localStorage.getItem(pagesKey(nbId)) || '[]')
-    return Array.isArray(raw) ? raw : []
-  } catch {
-    return []
-  }
+  const raw = safeJsonParse(safeGetLocalStorage(pagesKey(nbId), '[]'), [])
+  return Array.isArray(raw) ? raw : []
 }
 
 export function saveLocalPages(nbId, pages) {

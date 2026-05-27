@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
+import { safeJsonParse, safeGetLocalStorage } from "@/lib/storage"
 import { THEMES } from "@/lib/themes"
 import FocusPanel from "@/components/FocusPanel"
 import { BACKGROUNDS } from '@/lib/backgrounds'
@@ -94,7 +95,8 @@ const COLOR_LIST=["#c8622a","#3d6b8c","#4a7c59","#7c5c3d","#8c3d6b","#3d5c8c","#
 const RECENT_KEY = "forma_recent"
 const saveRecent = (id) => {
   try {
-    const r = [id, ...JSON.parse(localStorage.getItem(RECENT_KEY) || "[]").filter(x => x !== id)].slice(0, 5)
+    const prev = safeJsonParse(safeGetLocalStorage(RECENT_KEY, '[]'), [])
+    const r = [id, ...(Array.isArray(prev) ? prev : []).filter(x => x !== id)].slice(0, 5)
     localStorage.setItem(RECENT_KEY, JSON.stringify(r))
   } catch {}
 }
@@ -587,7 +589,7 @@ export default function LibraryPage() {
       }
     }
     init()
-    setRecentIds(JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"))
+    setRecentIds(safeJsonParse(safeGetLocalStorage(RECENT_KEY, '[]'), []))
   }, [])
 
   const loadNotebooks = async uid => {
@@ -617,7 +619,7 @@ export default function LibraryPage() {
 
   const open = nb => {
     saveRecent(nb.id)
-    setRecentIds(JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"))
+    setRecentIds(safeJsonParse(safeGetLocalStorage(RECENT_KEY, '[]'), []))
     setActiveNotebook(nb)
     navigate(`/editor/${nb.id}`)
   }
@@ -1289,7 +1291,7 @@ export default function LibraryPage() {
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                 <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: T.ink, lineHeight: 1 }}>Forma</div>
-                {userId && notebooks.length > 0 && (
+                {notebooks.length > 0 && (
                   <div style={{ padding: "2px 7px", borderRadius: 20, background: `${T.accent}18`, border: `1px solid ${T.accent}44`, fontSize: 10, fontWeight: 700, color: T.accent, lineHeight: 1.4 }}>{notebooks.length}</div>
                 )}
               </div>
@@ -1354,7 +1356,7 @@ export default function LibraryPage() {
               </div>
             )}
             <button
-              onClick={() => userId ? setShowNew(true) : navigate("/auth")}
+              onClick={() => setShowNew(true)}
               className="forma-btn-glass"
               style={{
                 padding: "8px 16px", borderRadius: TOKENS.radius.sm,
@@ -1369,8 +1371,8 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      {/* NOT LOGGED IN */}
-      {!userId && !loading && (
+      {/* NOT LOGGED IN — landing si aucun carnet local */}
+      {!userId && !loading && notebooks.length === 0 && (
         <div style={{ padding: "90px 22px" }}>
           <BrandLogo
             src={T.img}
@@ -1389,8 +1391,17 @@ export default function LibraryPage() {
         </div>
       )}
 
-      {userId && (
+      {(userId || notebooks.length > 0) && (
         <div className="forma-library-content">
+          {!userId && (
+            <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 10, background: `${T.accent}12`, border: `1px solid ${T.accent}33`, fontSize: 12, color: T.ink }}>
+              Mode local — tes carnets restent sur cet appareil.{" "}
+              <button type="button" onClick={() => navigate("/auth")} style={{ background: "none", border: "none", color: T.accent, fontWeight: 700, cursor: "pointer", padding: 0 }}>
+                Se connecter
+              </button>{" "}
+              pour la synchro cloud.
+            </div>
+          )}
 
           {/* COMPACT STATS BAR */}
           <div style={{display:"flex",gap:10,marginBottom:24,flexWrap:"wrap"}}>

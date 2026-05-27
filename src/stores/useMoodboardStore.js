@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import { createSafePersistStorage } from '@/lib/storage'
 
 const useMoodboardStore = create(
   persist(
@@ -72,6 +73,7 @@ const useMoodboardStore = create(
     }),
     {
       name: 'forma-moodboard',
+      storage: createJSONStorage(createSafePersistStorage),
       partialize: (state) => ({
         boards: state.boards,
         images: state.images.map(img => ({

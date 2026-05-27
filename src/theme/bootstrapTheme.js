@@ -1,5 +1,6 @@
 import { applyAppearanceToTheme } from '@/lib/appearance'
 import { THEMES } from '@/lib/themes'
+import { safeGetLocalStorage, safeJsonParse } from '@/lib/storage'
 
 const STORAGE_KEY = 'forma-store'
 
@@ -7,9 +8,9 @@ const STORAGE_KEY = 'forma-store'
 export function bootstrapFormaTheme() {
   if (typeof document === 'undefined') return
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = safeGetLocalStorage(STORAGE_KEY)
     if (!raw) return
-    const parsed = JSON.parse(raw)
+    const parsed = safeJsonParse(raw, null)
     const s = parsed?.state ?? parsed
     if (!s) return
 

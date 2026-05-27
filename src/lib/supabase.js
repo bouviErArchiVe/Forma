@@ -1,19 +1,33 @@
 // Schéma SQL (profiles, amis, partage) : supabase/migrations/001_account_sharing.sql
 import { createClient } from '@supabase/supabase-js'
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://YOUR_PROJECT.supabase.co'
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_ANON_KEY'
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
+export const isSupabaseConfigured = Boolean(
+  SUPABASE_URL
+  && SUPABASE_ANON_KEY
+  && !SUPABASE_URL.includes('YOUR_PROJECT')
+  && SUPABASE_ANON_KEY !== 'YOUR_ANON_KEY',
+)
+
+const FALLBACK_URL = 'https://placeholder.supabase.co'
+const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder'
+
+export const supabase = createClient(
+  isSupabaseConfigured ? SUPABASE_URL : FALLBACK_URL,
+  isSupabaseConfigured ? SUPABASE_ANON_KEY : FALLBACK_KEY,
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+    },
+    realtime: {
+      params: { eventsPerSecond: 10 },
+    },
   },
-  realtime: {
-    params: { eventsPerSecond: 10 }
-  }
-})
+)
 
 // ─── Auth helpers ────────────────────────────────────────────
 export const signInWithGoogle = () =>

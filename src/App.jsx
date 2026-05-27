@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import AppLoading from '@/components/AppLoading'
 import LibraryPage from '@/pages/LibraryPage'
 import EditorPage from '@/pages/EditorPage'
 import AuthPage from '@/pages/AuthPage'
@@ -22,13 +23,7 @@ function EasterEggLayer() {
 
 function ProtectedRoute({ children }) {
   const { loading } = useAuth()
-  if (loading) {
-    return (
-      <div className="forma-app-loading">
-        Chargement…
-      </div>
-    )
-  }
+  if (loading) return <AppLoading />
   return children
 }
 
