@@ -38,8 +38,10 @@ import {
 } from "@/lib/projectPersistence"
 import {
   loadFolders,
+  loadLocalFoldersForScope,
   persistFolderCreate,
   persistFolderDelete,
+  resolveFolderUserId,
 } from "@/lib/folderPersistence"
 
 const DEFAULT_SUBJECTS=[
@@ -470,7 +472,7 @@ export default function LibraryPage() {
   const spotifyIframeRef = useRef(null)
 
   const [notebooks, setNotebooks] = useState([])
-  const [folders, setFolders] = useState([])
+  const [folders, setFolders] = useState(() => loadLocalFoldersForScope(null))
   const [subjects, setSubjects] = useState(DEFAULT_SUBJECTS)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -520,33 +522,52 @@ export default function LibraryPage() {
 
   useEffect(() => {
     const init = async () => {
+      let uid = null
       try {
         const local = loadLocalNotebooks()
-        const {data:{session}} = await supabase.auth.getSession()
-        if (session?.user) {
-          setUserId(session.user.id)
+        const { data: { session } } = await supabase.auth.getSession()
+        uid = session?.user?.id || null
+
+        if (uid) {
+          setUserId(uid)
           const uname = session.user.user_metadata?.full_name || session.user.email || ""
           setUserName(uname)
-          const [{ data, error }, folderRes] = await Promise.all([
-            supabase.from("notebooks").select("*").eq("user_id", session.user.id).order("updated_at", {ascending:false}),
-            loadFolders(session.user.id),
-          ])
-          if (error) throw error
+        }
+
+        // Dossiers : chargement indépendant (ne jamais écraser à [] si les carnets échouent)
+        try {
+          const folderRes = uid ? await loadFolders(uid) : { folders: loadLocalFoldersForScope(null) }
           setFolders(folderRes.folders || [])
-          const cloud = data || []
-          const merged = [...cloud]
-          local.forEach((ln) => {
-            if (!merged.some((n) => n.id === ln.id)) merged.push(ln)
-          })
-          merged.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))
-          setNotebooks(merged)
+        } catch {
+          setFolders(loadLocalFoldersForScope(uid))
+        }
+
+        // Carnets
+        if (uid) {
+          try {
+            const { data, error } = await supabase
+              .from("notebooks")
+              .select("*")
+              .eq("user_id", uid)
+              .order("updated_at", { ascending: false })
+            if (error) throw error
+            const cloud = data || []
+            const merged = [...cloud]
+            local.forEach((ln) => {
+              if (!merged.some((n) => n.id === ln.id)) merged.push(ln)
+            })
+            merged.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))
+            setNotebooks(merged)
+          } catch {
+            setNotebooks(local.length ? local : loadLocalNotebooks())
+            addNotification("Carnets cloud indisponibles — mode local", "error")
+          }
         } else {
           setNotebooks(local)
-          setFolders(loadFolders(null).folders || [])
         }
       } catch {
         setNotebooks(loadLocalNotebooks())
-        setFolders(loadFolders(null).folders || [])
+        setFolders(loadLocalFoldersForScope(uid))
       } finally {
         setLoading(false)
       }
@@ -716,7 +737,9 @@ export default function LibraryPage() {
 
   const createFolder = async () => {
     if (!folderName.trim()) return
-    const res = await persistFolderCreate(userId, { name: folderName.trim(), icon: folderEmoji })
+    const uid = userId || await resolveFolderUserId()
+    if (uid && uid !== userId) setUserId(uid)
+    const res = await persistFolderCreate(uid, { name: folderName.trim(), icon: folderEmoji })
     if (!res.ok) {
       addNotification(res.error || "Erreur de sauvegarde du dossier", "error")
       return
