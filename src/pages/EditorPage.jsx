@@ -1525,32 +1525,28 @@ export default function EditorPage(){
     return()=>ro.disconnect()
   },[])
 
-  const distPointToRect=(p,rx,ry,rw,rh)=>{
-    const cx=Math.max(rx,Math.min(p.x,rx+rw))
-    const cy=Math.max(ry,Math.min(p.y,ry+rh))
-    return Math.hypot(p.x-cx,p.y-cy)
-  }
+  const pointInRect=(p,rx,ry,rw,rh)=>p.x>=rx&&p.x<=rx+rw&&p.y>=ry&&p.y<=ry+rh
 
   const eraseObjectsAt = useCallback((p, r) => {
     if(!p) return
     let changed = false
     const hitR = Math.max(r, 2)
-    // Imported images (absolute page coords)
+    // Imported images (absolute page coords) — auto mode: centre du curseur dans l'objet
     const imgs = importedRef.current || []
     if(imgs.length){
-      const hitIds = imgs.filter(img => distPointToRect(p, img.x, img.y, img.w, img.h) <= hitR + 2).map(i => i.id)
+      const hitIds = imgs.filter(img => pointInRect(p, img.x, img.y, img.w, img.h)).map(i => i.id)
       if(hitIds.length){
         setImportedImages(cur => cur.filter(i => !hitIds.includes(i.id)))
         changed = true
       }
     }
 
-    // Structural elements
+    // Structural elements — idem, pas de suppression au simple survol proche
     const els = placedRef.current || []
     if(els.length){
       const hitIds = els.filter(it => {
         const { w, h } = getPlacedSize(it)
-        return distPointToRect(p, it.x, it.y, w, h) <= hitR + 3
+        return pointInRect(p, it.x, it.y, w, h)
       }).map(i => i.id)
       if(hitIds.length){
         setPlaced(cur => cur.filter(it => !hitIds.includes(it.id)))
@@ -1620,7 +1616,7 @@ export default function EditorPage(){
     canvas_data:serializeCanvasData(window.__getStrokes?.()||[],layers,activeLayerId),
   }),[buildCurrentPageMeta,layers,activeLayerId])
 
-  const{saveNow,scheduleSave,status:saveStatus,lastSavedAt}=useAutoSave({
+  const{saveNow,scheduleSave,cancelScheduledSave,status:saveStatus,lastSavedAt}=useAutoSave({
     notebookId:nb.id,
     pageId,
     pageNum:page,
@@ -1634,9 +1630,10 @@ export default function EditorPage(){
 
   const goToPage=useCallback(async(num)=>{
     if(num<1||num>pagesCount||num===page)return
+    cancelScheduledSave()
     await saveNow()
     setPage(num)
-  },[page,pagesCount,saveNow])
+  },[page,pagesCount,saveNow,cancelScheduledSave])
   goToPageRef.current=goToPage
 
   const documentPage=useMemo(()=>({
@@ -1804,6 +1801,7 @@ export default function EditorPage(){
       skipPageLoadRef.current=false
       return
     }
+    cancelScheduledSave()
     const load=async()=>{
       try{
         const{data:{session}}=await supabase.auth.getSession()
@@ -1862,7 +1860,7 @@ export default function EditorPage(){
       }
     }
     load()
-  },[nb.id,nb.template,page,applyPageMetaToState])
+  },[nb.id,nb.template,page,applyPageMetaToState,cancelScheduledSave])
 
   // Add new page
   const addPage=async(bgImage=null)=>{
@@ -2402,9 +2400,9 @@ export default function EditorPage(){
     return(
       <div style={{position:"fixed",inset:0,background:"#000",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}}>
         <div style={{position:"absolute",top:16,right:16,display:"flex",gap:8,zIndex:10}}>
-          <button onClick={()=>setPage(p=>Math.max(1,p-1))}style={{padding:"8px 16px",borderRadius:10,background:"rgba(255,255,255,.1)",border:"none",color:"#fff",cursor:"pointer",fontSize:18}}>‹</button>
+          <button onClick={()=>goToPage(Math.max(1,page-1))}style={{padding:"8px 16px",borderRadius:10,background:"rgba(255,255,255,.1)",border:"none",color:"#fff",cursor:"pointer",fontSize:18}}>‹</button>
           <span style={{color:"#fff",fontSize:14,padding:"8px 12px"}}>{page}/{pagesCount}</span>
-          <button onClick={()=>setPage(p=>Math.min(pagesCount,p+1))}style={{padding:"8px 16px",borderRadius:10,background:"rgba(255,255,255,.1)",border:"none",color:"#fff",cursor:"pointer",fontSize:18}}>›</button>
+          <button onClick={()=>goToPage(Math.min(pagesCount,page+1))}style={{padding:"8px 16px",borderRadius:10,background:"rgba(255,255,255,.1)",border:"none",color:"#fff",cursor:"pointer",fontSize:18}}>›</button>
           <button onClick={()=>setShowPresent(false)}style={{padding:"8px 16px",borderRadius:10,background:"rgba(233,69,96,.3)",border:"none",color:"#fff",cursor:"pointer",fontSize:13}}>✕ Quitter</button>
         </div>
         <div style={{transform:"scale(0.9)",transformOrigin:"center",boxShadow:"0 20px 80px rgba(0,0,0,.8)"}}>
@@ -2850,7 +2848,7 @@ export default function EditorPage(){
                 <RulerSvg widthPx={Math.min(PW, 1158)} unitSys={unitSys} scale={scale} zoom={zoom} strokeColor={T.muted} />
               </div>}
 
-              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={eraserActive?15:5}/>}
+              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={5}/>}
               {!eraserActive&&canvasSelection?.shapeBounds&&canvasSelection.count===1&&!textEdit&&(
                 <ShapeTransformHandles
                   T={T}

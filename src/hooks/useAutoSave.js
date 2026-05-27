@@ -23,11 +23,19 @@ export function useAutoSave({
   const timer = useRef(null)
   const lastPayloadRef = useRef(null)
   const savingRef = useRef(false)
+  const pendingSaveRef = useRef(false)
   const lastSavedAtRef = useRef(null)
   const buildPagePayloadRef = useRef(buildPagePayload)
   buildPagePayloadRef.current = buildPagePayload
   const [status, setStatus] = useState('idle')
   const [lastSavedAt, setLastSavedAt] = useState(null)
+
+  const cancelScheduledSave = useCallback(() => {
+    if (timer.current) {
+      clearTimeout(timer.current)
+      timer.current = null
+    }
+  }, [])
 
   const markDirty = useCallback(() => {
     setStatus((s) => (s === 'saving' ? 'saving' : 'dirty'))
@@ -54,7 +62,12 @@ export function useAutoSave({
   }, [pageId, notebookId, pageNum, readOnly, onNotebookTouch])
 
   const saveNow = useCallback(async () => {
-    if (!pageId || !notebookId || readOnly || savingRef.current) return false
+    if (!pageId || !notebookId || readOnly) return false
+    if (savingRef.current) {
+      pendingSaveRef.current = true
+      return false
+    }
+    cancelScheduledSave()
     const payload = buildPagePayloadRef.current?.()
     if (!payload) return false
 
@@ -113,6 +126,10 @@ export function useAutoSave({
       setLastSavedAt(savedAt)
       setStatus('saved')
       savingRef.current = false
+      if (pendingSaveRef.current) {
+        pendingSaveRef.current = false
+        return saveNow()
+      }
       return true
     } catch (err) {
       console.warn('Autosave failed, local backup:', err?.message)
@@ -126,14 +143,19 @@ export function useAutoSave({
         setLastSavedAt(savedAt)
         setStatus('offline')
         savingRef.current = false
+        if (pendingSaveRef.current) {
+          pendingSaveRef.current = false
+          return saveNow()
+        }
         return true
       } catch {
         setStatus('error')
         savingRef.current = false
+        pendingSaveRef.current = false
         return false
       }
     }
-  }, [pageId, notebookId, pageNum, readOnly, onPagesUpdate, onNotebookTouch])
+  }, [pageId, notebookId, pageNum, readOnly, onPagesUpdate, onNotebookTouch, cancelScheduledSave])
 
   const scheduleSave = useCallback(() => {
     markDirty()
@@ -142,11 +164,13 @@ export function useAutoSave({
   }, [saveNow, markDirty])
 
   useEffect(() => {
+    cancelScheduledSave()
+    pendingSaveRef.current = false
     lastPayloadRef.current = null
     lastSavedAtRef.current = null
     setStatus('idle')
     setLastSavedAt(null)
-  }, [pageId])
+  }, [pageId, cancelScheduledSave])
 
   useEffect(() => () => {
     if (timer.current) clearTimeout(timer.current)
@@ -178,5 +202,5 @@ export function useAutoSave({
     }
   }, [saveNow, syncLocalBackup])
 
-  return { saveNow, scheduleSave, status, lastSavedAt, markDirty, syncLocalBackup }
+  return { saveNow, scheduleSave, cancelScheduledSave, status, lastSavedAt, markDirty, syncLocalBackup }
 }

@@ -9,9 +9,9 @@ export const ERASER_MODES = [
 export function loadEraserSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return { mode: 'auto', sizeMm: 5, ...JSON.parse(raw) }
+    if (raw) return { mode: 'precision', sizeMm: 5, ...JSON.parse(raw) }
   } catch {}
-  return { mode: 'auto', sizeMm: 5 }
+  return { mode: 'precision', sizeMm: 5 }
 }
 
 export function saveEraserSettings(settings) {
