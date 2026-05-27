@@ -322,10 +322,12 @@ export default function DraggablePanel({
     </button>
   )
 
+  const panelMode = layout.mode === 'float' ? 'float' : layout.mode
+
   return (
     <div
       data-forma-panel
-      className="forma-animate-in"
+      className={`forma-panel-enter forma-panel-enter--${panelMode}`}
       style={{
         ...shell,
         display: 'flex',

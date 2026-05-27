@@ -29,8 +29,16 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
       --forma-radius-md: ${radius.md}px;
       --forma-radius-lg: ${radius.lg}px;
       --forma-radius-xl: ${radius.xl}px;
+      --forma-space-xs: ${spacing.xs}px;
       --forma-space-sm: ${spacing.sm}px;
       --forma-space-md: ${spacing.md}px;
+      --forma-space-lg: ${spacing.lg}px;
+      --forma-space-xl: ${spacing.xl}px;
+      --forma-space-page: ${spacing.page}px;
+      --forma-shadow-sm: ${shadow.sm};
+      --forma-shadow-md: ${shadow.md};
+      --forma-shadow-lg: ${shadow.lg};
+      --forma-shadow-card: ${shadow.card};
       --forma-transition-fast: ${transition.fast};
       --forma-transition-normal: ${transition.normal};
       --forma-transition-spring: ${transition.spring};
@@ -87,9 +95,40 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     html.forma-animations-off .forma-animate-in,
     html.forma-animations-off .forma-animate-scale,
     html.forma-animations-off .forma-animate-sheet,
+    html.forma-animations-off .forma-route-enter,
+    html.forma-animations-off .forma-panel-enter,
     html.forma-animations-off .fade-up,
     html.forma-animations-off .nb-card {
       animation: none !important;
+    }
+
+    @keyframes formaBackdropIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes formaRouteEnter {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes formaRouteEditor {
+      from { opacity: 0; transform: translateX(12px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes formaPanelFromRight {
+      from { opacity: 0; transform: translateX(18px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes formaPanelFromLeft {
+      from { opacity: 0; transform: translateX(-18px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes formaPanelFromTop {
+      from { opacity: 0; transform: translateY(-14px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes formaPanelFromBottom {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: none; }
     }
 
     @keyframes fadeUp {
@@ -121,14 +160,28 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
 
     .fade-up { animation: fadeUp .28s ease forwards; }
     .forma-animate-in { animation: formaFadeUp .24s var(--forma-transition-spring) forwards; }
-    .forma-animate-scale { animation: formaScaleIn .2s var(--forma-transition-spring) forwards; }
+    .forma-animate-scale { animation: formaScaleIn .22s var(--forma-transition-spring) forwards; }
     .forma-animate-sheet { animation: formaSheetIn .32s var(--forma-transition-spring) forwards; }
+
+    .forma-route-enter {
+      animation: formaRouteEnter .32s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+    .forma-route-enter--editor {
+      animation: formaRouteEditor .34s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    .forma-panel-enter--right { animation: formaPanelFromRight .28s var(--forma-transition-spring) forwards; }
+    .forma-panel-enter--left { animation: formaPanelFromLeft .28s var(--forma-transition-spring) forwards; }
+    .forma-panel-enter--top { animation: formaPanelFromTop .28s var(--forma-transition-spring) forwards; }
+    .forma-panel-enter--bottom { animation: formaPanelFromBottom .28s var(--forma-transition-spring) forwards; }
+    .forma-panel-enter--float { animation: formaScaleIn .24s var(--forma-transition-spring) forwards; }
 
     .forma-modal-backdrop {
       position: fixed;
       inset: 0;
       display: flex;
       justify-content: center;
+      animation: formaBackdropIn .2s ease forwards;
       padding: 16px;
       padding-top: max(16px, env(safe-area-inset-top));
       padding-bottom: max(16px, env(safe-area-inset-bottom));
@@ -174,28 +227,28 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
       margin: 0 auto;
     }
     .forma-library-content {
-      padding: 20px 22px;
+      padding: var(--forma-space-page) 22px;
       max-width: 1400px;
       margin: 0 auto;
       padding-left: max(22px, env(safe-area-inset-left));
       padding-right: max(22px, env(safe-area-inset-right));
-      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      padding-bottom: max(var(--forma-space-page), env(safe-area-inset-bottom));
     }
     @media (min-width: 768px) {
       .forma-library-content {
-        padding: 28px 32px 40px;
+        padding: var(--forma-space-page) 32px 48px;
         padding-left: max(32px, env(safe-area-inset-left));
         padding-right: max(32px, env(safe-area-inset-right));
-        padding-bottom: max(40px, env(safe-area-inset-bottom));
+        padding-bottom: max(48px, env(safe-area-inset-bottom));
       }
       .forma-library-header { padding: 0 32px; }
     }
     @media (min-width: 1024px) {
       .forma-library-content {
-        padding: 32px 40px 48px;
+        padding: 32px 40px 56px;
         padding-left: max(40px, env(safe-area-inset-left));
         padding-right: max(40px, env(safe-area-inset-right));
-        padding-bottom: max(48px, env(safe-area-inset-bottom));
+        padding-bottom: max(56px, env(safe-area-inset-bottom));
       }
     }
 
@@ -215,17 +268,19 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     .forma-stat-chip--clickable:active { transform: scale(.97); }
 
     .nb-card {
-      animation: cardIn .32s cubic-bezier(.2,.8,.2,1) both;
-      transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s;
-      box-shadow: ${shadow.sm};
+      animation: cardIn .34s cubic-bezier(.2,.8,.2,1) both;
+      transition: transform .24s cubic-bezier(.2,.8,.2,1), box-shadow .24s ease;
+      box-shadow: var(--forma-shadow-card);
+      border: none;
     }
     .nb-card:hover {
-      transform: translateY(-4px) !important;
-      box-shadow: ${shadow.lg} !important;
+      transform: translateY(-5px) !important;
+      box-shadow: ${shadow.cardHover} !important;
     }
     .nb-card--list:hover,
     .nb-card--timeline:hover {
       transform: translateY(-2px) !important;
+      box-shadow: var(--forma-shadow-md) !important;
     }
     .nb-btn-action { opacity: 0; transition: opacity .15s; }
     @media (hover: hover) {
@@ -242,10 +297,15 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
     .nb-card:nth-child(4) { animation-delay: 105ms; }
     .nb-card:nth-child(5) { animation-delay: 140ms; }
     .nb-card:nth-child(6) { animation-delay: 175ms; }
+    .nb-card:nth-child(7) { animation-delay: 210ms; }
+    .nb-card:nth-child(8) { animation-delay: 245ms; }
+    .nb-card:nth-child(9) { animation-delay: 280ms; }
+    .nb-card:nth-child(10) { animation-delay: 315ms; }
+    .nb-card:nth-child(11) { animation-delay: 350ms; }
+    .nb-card:nth-child(12) { animation-delay: 385ms; }
 
     .nb-card--selected {
-      border-color: var(--forma-accent, #c8622a) !important;
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--forma-accent, #c8622a) 30%, transparent) !important;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--forma-accent, #c8622a) 32%, transparent), var(--forma-shadow-md) !important;
     }
     .nb-card--selecting:hover {
       transform: none !important;

@@ -1,5 +1,6 @@
 import CoverPattern from '@/components/CoverPattern'
 import { useLongPress } from '@/hooks/useLongPress'
+import { notebookCardStyle } from '@/lib/design'
 
 function timeAgo(d) {
   const m = Math.floor((Date.now() - new Date(d).getTime()) / 60000)
@@ -79,13 +80,11 @@ export default function NotebookLibraryItem({
         {...lp}
         style={{
           ...cardStyle,
+          ...notebookCardStyle(T, { selected, view: 'list' }),
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          padding: '10px 12px',
-          borderRadius: 12,
-          border: `1px solid ${selected ? T.accent : T.border}`,
-          background: selected ? `${T.accent}10` : T.surface,
+          padding: '12px 14px',
         }}
       >
         <SelectBadge selected={selected} T={T} />
@@ -121,13 +120,11 @@ export default function NotebookLibraryItem({
         {...lp}
         style={{
           ...cardStyle,
+          ...notebookCardStyle(T, { selected, view: 'timeline' }),
           display: 'flex',
           alignItems: 'center',
           gap: 10,
-          padding: '8px 10px',
-          borderRadius: 10,
-          border: `1px solid ${selected ? T.accent : T.border}`,
-          background: selected ? `${T.accent}10` : T.bg,
+          padding: '10px 12px',
           marginLeft: 8,
           position: 'relative',
         }}
@@ -154,10 +151,7 @@ export default function NotebookLibraryItem({
       {...lp}
       style={{
         ...cardStyle,
-        borderRadius: 16,
-        background: selected ? `${T.accent}08` : T.surface,
-        border: `1px solid ${selected ? T.accent : T.border}`,
-        overflow: 'hidden',
+        ...notebookCardStyle(T, { selected, view: 'grid' }),
       }}
     >
       <SelectBadge selected={selected} T={T} />
