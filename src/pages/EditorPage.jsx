@@ -4,6 +4,9 @@ import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
 import { THEMES } from "@/lib/themes"
 import FloatingSelectionToolbar from "@/components/FloatingSelectionToolbar"
+import CanvasTextEditor from "@/components/CanvasTextEditor"
+import ShapeTransformHandles from "@/components/ShapeTransformHandles"
+import { drawShapeStroke, shapeStylePayload, getShapeBounds, isTransformableShape, resizeShapeBox, SHAPE_TYPES } from "@/lib/shapeStroke"
 import { glassStyle } from "@/theme/glass"
 import { TOKENS } from "@/theme/tokens"
 import { getToolCursor, getPlacementCursor, isDarkSurface } from "@/theme/cursors"
@@ -382,7 +385,7 @@ function Paper({gridStyle,tmpl,T,pageColor,gridColor,PW=794,PH=1123}){
 }
 
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */
-function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123}){
+function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest}){
   const drawing=useRef(false)
   const strokes=useRef([])   // committed strokes
   const history=useRef([])   // for multi-level undo (copy of strokes at each commit)
@@ -427,48 +430,19 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
   }
 
   const drawSingleStroke=(ctx,s,layerOp)=>{
+    const st=s.shapeType||s.tool
+    if(st==="text"||SHAPE_TYPES.has(st)||["line","rect","circle","arrow","cloud","dimline"].includes(st)){
+      drawShapeStroke(ctx,s,layerOp,unitSys,formatDimension)
+      return
+    }
     if(!s.pts||s.pts.length<2)return
     ctx.beginPath();ctx.strokeStyle=s.color;ctx.lineWidth=s.size
     ctx.lineCap="round";ctx.lineJoin="round"
     const baseOp=(s.opacity??1)*layerOp
     ctx.globalAlpha=s.tool==="highlight"?Math.min(baseOp,.4):baseOp
     ctx.globalCompositeOperation=s.tool==="eraser"?"destination-out":"source-over"
-    if(s.shapeType==="line"||s.shapeType==="dimline"){
-      ctx.moveTo(s.pts[0].x,s.pts[0].y);ctx.lineTo(s.pts[1].x,s.pts[1].y);ctx.stroke()
-      if(s.shapeType==="dimline"){
-        const ang=Math.atan2(s.pts[1].y-s.pts[0].y,s.pts[1].x-s.pts[0].x)
-        const perp=ang+Math.PI/2,tick=8
-        ;[[s.pts[0],s.pts[1]]].forEach(([a,b])=>{
-          ctx.beginPath();ctx.moveTo(a.x-tick*Math.cos(perp)/2,a.y-tick*Math.sin(perp)/2);ctx.lineTo(a.x+tick*Math.cos(perp)/2,a.y+tick*Math.sin(perp)/2);ctx.stroke()
-          ctx.beginPath();ctx.moveTo(b.x-tick*Math.cos(perp)/2,b.y-tick*Math.sin(perp)/2);ctx.lineTo(b.x+tick*Math.cos(perp)/2,b.y+tick*Math.sin(perp)/2);ctx.stroke()
-        })
-        const distMm=Math.sqrt(Math.pow(s.pts[1].x-s.pts[0].x,2)+Math.pow(s.pts[1].y-s.pts[0].y,2))/3.78
-        const mx=(s.pts[0].x+s.pts[1].x)/2,my=(s.pts[0].y+s.pts[1].y)/2
-        ctx.font=`${Math.max(s.size*3,10)}px monospace`;ctx.fillStyle=s.color;ctx.globalAlpha=1
-        ctx.fillText(formatDimension(distMm,unitSys),mx+4,my-4)
-      }
-    }
-    else if(s.shapeType==="rect"){ctx.strokeRect(s.pts[0].x,s.pts[0].y,s.pts[1].x-s.pts[0].x,s.pts[1].y-s.pts[0].y)}
-    else if(s.shapeType==="circle"){const rx=Math.abs(s.pts[1].x-s.pts[0].x)/2,ry=Math.abs(s.pts[1].y-s.pts[0].y)/2;if(rx>0&&ry>0){ctx.ellipse((s.pts[0].x+s.pts[1].x)/2,(s.pts[0].y+s.pts[1].y)/2,rx,ry,0,0,Math.PI*2);ctx.stroke()}}
-    else if(s.shapeType==="arrow"){
-      const[a,b]=[s.pts[0],s.pts[1]],ang=Math.atan2(b.y-a.y,b.x-a.x),hs=Math.min(20,s.size*5+10)
-      ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()
-      ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-hs*Math.cos(ang-Math.PI/6),b.y-hs*Math.sin(ang-Math.PI/6));ctx.lineTo(b.x-hs*Math.cos(ang+Math.PI/6),b.y-hs*Math.sin(ang+Math.PI/6));ctx.closePath();ctx.fillStyle=s.color;ctx.fill()
-    }
-    else if(s.shapeType==="text"){
-      ctx.font=`${Math.max(s.size*3,14)}px Nunito, sans-serif`;ctx.fillStyle=s.color;ctx.globalAlpha=baseOp;ctx.globalCompositeOperation="source-over"
-      ctx.fillText(s.text||"",s.pts[0].x,s.pts[0].y)
-    }
-    else if(s.shapeType==="cloud"){
-      const[a,b]=[s.pts[0],s.pts[1]],W2=b.x-a.x,H2=b.y-a.y
-      ctx.strokeStyle=s.color;ctx.fillStyle=s.color+"22"
-      ctx.beginPath();ctx.roundRect(a.x,a.y,W2,H2,12);ctx.fill();ctx.stroke()
-      ctx.beginPath();ctx.moveTo(a.x+W2*.3,a.y+H2);ctx.lineTo(a.x+W2*.2,a.y+H2+15);ctx.lineTo(a.x+W2*.45,a.y+H2);ctx.fill()
-    }
-    else{
-      ctx.moveTo(s.pts[0].x,s.pts[0].y);s.pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke()
-    }
-    ctx.globalCompositeOperation="source-over"
+    ctx.moveTo(s.pts[0].x,s.pts[0].y);s.pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke()
+    ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1
   }
 
   const getSelectionBounds=()=>{
@@ -491,9 +465,12 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     const active=selectedStrokes.current.size>0
     setSelectionActive(active)
     if(!onSelRef.current)return
+    const indices=[...selectedStrokes.current]
+    const primary=indices.length===1?strokes.current[indices[0]]:null
     const b=getSelectionBounds()
-    if(!active||!b)onSelRef.current({active:false,count:0,bounds:null})
-    else onSelRef.current({active:true,count:selectedStrokes.current.size,bounds:b})
+    const shapeBounds=primary&&isTransformableShape(primary)?getShapeBounds(primary):null
+    if(!active||!b)onSelRef.current({active:false,count:0,bounds:null,indices:[],shapeBounds:null,rotation:0,primaryIndex:null})
+    else onSelRef.current({active:true,count:selectedStrokes.current.size,bounds:b,indices,primaryIndex:indices.length===1?indices[0]:null,shapeBounds,rotation:primary?.rotation||0})
   },[])
 
   const tryStartGroupDrag=(p,e)=>{
@@ -524,7 +501,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 
   const redraw=useCallback(()=>{
     const c=cRef.current;if(!c)return
-    const ctx=c.getContext("2d");ctx.clearRect(0,0,794,1123)
+    const ctx=c.getContext("2d");ctx.clearRect(0,0,pageW,pageH)
     const layerMap=getLayerMap()
     ;(layersRef.current||[]).forEach(layer=>{
       if(!layer.v)return
@@ -568,14 +545,14 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     })
     drawSnapGuides(ctx,snapGuides.current)
     ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1
-  },[cRef,unitSys])
+  },[cRef,unitSys,pageW,pageH])
 
   useEffect(()=>{redraw()},[layers,activeLayerId,redraw])
 
   const gP=e=>{
     const r=cRef.current.getBoundingClientRect()
     const src=e.touches?e.touches[0]:e
-    return{x:(src.clientX-r.left)*(794/r.width),y:(src.clientY-r.top)*(1123/r.height)}
+    return{x:(src.clientX-r.left)*(pageW/r.width),y:(src.clientY-r.top)*(pageH/r.height)}
   }
 
   const distPointToSegment=(p,a,b)=>{
@@ -737,14 +714,20 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     const p=gP(e)
     if(tool==="eyedropper"){
       const ctx=cRef.current.getContext("2d")
-      const px2=ctx.getImageData(Math.round(Math.max(0,Math.min(p.x,793))),Math.round(Math.max(0,Math.min(p.y,1122))),1,1).data
+      const px2=ctx.getImageData(Math.round(Math.max(0,Math.min(p.x,pageW-1))),Math.round(Math.max(0,Math.min(p.y,pageH-1))),1,1).data
       if(px2[3]>0&&onPickColor)onPickColor(`#${[px2[0],px2[1],px2[2]].map(v=>v.toString(16).padStart(2,"0")).join("")}`)
       return
     }
     if(tool==="text"){
       if(!canUseActiveLayer())return
-      const txt=prompt("Texte :")
-      if(txt){pushStroke({pts:[p,{x:p.x+1,y:p.y+1}],color,size,tool:"text",text:txt,shapeType:"text"});redraw();if(onStroke)onStroke(strokes.current);logAction("stroke_text",{stroke:strokes.current[strokes.current.length-1]})}
+      for(let i=strokes.current.length-1;i>=0;i--){
+        const s=strokes.current[i]
+        if(s.shapeType==="text"&&hitStroke(s,p,10)){
+          onTextEditRequest?.({index:i,x:s.pts[0].x,y:s.pts[0].y,text:s.text||"",color:s.color,size:s.size})
+          return
+        }
+      }
+      onTextEditRequest?.({index:null,x:p.x,y:p.y,text:"",color,size})
       return
     }
     if(["pen","highlight","eraser","line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)&&!canUseActiveLayer())return
@@ -779,7 +762,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
           const detected=detectShape(cur.current)
           if(detected){
             // Replace current freehand with detected shape
-            pushStroke({...detected,color,size,tool})
+            pushStroke({pts:detected.pts,color,size,tool:"pen",shapeType:detected.type,...shapeStylePayload(shapeStyle,color)})
             cur.current=[]
             drawing.current=false
             redraw()
@@ -823,18 +806,10 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       snapGuides.current=snapped.guides
       const ep={x:snapped.x,y:snapped.y}
       redraw()
-      ctx.strokeStyle=color;ctx.lineWidth=size;ctx.lineCap="round"
-      ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over"
       const s=shape.current.start
-      if(tool==="line"||tool==="dimline"){ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(ep.x,ep.y);ctx.stroke()}
-      else if(tool==="rect"){ctx.strokeRect(s.x,s.y,ep.x-s.x,ep.y-s.y)}
-      else if(tool==="circle"){const rx=Math.abs(ep.x-s.x)/2,ry=Math.abs(ep.y-s.y)/2;if(rx>0&&ry>0){ctx.beginPath();ctx.ellipse((s.x+ep.x)/2,(s.y+ep.y)/2,rx,ry,0,0,Math.PI*2);ctx.stroke()}}
-      else if(tool==="shape-arrow"){
-        const ang=Math.atan2(ep.y-s.y,ep.x-s.x),hs=Math.min(20,size*5+10)
-        ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(ep.x,ep.y);ctx.stroke()
-        ctx.beginPath();ctx.moveTo(ep.x,ep.y);ctx.lineTo(ep.x-hs*Math.cos(ang-Math.PI/6),ep.y-hs*Math.sin(ang-Math.PI/6));ctx.lineTo(ep.x-hs*Math.cos(ang+Math.PI/6),ep.y-hs*Math.sin(ang+Math.PI/6));ctx.closePath();ctx.fillStyle=color;ctx.fill()
-      }
-      else if(tool==="cloud"){ctx.strokeStyle=color;ctx.fillStyle=color+"22";ctx.beginPath();ctx.roundRect&&ctx.roundRect(Math.min(s.x,ep.x),Math.min(s.y,ep.y),Math.abs(ep.x-s.x),Math.abs(ep.y-s.y),12);ctx.fill();ctx.stroke()}
+      const finalPts=tool==="cloud"?[{x:Math.min(s.x,ep.x),y:Math.min(s.y,ep.y)},{x:Math.max(s.x,ep.x),y:Math.max(s.y,ep.y)}]:[s,ep]
+      const preview={pts:finalPts,color,size,tool,shapeType:tool==="shape-arrow"?"arrow":tool,...shapeStylePayload(shapeStyle,color)}
+      drawShapeStroke(ctx,preview,1,unitSys,formatDimension)
       drawSnapGuides(ctx,snapGuides.current)
       shape.current.end=ep
       return
@@ -937,7 +912,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       const s=shape.current.start
       const end=shape.current.end||p
       const finalPts=tool==="cloud"?[{x:Math.min(s.x,end.x),y:Math.min(s.y,end.y)},{x:Math.max(s.x,end.x),y:Math.max(s.y,end.y)}]:[s,end]
-      pushStroke({pts:finalPts,color,size,tool,shapeType:tool==="shape-arrow"?"arrow":tool})
+      pushStroke({pts:finalPts,color,size,tool,shapeType:tool==="shape-arrow"?"arrow":tool,...shapeStylePayload(shapeStyle,color)})
       shape.current=null;redraw()
       logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:tool})
     } else if(cur.current.length>0){
@@ -1021,7 +996,44 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       redraw();if(onStroke)onStroke(strokes.current)
       logAction("selection_opacity",{count:selectedStrokes.current.size,detail:`${Math.round(o*100)}%`})
     }
-  },[redraw,notifySelection,onStroke])
+    window.__setSelectionFill=(fill,fillOpacity)=>{
+      if(selectedStrokes.current.size===0)return
+      selectedStrokes.current.forEach(i=>{
+        const s=strokes.current[i]
+        if(!SHAPE_TYPES.has(s.shapeType||s.tool)&&!["rect","circle","cloud"].includes(s.shapeType))return
+        if(fill!=null)strokes.current[i].fill=fill
+        if(fillOpacity!=null)strokes.current[i].fillOpacity=fillOpacity
+      })
+      redraw();if(onStroke)onStroke(strokes.current)
+      logAction("selection_fill",{count:selectedStrokes.current.size})
+    }
+    window.__setSelectionRotation=deg=>{
+      if(selectedStrokes.current.size===0)return
+      selectedStrokes.current.forEach(i=>{strokes.current[i].rotation=deg})
+      redraw();notifySelection();if(onStroke)onStroke(strokes.current)
+      logAction("selection_rotate",{count:selectedStrokes.current.size,detail:`${deg}°`})
+    }
+    window.__resizeSelectedShape=(x1,y1,x2,y2)=>{
+      if(selectedStrokes.current.size!==1)return
+      const i=[...selectedStrokes.current][0]
+      strokes.current[i]=resizeShapeBox(strokes.current[i],x1,y1,x2,y2)
+      history.current.push(JSON.stringify(strokes.current))
+      redraw();notifySelection();if(onStroke)onStroke(strokes.current)
+    }
+    window.__updateTextStroke=(index,payload)=>{
+      if(index==null||index<0||!strokes.current[index])return
+      history.current.push(JSON.stringify(strokes.current))
+      strokes.current[index]={...strokes.current[index],...payload,shapeType:"text",tool:"text"}
+      redraw();if(onStroke)onStroke(strokes.current)
+      logAction("stroke_text",{stroke:strokes.current[index]})
+    }
+    window.__addTextStroke=(payload)=>{
+      history.current.push(JSON.stringify(strokes.current))
+      pushStroke({pts:[{x:payload.x,y:payload.y}],color:payload.color,size:payload.size,tool:"text",text:payload.text,shapeType:"text"})
+      redraw();if(onStroke)onStroke(strokes.current)
+      logAction("stroke_text",{stroke:strokes.current[strokes.current.length-1]})
+    }
+  },[redraw,notifySelection,onStroke,shapeStyle])
 
   const navTool=tool==="arrow"||tool==="select"
   const cursor=navTool?"default":getToolCursor(tool,{selectionActive,dark:cursorDark})
@@ -1031,7 +1043,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 }
 
 /* ══ FLOATING PANEL ══════════════════════════════════ */
-function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys}){
+function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle}){
   const[pos,setPos]=useState({x:16,y:120})
   const[drag,setDrag]=useState(false)
   const[offset,setOffset]=useState({x:0,y:0})
@@ -1042,6 +1054,7 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
   const[customHex,setCustomHex]=useState(color)
   const wheelRef=useRef()
   const isEraser=tool==="eraser"
+  const isShapeTool=["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)
 
   const startDrag=e=>{setDrag(true);setOffset({x:e.clientX-pos.x,y:e.clientY-pos.y})}
   useEffect(()=>{
@@ -1114,6 +1127,26 @@ function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,
           <div style={{fontSize:8,color:T.muted,marginBottom:3}}>TAILLE GOMME</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:3}}>{ERASER_SIZES_MM.map(s=><button key={s}onClick={()=>{setEraserMm(s);setTool("eraser")}}style={{padding:"2px 5px",borderRadius:5,border:`1px solid ${eraserMm===s&&isEraser?T.accent:T.border}`,background:eraserMm===s&&isEraser?`${T.accent}18`:T.bg,color:eraserMm===s&&isEraser?T.accent:T.muted,cursor:"pointer",fontSize:8,fontFamily:"monospace"}}>{s}</button>)}</div>
         </div>
+        {isShapeTool&&shapeStyle&&setShapeStyle&&(
+          <div style={{borderTop:`1px solid ${T.border}`,paddingTop:8,display:"flex",flexDirection:"column",gap:6}}>
+            <div style={{fontSize:8,color:T.muted,fontWeight:700}}>FORMES / BULLES</div>
+            <label style={{display:"flex",alignItems:"center",gap:6,fontSize:9,color:T.ink,cursor:"pointer"}}>
+              <input type="checkbox"checked={shapeStyle.useFill!==false}onChange={e=>setShapeStyle(s=>({...s,useFill:e.target.checked}))}/>
+              Remplissage
+            </label>
+            <div style={{display:"flex",alignItems:"center",gap:6}}>
+              <span style={{fontSize:8,color:T.muted,minWidth:52}}>Fill opac.</span>
+              <input type="range"min={0}max={1}step={0.05}value={shapeStyle.fillOpacity??0.22}onChange={e=>setShapeStyle(s=>({...s,fillOpacity:parseFloat(e.target.value)}))}style={{flex:1,accentColor:T.accent}}/>
+            </div>
+            {tool==="cloud"&&(
+              <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                {[["round","Arrondi"],["sharp","Carré"],["speech","Bulle"]].map(([id,l])=>(
+                  <button key={id}type="button"onClick={()=>setShapeStyle(s=>({...s,bubbleStyle:id}))}style={{padding:"3px 6px",borderRadius:6,border:`1px solid ${shapeStyle.bubbleStyle===id?T.accent:T.border}`,background:shapeStyle.bubbleStyle===id?`${T.accent}18`:T.bg,color:shapeStyle.bubbleStyle===id?T.accent:T.muted,fontSize:8,cursor:"pointer"}}>{l}</button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <div>
           <div style={{fontSize:8,color:T.muted,marginBottom:3}}>FAVORIS — clic: charger · dbl: sauvegarder</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:4}}>{Array.from({length:FAVORITE_SLOTS},(_,i)=>{const fav=favorites[i];return<button key={i}onClick={()=>loadFav(fav)}onDoubleClick={()=>saveFav(i)}title={fav?`${fav.label||""} ${fav.tool} ${fav.color} ${formatDimension(fav.sizeMm,unitSys)}`:"Dbl-clic sauvegarder"}style={{width:26,height:26,borderRadius:7,background:fav?fav.color:T.bg,border:`1px solid ${fav?T.accent:T.border}`,cursor:"pointer",fontSize:fav?"0":"11",color:T.muted,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{!fav&&"+"}</button>})}</div>
@@ -1329,6 +1362,8 @@ export default function EditorPage(){
   const[showPresent,setShowPresent]=useState(false) // presentation mode
   const[focusMode,setFocusMode]=useState(false)
   const[canvasSelection,setCanvasSelection]=useState(null)
+  const[shapeStyle,setShapeStyle]=useState({useFill:true,fill:null,fillOpacity:0.22,opacity:1,rotation:0,bubbleStyle:"round"})
+  const[textEdit,setTextEdit]=useState(null)
   const[showCalc,setShowCalc]=useState(false)
   const[showTimer,setShowTimer]=useState(false)
   const[showConv,setShowConv]=useState(false)
@@ -1653,6 +1688,29 @@ export default function EditorPage(){
 
   const handleCanvasSelection=useCallback(info=>setCanvasSelection(info?.active?info:null),[])
 
+  const pagePointToScreen=useCallback((px,py)=>{
+    const canvas=cRef.current
+    if(!canvas)return{x:0,y:0}
+    const r=canvas.getBoundingClientRect()
+    return{x:r.left+(px/PW)*r.width,y:r.top+(py/PH)*r.height}
+  },[PW,PH])
+
+  const handleTextEditRequest=useCallback(({index,x,y,text,color:textColor,size:textSize})=>{
+    setTextEdit({index,x,y,text,color:textColor||color,size:textSize||sizePx,key:Date.now(),screen:pagePointToScreen(x,y)})
+  },[pagePointToScreen,color,sizePx])
+
+  const handleTextCommit=useCallback((payload)=>{
+    if(payload.index!=null){
+      window.__updateTextStroke?.(payload.index,{text:payload.text,pts:[{x:payload.x,y:payload.y}],color:payload.color,size:payload.size})
+    }else{
+      window.__addTextStroke?.({x:payload.x,y:payload.y,text:payload.text,color:payload.color,size:payload.size})
+    }
+    setTextEdit(null)
+    requestSave()
+  },[requestSave])
+
+  const handleTextCancel=useCallback(()=>setTextEdit(null),[])
+
   const ACTION_KEY=useMemo(()=>`forma_actions_${nb.id}_${page}`,[nb.id,page])
   useEffect(()=>{try{setActionLog(JSON.parse(localStorage.getItem(ACTION_KEY)||"[]"))}catch{setActionLog([])}},[ACTION_KEY])
   const pushAction=useCallback((payload)=>{
@@ -1901,6 +1959,15 @@ export default function EditorPage(){
         />
       )}
 
+      {textEdit&&(
+        <CanvasTextEditor
+          T={T}
+          edit={textEdit}
+          onCommit={handleTextCommit}
+          onCancel={handleTextCancel}
+        />
+      )}
+
       {/* ── POMODORO ──────────────────────────────────── */}
       {!focusMode&&showTimer&&<div style={{position:"fixed",bottom:72,right:20,width:220,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:89,overflow:"hidden",userSelect:"none"}}>
         <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -2018,7 +2085,7 @@ export default function EditorPage(){
         />
       )}
 
-      {!focusMode&&<FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys}/>}
+      {!focusMode&&<FloatingPanel T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle}/>}
 
       {focusMode&&(
         <FocusToolbar
@@ -2223,17 +2290,34 @@ export default function EditorPage(){
                 </div>
               )}
 
-              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone}/>}
+              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone}/>}
+              {canvasSelection?.shapeBounds&&canvasSelection.count===1&&!textEdit&&(
+                <ShapeTransformHandles
+                  T={T}
+                  bounds={canvasSelection.shapeBounds}
+                  rotation={canvasSelection.rotation}
+                  canvasEl={cRef.current}
+                  pageW={PW}
+                  pageH={PH}
+                  onResize={(x1,y1,x2,y2)=>{window.__resizeSelectedShape?.(x1,y1,x2,y2);requestSave()}}
+                  onRotate={(deg)=>{window.__setSelectionRotation?.(deg);requestSave()}}
+                />
+              )}
               {canvasSelection&&!readOnly&&(
                 <FloatingSelectionToolbar
                   T={T}
                   bounds={canvasSelection.bounds}
                   count={canvasSelection.count}
+                  showShapeOpts={!!canvasSelection.shapeBounds}
+                  rotation={canvasSelection.rotation}
                   onDelete={()=>window.__deleteSelected?.()}
                   onDuplicate={()=>window.__duplicateSelected?.()}
                   onColor={c=>window.__setSelectionColor?.(c)}
                   onSize={mm=>window.__setSelectionSize?.(mm2px(mm))}
                   onOpacity={o=>window.__setSelectionOpacity?.(o)}
+                  onFill={c=>window.__setSelectionFill?.(c)}
+                  onFillOpacity={o=>window.__setSelectionFill?.(null,o)}
+                  onRotation={deg=>window.__setSelectionRotation?.(deg)}
                   onClose={()=>{window.__clearSelection?.();setCanvasSelection(null)}}
                 />
               )}

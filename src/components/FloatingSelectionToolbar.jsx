@@ -7,17 +7,22 @@ export default function FloatingSelectionToolbar({
   T,
   bounds,
   count,
+  showShapeOpts,
+  rotation,
   onDelete,
   onDuplicate,
   onColor,
   onSize,
   onOpacity,
+  onFill,
+  onFillOpacity,
+  onRotation,
   onClose,
 }) {
   if (!bounds || !count) return null
 
-  const top = Math.max(8, bounds.y1 - 52)
-  const left = Math.min(Math.max(8, bounds.x1), 794 - 280)
+  const top = Math.max(8, bounds.y1 - (showShapeOpts ? 88 : 52))
+  const left = Math.min(Math.max(8, bounds.x1), 794 - 300)
 
   return (
     <GlassPanel
@@ -34,7 +39,7 @@ export default function FloatingSelectionToolbar({
         flexDirection: 'column',
         gap: TOKENS.spacing.sm,
         padding: `${TOKENS.spacing.sm}px ${TOKENS.spacing.md}px`,
-        minWidth: 220,
+        minWidth: 240,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
@@ -42,6 +47,7 @@ export default function FloatingSelectionToolbar({
           {count} élément{count > 1 ? 's' : ''} · glisser pour déplacer
         </div>
         <button
+          type="button"
           onClick={onClose}
           className="forma-btn-glass"
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted, fontSize: 14, padding: '2px 4px' }}
@@ -55,20 +61,30 @@ export default function FloatingSelectionToolbar({
         <GlassButton T={T} danger onClick={onDelete}>🗑 Suppr.</GlassButton>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         <input
           type="color"
           defaultValue={T.accent}
           onChange={(e) => onColor(e.target.value)}
-          title="Couleur"
+          title="Couleur trait"
           style={{ width: 28, height: 28, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}
         />
+        {showShapeOpts && (
+          <input
+            type="color"
+            defaultValue={T.accent}
+            onChange={(e) => onFill(e.target.value)}
+            title="Couleur remplissage"
+            style={{ width: 28, height: 28, border: `2px dashed ${T.border}`, borderRadius: 6, background: 'none', cursor: 'pointer', padding: 0 }}
+          />
+        )}
         <select
           defaultValue="2"
           onChange={(e) => onSize(parseFloat(e.target.value))}
           title="Épaisseur"
           style={{
             flex: 1,
+            minWidth: 72,
             padding: '5px 6px',
             borderRadius: TOKENS.radius.sm,
             border: `1px solid ${rgbaFromHex(T.border, 0.45)}`,
@@ -81,6 +97,10 @@ export default function FloatingSelectionToolbar({
             <option key={s} value={s}>{s} mm</option>
           ))}
         </select>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <label style={{ fontSize: 8, color: T.muted, minWidth: 44 }}>Opacité</label>
         <input
           type="range"
           min="0.1"
@@ -88,10 +108,41 @@ export default function FloatingSelectionToolbar({
           step="0.05"
           defaultValue="1"
           onChange={(e) => onOpacity(parseFloat(e.target.value))}
-          title="Opacité"
-          style={{ width: 70, accentColor: T.accent }}
+          title="Opacité trait"
+          style={{ flex: 1, accentColor: T.accent }}
         />
+        {showShapeOpts && (
+          <>
+            <label style={{ fontSize: 8, color: T.muted, minWidth: 32 }}>Fill</label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              defaultValue="0.25"
+              onChange={(e) => onFillOpacity(parseFloat(e.target.value))}
+              title="Opacité remplissage"
+              style={{ flex: 1, accentColor: T.accent }}
+            />
+          </>
+        )}
       </div>
+
+      {showShapeOpts && count === 1 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <label style={{ fontSize: 8, color: T.muted, minWidth: 44 }}>Rotation</label>
+          <input
+            type="range"
+            min="-180"
+            max="180"
+            step="1"
+            value={rotation ?? 0}
+            onChange={(e) => onRotation(parseInt(e.target.value, 10))}
+            style={{ flex: 1, accentColor: T.accent }}
+          />
+          <span style={{ fontSize: 9, color: T.muted, minWidth: 28, fontFamily: 'monospace' }}>{rotation ?? 0}°</span>
+        </div>
+      )}
     </GlassPanel>
   )
 }
