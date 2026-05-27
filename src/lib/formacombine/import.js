@@ -156,30 +156,34 @@ export async function importFiles(files, onProgress) {
   let done = 0
   for (const file of list) {
     const name = file.name || 'fichier'
-    if (file.type === 'application/pdf' || /\.pdf$/i.test(name)) {
-      const pdfPages = await importPdfPages(file, (pct) => {
-        if (onProgress) onProgress(Math.round(((done + pct / 100) / list.length) * 100))
-      })
-      pages.push(...pdfPages)
-    } else if (file.type?.startsWith('image/')) {
-      const dataUrl = await readFileAsDataUrl(file)
-      const dim = await loadImageDimensions(dataUrl)
-      pages.push(createPage({
-        name,
-        type: 'raster',
-        width: dim.width,
-        height: dim.height,
-        dataUrl,
-        sourceType: 'image',
-      }))
-    } else if (/\.docx$/i.test(name)) {
-      const text = await extractDocxText(file)
-      pages.push(textPage(text, name.replace(/\.docx$/i, '')))
-    } else if (file.type?.startsWith('text/') || /\.(txt|md|csv)$/i.test(name)) {
-      const text = await readFileAsText(file)
-      pages.push(textPage(text, name.replace(/\.[^.]+$/, '')))
-    } else {
-      throw new Error(`Format non supporté : ${name}`)
+    try {
+      if (file.type === 'application/pdf' || /\.pdf$/i.test(name)) {
+        const pdfPages = await importPdfPages(file, (pct) => {
+          if (onProgress) onProgress(Math.round(((done + pct / 100) / list.length) * 100))
+        })
+        pages.push(...pdfPages)
+      } else if (file.type?.startsWith('image/')) {
+        const dataUrl = await readFileAsDataUrl(file)
+        const dim = await loadImageDimensions(dataUrl)
+        pages.push(createPage({
+          name,
+          type: 'raster',
+          width: dim.width,
+          height: dim.height,
+          dataUrl,
+          sourceType: 'image',
+        }))
+      } else if (/\.docx$/i.test(name)) {
+        const text = await extractDocxText(file)
+        pages.push(textPage(text, name.replace(/\.docx$/i, '')))
+      } else if (file.type?.startsWith('text/') || /\.(txt|md|csv)$/i.test(name)) {
+        const text = await readFileAsText(file)
+        pages.push(textPage(text, name.replace(/\.[^.]+$/, '')))
+      } else {
+        throw new Error(`Format non supporté : ${name}`)
+      }
+    } catch (err) {
+      throw new Error(err?.message || `Import échoué : ${name}`)
     }
     done += 1
     if (onProgress) onProgress(Math.round((done / list.length) * 100))

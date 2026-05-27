@@ -27,6 +27,11 @@ export function normalizeFolder(raw, ownerId = null) {
     lastOpenedAt: raw.lastOpenedAt ?? raw.last_opened_at ?? null,
     ownerId: raw.ownerId ?? raw.owner_id ?? ownerId ?? null,
     projectIds: Array.isArray(raw.projectIds) ? raw.projectIds : (Array.isArray(raw.project_ids) ? raw.project_ids : []),
+    mode: raw.mode || 'general',
+    tags: Array.isArray(raw.tags) ? raw.tags : [],
+    favorite: !!raw.favorite,
+    masterFormat: raw.masterFormat || raw.master_format || null,
+    description: raw.description || '',
     createdAt: raw.createdAt || raw.created_at || now,
     updatedAt: raw.updatedAt || raw.updated_at || now,
   }
@@ -188,9 +193,10 @@ export async function loadFolders(userId) {
   }
 }
 
-export async function persistFolderCreate(userId, { name, icon, color = '#3d6b8c', parentId = null, sortOrder = 0 }) {
+export async function persistFolderCreate(userId, { name, icon, color = '#3d6b8c', parentId = null, sortOrder = 0, mode, tags, masterFormat, description }) {
   const ownerId = userId ?? await resolveFolderUserId()
   const now = new Date().toISOString()
+  const parent = parentId ? loadLocalFoldersForScope(ownerId).find((f) => f.id === parentId) : null
   const folder = normalizeFolder({
     id: `folder-${Date.now()}`,
     name: name.trim(),
@@ -198,6 +204,10 @@ export async function persistFolderCreate(userId, { name, icon, color = '#3d6b8c
     color,
     parentId: parentId || null,
     sortOrder,
+    mode: mode || parent?.mode || 'general',
+    tags: tags || [],
+    masterFormat: masterFormat || parent?.masterFormat || null,
+    description: description || '',
     ownerId,
     createdAt: now,
     updatedAt: now,
@@ -248,6 +258,11 @@ export async function persistFolderUpdate(userId, folderId, patch = {}) {
           parentId: patch.parentId !== undefined ? patch.parentId : f.parentId,
           sortOrder: patch.sortOrder !== undefined ? patch.sortOrder : f.sortOrder,
           lastOpenedAt: patch.lastOpenedAt !== undefined ? patch.lastOpenedAt : f.lastOpenedAt,
+          mode: patch.mode !== undefined ? patch.mode : f.mode,
+          tags: patch.tags !== undefined ? patch.tags : f.tags,
+          favorite: patch.favorite !== undefined ? patch.favorite : f.favorite,
+          masterFormat: patch.masterFormat !== undefined ? patch.masterFormat : f.masterFormat,
+          description: patch.description !== undefined ? patch.description : f.description,
           updatedAt: new Date().toISOString(),
         }, ownerId)
       : f

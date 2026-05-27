@@ -1515,6 +1515,7 @@ export default function EditorPage(){
   const[showHistory,setShowHistory]=useState(false)
   const[actionLog,setActionLog]=useState([])
   const[showToolsToolbar,setShowToolsToolbar]=useState(true)
+  const[toolbarDock,setToolbarDock]=useState('top')
   const[showPropsPanel,setShowPropsPanel]=useState(true)
   const[propsCollapsed,setPropsCollapsed]=useState(true)
   const[showEraserPanel,setShowEraserPanel]=useState(true)

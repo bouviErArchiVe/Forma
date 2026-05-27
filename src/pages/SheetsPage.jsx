@@ -163,9 +163,17 @@ export default function SheetsPage() {
           <GlassButton T={T} size="sm" onClick={() => handleExport('json')}>JSON</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('png')}>PNG</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('pdf')}>PDF</GlassButton>
+          <button
+            type="button"
+            title={sheet.locked ? 'Déverrouiller' : 'Verrouiller'}
+            onClick={() => handleChange({ ...sheet, locked: !sheet.locked })}
+            style={{ background: 'none', border: `1px solid ${T.border}`, borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontSize: 14 }}
+          >
+            {sheet.locked ? '🔒' : '🔓'}
+          </button>
         </header>
         <main style={{ flex: 1, minHeight: 0, padding: '12px 16px 24px', display: 'flex', flexDirection: 'column' }}>
-          <SpreadsheetGrid sheet={sheet} onChange={handleChange} T={T} gridRef={gridRef} />
+          <SpreadsheetGrid sheet={sheet} onChange={handleChange} T={T} gridRef={gridRef} readOnly={!!sheet.locked} />
         </main>
 
         {insertModal && (

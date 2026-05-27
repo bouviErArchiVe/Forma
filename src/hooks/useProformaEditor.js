@@ -109,7 +109,7 @@ export function useProformaEditor(doc, setDoc, { viewportRef, viewSize, onAutosa
   }, [doc, layerLocked, tool, color, brush])
 
   const onPointerDown = useCallback((e) => {
-    if (!doc || e.button !== 0) return
+    if (!doc || e.button !== 0 || tool === 'hand') return
     const pt = pageFromEvent(e)
     if (!pt) return
     setCursorPage(pt)
@@ -163,6 +163,7 @@ export function useProformaEditor(doc, setDoc, { viewportRef, viewSize, onAutosa
   }, [doc, tool, pageFromEvent, commitDoc, startStroke, color, brush])
 
   const onPointerMove = useCallback((e) => {
+    if (tool === 'hand') return
     const pt = pageFromEvent(e)
     if (pt) setCursorPage(pt)
 

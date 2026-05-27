@@ -44,7 +44,8 @@ export function FormatcalMonthView({ cursor, events, weekStartsOn, onDayClick, o
   const monthEvents = eventsForMonth(events, cursor)
 
   return (
-    <div id="formatcal-month-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, flex: 1, minHeight: 0 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', padding: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 1, flex: 1, minHeight: 0, overflow: 'auto', alignContent: 'start' }}>
       {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((d) => (
         <div key={d} style={{ padding: '6px 4px', fontSize: 10, fontWeight: 700, color: FC_DARK.muted, textAlign: 'center' }}>{d}</div>
       ))}
@@ -90,6 +91,7 @@ export function FormatcalMonthView({ cursor, events, weekStartsOn, onDayClick, o
           </div>
         )
       })}
+      </div>
     </div>
   )
 }

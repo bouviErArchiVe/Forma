@@ -75,12 +75,20 @@ export default function FormaCombinePage() {
   const handleFiles = async (files) => {
     if (!files?.length || !project) return
     setBusy(true)
+    let imported = 0
     try {
-      const pages = await importFiles(files)
-      addPages(pages)
-      addNotification(`${pages.length} page(s) importée(s)`, 'success')
-    } catch (err) {
-      addNotification(err.message || 'Import échoué', 'error')
+      for (const file of files) {
+        try {
+          const pages = await importFiles([file])
+          if (pages.length) {
+            addPages(pages)
+            imported += pages.length
+          }
+        } catch (err) {
+          addNotification(`${file.name} : ${err.message || 'Import échoué'}`, 'error')
+        }
+      }
+      if (imported) addNotification(`${imported} page(s) importée(s)`, 'success')
     } finally {
       setBusy(false)
     }
@@ -172,6 +180,7 @@ export default function FormaCombinePage() {
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: FCMB_DARK.bg, color: FCMB_DARK.ink }}>
       <header style={headerStyle}>
         <Btn onClick={handleBack}>← Projets</Btn>
+        <Btn onClick={() => navigate('/')}>Accueil</Btn>
         <input
           value={project?.name || ''}
           onChange={(e) => updateProject({ name: e.target.value })}

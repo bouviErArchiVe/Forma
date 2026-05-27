@@ -20,6 +20,8 @@ export const CONTENT_FILTERS = [
   { id: 'all', label: 'Tout' },
   { id: 'folders', label: 'Dossiers' },
   { id: 'notebooks', label: 'Carnets' },
+  { id: 'assets', label: 'Fichiers' },
+  { id: 'favorites', label: 'Favoris' },
 ]
 
 export function sortFolderItems(folders, notebooks, sortId, subjects, folderId) {

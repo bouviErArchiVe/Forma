@@ -140,6 +140,7 @@ export function createSheet(name = 'Nouveau tableau') {
     filterText: '',
     sortCol: null,
     sortDir: 'asc',
+    locked: false,
   }
 }
 

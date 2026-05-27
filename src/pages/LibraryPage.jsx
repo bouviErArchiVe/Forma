@@ -49,7 +49,7 @@ import {
   resolveFolderUserId,
 } from "@/lib/folderPersistence"
 import { getFolderDescendantIds, canCreateChildFolder, MAX_FOLDER_DEPTH } from "@/lib/folders/tree"
-import FolderExplorer from "@/components/folders/FolderExplorer"
+import FormaFolderExplorer from "@/components/formafolder/FormaFolderExplorer"
 
 const FOLDER_EMOJIS = ["📁","📂","🏗","🏛","📐","⚙","🎨","📚","🌿","🔥","⭐","💡","🎯","🏆","🔬","🌍","🏠","🚀","💎","🗂"]
 
@@ -507,6 +507,7 @@ export default function LibraryPage() {
   const [showTranslate, setShowTranslate] = useState(false)
   const [showProfilePanel, setShowProfilePanel] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showModuleMenu, setShowModuleMenu] = useState(false)
   const avatarRef = useRef(null)
   const { signOut: authSignOut } = useAuth()
   const collab = useCollaboration()
@@ -1356,6 +1357,9 @@ export default function LibraryPage() {
             <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formatCal.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               📅 {MODULES.formatCal.name}
             </GlassButton>
+            <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaFolder.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              📁 {MODULES.formaFolder.name}
+            </GlassButton>
             <GlassButton T={T} size="md" onClick={() => navigate(MODULES.formaCombine.route)} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               📎 {MODULES.formaCombine.name}
             </GlassButton>
@@ -1436,34 +1440,64 @@ export default function LibraryPage() {
           )}
 
           {/* COMPACT STATS BAR */}
-          <div style={{display:"flex",gap:10,marginBottom:24,flexWrap:"wrap"}}>
+          <div style={{ display: 'flex', gap: 10, marginBottom: showModuleMenu ? 8 : 24, flexWrap: 'wrap', alignItems: 'flex-start' }}>
             {[
-              {e:"📓", v:notebooks.length, l:"carnets",   tab:"notebooks"},
-              {e:"⭐", v:starredCount,      l:"favoris",   tab:"favorites"},
-              {e:"📁", v:folders.length,   l:"dossiers",  tab:"folders"},
-              {e:"📊", v:"",               l:"tableau",   tab:"dashboard"},
-              {e:"👤", v:activityStreak > 0 ? activityStreak : "", l:"compte", tab:null, action:openProfilePanel},
-              {e:"🤝", v:collab.friends.length, l:"amis", tab:null, action:()=>navigate("/account/friends")},
-              {e:"🔗", v:"",               l:"partage",   tab:null, action:()=>navigate("/account/sharing")},
-              {e:"📂", v:(collab.sharedFolders.owned?.length||0)+(collab.sharedFolders.member?.length||0), l:"partagés", tab:null, action:()=>navigate("/account/folders")},
-              {e:"🎭", v:"",               l:MODULES.fMoodboard.name, tab:null, action:()=>navigate(MODULES.fMoodboard.route)},
-              {e:"📐", v:"",               l:MODULES.formules.name,   tab:null, action:()=>navigate(MODULES.formules.route)},
-              {e:"📊", v:"",               l:MODULES.formaTab.name,   tab:null, action:()=>navigate(MODULES.formaTab.route)},
-              {e:"📄", v:"",               l:MODULES.formaDoc.name,   tab:null, action:()=>navigate(MODULES.formaDoc.route)},
-              {e:"✏", v:"",               l:MODULES.proforma.name,   tab:null, action:()=>navigate(MODULES.proforma.route)},
-              {e:"📅", v:"",               l:MODULES.formatCal.name,  tab:null, action:()=>navigate(MODULES.formatCal.route)},
-              {e:"📎", v:"",               l:MODULES.formaCombine.name, tab:null, action:()=>navigate(MODULES.formaCombine.route)},
-              {e:"🌐", v:"",               l:"traduction",tab:null, action:()=>navigate("/translate")},
-              {e:"🎮", v:"",               l:MODULES.fPause.name,     tab:null, action:()=>navigate(MODULES.fPause.route)},
-              {e:"🎨", v:"",               l:MODULES.fTheme.name,     tab:null, action:()=>setShowTheme(true)},
-            ].map(s => (
-              <StatChip key={s.l} e={s.e} v={s.v} l={s.l} tab={s.tab} activeTab={activeTab} setActiveTab={setActiveTab} T={T} action={s.action}/>
+              { e: '📓', v: notebooks.length, l: 'carnets', tab: 'notebooks' },
+              { e: '⭐', v: starredCount, l: 'favoris', tab: 'favorites' },
+              { e: '📁', v: folders.length, l: 'FormaFolder', tab: null, action: () => navigate(MODULES.formaFolder.route) },
+              { e: '📊', v: '', l: 'tableau', tab: 'dashboard' },
+              { e: '👤', v: activityStreak > 0 ? activityStreak : '', l: 'compte', tab: null, action: openProfilePanel },
+              { e: '⋯', v: '', l: 'Outils Forma', tab: null, action: () => setShowModuleMenu((v) => !v) },
+            ].map((s) => (
+              <StatChip key={s.l} e={s.e} v={s.v} l={s.l} tab={s.tab} activeTab={activeTab} setActiveTab={setActiveTab} T={T} action={s.action} />
             ))}
           </div>
+          {showModuleMenu && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+              gap: 8,
+              marginBottom: 24,
+              padding: 12,
+              borderRadius: 12,
+              border: `1px solid ${T.border}`,
+              background: T.surface,
+            }}>
+              {[
+                { e: '🎭', l: MODULES.fMoodboard.name, action: () => navigate(MODULES.fMoodboard.route) },
+                { e: '📐', l: MODULES.formules.name, action: () => navigate(MODULES.formules.route) },
+                { e: '📊', l: MODULES.formaTab.name, action: () => navigate(MODULES.formaTab.route) },
+                { e: '📄', l: MODULES.formaDoc.name, action: () => navigate(MODULES.formaDoc.route) },
+                { e: '✏', l: MODULES.proforma.name, action: () => navigate(MODULES.proforma.route) },
+                { e: '📅', l: MODULES.formatCal.name, action: () => navigate(MODULES.formatCal.route) },
+                { e: '📎', l: MODULES.formaCombine.name, action: () => navigate(MODULES.formaCombine.route) },
+                { e: '🌐', l: 'Traduction', action: () => navigate('/translate') },
+                { e: '🎮', l: MODULES.fPause.name, action: () => navigate(MODULES.fPause.route) },
+                { e: '🎨', l: MODULES.fTheme.name, action: () => setShowTheme(true) },
+                { e: '🤝', l: 'Amis', action: () => navigate('/account/friends') },
+                { e: '🔗', l: 'Partage', action: () => navigate('/account/sharing') },
+                { e: '📂', l: 'Partagés', action: () => navigate('/account/folders') },
+              ].map((m) => (
+                <button
+                  key={m.l}
+                  type="button"
+                  onClick={() => { m.action(); setShowModuleMenu(false) }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px',
+                    borderRadius: 10, border: `1px solid ${T.border}`, background: T.bg,
+                    cursor: 'pointer', color: T.ink, fontSize: 12, fontWeight: 600, textAlign: 'left',
+                  }}
+                >
+                  <span>{m.e}</span>
+                  <span>{m.l}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* DOSSIERS */}
           {activeTab === "folders" && (
-            <FolderExplorer
+            <FormaFolderExplorer
               T={T}
               folders={folders}
               setFolders={setFolders}
@@ -1480,6 +1514,7 @@ export default function LibraryPage() {
               onOpenNotebook={(nb) => { setActiveNotebook(nb); navigate(`/editor/${nb.id}`) }}
               renderNotebook={renderNotebook}
               addNotification={addNotification}
+              showHeader={false}
             />
           )}
 

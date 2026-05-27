@@ -176,11 +176,11 @@ export default function DocEditor({
     onChange({ ...doc, pages: newPages, updatedAt: Date.now() })
   }
 
-  const btn = (label, onClick, active = false, title = '') => (
-    <button type="button" title={title} onClick={onClick} disabled={readOnly || doc.locked} style={{
-      padding: '5px 8px', fontSize: 11, borderRadius: 6, cursor: readOnly || doc.locked ? 'default' : 'pointer',
+  const btn = (label, onClick, active = false, title = '', alwaysEnabled = false) => (
+    <button type="button" title={title || label} onClick={onClick} disabled={!alwaysEnabled && (readOnly || doc.locked)} style={{
+      padding: '5px 8px', fontSize: 11, borderRadius: 6, cursor: !alwaysEnabled && (readOnly || doc.locked) ? 'default' : 'pointer',
       border: `1px solid ${active ? T.accent : T.border}`, background: active ? `${T.accent}18` : T.bg,
-      color: T.ink, fontWeight: active ? 700 : 500, opacity: doc.locked ? 0.5 : 1,
+      color: T.ink, fontWeight: active ? 700 : 500, opacity: !alwaysEnabled && doc.locked ? 0.5 : 1,
     }}>{label}</button>
   )
 
@@ -282,7 +282,7 @@ export default function DocEditor({
       {btn(doc.viewMode === 'pages' ? 'Continu' : 'Pages', () => onChange({ ...doc, viewMode: doc.viewMode === 'pages' ? 'continuous' : 'pages' }))}
       {btn('📖', () => setReadingMode(true), readingMode)}
       {btn('⛶', () => setFullscreen((v) => !v), fullscreen)}
-      {btn(doc.locked ? '🔒' : '🔓', () => onChange({ ...doc, locked: !doc.locked }), doc.locked)}
+      {btn(doc.locked ? '🔒' : '🔓', () => onChange({ ...doc, locked: !doc.locked }), doc.locked, doc.locked ? 'Déverrouiller' : 'Verrouiller', true)}
       <select
         value=""
         onChange={(e) => { if (e.target.value) insertSheet(e.target.value); e.target.value = '' }}

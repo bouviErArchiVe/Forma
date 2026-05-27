@@ -12,6 +12,7 @@ import { formatLabel } from '@/lib/pageFormats'
 export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, addNotification }) {
   const [panels, setPanels] = useState({ layers: true, colors: true, props: true })
   const [viewSize, setViewSize] = useState({ w: 0, h: 0 })
+  const [vp, setVp] = useState({ zoom: 1 })
   const viewportRef = useRef({ zoom: 1, panX: 0, panY: 0 })
 
   const editor = useProformaEditor(doc, setDoc, {
@@ -86,6 +87,12 @@ export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, 
         <span style={{ fontSize: 10, color: PF_DARK.muted }}>
           {formatLabel(doc.formatId)} · {doc.width}×{doc.height}px
         </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: PF_DARK.muted }}>
+          <button type="button" style={headerBtn} onClick={() => vp.zoomBy?.(0.8)} title="Zoom −">−</button>
+          <span style={{ minWidth: 42, textAlign: 'center', color: PF_DARK.ink, fontWeight: 700 }}>{Math.round((vp.zoom || 1) * 100)}%</span>
+          <button type="button" style={headerBtn} onClick={() => vp.zoomBy?.(1.25)} title="Zoom +">+</button>
+          <button type="button" style={headerBtn} onClick={() => vp.resetViewport?.()} title="Reset zoom">100%</button>
+        </div>
         <button type="button" onClick={() => editor.commitDoc((d) => ({ ...d, showGrid: !d.showGrid }), { recordHistory: false })} style={headerBtn}>
           {doc.showGrid ? '▦ Grille' : 'Grille'}
         </button>
@@ -115,7 +122,7 @@ export default function ProformaEditor({ doc, setDoc, onBack, onInsertNotebook, 
           doc={doc}
           editor={editor}
           panToolActive={editor.tool === 'hand'}
-          viewportState={(v) => { viewportRef.current = v }}
+          viewportState={(v) => { viewportRef.current = v; setVp(v) }}
           onViewSize={setViewSize}
         />
 

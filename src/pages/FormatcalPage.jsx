@@ -141,9 +141,19 @@ export default function FormatcalPage() {
         <BrandLogo src={T.img} alt={T.n} size="sm" showText={false} accent={FC_DARK.accent} />
         <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17 }}>FormatCal</div>
         <div style={{ flex: 1, minWidth: 120, fontSize: 13, fontWeight: 600, color: FC_DARK.muted }}>{navLabel}</div>
-        <button type="button" onClick={() => shiftCursor('prev')} style={navBtn}>‹</button>
+        <button type="button" onClick={() => shiftCursor('prev')} style={navBtn} title="Précédent">‹</button>
         <button type="button" onClick={goToday} style={{ ...navBtn, color: FC_DARK.accent, fontWeight: 700 }}>Aujourd'hui</button>
-        <button type="button" onClick={() => shiftCursor('next')} style={navBtn}>›</button>
+        <button type="button" onClick={() => shiftCursor('next')} style={navBtn} title="Suivant">›</button>
+        {['day', 'week', 'month', 'year'].map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => setView(v)}
+            style={{ ...navBtn, color: view === v ? FC_DARK.accent : FC_DARK.muted, fontWeight: view === v ? 800 : 600, border: `1px solid ${view === v ? FC_DARK.accent : FC_DARK.border}`, borderRadius: 6, padding: '4px 8px' }}
+          >
+            {v === 'day' ? 'Jour' : v === 'week' ? 'Semaine' : v === 'month' ? 'Mois' : 'Année'}
+          </button>
+        ))}
         <select value={view} onChange={(e) => setView(e.target.value)} style={selectStyle}>
           {FC_VIEWS.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
         </select>
@@ -164,8 +174,10 @@ export default function FormatcalPage() {
           }}
         />
 
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
-          {renderView()}
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'auto' }}>
+            {renderView()}
+          </div>
         </main>
       </div>
 

@@ -40,8 +40,10 @@ export default function ProformaCanvas({
       zoom: viewport.zoom,
       panX: viewport.panX,
       panY: viewport.panY,
+      zoomBy: viewport.zoomBy,
+      resetViewport: viewport.resetViewport,
     })
-  }, [viewport.zoom, viewport.panX, viewport.panY, viewportState])
+  }, [viewport.zoom, viewport.panX, viewport.panY, viewport.zoomBy, viewport.resetViewport, viewportState])
 
   useEffect(() => {
     const el = viewportRef.current
@@ -61,7 +63,7 @@ export default function ProformaCanvas({
       const r = el.getBoundingClientRect()
       const sx = e.clientX - r.left
       const sy = e.clientY - r.top
-      if (e.ctrlKey || e.metaKey) {
+      if (e.ctrlKey || e.metaKey || !allowPan) {
         const factor = Math.exp(-e.deltaY * 0.0022)
         viewport.zoomBy(factor, { x: sx, y: sy })
         return
@@ -70,7 +72,7 @@ export default function ProformaCanvas({
     }
     el.addEventListener('wheel', onWheel, { passive: false })
     return () => el.removeEventListener('wheel', onWheel)
-  }, [viewport])
+  }, [viewport, allowPan])
 
   const paint = useCallback(() => {
     const canvas = canvasRef.current
@@ -165,21 +167,28 @@ export default function ProformaCanvas({
       }}
       {...viewport.canvasHandlers}
       onPointerDown={(e) => {
-        viewport.canvasHandlers.onPointerDownCapture?.(e)
-        if (isPanMode) return
+        if (isPanMode) {
+          viewport.canvasHandlers.onPointerDownCapture?.(e)
+          return
+        }
+        if (e.button !== 0) return
         e.currentTarget.setPointerCapture(e.pointerId)
         editor.onPointerDown(e)
       }}
       onPointerMove={(e) => {
-        viewport.canvasHandlers.onPointerMove?.(e)
-        if (!isPanMode) editor.onPointerMove(e)
+        if (isPanMode) {
+          viewport.canvasHandlers.onPointerMove?.(e)
+          return
+        }
+        editor.onPointerMove(e)
       }}
       onPointerUp={(e) => {
-        viewport.canvasHandlers.onPointerUp?.(e)
-        if (!isPanMode) {
-          editor.onPointerUp(e)
-          try { e.currentTarget.releasePointerCapture(e.pointerId) } catch { /* ignore */ }
+        if (isPanMode) {
+          viewport.canvasHandlers.onPointerUp?.(e)
+          return
         }
+        editor.onPointerUp(e)
+        try { e.currentTarget.releasePointerCapture(e.pointerId) } catch { /* ignore */ }
       }}
     >
       <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%', pointerEvents: 'none' }} />

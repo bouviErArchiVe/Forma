@@ -1,7 +1,7 @@
 /** Arborescence dossiers bibliothèque. */
 
-/** Profondeur max : racine + 2 niveaux de sous-dossiers (= 3 niveaux). */
-export const MAX_FOLDER_DEPTH = 3
+/** Profondeur max dossiers — 0 = illimitée (FormaFolder). */
+export const MAX_FOLDER_DEPTH = 0
 
 export function getFolderChildren(folders, parentId = null) {
   const pid = parentId || null
@@ -32,6 +32,7 @@ export function getFolderDepth(folders, folderId) {
 
 export function canCreateChildFolder(folders, parentId) {
   if (!parentId) return true
+  if (!MAX_FOLDER_DEPTH) return true
   return getFolderDepth(folders, parentId) < MAX_FOLDER_DEPTH
 }
 
@@ -41,8 +42,10 @@ export function canMoveFolderTo(folders, folderId, newParentId) {
   if (newParentId) {
     const descendants = getFolderDescendantIds(folders, folderId)
     if (descendants.includes(newParentId)) return false
-    const childDepth = getFolderDepth(folders, newParentId) + 1
-    if (childDepth > MAX_FOLDER_DEPTH) return false
+    if (MAX_FOLDER_DEPTH) {
+      const childDepth = getFolderDepth(folders, newParentId) + 1
+      if (childDepth > MAX_FOLDER_DEPTH) return false
+    }
   }
   return true
 }

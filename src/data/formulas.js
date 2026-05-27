@@ -8,6 +8,7 @@ import * as roof from '@/lib/formulas/roof'
 import * as materials from '@/lib/formulas/materials'
 import * as accessibility from '@/lib/formulas/accessibility'
 import * as light from '@/lib/formulas/light'
+import * as structures from '@/lib/formulas/structures'
 
 export const FORMULA_CATEGORIES = [
   { id: 'all', label: 'Toutes', icon: '📚' },
@@ -602,6 +603,90 @@ export const FORMULAS = [
       { key: 'minPercent', label: 'Ratio cible (%)', type: 'number', placeholder: '17' },
     ],
     compute: (_, v) => light.lightMinGlazing(v),
+  },
+  {
+    id: 'struct-load-total',
+    categoryId: 'structures',
+    title: 'Charge totale',
+    icon: '⚖',
+    description: 'Somme des charges permanentes et d\'exploitation.',
+    formulaText: 'G + Q',
+    tags: ['structure', 'charge'],
+    fieldsForMode: () => [
+      { key: 'permanent', label: 'Charge permanente G (kN/m²)', type: 'number', step: 0.1 },
+      { key: 'exploitation', label: 'Charge exploitation Q (kN/m²)', type: 'number', step: 0.1 },
+    ],
+    compute: (_, v) => structures.loadTotal(v),
+  },
+  {
+    id: 'struct-linear-load',
+    categoryId: 'structures',
+    title: 'Charge linéaire',
+    icon: '↔',
+    description: 'Charge linéaire à partir d\'une charge surfacique et d\'une largeur tributaire.',
+    formulaText: 'q_lin = q × l_trib',
+    tags: ['structure', 'charge linéaire'],
+    fieldsForMode: () => [
+      { key: 'surfaceLoad', label: 'Charge surfacique (kN/m²)', type: 'number', step: 0.1 },
+      { key: 'tributaryWidth', label: 'Largeur tributaire (m)', type: 'number', step: 0.1 },
+    ],
+    compute: (_, v) => structures.linearLoad(v),
+  },
+  {
+    id: 'struct-beam-moment',
+    categoryId: 'structures',
+    title: 'Moment poutre appuyée',
+    icon: '🏗',
+    description: 'Moment fléchissant max. — charge uniformément répartie.',
+    formulaText: 'M = qL²/8',
+    tags: ['poutre', 'moment'],
+    fieldsForMode: () => [
+      { key: 'load', label: 'Charge linéaire q (kN/m)', type: 'number', step: 0.1 },
+      { key: 'span', label: 'Portée L (m)', type: 'number', step: 0.1 },
+    ],
+    compute: (_, v) => structures.beamMoment(v),
+  },
+  {
+    id: 'struct-beam-shear',
+    categoryId: 'structures',
+    title: 'Effort tranchant',
+    icon: '✂',
+    description: 'Effort tranchant max. — poutre appuyée, charge uniforme.',
+    formulaText: 'V = qL/2',
+    tags: ['poutre', 'effort tranchant'],
+    fieldsForMode: () => [
+      { key: 'load', label: 'Charge linéaire q (kN/m)', type: 'number', step: 0.1 },
+      { key: 'span', label: 'Portée L (m)', type: 'number', step: 0.1 },
+    ],
+    compute: (_, v) => structures.beamShear(v),
+  },
+  {
+    id: 'struct-rect-area',
+    categoryId: 'structures',
+    title: 'Surface rectangle',
+    icon: '▭',
+    description: 'Surface = longueur × largeur.',
+    formulaText: 'S = L × l',
+    tags: ['surface', 'structure'],
+    fieldsForMode: () => [
+      { key: 'length', label: 'Longueur (m)', type: 'number', step: 0.01 },
+      { key: 'width', label: 'Largeur (m)', type: 'number', step: 0.01 },
+    ],
+    compute: (_, v) => structures.rectArea(v),
+  },
+  {
+    id: 'struct-weight',
+    categoryId: 'structures',
+    title: 'Poids matériau',
+    icon: '⚓',
+    description: 'Poids à partir du volume et de la masse volumique.',
+    formulaText: 'P = V × ρ',
+    tags: ['poids', 'masse volumique'],
+    fieldsForMode: () => [
+      { key: 'volume', label: 'Volume (m³)', type: 'number', step: 0.01 },
+      { key: 'density', label: 'Masse volumique (kg/m³)', type: 'number', step: 1, placeholder: '2400' },
+    ],
+    compute: (_, v) => structures.weightVolume(v),
   },
 ]
 

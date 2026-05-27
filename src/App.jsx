@@ -14,6 +14,7 @@ import DocsPage from '@/pages/DocsPage'
 import ProformaPage from '@/pages/ProformaPage'
 const FormatcalPage = lazy(() => import('@/pages/FormatcalPage'))
 const FormaCombinePage = lazy(() => import('@/pages/FormaCombinePage'))
+const FormaFolderPage = lazy(() => import('@/pages/FormaFolderPage'))
 import GamesPage from '@/pages/GamesPage'
 import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/proforma" element={<ProtectedRoute><ErrorBoundary title="Erreur Proforma"><ProformaPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/formatcal" element={<ProtectedRoute><ErrorBoundary title="Erreur FormatCal"><Suspense fallback={<AppLoading />}><FormatcalPage /></Suspense></ErrorBoundary></ProtectedRoute>} />
           <Route path="/formacombine" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaCombine"><Suspense fallback={<AppLoading />}><FormaCombinePage /></Suspense></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/formafolder" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaFolder"><Suspense fallback={<AppLoading />}><FormaFolderPage /></Suspense></ErrorBoundary></ProtectedRoute>} />
           <Route path="/games" element={<ProtectedRoute><ErrorBoundary title="Erreur FPause"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/fpause" element={<ProtectedRoute><ErrorBoundary title="Erreur FPause"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/translate" element={<ProtectedRoute><ErrorBoundary title="Erreur traduction scan"><TranslateScanPage /></ErrorBoundary></ProtectedRoute>} />
