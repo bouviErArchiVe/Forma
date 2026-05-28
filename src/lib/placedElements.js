@@ -97,3 +97,64 @@ export function resizePlacedItem(item, x1, y1, x2, y2, { lockRatio = false } = {
     scaleY: nh / base.h,
   }
 }
+
+/** Boîte locale d'une image importée (handles resize/rotation). */
+export function getImportedImageLocalBounds(img) {
+  const w = img.w
+  const h = img.h
+  const cx = img.x + w / 2
+  const cy = img.y + h / 2
+  return {
+    x1: img.x,
+    y1: img.y,
+    x2: img.x + w,
+    y2: img.y + h,
+    cx,
+    cy,
+    w,
+    h,
+    rotation: img.rotation || 0,
+  }
+}
+
+/** Boîte englobante axis-aligned (hit-test, lasso). */
+export function getImportedImageBounds(img) {
+  const local = getImportedImageLocalBounds(img)
+  const rot = local.rotation
+  if (!rot) return local
+
+  const rad = (rot * Math.PI) / 180
+  const cos = Math.abs(Math.cos(rad))
+  const sin = Math.abs(Math.sin(rad))
+  const rw = local.w * cos + local.h * sin
+  const rh = local.w * sin + local.h * cos
+  return {
+    ...local,
+    x1: local.cx - rw / 2,
+    y1: local.cy - rh / 2,
+    x2: local.cx + rw / 2,
+    y2: local.cy + rh / 2,
+  }
+}
+
+export function resizeImportedImage(img, x1, y1, x2, y2, { lockRatio = false } = {}) {
+  let nx1 = Math.min(x1, x2)
+  let ny1 = Math.min(y1, y2)
+  let nx2 = Math.max(x1, x2)
+  let ny2 = Math.max(y1, y2)
+  let nw = nx2 - nx1
+  let nh = ny2 - ny1
+
+  if (lockRatio) {
+    const ratio = img.w / Math.max(img.h, 0.001)
+    if (nw / Math.max(nh, 0.001) > ratio) nw = nh * ratio
+    else nh = nw / ratio
+    nx2 = nx1 + nw
+    ny2 = ny1 + nh
+  }
+
+  nw = Math.max(8, nw)
+  nh = Math.max(8, nh)
+
+  return { ...img, x: nx1, y: ny1, w: nw, h: nh }
+}

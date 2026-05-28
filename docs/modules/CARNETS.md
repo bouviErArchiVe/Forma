@@ -15,9 +15,9 @@ Route : `/editor/:id`
 - Formats page (A0–A6, B4/B5, Letter, Legal, carré, personnalisé mm/cm/po, infini)
 - Application immédiate du format à la page courante (panneau Pages, Style de page, menu ⋯)
 - Format par défaut pour les nouvelles pages (panneau Pages)
+- Poignées resize/rotation : formes canvas (line, flèche, cote, rect, cercle, bulle, texte), éléments bibliothèque, images importées
 
 ## Reste à compléter (prochains packs)
-- Resize/rotation poignées sur tous types d’éléments
 - Dictée vocale intégrée canvas
 - Tests iPad réels device
 

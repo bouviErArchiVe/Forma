@@ -53,7 +53,7 @@ import { useTheme } from "@/hooks/useAppearance"
 import { loadFavorites, saveFavorites, FAVORITE_SLOTS, favoriteFromEditor } from "@/lib/favorites"
 import { loadEraserSettings, saveEraserSettings, ERASER_MODES } from "@/lib/eraserSettings"
 import { selectObjectsInRect, selectObjectsInPolygon, hitTestObjects } from "@/lib/canvasHitTest"
-import { getPlacedSize, getPlacedLocalBounds, resizePlacedItem } from "@/lib/placedElements"
+import { getPlacedSize, getPlacedLocalBounds, resizePlacedItem, getImportedImageLocalBounds, resizeImportedImage } from "@/lib/placedElements"
 import { renderSpreadsheetPlaced, SpreadsheetPlacedStatic } from "@/components/spreadsheet/SpreadsheetPlacedView"
 import { DocPlacedStatic } from "@/components/docs/DocPlacedView"
 import {
@@ -1700,6 +1700,18 @@ export default function EditorPage(){
     [selectedPlacedItem],
   )
 
+  const selectedImportedItem=useMemo(()=>{
+    if(readOnly) return null
+    if(selectedObjects.placed.length) return null
+    if(selectedObjects.images.length!==1) return null
+    return importedImages.find(i=>i.id===selectedObjects.images[0])||null
+  },[readOnly,selectedObjects.placed,selectedObjects.images,importedImages])
+
+  const selectedImportedBounds=useMemo(
+    ()=>(selectedImportedItem?getImportedImageLocalBounds(selectedImportedItem):null),
+    [selectedImportedItem],
+  )
+
   const applyPageMetaToState=useCallback(meta=>{
     setPageFormat(meta.format||"a4")
     setPageRotation(meta.rotation??0)
@@ -3079,11 +3091,14 @@ export default function EditorPage(){
               {/* Imported images */}
               {importedImages.map(img=>{
                 const imgSel=selectedObjects.images.includes(img.id)
+                const rot=img.rotation||0
                 return(
-                <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,zIndex:3,cursor:readOnly||eraserActive?"default":"move",userSelect:"none",pointerEvents:eraserActive?"none":"auto",outline:imgSel?"2px solid #c8622a":"none",outlineOffset:2}}
+                <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,width:img.w,height:img.h,zIndex:imgSel?12:3,cursor:readOnly||eraserActive?"default":"move",userSelect:"none",pointerEvents:eraserActive?"none":"auto",transform:rot?`rotate(${rot}deg)`:"none",transformOrigin:"center center"}}
                   onMouseDown={e=>startObjectGroupDrag(e,{kind:"image",item:img})}>
-                  <img src={img.src}alt=""style={{width:img.w,height:img.h,display:"block",opacity:.88,pointerEvents:"none"}}/>
-                  {!readOnly&&!eraserActive&&<button onClick={()=>{setImportedImages(p=>p.filter(i=>i.id!==img.id));scheduleSave()}}style={{position:"absolute",top:-8,right:-8,width:18,height:18,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontWeight:700}}>×</button>}
+                  <div style={{width:"100%",height:"100%",outline:imgSel?"2px solid #c8622a":"none",outlineOffset:2,pointerEvents:"none"}}>
+                    <img src={img.src}alt=""style={{width:"100%",height:"100%",display:"block",opacity:.88,pointerEvents:"none",objectFit:"fill"}}/>
+                  </div>
+                  {imgSel&&!readOnly&&!eraserActive&&<button onClick={()=>{setImportedImages(p=>p.filter(i=>i.id!==img.id));setSelectedObjects({placed:[],images:[]});scheduleSave()}}style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,zIndex:20}}>×</button>}
                 </div>
               )})}
 
@@ -3133,7 +3148,7 @@ export default function EditorPage(){
                   canvasEl={cRef.current}
                   pageW={PW}
                   pageH={PH}
-                  showSideHandles={false}
+                  showSideHandles={!["line","arrow","dimline"].includes(canvasSelection.primaryShapeType)}
                   onResize={(x1,y1,x2,y2)=>{window.__resizeSelectedShape?.(x1,y1,x2,y2);scheduleSave()}}
                   onRotate={(deg)=>{window.__setSelectionRotation?.(deg);scheduleSave()}}
                 />
@@ -3153,6 +3168,25 @@ export default function EditorPage(){
                   }}
                   onRotate={(deg)=>{
                     setPlaced(p=>p.map(it=>it.id===selectedPlacedItem.id?{...it,rotation:deg}:it))
+                    scheduleSave()
+                  }}
+                />
+              )}
+              {!eraserActive&&selectedImportedItem&&selectedImportedBounds&&!textEdit&&(
+                <ShapeTransformHandles
+                  T={T}
+                  bounds={selectedImportedBounds}
+                  rotation={selectedImportedItem.rotation||0}
+                  canvasEl={cRef.current}
+                  pageW={PW}
+                  pageH={PH}
+                  showSideHandles
+                  onResize={(x1,y1,x2,y2)=>{
+                    setImportedImages(p=>p.map(it=>it.id===selectedImportedItem.id?resizeImportedImage(it,x1,y1,x2,y2,{lockRatio:false}):it))
+                    scheduleSave()
+                  }}
+                  onRotate={(deg)=>{
+                    setImportedImages(p=>p.map(it=>it.id===selectedImportedItem.id?{...it,rotation:deg}:it))
                     scheduleSave()
                   }}
                 />

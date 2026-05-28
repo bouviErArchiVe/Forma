@@ -1,6 +1,6 @@
 /** Hit-test objets canvas (bibliothèque, images) pour lasso / sélection */
 
-import { getPlacedBounds } from '@/lib/placedElements'
+import { getPlacedBounds, getImportedImageBounds } from '@/lib/placedElements'
 
 export function bboxPlaced(item) {
   const b = getPlacedBounds(item)
@@ -8,7 +8,8 @@ export function bboxPlaced(item) {
 }
 
 export function bboxImage(img) {
-  return { x1: img.x, y1: img.y, x2: img.x + img.w, y2: img.y + img.h }
+  const b = getImportedImageBounds(img)
+  return { x1: b.x1, y1: b.y1, x2: b.x2, y2: b.y2 }
 }
 
 export function pointInRect(p, r) {

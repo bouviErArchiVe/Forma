@@ -35,10 +35,23 @@ export function getShapeBounds(s) {
     return { x1: x, y1: y, x2: x + w, y2: s.pts[0].y + fs * 0.2, w, h: fs * 1.2, cx: x + w / 2, cy: y + fs * 0.6 }
   }
   const box = normalizeBoxPts(s.pts)
-  const x1 = box[0].x
-  const y1 = box[0].y
-  const x2 = box[1].x
-  const y2 = box[1].y
+  let x1 = box[0].x
+  let y1 = box[0].y
+  let x2 = box[1].x
+  let y2 = box[1].y
+  if (st === 'line' || st === 'arrow' || st === 'dimline') {
+    const pad = Math.max(s.size || 4, 10)
+    if (Math.abs(x2 - x1) < pad) {
+      const cx = (x1 + x2) / 2
+      x1 = cx - pad / 2
+      x2 = cx + pad / 2
+    }
+    if (Math.abs(y2 - y1) < pad) {
+      const cy = (y1 + y2) / 2
+      y1 = cy - pad / 2
+      y2 = cy + pad / 2
+    }
+  }
   const rot = s.rotation || 0
   if (!rot) {
     return { x1, y1, x2, y2, w: x2 - x1, h: y2 - y1, cx: (x1 + x2) / 2, cy: (y1 + y2) / 2 }
@@ -271,7 +284,7 @@ export function shapeStylePayload(shapeStyle, color) {
 
 export function isTransformableShape(s) {
   const st = s?.shapeType || s?.tool
-  return ['rect', 'circle', 'cloud', 'text'].includes(st)
+  return ['line', 'arrow', 'dimline', 'rect', 'circle', 'cloud', 'text'].includes(st)
 }
 
 export function resizeShapeBox(s, x1, y1, x2, y2) {
@@ -281,6 +294,9 @@ export function resizeShapeBox(s, x1, y1, x2, y2) {
     const h = Math.max(y2 - y1, fs)
     const scale = h / fs
     return { ...s, size: Math.max(0.15, (s.size || 0.5) * scale), pts: [{ x: x1, y: y2 }] }
+  }
+  if (st === 'line' || st === 'arrow' || st === 'dimline') {
+    return { ...s, pts: [{ x: x1, y: y1 }, { x: x2, y: y2 }] }
   }
   return { ...s, pts: [{ x: x1, y: y1 }, { x: x2, y: y2 }] }
 }
