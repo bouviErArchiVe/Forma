@@ -28,12 +28,12 @@ import GlassPanel from "@/components/ui/GlassPanel"
 import ModalOverlay from "@/components/ui/ModalOverlay"
 import BottomSheet from "@/components/ui/BottomSheet"
 import { useTabletLayout } from "@/hooks/useTabletLayout"
+import { useLongPress } from "@/hooks/useLongPress"
 import { glassStyle, rgbaFromHex } from "@/theme/glass"
 import { TOKENS } from "@/theme/tokens"
 import { serializePageElements, defaultPageMeta } from "@/lib/pageSettings"
 import { serializeCanvasData, DEFAULT_LAYERS, defaultActiveLayerId } from "@/lib/layers"
 import CoverPattern from "@/components/CoverPattern"
-import NotebookLibraryItem from "@/components/NotebookLibraryItem"
 import { LIBRARY_VIEWS, LIBRARY_SORTS, sortNotebooks, groupNotebooksByMonth } from "@/lib/libraryViews"
 import {
   loadLocalNotebooks,
@@ -53,6 +53,34 @@ import {
 } from "@/lib/folderPersistence"
 import { getFolderDescendantIds, canCreateChildFolder, MAX_FOLDER_DEPTH } from "@/lib/folders/tree"
 import FormaFolderExplorer from "@/components/formafolder/FormaFolderExplorer"
+import {
+  BookOpen, Star, Users, ShoppingBag, Search, Grid3X3, List, Plus,
+  FileText, FolderOpen, ChevronLeft,
+} from "lucide-react"
+
+const COLORS = {
+  bg: '#000000',
+  sidebar: '#1C1C1E',
+  sidebarActive: '#2C2C2E',
+  header: '#1C1C1E',
+  card: '#2C2C2E',
+  cardBorder: '#3A3A3C',
+  text: '#FFFFFF',
+  textSecondary: '#8E8E93',
+  textMuted: '#636366',
+  accent: '#0A84FF',
+  separator: '#38383A',
+  inactive: '#EBEBF5',
+  star: '#FFD60A',
+  destructive: '#FF453A',
+}
+
+const SIDEBAR_NAV = [
+  { id: 'documents', label: 'Documents', Icon: BookOpen },
+  { id: 'favorites', label: 'Favoris', Icon: Star },
+  { id: 'shared', label: 'Partagé', Icon: Users },
+  { id: 'marketplace', label: 'Marketplace', Icon: ShoppingBag },
+]
 
 const FOLDER_EMOJIS = ["📁","📂","🏗","🏛","📐","⚙","🎨","📚","🌿","🔥","⭐","💡","🎯","🏆","🔬","🌍","🏠","🚀","💎","🗂"]
 
@@ -109,6 +137,246 @@ const saveRecent = (id) => {
 }
 
 function timeAgo(d){const m=Math.floor((Date.now()-new Date(d).getTime())/60000);if(m<1)return"À l'instant";if(m<60)return`Il y a ${m}min`;const h=Math.floor(m/60);if(h<24)return`Il y a ${h}h`;const days=Math.floor(h/24);if(days===1)return"Hier";return new Date(d).toLocaleDateString("fr-FR")}
+
+function formatDocDate(d) {
+  if (!d) return '—'
+  const date = new Date(d)
+  return `${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })} à ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+}
+
+function MacFolderIcon({ width = 120, color = COLORS.accent }) {
+  return (
+    <svg width={width} height={width * 0.75} viewBox="0 0 120 90" fill="none" aria-hidden>
+      <path d="M8 22C8 16.477 12.477 12 18 12H46L54 20H102C107.523 20 112 24.477 112 30V76C112 81.523 107.523 86 102 86H18C12.477 86 8 81.523 8 76V22Z" fill={color} />
+      <path d="M8 28C8 22.477 12.477 18 18 18H44L52 26H102C107.523 26 112 30.477 112 36V76C112 81.523 107.523 86 102 86H18C12.477 86 8 81.523 8 76V28Z" fill={color} opacity="0.88" />
+      <path d="M8 34H112V76C112 81.523 107.523 86 102 86H18C12.477 86 8 81.523 8 76V34Z" fill={color} opacity="0.72" />
+    </svg>
+  )
+}
+
+function IOSContextMenu({ x, y, items, onClose }) {
+  useEffect(() => {
+    const close = () => onClose()
+    window.addEventListener('pointerdown', close)
+    window.addEventListener('scroll', close, true)
+    return () => {
+      window.removeEventListener('pointerdown', close)
+      window.removeEventListener('scroll', close, true)
+    }
+  }, [onClose])
+
+  return (
+    <div
+      onPointerDown={(e) => e.stopPropagation()}
+      style={{
+        position: 'fixed',
+        left: x,
+        top: y,
+        zIndex: 9600,
+        minWidth: 200,
+        background: COLORS.card,
+        borderRadius: 14,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+        overflow: 'hidden',
+        border: `1px solid ${COLORS.cardBorder}`,
+      }}
+    >
+      {items.map((item, i) => (
+        <div key={item.label}>
+          {i > 0 && <div style={{ height: 1, background: COLORS.cardBorder }} />}
+          <button
+            type="button"
+            onClick={() => { item.action?.(); onClose() }}
+            style={{
+              display: 'block',
+              width: '100%',
+              height: 44,
+              padding: '0 16px',
+              border: 'none',
+              background: 'transparent',
+              color: item.destructive ? COLORS.destructive : COLORS.text,
+              fontSize: 15,
+              textAlign: 'left',
+              cursor: 'pointer',
+            }}
+          >
+            {item.label}
+          </button>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function SidebarNavItem({ item, active, onClick }) {
+  const [hover, setHover] = useState(false)
+  const Icon = item.Icon
+  const isActive = active
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        width: '100%',
+        height: 44,
+        padding: '0 16px',
+        border: 'none',
+        borderRadius: 10,
+        cursor: 'pointer',
+        background: isActive ? COLORS.sidebarActive : (hover ? COLORS.sidebarActive : 'transparent'),
+        color: isActive ? COLORS.accent : COLORS.inactive,
+        transition: 'background-color 150ms ease',
+      }}
+    >
+      <Icon size={20} strokeWidth={2} />
+      <span style={{ fontSize: 14, fontWeight: 500 }}>{item.label}</span>
+    </button>
+  )
+}
+
+function GoodNotesFolderCard({ folder, onOpen, onContextMenu, onStar }) {
+  const [hover, setHover] = useState(false)
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onOpen}
+      onContextMenu={onContextMenu}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        cursor: 'pointer',
+        opacity: hover ? 0.8 : 1,
+        transition: 'opacity 150ms ease',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        position: 'relative',
+        userSelect: 'none',
+      }}
+    >
+      {folder.starred && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onStar?.(e) }}
+          style={{ position: 'absolute', top: 0, right: 8, background: 'none', border: 'none', cursor: 'pointer', padding: 4, zIndex: 2 }}
+        >
+          <Star size={16} fill={COLORS.star} color={COLORS.star} />
+        </button>
+      )}
+      <MacFolderIcon width={120} color={folder.color || COLORS.accent} />
+      <div style={{ fontSize: 13, fontWeight: 500, color: COLORS.text, marginTop: 8, textAlign: 'center', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {folder.e ? `${folder.e} ` : ''}{folder.n}
+      </div>
+      <div style={{ fontSize: 11, color: COLORS.textSecondary, marginTop: 4, textAlign: 'center' }}>
+        {formatDocDate(folder.updated_at || folder.created_at)}
+      </div>
+    </div>
+  )
+}
+
+function GoodNotesDocumentCard({ nb, subject, onOpen, onStar, onContextMenu, selectionMode, selected, onToggleSelect, onLongPress, view = 'grid' }) {
+  const [hover, setHover] = useState(false)
+  const thumb = nb.thumbnail || nb.cover_url || nb.cover_image
+
+  const lp = useLongPress({
+    onLongPress: () => onLongPress?.(),
+    onClick: (e) => {
+      if (selectionMode) {
+        e?.stopPropagation?.()
+        onToggleSelect?.()
+      } else {
+        onOpen?.()
+      }
+    },
+  })
+
+  if (view === 'list') {
+    return (
+      <div
+        {...lp}
+        onContextMenu={onContextMenu}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 14,
+          padding: '10px 12px',
+          borderRadius: 12,
+          background: COLORS.card,
+          border: `1px solid ${selected ? COLORS.accent : COLORS.cardBorder}`,
+          cursor: 'pointer',
+          transform: hover ? 'scale(1.01)' : 'none',
+          boxShadow: hover ? '0 4px 20px rgba(0,0,0,0.4)' : 'none',
+          transition: 'transform 150ms ease, box-shadow 150ms ease',
+        }}
+      >
+        <div style={{ width: 48, height: 64, borderRadius: 8, background: COLORS.sidebar, overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {thumb ? <img src={thumb} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <FileText size={22} color={COLORS.textSecondary} />}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 500, color: COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nb.title}</div>
+          <div style={{ fontSize: 11, color: COLORS.textSecondary, marginTop: 4 }}>{formatDocDate(nb.updated_at)}</div>
+        </div>
+        <button type="button" onClick={onStar} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+          <Star size={16} fill={nb.starred ? COLORS.star : 'none'} color={nb.starred ? COLORS.star : COLORS.textSecondary} />
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      {...lp}
+      onContextMenu={onContextMenu}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        width: '100%',
+        borderRadius: 12,
+        overflow: 'hidden',
+        background: COLORS.card,
+        border: `1px solid ${selected ? COLORS.accent : COLORS.cardBorder}`,
+        cursor: 'pointer',
+        transform: hover ? 'scale(1.02)' : 'none',
+        boxShadow: hover ? '0 4px 20px rgba(0,0,0,0.4)' : 'none',
+        transition: 'transform 150ms ease, box-shadow 150ms ease',
+        position: 'relative',
+      }}
+    >
+      {selectionMode && selected && (
+        <div style={{ position: 'absolute', top: 8, left: 8, width: 22, height: 22, borderRadius: '50%', background: COLORS.accent, color: '#fff', fontSize: 12, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>✓</div>
+      )}
+      <div style={{ position: 'relative', aspectRatio: '3/4', background: COLORS.sidebar, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+        {thumb ? (
+          <img src={thumb} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CoverPattern tmpl={nb.template} color={subject?.c || COLORS.accent} />
+            <FileText size={40} color={COLORS.textSecondary} style={{ position: 'relative', zIndex: 1 }} />
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={onStar}
+          style={{ position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', cursor: 'pointer', padding: 4, zIndex: 2 }}
+        >
+          <Star size={16} fill={nb.starred ? COLORS.star : 'none'} color={nb.starred ? COLORS.star : COLORS.textSecondary} />
+        </button>
+      </div>
+      <div style={{ padding: '10px 12px' }}>
+        <div style={{ fontSize: 13, fontWeight: 500, color: COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nb.title}</div>
+        <div style={{ fontSize: 11, color: COLORS.textSecondary, marginTop: 4 }}>{formatDocDate(nb.updated_at)}</div>
+      </div>
+    </div>
+  )
+}
 
 function StatChip({e, v, l, tab, activeTab, setActiveTab, T, action}) {
   const isActive = tab && activeTab === tab
@@ -512,6 +780,9 @@ export default function LibraryPage() {
   const [showProfilePanel, setShowProfilePanel] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [showModuleMenu, setShowModuleMenu] = useState(false)
+  const [sidebarSection, setSidebarSection] = useState('documents')
+  const [ctxMenu, setCtxMenu] = useState(null)
+  const [gridVisible, setGridVisible] = useState(false)
   const avatarRef = useRef(null)
   const { signOut: authSignOut } = useAuth()
   const collab = useCollaboration()
@@ -642,6 +913,49 @@ export default function LibraryPage() {
     () => sortNotebooks(filtered, librarySort, subjects),
     [filtered, librarySort, subjects],
   )
+
+  const visibleFolders = useMemo(() => {
+    if (activeTab !== 'notebooks' || folderFilt === 'none') return []
+    const parentId = folderFilt === 'all' ? null : folderFilt
+    return folders.filter((f) => (f.parentId || null) === parentId)
+  }, [folders, folderFilt, activeTab])
+
+  const currentFolder = useMemo(() => {
+    if (folderFilt === 'all' || folderFilt === 'none') return null
+    return folders.find((f) => f.id === folderFilt) || null
+  }, [folders, folderFilt])
+
+  const sectionTitle = useMemo(() => {
+    if (activeTab === 'favorites') return 'Favoris'
+    if (currentFolder) return currentFolder.n
+    return 'Documents'
+  }, [activeTab, currentFolder])
+
+  useEffect(() => {
+    setGridVisible(false)
+    const t = requestAnimationFrame(() => setGridVisible(true))
+    return () => cancelAnimationFrame(t)
+  }, [activeTab, folderFilt, libraryView, sortedFiltered.length])
+
+  const handleSidebarNav = (id) => {
+    setSidebarSection(id)
+    if (id === 'documents') {
+      setActiveTab('notebooks')
+      return
+    }
+    if (id === 'favorites') {
+      setActiveTab('favorites')
+      return
+    }
+    if (id === 'shared') navigate('/account/folders')
+    if (id === 'marketplace') navigate(MODULES.formaHub.route)
+  }
+
+  const openContextMenu = (e, payload) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setCtxMenu({ x: e.clientX, y: e.clientY, ...payload })
+  }
 
   const open = nb => {
     saveRecent(nb.id)
@@ -775,28 +1089,31 @@ export default function LibraryPage() {
 
   const renderNotebook = useCallback((nb, view = libraryView) => {
     const subject = subjects.find(s => s.id === nb.subject) || subjects[0]
-    const template = TEMPLATES.find(t => t.id === nb.template) || TEMPLATES[0]
-    const folder = folders.find(f => f.id === nb.folder_id)
     return (
-      <NotebookLibraryItem
+      <GoodNotesDocumentCard
         key={nb.id}
-        T={T}
         nb={nb}
         subject={subject}
-        template={template}
-        folder={folder}
-        view={view}
+        view={view === 'timeline' ? 'list' : view}
         selectionMode={selectionMode}
         selected={selectedIds.has(nb.id)}
         onLongPress={() => enterSelection(nb.id)}
         onToggleSelect={() => toggleSelect(nb.id)}
         onOpen={() => open(nb)}
         onStar={(e) => toggleStar(nb.id, e)}
-        onAssign={(e) => { e.stopPropagation(); setShowFolderAssign(nb.id) }}
-        onDelete={(e) => deleteNB(nb.id, e)}
+        onContextMenu={(e) => openContextMenu(e, {
+          type: 'notebook',
+          item: nb,
+          items: [
+            { label: 'Ouvrir', action: () => open(nb) },
+            { label: nb.starred ? 'Retirer des favoris' : 'Ajouter aux favoris', action: () => toggleStar(nb.id, { stopPropagation: () => {} }) },
+            { label: 'Déplacer…', action: () => setShowFolderAssign(nb.id) },
+            { label: 'Supprimer', destructive: true, action: () => deleteNB(nb.id, { stopPropagation: () => {} }) },
+          ],
+        })}
       />
     )
-  }, [subjects, folders, T, libraryView, toggleStar, selectionMode, selectedIds, enterSelection, toggleSelect])
+  }, [subjects, libraryView, toggleStar, selectionMode, selectedIds, enterSelection, toggleSelect, open])
 
   const assignFolder = async (nbId, folderId) => {
     const next = notebooks.map(n => n.id === nbId ? {...n, folder_id: folderId || null, updated_at: new Date().toISOString()} : n)
@@ -1333,536 +1650,285 @@ export default function LibraryPage() {
         </div>
       )}
 
-      {/* HEADER */}
-      <div
-        className="forma-library-header"
-        style={{
-          borderBottom: `1px solid ${rgbaFromHex(T.border, 0.35)}`,
-          ...glassStyle(T, { variant: "toolbar", border: false, radius: 0 }),
-        }}
-      >
-        <div className="forma-library-header-inner">
-          {/* Logo + title + tools */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button type="button" onClick={() => navigate('/')} title="Accueil Forma" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0 }}>
-              <img src={T.img} alt={T.n} style={{ width: 38, height: 38, borderRadius: TOKENS.radius.sm, objectFit: "cover", boxShadow: `0 4px 16px ${T.accent}44`, display: 'block' }} />
-            </button>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: T.ink, lineHeight: 1 }}>{BRAND.appName}</div>
-                {notebooks.length > 0 && (
-                  <div style={{ padding: "2px 7px", borderRadius: 20, background: `${T.accent}18`, border: `1px solid ${T.accent}44`, fontSize: 10, fontWeight: 700, color: T.accent, lineHeight: 1.4 }}>{notebooks.length}</div>
-                )}
-              </div>
-              <div style={{ fontSize: 9, color: T.muted, marginTop: 1 }}>{userId ? `par ${BRAND.ecosystemName} · ${userName}` : `par ${BRAND.ecosystemName} · Non connecté`}</div>
-            </div>
-            <GlassButton T={T} active={showCalc} onClick={() => setShowCalc(v => !v)} title="Calculatrice"
-              className="forma-tap-target"
-              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
-              🧮
-            </GlassButton>
-            <GlassButton T={T} active={showConverter} onClick={() => setShowConverter(v => !v)} title="Convertisseur"
-              className="forma-tap-target"
-              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
-              📐
-            </GlassButton>
-            <GlassButton T={T} active={showTranslate} onClick={() => setShowTranslate(v => !v)} title="Traduction"
-              className="forma-tap-target"
-              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
-              🌐
-            </GlassButton>
-            <GlassButton T={T} onClick={() => window.dispatchEvent(new CustomEvent('forma:open-search'))} title="Recherche"
-              className="forma-tap-target"
-              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
-              🔍
-            </GlassButton>
-            <GlassButton T={T} onClick={() => navigate('/formaai')} title="FormaAI"
-              className="forma-tap-target"
-              style={{ width: 44, height: 44, padding: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
-              ✦
-            </GlassButton>
-          </div>
-
-          {/* Right actions — notifications, compte, déconnexion */}
-          <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
-            {userId && (
-              <NotificationBell
-                T={T}
-                unreadCount={collab.unreadCount}
-                active={showNotifications}
-                onClick={() => { setShowNotifications(v => !v); setShowProfilePanel(false) }}
-              />
-            )}
-            {userId ? (
-              <GlassButton T={T} size="md" onClick={logout}>Déconnexion</GlassButton>
-            ) : (
-              <GlassButton T={T} size="md" accent onClick={() => navigate("/auth")}>Se connecter</GlassButton>
-            )}
-            {userId && (
-              <div
-                ref={avatarRef}
-                onClick={openProfilePanel}
-                className="forma-btn-glass"
-                style={{
-                  width: 32, height: 32, borderRadius: "50%",
-                  background: collab.profile?.avatar_url ? `url(${collab.profile.avatar_url}) center/cover` : `linear-gradient(135deg,${T.accent},${T.a2})`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 13, fontWeight: 800, color: "#fff", flexShrink: 0,
-                  boxShadow: `0 2px 8px ${T.accent}44`, cursor: "pointer",
-                  border: showProfilePanel ? `2px solid ${T.accent}` : 'none',
-                }}
-              >
-                {!collab.profile?.avatar_url && avatarLetter}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* NOT LOGGED IN — landing si aucun carnet local */}
-      {!userId && !loading && notebooks.length === 0 && (
-        <div style={{ padding: "90px 22px" }}>
-          <BrandLogo
-            src={T.img}
-            alt={T.n}
-            size="lg"
-            subtitle={`${BRAND.description} · par ${BRAND.ecosystemName}`}
-            accent={T.accent}
-            ink={T.ink}
-            muted={T.muted}
-          />
-          <div style={{ display: "flex", justifyContent: "center", marginTop: 28 }}>
-            <button onClick={() => navigate("/auth")} style={{padding:"12px 26px",borderRadius:12,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:`0 4px 14px ${T.accent}44`}}>
-              Se connecter / Créer un compte
-            </button>
-          </div>
-        </div>
+      {ctxMenu && (
+        <IOSContextMenu
+          x={ctxMenu.x}
+          y={ctxMenu.y}
+          items={ctxMenu.items}
+          onClose={() => setCtxMenu(null)}
+        />
       )}
 
-      {(userId || notebooks.length > 0) && (
-        <div className="forma-library-content">
-          {!userId && (
-            <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 10, background: `${T.accent}12`, border: `1px solid ${T.accent}33`, fontSize: 12, color: T.ink }}>
-              Mode local — tes carnets restent sur cet appareil.{" "}
-              <button type="button" onClick={() => navigate("/auth")} style={{ background: "none", border: "none", color: T.accent, fontWeight: 700, cursor: "pointer", padding: 0 }}>
-                Se connecter
-              </button>{" "}
-              pour la synchro cloud.
-            </div>
-          )}
-
-          {/* COMPACT STATS BAR */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: showModuleMenu ? 8 : 24, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-            {[
-              { e: '📓', v: notebooks.length, l: 'carnets', tab: 'notebooks' },
-              { e: '⭐', v: starredCount, l: 'favoris', tab: 'favorites' },
-              { e: '📁', v: folders.length, l: 'FormaFolder', tab: null, action: () => navigate(MODULES.formaFolder.route) },
-              { e: '📊', v: '', l: 'tableau', tab: 'dashboard' },
-              { e: '👤', v: activityStreak > 0 ? activityStreak : '', l: 'compte', tab: null, action: openProfilePanel },
-              { e: '⋯', v: '', l: 'Outils Forma', tab: null, action: () => setShowModuleMenu((v) => !v) },
-            ].map((s) => (
-              <StatChip key={s.l} e={s.e} v={s.v} l={s.l} tab={s.tab} activeTab={activeTab} setActiveTab={setActiveTab} T={T} action={s.action} />
-            ))}
+      <div style={{ display: 'flex', height: '100dvh', overflow: 'hidden', background: COLORS.bg, color: COLORS.text }}>
+        {/* Sidebar */}
+        <aside style={{
+          width: 260,
+          flexShrink: 0,
+          background: COLORS.sidebar,
+          display: 'flex',
+          flexDirection: 'column',
+          borderRight: `1px solid ${COLORS.separator}`,
+        }}>
+          <div style={{ height: 60, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 10 }}>
+            {T.img && (
+              <img src={T.img} alt={BRAND.ecosystemName} style={{ width: 28, height: 28, borderRadius: 8, objectFit: 'cover' }} />
+            )}
+            <div style={{ fontSize: 18, fontWeight: 700, color: COLORS.text }}>{BRAND.ecosystemName}</div>
           </div>
-          {showModuleMenu && (
+          <div style={{ height: 1, background: COLORS.separator, margin: '0 12px' }} />
+          <nav style={{ padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {SIDEBAR_NAV.map((item) => (
+              <SidebarNavItem
+                key={item.id}
+                item={item}
+                active={
+                  (item.id === 'documents' && sidebarSection === 'documents' && activeTab === 'notebooks')
+                  || (item.id === 'favorites' && activeTab === 'favorites')
+                }
+                onClick={() => handleSidebarNav(item.id)}
+              />
+            ))}
+          </nav>
+          <div style={{ flex: 1 }} />
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={openProfilePanel}
+            onKeyDown={(e) => e.key === 'Enter' && openProfilePanel()}
+            style={{
+              height: 60,
+              padding: '0 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              borderTop: `1px solid ${COLORS.separator}`,
+              cursor: 'pointer',
+            }}
+          >
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-              gap: 8,
-              marginBottom: 24,
-              padding: 12,
-              borderRadius: 12,
-              border: `1px solid ${T.border}`,
-              background: T.surface,
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              background: collab.profile?.avatar_url ? `url(${collab.profile.avatar_url}) center/cover` : COLORS.accent,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 13,
+              fontWeight: 700,
+              color: '#fff',
+              flexShrink: 0,
             }}>
-              {[
-                { e: '🎭', l: MODULES.fMoodboard.name, action: () => navigate(MODULES.fMoodboard.route) },
-                { e: '📐', l: MODULES.formules.name, action: () => navigate(MODULES.formules.route) },
-                { e: '📊', l: MODULES.formaTab.name, action: () => navigate(MODULES.formaTab.route) },
-                { e: '📄', l: MODULES.formaDoc.name, action: () => navigate(MODULES.formaDoc.route) },
-                { e: '📅', l: MODULES.formatCal.name, action: () => navigate(MODULES.formatCal.route) },
-                { e: '📎', l: MODULES.formaCombine.name, action: () => navigate(MODULES.formaCombine.route) },
-                { e: '💬', l: MODULES.formaReview.name, action: () => navigate(MODULES.formaReview.route) },
-                { e: '📽', l: MODULES.formaPresent.name, action: () => navigate(MODULES.formaPresent.route) },
-                { e: '📚', l: MODULES.formaLibrary.name, action: () => navigate(MODULES.formaLibrary.route) },
-                { e: '✦', l: MODULES.formaAI.name, action: () => navigate(MODULES.formaAI.route) },
-                { e: '📖', l: MODULES.formaDico.name, action: () => navigate(MODULES.formaDico.route) },
-                { e: '💬', l: MODULES.formaMessage.name, action: () => navigate(MODULES.formaMessage.route) },
-                { e: '🌐', l: MODULES.formaHub.name, action: () => navigate(MODULES.formaHub.route) },
-                { e: '🔍', l: 'Recherche globale', action: () => window.dispatchEvent(new CustomEvent('forma:open-search')) },
-                { e: '🌐', l: 'Traduction', action: () => navigate('/translate') },
-                { e: '🎮', l: MODULES.fPause.name, action: () => navigate(MODULES.fPause.route) },
-                { e: '🎨', l: MODULES.fTheme.name, action: () => setShowTheme(true) },
-                { e: '🤝', l: 'Amis', action: () => navigate('/account/friends') },
-                { e: '🔗', l: 'Partage', action: () => navigate('/account/sharing') },
-                { e: '📂', l: 'Partagés', action: () => navigate('/account/folders') },
-              ].map((m) => (
-                <button
-                  key={m.l}
-                  type="button"
-                  onClick={() => { m.action(); setShowModuleMenu(false) }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px',
-                    borderRadius: 10, border: `1px solid ${T.border}`, background: T.bg,
-                    cursor: 'pointer', color: T.ink, fontSize: 12, fontWeight: 600, textAlign: 'left',
-                  }}
-                >
-                  <span>{m.e}</span>
-                  <span>{m.l}</span>
-                </button>
-              ))}
+              {!collab.profile?.avatar_url && avatarLetter}
             </div>
-          )}
-
-          {/* DOSSIERS */}
-          {activeTab === "folders" && (
-            <FormaFolderExplorer
-              T={T}
-              folders={folders}
-              setFolders={setFolders}
-              notebooks={notebooks}
-              setNotebooks={setNotebooks}
-              subjects={subjects}
-              userId={userId}
-              foldersCloudOk={foldersCloudOk}
-              syncingFolders={syncingFolders}
-              onSyncFolders={syncFolders}
-              onCreateFolder={(parentId) => { setNewFolderParentId(parentId || null); setShowNewFolder(true) }}
-              onEditFolder={openEditFolder}
-              onAssignNotebooks={assignFolderBatch}
-              onOpenNotebook={(nb) => { setActiveNotebook(nb); navigate(`/editor/${nb.id}`) }}
-              renderNotebook={renderNotebook}
-              addNotification={addNotification}
-              showHeader={false}
-            />
-          )}
-
-          {/* MATIÈRES */}
-          {activeTab === "subjects" && (
-            <div>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-                <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:17,color:T.ink}}>✏ Matières ({subjects.length})</div>
-                <button onClick={() => setShowNewSubject(true)} style={{padding:"7px 14px",borderRadius:8,background:`linear-gradient(135deg,${T.accent},${T.a2})`,border:"none",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer"}}>+ Nouvelle matière</button>
-              </div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:9}}>
-                {subjects.map(s => (
-                  <div key={s.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderRadius:22,background:s.c+"18",border:`1px solid ${s.c}44`}}>
-                    <span style={{fontSize:18}}>{s.e}</span>
-                    <span style={{fontSize:12,fontWeight:700,color:s.c}}>{s.l}</span>
-                    <span style={{fontSize:10,color:s.c+"88"}}>{notebooks.filter(n => n.subject === s.id).length} carnets</span>
-                    {s.custom && <button onClick={() => setSubjects(p => p.filter(x => x.id !== s.id))} style={{background:"none",border:"none",color:s.c,cursor:"pointer",fontSize:13,opacity:.6,padding:0}}>×</button>}
-                  </div>
-                ))}
-                <button onClick={() => setShowNewSubject(true)}
-                  style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderRadius:22,background:T.bg,border:`1px dashed ${T.border}`,color:T.muted,cursor:"pointer",fontSize:12}}>
-                  ➕ Créer une matière
-                </button>
-              </div>
+            <div style={{ fontSize: 14, color: COLORS.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {collab.user?.email || userName || 'Invité'}
             </div>
-          )}
+          </div>
+        </aside>
 
-          {/* DASHBOARD */}
-          {activeTab === "dashboard" && (() => {
-            const totalPages = notebooks.reduce((s,n) => s + (n.pages_count||1), 0)
-            const bySubject = subjects.map(s => ({...s, count:notebooks.filter(n => n.subject===s.id).length})).filter(s => s.count>0).sort((a,b) => b.count-a.count)
-            const byTemplate = TEMPLATES.map(t => ({...t, count:notebooks.filter(n => n.template===t.id).length})).filter(t => t.count>0).sort((a,b) => b.count-a.count)
-            const maxSubj = bySubject[0]?.count || 1
-            const maxTmpl = byTemplate[0]?.count || 1
-            const recentActivity = [...notebooks].sort((a,b) => new Date(b.updated_at)-new Date(a.updated_at)).slice(0,5)
-            const TIPS = [
-              "💡 Utilise l'outil Cotation (↔) pour annoter tes plans avec des dimensions automatiques.",
-              "🎨 Le mode Focus (⛶) masque la barre d'outils et laisse toute la place à ta feuille.",
-              "📐 Glisse les éléments de la bibliothèque structurale directement sur ton plan.",
-              "⏱ Le minuteur Pomodoro (25min travail / 5min pause) améliore ta concentration.",
-              "🔢 La calculatrice intégrée se souvient de tes 4 derniers calculs.",
-              "🏠 Ajoute des symboles de mobilier avec l'onglet 'Sym.' dans la bibliothèque.",
-            ]
-            const tip = TIPS[new Date().getDay() % TIPS.length]
-            return (
-              <div style={{display:"flex",flexDirection:"column",gap:20}}>
-                {/* Big numbers */}
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:12}}>
-                  {[
-                    {e:"📓",v:notebooks.length,l:"Carnets créés",c:T.accent},
-                    {e:"📄",v:totalPages,l:"Pages au total",c:T.a2},
-                    {e:"⭐",v:starredCount,l:"Mis en favori",c:"#f5a623"},
-                    {e:"✏",v:subjects.filter(s => notebooks.some(n=>n.subject===s.id)).length,l:"Matières actives",c:T.a3},
-                  ].map(card => (
-                    <div key={card.l} style={{padding:"16px 18px",borderRadius:14,background:T.surface,border:`1px solid ${T.border}`,boxShadow:"0 2px 8px rgba(0,0,0,.05)"}}>
-                      <div style={{fontSize:24,marginBottom:6}}>{card.e}</div>
-                      <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:28,color:card.c,lineHeight:1}}>{card.v}</div>
-                      <div style={{fontSize:10,color:T.muted,marginTop:4}}>{card.l}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-                  {/* Subject breakdown */}
-                  <div style={{background:T.surface,borderRadius:14,padding:"16px 18px",border:`1px solid ${T.border}`}}>
-                    <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:T.ink,marginBottom:14}}>📚 Carnets par matière</div>
-                    {bySubject.length === 0 && <div style={{color:T.muted,fontSize:12}}>Aucune donnée</div>}
-                    <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                      {bySubject.slice(0,7).map(s => (
-                        <div key={s.id}>
-                          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
-                            <div style={{display:"flex",alignItems:"center",gap:6,fontSize:11,color:T.ink}}>
-                              <span style={{fontSize:14}}>{s.e}</span>{s.l}
-                            </div>
-                            <span style={{fontSize:11,fontWeight:700,color:s.c}}>{s.count}</span>
-                          </div>
-                          <div style={{height:6,borderRadius:3,background:T.border}}>
-                            <div style={{height:"100%",borderRadius:3,background:`linear-gradient(90deg,${s.c},${s.c}88)`,width:`${(s.count/maxSubj)*100}%`,transition:"width .6s ease"}}/>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Template usage */}
-                  <div style={{background:T.surface,borderRadius:14,padding:"16px 18px",border:`1px solid ${T.border}`}}>
-                    <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:T.ink,marginBottom:14}}>📋 Modèles utilisés</div>
-                    {byTemplate.length === 0 && <div style={{color:T.muted,fontSize:12}}>Aucune donnée</div>}
-                    <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                      {byTemplate.slice(0,6).map(t => (
-                        <div key={t.id}>
-                          <div style={{display:"flex",justifyContent:"space-between",marginBottom:3,fontSize:11,color:T.ink}}>
-                            <span>{t.i} {t.l}</span>
-                            <span style={{fontWeight:700,color:T.accent}}>{t.count}</span>
-                          </div>
-                          <div style={{height:6,borderRadius:3,background:T.border}}>
-                            <div style={{height:"100%",borderRadius:3,background:`linear-gradient(90deg,${T.accent},${T.a2})`,width:`${(t.count/maxTmpl)*100}%`,transition:"width .6s ease"}}/>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recent activity */}
-                <div style={{background:T.surface,borderRadius:14,padding:"16px 18px",border:`1px solid ${T.border}`}}>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:T.ink,marginBottom:12}}>🕐 Activité récente</div>
-                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                    {recentActivity.map((nb,i) => {
-                      const s = subjects.find(s=>s.id===nb.subject)||subjects[0]
-                      return (
-                        <div key={nb.id} onClick={() => open(nb)} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 10px",borderRadius:10,cursor:"pointer",transition:"background .15s"}}
-                          onMouseEnter={e=>e.currentTarget.style.background=T.bg}
-                          onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                          <div style={{width:36,height:36,borderRadius:10,background:`linear-gradient(135deg,${s.c}30,${s.c}10)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0,border:`1px solid ${s.c}30`}}>{s.e}</div>
-                          <div style={{flex:1,overflow:"hidden"}}>
-                            <div style={{fontWeight:700,fontSize:12,color:T.ink,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nb.title}</div>
-                            <div style={{fontSize:10,color:T.muted,marginTop:2}}>{s.l} · {nb.pages_count||1} page{(nb.pages_count||1)>1?"s":""}</div>
-                          </div>
-                          <div style={{fontSize:9,color:T.muted,flexShrink:0}}>{timeAgo(nb.updated_at)}</div>
-                        </div>
-                      )
-                    })}
-                    {recentActivity.length === 0 && <div style={{color:T.muted,fontSize:12,textAlign:"center",padding:"12px 0"}}>Aucun carnet pour l'instant</div>}
-                  </div>
-                </div>
-
-                {/* Tip of the day */}
-                <div style={{padding:"14px 18px",borderRadius:14,background:`${T.accent}10`,border:`1px dashed ${T.accent}44`,display:"flex",alignItems:"flex-start",gap:12}}>
-                  <div style={{fontSize:20,flexShrink:0,marginTop:1}}>📌</div>
-                  <div>
-                    <div style={{fontSize:10,fontWeight:700,color:T.accent,letterSpacing:.8,marginBottom:4}}>ASTUCE DU JOUR</div>
-                    <div style={{fontSize:12,color:T.ink,lineHeight:1.6}}>{tip}</div>
-                  </div>
-                </div>
-              </div>
-            )
-          })()}
-
-          {/* NOTEBOOKS + FAVORITES */}
-          {(activeTab === "notebooks" || activeTab === "favorites") && <>
-
-            {/* RECENTLY OPENED STRIP */}
-            {recentNotebooks.length > 0 && activeTab === "notebooks" && (
-              <div style={{marginBottom:22}}>
-                <div style={{fontSize:10,fontWeight:700,color:T.muted,letterSpacing:.8,marginBottom:8,textTransform:"uppercase"}}>Récemment ouvert</div>
-                <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:4}}>
-                  {recentNotebooks.map(nb => {
-                    const rs = subjects.find(s => s.id === nb.subject) || subjects[0]
-                    return (
-                      <div key={nb.id} onClick={() => open(nb)}
-                        style={{width:220,height:80,flexShrink:0,borderRadius:12,overflow:"hidden",cursor:"pointer",border:`1px solid ${T.border}`,background:T.surface,display:"flex",position:"relative",transition:"all .18s",boxShadow:"0 2px 8px rgba(0,0,0,.05)"}}
-                        onMouseEnter={e => {e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow=`0 6px 20px ${rs.c}22`}}
-                        onMouseLeave={e => {e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,.05)"}}>
-                        {/* Colored left strip */}
-                        <div style={{width:5,flexShrink:0,background:`linear-gradient(to bottom,${rs.c},${rs.c}88)`}}/>
-                        {/* Cover area */}
-                        <div style={{width:60,flexShrink:0,background:`linear-gradient(145deg,${rs.c}28,${rs.c}08)`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
-                          <CoverPattern tmpl={nb.template} color={rs.c}/>
-                          <div style={{fontSize:22,position:"relative",zIndex:1}}>{rs.e}</div>
-                        </div>
-                        {/* Info */}
-                        <div style={{flex:1,padding:"8px 10px",overflow:"hidden",display:"flex",flexDirection:"column",justifyContent:"center"}}>
-                          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:11,color:T.ink,lineHeight:1.3,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>{nb.title}</div>
-                          <div style={{fontSize:9,color:T.muted,marginTop:3}}>{timeAgo(nb.updated_at)}</div>
-                          <div style={{fontSize:9,color:rs.c,fontWeight:700,marginTop:2}}>{rs.l}</div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Folder breadcrumb */}
-            {folderFilt !== "all" && activeTab === "notebooks" && (
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,padding:"8px 12px",background:T.surface,borderRadius:10,border:`1px solid ${T.border}`}}>
-                <button onClick={() => setFolderFilt("all")} style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:12}}>← Tous</button>
-                <span style={{color:T.muted,fontSize:12}}>›</span>
-                <span style={{fontSize:12,color:T.ink,fontWeight:600}}>
-                  {folderFilt === "none" ? "📝 Sans dossier" : (folders.find(f => f.id === folderFilt)?.e + " " + folders.find(f => f.id === folderFilt)?.n)}
-                </span>
-              </div>
-            )}
-
-            {/* Filters */}
-            <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
-              <button onClick={() => setSubjFilt("all")} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${subjFilt==="all"?T.accent:T.border}`,background:subjFilt==="all"?`${T.accent}15`:T.bg,color:subjFilt==="all"?T.accent:T.muted,fontSize:11,cursor:"pointer"}}>
-                Tous ({activeTab === "favorites" ? starredCount : notebooks.length})
+        {/* Main column */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          {/* Header 64px */}
+          <header style={{
+            height: 64,
+            flexShrink: 0,
+            background: COLORS.header,
+            borderBottom: `1px solid ${COLORS.separator}`,
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 20px',
+            gap: 12,
+          }}>
+            {currentFolder && activeTab === 'notebooks' && (
+              <button
+                type="button"
+                onClick={() => setFolderFilt(currentFolder.parentId || 'all')}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', color: COLORS.accent, fontSize: 15, cursor: 'pointer', padding: 0 }}
+              >
+                <ChevronLeft size={18} />
+                {folders.find((f) => f.id === currentFolder.parentId)?.n || 'Documents'}
               </button>
-              {usedSubjects.map(s => (
-                <button key={s.id} onClick={() => setSubjFilt(s.id)} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${subjFilt===s.id?s.c:T.border}`,background:subjFilt===s.id?s.c+"18":T.bg,color:subjFilt===s.id?s.c:T.muted,fontSize:11,cursor:"pointer"}}>
-                  {s.e} {s.l}
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <div style={{ fontSize: 17, fontWeight: 600, color: COLORS.text, lineHeight: 1.2 }}>{sectionTitle}</div>
+            </div>
+            <div style={{ flex: 1 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button
+                type="button"
+                title="Recherche"
+                onClick={() => window.dispatchEvent(new CustomEvent('forma:open-search'))}
+                style={{ width: 40, height: 40, borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.accent }}
+              >
+                <Search size={24} />
+              </button>
+              <button
+                type="button"
+                title={libraryView === 'list' ? 'Vue grille' : 'Vue liste'}
+                onClick={() => setLibraryView(libraryView === 'list' ? 'grid' : 'list')}
+                style={{ width: 40, height: 40, borderRadius: 10, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.accent }}
+              >
+                {libraryView === 'list' ? <Grid3X3 size={24} /> : <List size={24} />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowNew(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '8px 16px',
+                  borderRadius: 10,
+                  border: 'none',
+                  background: COLORS.accent,
+                  color: '#fff',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                <Plus size={16} />
+                Nouveau
+              </button>
+            </div>
+          </header>
+
+          {/* Scrollable content */}
+          <main style={{ flex: 1, overflowY: 'auto', padding: 20, background: COLORS.bg }}>
+            {!userId && !loading && notebooks.length === 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center' }}>
+                <FolderOpen size={64} color={COLORS.cardBorder} strokeWidth={1.5} />
+                <div style={{ fontSize: 17, color: COLORS.textSecondary, marginTop: 20 }}>Aucun document</div>
+                <div style={{ fontSize: 14, color: COLORS.textMuted, marginTop: 8 }}>Appuyez sur + Nouveau pour commencer</div>
+                <button
+                  type="button"
+                  onClick={() => navigate('/auth')}
+                  style={{ marginTop: 24, padding: '10px 20px', borderRadius: 10, background: COLORS.accent, border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Se connecter
                 </button>
-              ))}
-            </div>
-
-            {/* Search */}
-            <div style={{position:"relative",marginBottom:20}}>
-              <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:T.muted,fontSize:14}}>🔍</span>
-              <input value={search} onChange={e => { const v = e.target.value; setSearch(v); checkEasterEggText(v, 'library-search') }} placeholder="Rechercher carnets… (Ctrl+K recherche globale)"
-                style={{width:"100%",padding:"10px 12px 10px 38px",borderRadius:11,border:`1px solid ${T.border}`,background:T.surface,fontSize:13,outline:"none",color:T.ink,boxSizing:"border-box"}}
-                onFocus={e => e.target.style.borderColor = T.accent}
-                onBlur={e => e.target.style.borderColor = T.border}/>
-            </div>
-
-            {loading ? (
-              <div style={{textAlign:"center",padding:"60px 0",color:T.muted}}>
-                <div style={{fontSize:28,marginBottom:10}}>⏳</div><div>Chargement…</div>
-              </div>
-            ) : filtered.length === 0 ? (
-              <div style={{textAlign:"center",padding:"80px 0 60px",animation:"cardIn .4s ease both"}}>
-                <div style={{fontSize:56,marginBottom:16,filter:"grayscale(.3)"}}>📓</div>
-                <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:20,color:T.ink,marginBottom:8}}>
-                  {search || subjFilt !== "all" ? "Aucun résultat trouvé" : "Aucun carnet pour l'instant"}
-                </div>
-                <div style={{fontSize:13,color:T.muted,marginBottom:24,maxWidth:320,margin:"0 auto 24px"}}>
-                  {search ? `Aucun carnet ne correspond à "${search}"` : subjFilt !== "all" ? "Essaie un autre filtre" : "Commence par créer ton premier carnet de cours"}
-                </div>
-                {notebooks.length === 0 && (
-                  <button onClick={() => setShowNew(true)} style={{padding:"12px 26px",borderRadius:12,background:T.accent,border:"none",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer",boxShadow:`0 4px 18px ${T.accent}44`}}>
-                    + Créer mon premier carnet
-                  </button>
-                )}
               </div>
             ) : (
               <>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
-                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                    {LIBRARY_VIEWS.map((v) => (
-                      <button
-                        key={v.id}
-                        type="button"
-                        onClick={() => setLibraryView(v.id)}
-                        title={v.label}
-                        style={{
-                          padding: "6px 12px",
-                          borderRadius: 8,
-                          border: `1px solid ${libraryView === v.id ? T.accent : T.border}`,
-                          background: libraryView === v.id ? `${T.accent}15` : T.bg,
-                          color: libraryView === v.id ? T.accent : T.muted,
-                          fontSize: 11,
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 5,
-                        }}
-                      >
-                        <span>{v.icon}</span>
-                        <span>{v.label}</span>
-                      </button>
-                    ))}
+                {!userId && (
+                  <div style={{ marginBottom: 16, padding: '10px 14px', borderRadius: 10, background: `${COLORS.accent}18`, border: `1px solid ${COLORS.accent}44`, fontSize: 12, color: COLORS.text }}>
+                    Mode local — tes carnets restent sur cet appareil.{' '}
+                    <button type="button" onClick={() => navigate('/auth')} style={{ background: 'none', border: 'none', color: COLORS.accent, fontWeight: 700, cursor: 'pointer', padding: 0 }}>
+                      Se connecter
+                    </button>{' '}
+                    pour la synchro cloud.
                   </div>
-                  <select
-                    value={librarySort}
-                    onChange={(e) => setLibrarySort(e.target.value)}
-                    style={{
-                      padding: "6px 10px",
-                      borderRadius: 8,
-                      border: `1px solid ${T.border}`,
-                      background: T.surface,
-                      color: T.ink,
-                      fontSize: 11,
-                      cursor: "pointer",
-                      outline: "none",
-                    }}
-                  >
-                    {LIBRARY_SORTS.map((s) => (
-                      <option key={s.id} value={s.id}>{s.label}</option>
-                    ))}
-                  </select>
-                </div>
+                )}
 
-                {libraryView === "timeline" ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                    {groupNotebooksByMonth(sortedFiltered).map((group) => (
-                      <div key={group.key}>
-                        <div style={{
-                          fontSize: 11,
-                          fontWeight: 700,
-                          color: T.muted,
-                          letterSpacing: 0.6,
-                          textTransform: "capitalize",
-                          marginBottom: 10,
-                          paddingLeft: 4,
-                        }}>
-                          {group.label}
-                        </div>
-                        <div style={{
-                          position: "relative",
-                          paddingLeft: 20,
-                          borderLeft: `2px solid ${T.border}`,
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 8,
-                        }}>
-                          {group.items.map((nb) => (
-                            <div key={nb.id} style={{ position: "relative" }}>
-                              <div style={{
-                                position: "absolute",
-                                left: -25,
-                                top: 14,
-                                width: 10,
-                                height: 10,
-                                borderRadius: "50%",
-                                background: T.accent,
-                                border: `2px solid ${T.surface}`,
-                              }} />
-                              {renderNotebook(nb, "timeline")}
-                            </div>
-                          ))}
-                        </div>
+                {(activeTab === 'notebooks' || activeTab === 'favorites') && (
+                  <div style={{ opacity: gridVisible ? 1 : 0, transition: 'opacity 200ms ease' }}>
+                    {loading ? (
+                      <div style={{ textAlign: 'center', padding: '80px 0', color: COLORS.textSecondary }}>Chargement…</div>
+                    ) : visibleFolders.length === 0 && sortedFiltered.length === 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', textAlign: 'center' }}>
+                        <FolderOpen size={64} color={COLORS.cardBorder} strokeWidth={1.5} />
+                        <div style={{ fontSize: 17, color: COLORS.textSecondary, marginTop: 20 }}>Aucun document</div>
+                        <div style={{ fontSize: 14, color: COLORS.textMuted, marginTop: 8 }}>Appuyez sur + Nouveau pour commencer</div>
                       </div>
-                    ))}
+                    ) : (
+                      <>
+                        {visibleFolders.length > 0 && (
+                          <div style={{ marginBottom: 24 }}>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: COLORS.textSecondary, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 12 }}>
+                              Dossiers
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 20 }}>
+                              {visibleFolders.map((folder) => (
+                                <GoodNotesFolderCard
+                                  key={folder.id}
+                                  folder={folder}
+                                  onOpen={() => setFolderFilt(folder.id)}
+                                  onContextMenu={(e) => openContextMenu(e, {
+                                    type: 'folder',
+                                    item: folder,
+                                    items: [
+                                      { label: 'Ouvrir', action: () => setFolderFilt(folder.id) },
+                                      { label: 'Modifier', action: () => openEditFolder(folder) },
+                                      { label: 'Supprimer', destructive: true, action: () => removeFolder(folder.id) },
+                                    ],
+                                  })}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {sortedFiltered.length > 0 && (
+                          <div>
+                            {visibleFolders.length > 0 && (
+                              <div style={{ fontSize: 12, fontWeight: 600, color: COLORS.textSecondary, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 12 }}>
+                                Documents
+                              </div>
+                            )}
+                            {libraryView === 'list' ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                {sortedFiltered.map((nb) => renderNotebook(nb, 'list'))}
+                              </div>
+                            ) : (
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 20 }}>
+                                {sortedFiltered.map((nb) => renderNotebook(nb, 'grid'))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
-                ) : libraryView === "list" ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {sortedFiltered.map((nb) => renderNotebook(nb, "list"))}
+                )}
+
+                {/* Legacy tabs — logique conservée, masquée sauf navigation interne */}
+                {activeTab === 'folders' && (
+                  <FormaFolderExplorer
+                    T={T}
+                    folders={folders}
+                    setFolders={setFolders}
+                    notebooks={notebooks}
+                    setNotebooks={setNotebooks}
+                    subjects={subjects}
+                    userId={userId}
+                    foldersCloudOk={foldersCloudOk}
+                    syncingFolders={syncingFolders}
+                    onSyncFolders={syncFolders}
+                    onCreateFolder={(parentId) => { setNewFolderParentId(parentId || null); setShowNewFolder(true) }}
+                    onEditFolder={openEditFolder}
+                    onAssignNotebooks={assignFolderBatch}
+                    onOpenNotebook={(nb) => { setActiveNotebook(nb); navigate(`/editor/${nb.id}`) }}
+                    renderNotebook={renderNotebook}
+                    addNotification={addNotification}
+                    showHeader={false}
+                  />
+                )}
+                {activeTab === 'subjects' && (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                      <div style={{ fontWeight: 700, fontSize: 17, color: COLORS.text }}>Matières ({subjects.length})</div>
+                      <button type="button" onClick={() => setShowNewSubject(true)} style={{ padding: '7px 14px', borderRadius: 8, background: COLORS.accent, border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>+ Nouvelle matière</button>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 9 }}>
+                      {subjects.map((s) => (
+                        <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderRadius: 22, background: `${s.c}22`, border: `1px solid ${s.c}44` }}>
+                          <span style={{ fontSize: 18 }}>{s.e}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: s.c }}>{s.l}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ) : (
-                  <div className="forma-library-grid">
-                    {sortedFiltered.map((nb) => renderNotebook(nb, "grid"))}
+                )}
+                {activeTab === 'dashboard' && (
+                  <div style={{ color: COLORS.textSecondary, fontSize: 14 }}>
+                    Tableau de bord — utilise les filtres internes ou rouvrez via les raccourcis existants.
                   </div>
                 )}
               </>
             )}
-          </>}
+          </main>
         </div>
-      )}
+      </div>
     </div>
   )
 }
