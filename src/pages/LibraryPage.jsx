@@ -1310,7 +1310,7 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
   }
 
   return (
-    <div className="forma-page-shell">
+    <div className="forma-page-shell" style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
       {showTheme && <ThemePicker onClose={() => setShowTheme(false)}/>}
 

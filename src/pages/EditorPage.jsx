@@ -2458,7 +2458,7 @@ export default function EditorPage({ onBack }){
   const colorWheelRef=useRef(null)
   const[focusDuration,setFocusDuration]=useState(25)
   const[breakDuration,setBreakDuration]=useState(5)
-  const[alarms,setAlarms]=useState([{id:1,label:"Fin focus",enabled:true},{id:2,label:"Fin pause",enabled:true}])
+  const[alarmSound,setAlarmSound]=useState('bell')
   const[editingBubble,setEditingBubble]=useState(null)
   const[bubbleText,setBubbleText]=useState("")
   const[pageId,setPageId]=useState(null)
@@ -3204,6 +3204,24 @@ export default function EditorPage({ onBack }){
 
   // Calculator — handled by CalculatorDrawer component
 
+  const playAlarm=useCallback(()=>{
+    if(alarmSound==="none")return
+    try{
+      const ctx=new(window.AudioContext||window.webkitAudioContext)()
+      const osc=ctx.createOscillator()
+      const gain=ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      const freq=alarmSound==="bell"?880:alarmSound==="chime"?1200:440
+      osc.frequency.value=freq
+      osc.type=alarmSound==="gong"?"sine":"triangle"
+      gain.gain.setValueAtTime(0.3,ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+(alarmSound==="gong"?2:0.8))
+      osc.start(ctx.currentTime)
+      osc.stop(ctx.currentTime+(alarmSound==="gong"?2:0.8))
+    }catch{/* audio non disponible */}
+  },[alarmSound])
+
   // Timer
   useEffect(()=>{
     if(!timerRunning){clearInterval(timerRef.current);return}
@@ -3211,12 +3229,15 @@ export default function EditorPage({ onBack }){
     return()=>clearInterval(timerRef.current)
   },[timerRunning])
   useEffect(()=>{
-    if(timerSec===0)setTimerMode(m=>{
-      const next=m==="work"?"break":"work"
-      setTimeout(()=>setTimerSec(next==="work"?focusDuration*60:breakDuration*60),50)
-      return next
-    })
-  },[timerSec,focusDuration,breakDuration])
+    if(timerSec===0){
+      playAlarm()
+      setTimerMode(m=>{
+        const next=m==="work"?"break":"work"
+        setTimeout(()=>setTimerSec(next==="work"?focusDuration*60:breakDuration*60),50)
+        return next
+      })
+    }
+  },[timerSec,focusDuration,breakDuration,playAlarm])
 
   // Flashcards — persist per notebook
   useEffect(()=>{
@@ -3757,8 +3778,13 @@ export default function EditorPage({ onBack }){
   }
 
   return(
-    <div className="forma-page-shell" style={{ display: "flex", flexDirection: "column", height: "100dvh", overflow: "hidden" }}>
-      {!focusMode&&showPageSettings&&(
+    <div className="forma-page-shell" style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+      {!focusMode&&showPageSettings&&isTablet&&(
+        <BottomSheet T={T} open onClose={()=>setShowPageSettings(false)} title="Style de page">
+          <PageSettingsBody T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} pageFormat={pageFormat} customMm={customPageMm} onFormatChange={(partial)=>applyPageSettings(page,partial)} onClose={()=>setShowPageSettings(false)}/>
+        </BottomSheet>
+      )}
+      {!focusMode&&showPageSettings&&!isTablet&&(
         <DraggablePanel T={T} id="editor-page-settings" title="Style de page" open onClose={()=>setShowPageSettings(false)} defaultSide="left" width={320}>
           <PageSettingsBody T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} pageFormat={pageFormat} customMm={customPageMm} onFormatChange={(partial)=>applyPageSettings(page,partial)} onClose={()=>setShowPageSettings(false)}/>
         </DraggablePanel>
@@ -3830,7 +3856,7 @@ export default function EditorPage({ onBack }){
             T={T}
             variant="embedded"
             notebooks={notebooks}
-            onOpenScan={() => { setShowTranslate(false); navigate('/translate') }}
+            onOpenScan={() => setShowTranslate(false)}
           />
         </BottomSheet>
       )}
@@ -3840,7 +3866,7 @@ export default function EditorPage({ onBack }){
             T={T}
             variant="embedded"
             notebooks={notebooks}
-            onOpenScan={() => { setShowTranslate(false); navigate('/translate') }}
+            onOpenScan={() => setShowTranslate(false)}
           />
         </DraggablePanel>
       )}
@@ -3906,16 +3932,28 @@ export default function EditorPage({ onBack }){
               <button type="button" onClick={()=>setBreakDuration(d=>Math.min(30,d+1))} style={{width:28,height:28,borderRadius:8,background:"#2C2C2E",border:"1px solid #38383A",color:"#FFFFFF",cursor:"pointer",fontSize:16}}>+</button>
             </div>
           </div>
-          <div style={{fontSize:11,color:"#8E8E93",marginBottom:8,letterSpacing:0.5}}>ALARMES</div>
-          {alarms.map(alarm=>(
-            <div key={alarm.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-              <span style={{fontSize:13,color:"#FFFFFF"}}>{alarm.label}</span>
-              <div onClick={()=>setAlarms(a=>a.map(x=>x.id===alarm.id?{...x,enabled:!x.enabled}:x))} style={{width:44,height:26,borderRadius:13,background:alarm.enabled?"#30D158":"#3A3A3C",cursor:"pointer",position:"relative",transition:"background 0.2s"}}>
-                <div style={{position:"absolute",top:3,left:alarm.enabled?21:3,width:20,height:20,borderRadius:"50%",background:"#FFFFFF",transition:"left 0.2s",boxShadow:"0 1px 3px rgba(0,0,0,0.3)"}}/>
-              </div>
-            </div>
-          ))}
-          <button type="button" onClick={()=>setAlarms(a=>[...a,{id:Date.now(),label:`Alarme ${a.length+1}`,enabled:true}])} style={{width:"100%",padding:8,borderRadius:8,background:"transparent",border:"1px dashed #3A3A3C",color:"#8E8E93",cursor:"pointer",fontSize:12,marginTop:4}}>+ Ajouter alarme</button>
+          <div style={{fontSize:11,color:"#8E8E93",marginBottom:8,letterSpacing:0.5}}>SON D&apos;ALARME</div>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {[
+              ["bell","🔔","Cloche"],
+              ["chime","🎵","Carillon"],
+              ["gong","🥁","Gong"],
+              ["none","🔇","Silence"],
+            ].map(([id,icon,label])=>(
+              <button key={id} type="button"
+                onClick={()=>setAlarmSound(id)}
+                style={{
+                  padding:"6px 10px",borderRadius:8,fontSize:12,
+                  border:`1px solid ${alarmSound===id?"#0A84FF":"#38383A"}`,
+                  background:alarmSound===id?"rgba(10,132,255,0.15)":"#2C2C2E",
+                  color:alarmSound===id?"#0A84FF":"#FFFFFF",
+                  cursor:"pointer",display:"flex",alignItems:"center",gap:4,
+                }}>
+                <span>{icon}</span>
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>}
 
@@ -4038,7 +4076,7 @@ export default function EditorPage({ onBack }){
         />
       )}
 
-      <div style={focusMode?{display:"flex",flex:1,overflow:"hidden",minHeight:0}:{height:"100dvh",overflow:"hidden",background:COLORS.bg,display:"flex",flexDirection:"column",flex:1,minHeight:0}}>
+      <div style={focusMode?{display:"flex",flex:1,overflow:"hidden",minHeight:0}:{height:"100%",overflow:"hidden",background:COLORS.bg,display:"flex",flexDirection:"column",flex:1,minHeight:0}}>
         <style>{`@keyframes gnSpin{to{transform:rotate(360deg)}}@keyframes gnPopupIn{from{opacity:0;transform:translateX(-50%) translateY(-4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}@keyframes gnShapeHudIn{from{opacity:0;transform:translateX(-50%) translateY(-4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}`}</style>
         {!focusMode&&readOnly&&(
           <div style={{height:24,flexShrink:0,background:COLORS.destructive,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:600,gap:8,zIndex:50}}>
@@ -4128,7 +4166,7 @@ export default function EditorPage({ onBack }){
           {showArrowHUD&&<GoodNotesArrowHud show arrowStyle={arrowStyle} setArrowStyle={setArrowStyle} onClose={()=>setShowArrowHUD(false)}/>}
           </div>
         )}
-        <div style={{display:"flex",flex:1,minHeight:0,...(!focusMode?{height:readOnly?`calc(100dvh - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px - 24px)`:`calc(100dvh - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px)`}:{})}}>
+        <div style={{display:"flex",flex:1,minHeight:0,minWidth:0,...(!focusMode?{height:readOnly?`calc(100% - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px - 24px)`:`calc(100% - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px)`}:{})}}>
           <div style={{flex:1,position:"relative",minWidth:0,display:"flex",flexDirection:"column",minHeight:0}}>
               {!focusMode&&showPagePanelOpen&&(
                 <EditorPagesPanel open={showPagePanelOpen} onClose={()=>setActivePanel(null)} page={page} pagesCount={pagesCount} pages={pages} nb={nb} T={T} goToPage={goToPage} addPage={addPage}/>

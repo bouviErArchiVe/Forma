@@ -3,7 +3,7 @@
 export const TABLET_MAX_WIDTH = 1024
 
 export function isTabletLayout(width = typeof window !== 'undefined' ? window.innerWidth : 1200) {
-  return width <= TABLET_MAX_WIDTH
+  return true // Toujours mode tablet : BottomSheet sur tous les écrans, jamais DraggablePanel flottant
 }
 
 export function isCoarsePointer() {

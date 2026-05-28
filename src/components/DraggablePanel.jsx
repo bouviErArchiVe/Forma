@@ -9,8 +9,8 @@ import {
   getPanelStackCount,
 } from '@/lib/panelDockStack'
 
-const TOP_BAR = 46
-const BOTTOM_BAR = 32
+const TOP_BAR = 52
+const BOTTOM_BAR = 44
 const SNAP = 28
 const MIN_FLOAT_W = 180
 

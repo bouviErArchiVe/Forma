@@ -32,7 +32,7 @@ export default function AppLayout() {
       overflow: 'hidden',
       background: T.bg,
     }}>
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0 }}>
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0, minWidth: 0 }}>
         {viewWrap('library', (
           <ErrorBoundary title="Erreur bibliothèque">
             <LibraryPage
