@@ -64,7 +64,7 @@ import {
 import CustomProfileForm from "@/components/CustomProfileForm"
 import { screenToPage, pageToScreen } from "@/lib/viewport"
 import { useCanvasViewport } from "@/hooks/useCanvasViewport"
-import { resolvePageDimensions } from "@/lib/pageFormats"
+import { resolvePageDimensions, formatLabel } from "@/lib/pageFormats"
 import PageFormatPicker from "@/components/PageFormatPicker"
 import RulerSvg from "@/components/RulerSvg"
 import { computeRotatedBounds } from "@/lib/pageRotation"
@@ -1418,9 +1418,13 @@ function ThemePicker({current,onChange,onClose}){
   )
 }
 
-function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridStyle,setGridStyle,onClose}){
+function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridStyle,setGridStyle,pageFormat,customMm,onFormatChange,onClose}){
   return(
     <div style={{padding:"12px 14px 16px",display:"flex",flexDirection:"column",gap:14}}>
+      <div>
+        <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>FORMAT DE PAGE</div>
+        <PageFormatPicker T={T} format={pageFormat} customMm={customMm} onChange={onFormatChange} />
+      </div>
       <div>
         <div style={{fontSize:10,fontWeight:700,color:T.muted,marginBottom:7}}>GRILLE / PAPIER</div>
         <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{GRID_STYLES.map(g=><button key={g.id}type="button"onClick={()=>setGridStyle(g.id)}title={g.desc}style={{padding:"4px 8px",borderRadius:7,border:`1px solid ${gridStyle===g.id?T.accent:T.border}`,background:gridStyle===g.id?`${T.accent}18`:T.bg,color:gridStyle===g.id?T.accent:T.ink,cursor:"pointer",fontSize:9}}>{g.label}</button>)}</div>
@@ -1571,6 +1575,7 @@ export default function EditorPage(){
   useEffect(()=>{if(tool==="eraser")setShowEraserPanel(true)},[tool])
   const[pageFormat,setPageFormat]=useState("a4")
   const[nextPageFmt,setNextPageFmt]=useState("a4")
+  const[nextPageCustomMm,setNextPageCustomMm]=useState({w:210,h:297})
   const[pageRotation,setPageRotation]=useState(0)
   const[customPageMm,setCustomPageMm]=useState({w:210,h:297})
   const[pageGridStyle,setPageGridStyle]=useState(()=>defaultGridStyle("plan"))
@@ -1709,6 +1714,7 @@ export default function EditorPage(){
     setPageBgImage(meta.bgImage??null)
     setPageBgOpacity(meta.bgImageOpacity??1)
     setNextPageFmt(meta.format||"a4")
+    setNextPageCustomMm(meta.customMm||{w:210,h:297})
   },[nb.template])
 
   const buildCurrentPageMeta=useCallback(()=>serializePageElements({
@@ -1995,7 +2001,7 @@ export default function EditorPage(){
       const newMeta=serializePageElements({
         format:nextPageFmt,
         rotation:0,
-        customMm:customPageMm,
+        customMm:nextPageCustomMm,
         items:[],
         gridStyle:pageGridStyle||defaultGridStyle(nb.template),
         bgImage:bgImage||null,
@@ -2352,9 +2358,17 @@ export default function EditorPage(){
 
   const applyPageSettings=useCallback(async(pageNum,partial)=>{
     if(pageNum===page){
-      if(partial.format!==undefined){setPageFormat(partial.format);setNextPageFmt(partial.format)}
+      if(partial.format!==undefined){
+        setPageFormat(partial.format)
+        setNextPageFmt(partial.format)
+        if(partial.format==="infinite")setInfiniteMode(true)
+        else if(partial.infinite===undefined)setInfiniteMode(false)
+      }
       if(partial.rotation!==undefined)setPageRotation(partial.rotation)
-      if(partial.customMm)setCustomPageMm(partial.customMm)
+      if(partial.customMm){
+        setCustomPageMm(partial.customMm)
+        setNextPageCustomMm(partial.customMm)
+      }
       if(partial.pageColor!==undefined)setPageColor(partial.pageColor)
       if(partial.gridColor!==undefined)setGridColor(partial.gridColor)
       if(partial.gridStyle!==undefined)setPageGridStyle(partial.gridStyle)
@@ -2363,6 +2377,7 @@ export default function EditorPage(){
       if(partial.bgImage!==undefined)setPageBgImage(partial.bgImage)
       if(partial.bgImageOpacity!==undefined)setPageBgOpacity(partial.bgImageOpacity)
       scheduleSave()
+      if(partial.format||partial.customMm)addNotification("Format de page appliqué","success")
       return
     }
     const pg=pages.find(p=>p.page_number===pageNum)
@@ -2382,7 +2397,7 @@ export default function EditorPage(){
       await supabase.from("pages").update({elements:elementsStr,updated_at:new Date().toISOString()}).eq("id",pg.id)
       setPages(prev=>prev.map(p=>p.id===pg.id?{...p,elements:elementsStr}:p))
     }catch(e){console.error(e)}
-  },[page,pages,nb,scheduleSave])
+  },[page,pages,nb,scheduleSave,addNotification])
 
   const pageMenuMeta=useMemo(()=>{
     if(!pageMenu)return null
@@ -2590,7 +2605,7 @@ export default function EditorPage(){
     <div className="forma-page-shell" style={{ display: "flex", flexDirection: "column", height: "100dvh", overflow: "hidden" }}>
       {!focusMode&&showPageSettings&&(
         <DraggablePanel T={T} id="editor-page-settings" title="Style de page" open onClose={()=>setShowPageSettings(false)} defaultSide="left" width={320}>
-          <PageSettingsBody T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} onClose={()=>setShowPageSettings(false)}/>
+          <PageSettingsBody T={T} pageColor={pageColor} setPageColor={setPageColorLogged} gridColor={gridColor} setGridColor={setGridColorLogged} gridStyle={pageGridStyle} setGridStyle={setPageGridStyleLogged} pageFormat={pageFormat} customMm={customPageMm} onFormatChange={(partial)=>applyPageSettings(page,partial)} onClose={()=>setShowPageSettings(false)}/>
         </DraggablePanel>
       )}
       {showShare&&(
@@ -3175,14 +3190,22 @@ export default function EditorPage(){
       </div>
 
       {!focusMode&&(
-        <DraggablePanel T={T} id="editor-pages" title="Pages" open={showPagePanel&&!isTablet} onClose={()=>setShowPagePanel(false)} width={220} defaultSide="right"
+        <DraggablePanel T={T} id="editor-pages" title="Pages" open={showPagePanel&&!isTablet} onClose={()=>setShowPagePanel(false)} width={280} defaultSide="right"
           headerExtra={<>
             <button type="button" onClick={addPage} title="Ajouter page" style={{background:"none",border:"none",cursor:"pointer",color:T.accent,fontSize:14,lineHeight:1,padding:0}}>+</button>
             <button type="button" onClick={duplicatePage} title="Dupliquer" style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:11,padding:0}}>⊕</button>
           </>}>
           <div style={{padding:"8px 10px 6px",borderBottom:`1px solid ${T.border}`}}>
-            <div style={{fontSize:8,color:T.muted,fontWeight:700,marginBottom:6}}>Format nouvelle page</div>
-            <PageFormatPicker T={T} format={nextPageFmt} compact onChange={({ format }) => setNextPageFmt(format || "a4")} />
+            <div style={{ fontSize: 8, color: T.muted, fontWeight: 700, marginBottom: 4 }}>Page {page} — {formatLabel(pageFormat, customPageMm, pageRotation)}</div>
+            <div style={{ fontSize: 8, color: T.accent, fontWeight: 700, marginBottom: 6 }}>Format page courante</div>
+            <PageFormatPicker T={T} format={pageFormat} customMm={customPageMm} compact onChange={(partial)=>applyPageSettings(page,partial)} />
+          </div>
+          <div style={{padding:"8px 10px 6px",borderBottom:`1px solid ${T.border}`}}>
+            <div style={{fontSize:8,color:T.muted,fontWeight:700,marginBottom:6}}>Format nouvelles pages</div>
+            <PageFormatPicker T={T} format={nextPageFmt} customMm={nextPageCustomMm} compact onChange={(partial)=>{
+              if(partial.format)setNextPageFmt(partial.format)
+              if(partial.customMm)setNextPageCustomMm(partial.customMm)
+            }} />
           </div>
           <div style={{padding:8,display:"flex",flexDirection:"column",gap:6}}>
             {Array.from({length:pagesCount},(_,i)=>{
@@ -3289,6 +3312,7 @@ export default function EditorPage(){
         <div style={{display:"flex",alignItems:"center",gap:4}}>
           <button onClick={()=>goToPage(Math.max(1,page-1))} disabled={page===1} style={{background:"none",border:"none",color:page===1?T.border:T.muted,cursor:page===1?"default":"pointer",fontSize:12}}>‹</button>
           <span style={{fontSize:9,color:T.muted,fontFamily:"monospace"}}>{page}/{pagesCount}</span>
+          <span style={{fontSize:8,color:T.muted,maxWidth:120,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={formatLabel(pageFormat,customPageMm,pageRotation)}>{formatLabel(pageFormat,customPageMm,pageRotation)}</span>
           <button onClick={()=>goToPage(Math.min(pagesCount,page+1))} style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:12}}>›</button>
           <button type="button" onClick={()=>addPage()} title="Nouvelle page" style={{background:"none",border:"none",color:T.accent,cursor:"pointer",fontSize:11}}>＋</button>
           <button type="button" onClick={()=>pagePhotoInputRef.current?.click()} title="Page avec photo" style={{background:"none",border:"none",color:T.muted,cursor:"pointer",fontSize:11}}>📷</button>

@@ -12,11 +12,13 @@ Route : `/editor/:id`
 - Déplacement groupé objets sélectionnés (lasso)
 - Export PNG, mode focus, iPad (sidebar + bottom toolbar)
 - Mode lecture seule (collab)
+- Formats page (A0–A6, B4/B5, Letter, Legal, carré, personnalisé mm/cm/po, infini)
+- Application immédiate du format à la page courante (panneau Pages, Style de page, menu ⋯)
+- Format par défaut pour les nouvelles pages (panneau Pages)
 
 ## Reste à compléter (prochains packs)
 - Resize/rotation poignées sur tous types d’éléments
 - Dictée vocale intégrée canvas
-- Formats page avancés (perso mm)
 - Tests iPad réels device
 
 ## Validation
