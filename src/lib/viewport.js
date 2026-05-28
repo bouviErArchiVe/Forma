@@ -1,3 +1,5 @@
+import { boxPointToPage, pagePointToBox } from '@/lib/pageRotation'
+
 /** Viewport math — zoom centré curseur, coords écran ↔ page */
 
 export const ZOOM_MIN = 0.25
@@ -27,7 +29,7 @@ export function zoomAtPoint({ zoom, panX, panY, viewW, viewH, sx, sy, newZoom })
   }
 }
 
-/** Coords écran (viewport) → coords page logique */
+/** Coords écran (viewport) → coords page logique (espace page non tourné) */
 export function screenToPage({
   sx,
   sy,
@@ -40,10 +42,13 @@ export function screenToPage({
   panY,
   offsetX = 0,
   offsetY = 0,
+  baseW = pageW,
+  baseH = pageH,
+  rotationDeg = 0,
 }) {
-  const x = pageW / 2 + (sx - viewW / 2 - panX) / zoom - offsetX
-  const y = pageH / 2 + (sy - viewH / 2 - panY) / zoom - offsetY
-  return { x, y }
+  const bx = pageW / 2 + (sx - viewW / 2 - panX) / zoom
+  const by = pageH / 2 + (sy - viewH / 2 - panY) / zoom
+  return boxPointToPage(bx, by, baseW, baseH, rotationDeg, offsetX, offsetY)
 }
 
 /** Coords page logique → coords écran (viewport) */
@@ -59,9 +64,11 @@ export function pageToScreen({
   panY,
   offsetX = 0,
   offsetY = 0,
+  baseW = pageW,
+  baseH = pageH,
+  rotationDeg = 0,
 }) {
-  const bx = px + offsetX
-  const by = py + offsetY
+  const { x: bx, y: by } = pagePointToBox(px, py, baseW, baseH, rotationDeg, offsetX, offsetY)
   return {
     sx: viewW / 2 + (bx - pageW / 2) * zoom + panX,
     sy: viewH / 2 + (by - pageH / 2) * zoom + panY,

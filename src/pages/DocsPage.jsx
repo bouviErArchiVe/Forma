@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { loadLocalNotebooks } from '@/lib/projectPersistence'
 import useAppStore from '@/stores/useAppStore'
 import FormaModuleHeader from '@/components/FormaModuleHeader'
+import BrandLogo from '@/components/BrandLogo'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassButton from '@/components/ui/GlassButton'
 import DocEditor from '@/components/docs/DocEditor'
@@ -154,6 +155,9 @@ export default function DocsPage() {
           padding: '12px 18px', borderBottom: `1px solid ${T.border}`, background: T.surface,
           display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', position: 'sticky', top: 0, zIndex: 20,
         }}>
+          <button type="button" onClick={() => navigate('/')} title="Accueil Forma" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0 }}>
+            <BrandLogo src={T?.img} alt={T?.n} size="sm" showText={false} accent={T.accent} />
+          </button>
           <button type="button" onClick={() => { saveDoc(doc); setView('library'); refresh() }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: T.accent, fontWeight: 600 }}>
             ← Bibliothèque
           </button>

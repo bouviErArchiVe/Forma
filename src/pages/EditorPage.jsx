@@ -1300,6 +1300,7 @@ function PageThumbnail({pageData,pageNum,current,T,onClick,onMenu,notebookTempla
   const ref=useRef()
   const meta=parsePageElements(pageData?.elements,notebookTemplate)
   const label=pageDisplayName(pageNum,meta)
+  const rotation=meta.rotation??0
   useEffect(()=>{
     if(!ref.current||!pageData)return
     const canvas=ref.current
@@ -1351,11 +1352,18 @@ function PageThumbnail({pageData,pageNum,current,T,onClick,onMenu,notebookTempla
     }else{
       drawStrokes()
     }
-  },[pageData,meta.pageColor,meta.bgImage,meta.bgImageOpacity])
+  },[pageData,meta.pageColor,meta.bgImage,meta.bgImageOpacity,rotation])
   return(
     <div style={{position:"relative",padding:4,borderRadius:8,border:`2px solid ${current?T.accent:T.border}`,background:current?`${T.accent}10`:T.bg,transition:"all .15s"}}>
       <div onClick={onClick}style={{cursor:"pointer"}}>
-        <canvas ref={ref}width={100}height={141}style={{display:"block",width:80,height:113,borderRadius:4}}/>
+        <div style={{
+          width:80,height:113,margin:"0 auto",
+          display:"flex",alignItems:"center",justifyContent:"center",
+          transform:rotation?`rotate(${rotation}deg)`:"none",
+          transformOrigin:"center center",
+        }}>
+          <canvas ref={ref}width={100}height={141}style={{display:"block",width:80,height:113,borderRadius:4}}/>
+        </div>
         <div style={{fontSize:8,color:current?T.accent:T.muted,textAlign:"center",marginTop:3,fontFamily:"var(--app-font)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:84}}title={label}>{label}</div>
       </div>
       <button type="button"onClick={e=>{e.stopPropagation();onMenu?.(e,pageNum)}}title="Options page"style={{position:"absolute",top:2,right:2,width:18,height:18,borderRadius:4,border:`1px solid ${T.border}`,background:T.surface,color:T.muted,cursor:"pointer",fontSize:10,lineHeight:1,padding:0}}>⋯</button>
@@ -1772,7 +1780,8 @@ export default function EditorPage(){
     pageW:displayW,pageH:displayH,
     zoom,panX,panY,
     offsetX:rotLayout.offsetX,offsetY:rotLayout.offsetY,
-  }),[displayW,displayH,zoom,panX,panY,rotLayout.offsetX,rotLayout.offsetY])
+    baseW:PW,baseH:PH,rotationDeg:infiniteMode?0:pageRotation,
+  }),[displayW,displayH,PW,PH,pageRotation,infiniteMode,zoom,panX,panY,rotLayout.offsetX,rotLayout.offsetY])
 
   useEffect(() => {
     if (tool !== 'eraser') return
@@ -2920,6 +2929,7 @@ export default function EditorPage(){
               pageW:displayW,pageH:displayH,
               zoom,panX,panY,
               offsetX:rotLayout.offsetX,offsetY:rotLayout.offsetY,
+              baseW:PW,baseH:PH,rotationDeg:infiniteMode?0:pageRotation,
             })
             return<div key={c.userId}style={{position:"absolute",left:pt.sx,top:pt.sy,zIndex:60,pointerEvents:"none"}}>
               <div style={{width:12,height:12,background:COLLAB_COLORS[i%6],clipPath:"polygon(0 0,100% 30%,40% 40%,30% 100%)"}}/>

@@ -42,5 +42,21 @@ export default defineConfig({
   ],
   resolve: {
     alias: { '@': '/src' }
-  }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/pdfjs-dist') || id.includes('pdf.worker')) return 'pdf'
+          if (id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas')) return 'pdf-export'
+          if (id.includes('node_modules/@supabase')) return 'supabase'
+          if (id.includes('node_modules/tesseract.js')) return 'ocr'
+          if (id.includes('node_modules/docx') || id.includes('node_modules/jszip')) return 'office'
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'react-vendor'
+          if (id.includes('node_modules/react-router')) return 'router'
+          if (id.includes('node_modules/lucide-react')) return 'icons'
+        },
+      },
+    },
+  },
 })
