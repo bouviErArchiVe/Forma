@@ -175,6 +175,47 @@ const SIZES_MM=[0.05,0.1,0.18,0.25,0.35,0.5,0.7,1.0,1.4,2.0,3.0,5.0,7.0,10.0]
 const ERASER_SIZES_MM=[0.5,1.0,2.0,3.0,5.0,8.0,12.0,20.0,30.0]
 const mm2px=mm=>mm*3.78
 
+function drawArrowStroke(ctx,s,layerOp){
+  const style=s.arrowStyle||"single"
+  const[a,b]=[s.pts[0],s.pts[1]]
+  const ang=Math.atan2(b.y-a.y,b.x-a.x)
+  const hs=Math.min(20,s.size*5+10)
+  const baseOp=(s.opacity??1)*layerOp
+  ctx.save()
+  ctx.strokeStyle=s.color
+  ctx.lineWidth=s.size
+  ctx.globalAlpha=baseOp
+  ctx.lineCap="round"
+  ctx.lineJoin="round"
+  if(style==="dashed")ctx.setLineDash([8,4])
+  ctx.beginPath()
+  ctx.moveTo(a.x,a.y)
+  ctx.lineTo(b.x,b.y)
+  ctx.stroke()
+  const drawHead=(x,y,dir)=>{
+    if(style==="openhead"){
+      ctx.beginPath()
+      ctx.moveTo(x,y)
+      ctx.lineTo(x-hs*Math.cos(dir-Math.PI/6),y-hs*Math.sin(dir-Math.PI/6))
+      ctx.moveTo(x,y)
+      ctx.lineTo(x-hs*Math.cos(dir+Math.PI/6),y-hs*Math.sin(dir+Math.PI/6))
+      ctx.stroke()
+    }else{
+      ctx.beginPath()
+      ctx.moveTo(x,y)
+      ctx.lineTo(x-hs*Math.cos(dir-Math.PI/6),y-hs*Math.sin(dir-Math.PI/6))
+      ctx.lineTo(x-hs*Math.cos(dir+Math.PI/6),y-hs*Math.sin(dir+Math.PI/6))
+      ctx.closePath()
+      ctx.fillStyle=s.color
+      ctx.fill()
+    }
+  }
+  drawHead(b.x,b.y,ang)
+  if(style==="double"||style==="both")drawHead(a.x,a.y,ang+Math.PI)
+  ctx.setLineDash([])
+  ctx.restore()
+}
+
 function formatDimension(mm, unitSystem) {
   if (unitSystem === 'imperial') {
     const totalIn = mm / 25.4
@@ -504,7 +545,7 @@ function smoothStrokePoints(pts, amount = 0.32) {
 }
 
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */
-function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest,canvasTextFont,canvasZIndex=5}){
+function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest,canvasTextFont,canvasZIndex=5,arrowStyle,onEditBubble}){
   const drawing=useRef(false)
   const strokes=useRef([])   // committed strokes
   const history=useRef([])   // for multi-level undo (copy of strokes at each commit)
@@ -550,15 +591,52 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 
   const drawSingleStroke=(ctx,s,layerOp)=>{
     const st=s.shapeType||s.tool
+    if(st==="arrow"){
+      drawArrowStroke(ctx,s,layerOp)
+      return
+    }
+    if(st==="cloud"){
+      drawShapeStroke(ctx,s,layerOp,unitSys,formatDimension)
+      if(s.text){
+        const cx=(s.pts[0].x+s.pts[1].x)/2
+        const cy=(s.pts[0].y+s.pts[1].y)/2
+        ctx.save()
+        ctx.font=`${Math.max(s.size*2.5,12)}px Nunito, sans-serif`
+        ctx.fillStyle=s.color
+        ctx.globalAlpha=1
+        ctx.textAlign="center"
+        ctx.textBaseline="middle"
+        ctx.fillText(s.text,cx,cy)
+        ctx.textAlign="left"
+        ctx.textBaseline="alphabetic"
+        ctx.restore()
+      }
+      return
+    }
     if(st==="text"||SHAPE_TYPES.has(st)||["line","rect","circle","arrow","cloud","dimline"].includes(st)){
       drawShapeStroke(ctx,s,layerOp,unitSys,formatDimension)
       return
     }
     if(!s.pts||s.pts.length<2)return
+    if(s.tool==="highlight"){
+      ctx.save()
+      ctx.globalAlpha=0.35*((s.opacity??1)*layerOp)
+      ctx.globalCompositeOperation="source-over"
+      ctx.strokeStyle=s.color
+      ctx.lineWidth=s.size
+      ctx.lineCap="square"
+      ctx.lineJoin="round"
+      ctx.beginPath()
+      ctx.moveTo(s.pts[0].x,s.pts[0].y)
+      s.pts.forEach(p=>ctx.lineTo(p.x,p.y))
+      ctx.stroke()
+      ctx.restore()
+      return
+    }
     ctx.beginPath();ctx.strokeStyle=s.color;ctx.lineWidth=s.size
     ctx.lineCap="round";ctx.lineJoin="round"
     const baseOp=(s.opacity??1)*layerOp
-    ctx.globalAlpha=s.tool==="highlight"?Math.min(baseOp,.4):baseOp
+    ctx.globalAlpha=baseOp
     ctx.globalCompositeOperation=s.tool==="eraser"?"destination-out":"source-over"
     ctx.moveTo(s.pts[0].x,s.pts[0].y);s.pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke()
     ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1
@@ -663,8 +741,11 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       ctx.restore()
     })
     drawSnapGuides(ctx,snapGuides.current)
+    if(drawing.current&&cur.current.length>1&&["pen","highlight"].includes(tool)){
+      drawSingleStroke(ctx,{pts:[...cur.current],color,size,tool},1)
+    }
     ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1
-  },[cRef,unitSys,pageW,pageH])
+  },[cRef,unitSys,pageW,pageH,tool,color,size])
 
   useEffect(()=>{redraw()},[layers,activeLayerId,redraw])
 
@@ -909,18 +990,16 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     if(tool==="pen"){
       holdTimer.current=setTimeout(()=>{
         if(cur.current.length>3){
-          const detected=detectShape(cur.current)
-          if(detected){
-            // Replace current freehand with detected shape
-            pushStroke({pts:detected.pts,color,size,tool:"pen",shapeType:detected.type,...shapeStylePayload(shapeStyle,color)})
-            cur.current=[]
-            drawing.current=false
-            redraw()
-            if(onStroke)onStroke(strokes.current)
-            logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:detected.shapeType||detected.type})
-          }
+          const start=cur.current[0]
+          const end=cur.current[cur.current.length-1]
+          pushStroke({pts:[start,end],color,size,tool,shapeType:"line"})
+          cur.current=[]
+          drawing.current=false
+          redraw()
+          if(onStroke)onStroke(strokes.current)
+          logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:"line"})
         }
-      },650)
+      },800)
     }
   }
 
@@ -958,13 +1037,21 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       redraw()
       const s=shape.current.start
       const finalPts=tool==="cloud"?[{x:Math.min(s.x,ep.x),y:Math.min(s.y,ep.y)},{x:Math.max(s.x,ep.x),y:Math.max(s.y,ep.y)}]:[s,ep]
-      const preview={pts:finalPts,color,size,tool,shapeType:tool==="shape-arrow"?"arrow":tool,...shapeStylePayload(shapeStyle,color)}
-      drawShapeStroke(ctx,preview,1,unitSys,formatDimension)
+      const preview={pts:finalPts,color,size,tool,shapeType:tool==="shape-arrow"?"arrow":tool,arrowStyle,...shapeStylePayload(shapeStyle,color)}
+      if(tool==="shape-arrow")drawArrowStroke(ctx,preview,1)
+      else drawShapeStroke(ctx,preview,1,unitSys,formatDimension)
       drawSnapGuides(ctx,snapGuides.current)
       shape.current.end=ep
       return
     }
-    if (["pen", "highlight"].includes(tool)) {
+    if (tool === "highlight") {
+      const last = cur.current[cur.current.length - 1]
+      if (last && Math.hypot(p.x - last.x, p.y - last.y) < 1.5) return
+      cur.current.push(p)
+      redraw()
+      return
+    }
+    if (["pen"].includes(tool)) {
       const last = cur.current[cur.current.length - 1]
       if (last && Math.hypot(p.x - last.x, p.y - last.y) < 1.5) return
     }
@@ -1083,9 +1170,24 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       const s=shape.current.start
       const end=shape.current.end||p
       const finalPts=tool==="cloud"?[{x:Math.min(s.x,end.x),y:Math.min(s.y,end.y)},{x:Math.max(s.x,end.x),y:Math.max(s.y,end.y)}]:[s,end]
-      pushStroke({pts:finalPts,color,size,tool,shapeType:tool==="shape-arrow"?"arrow":tool,...shapeStylePayload(shapeStyle,color)})
-      shape.current=null;redraw()
-      logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:tool})
+      if(tool==="cloud"){
+        const bubbleId=Date.now()
+        pushStroke({pts:finalPts,color,size,tool,shapeType:"cloud",id:bubbleId,text:"",...shapeStylePayload(shapeStyle,color)})
+        shape.current=null
+        redraw()
+        logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:"cloud"})
+        onEditBubble?.(bubbleId,finalPts)
+      }else if(tool==="shape-arrow"){
+        pushStroke({pts:finalPts,color,size,tool,shapeType:"arrow",arrowStyle,...shapeStylePayload(shapeStyle,color)})
+        shape.current=null
+        redraw()
+        logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:"arrow"})
+      }else{
+        pushStroke({pts:finalPts,color,size,tool,shapeType:tool==="shape-arrow"?"arrow":tool,...shapeStylePayload(shapeStyle,color)})
+        shape.current=null
+        redraw()
+        logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:tool})
+      }
     } else if(cur.current.length>0){
       if(tool==="eraser"&&eraserMode==="precision"){
         pushStroke({pts:[...cur.current],color:"#000000",size:eraserSize,tool:"eraser"})
@@ -1098,12 +1200,30 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
         const last=strokes.current[strokes.current.length-1]
         logAction(tool==="highlight"?"stroke_highlight":"stroke_pen",{stroke:last})
       }
+      if(tool==="eraser"&&cur.current.length>0){
+        const xs=cur.current.map(pt=>pt.x),ys=cur.current.map(pt=>pt.y)
+        const minX=Math.min(...xs)-eraserSize/2,maxX=Math.max(...xs)+eraserSize/2
+        const minY=Math.min(...ys)-eraserSize/2,maxY=Math.max(...ys)+eraserSize/2
+        strokes.current=strokes.current.filter(s=>{
+          if(s.shapeType!=="text"&&s.tool!=="text")return true
+          const tx=s.pts?.[0]?.x??0,ty=s.pts?.[0]?.y??0
+          return!(tx>=minX&&tx<=maxX&&ty>=minY&&ty<=maxY)
+        })
+        redraw()
+      }
     }
     cur.current=[]
     if(onStroke)onStroke(strokes.current)
   }
 
   useEffect(()=>{
+    window.__updateStrokeText=(id,text)=>{
+      const s=strokes.current.find(x=>x.id===id)
+      if(!s)return
+      s.text=text
+      redraw()
+      if(onStroke)onStroke(strokes.current)
+    }
     window.__undo=()=>{
       if(history.current.length===0)return
       redoStack.current.push(JSON.stringify(strokes.current))
@@ -1255,9 +1375,11 @@ function GoodNotesSectionLabel({children}){
   return<div style={{fontSize:11,fontWeight:600,color:COLORS.textSecondary,textTransform:"uppercase",letterSpacing:0.6,marginBottom:6}}>{children}</div>
 }
 
-function GnSep({h=20}){return<div style={{width:1,height:h,background:C.border,margin:"0 4px",flexShrink:0}}/>}
+function GnSep({h=20}){return<div style={{width:1,height:h,background:"#38383A",margin:"0 6px",flexShrink:0}}/>}
 
-function GnToolBtn({children,active,onClick,title,disabled,size=38}){
+const LEFT_PANEL_STYLE={position:"absolute",top:TOP_BAR_H,left:0,bottom:BOTTOM_BAR_H,zIndex:110,display:"flex",flexDirection:"column",boxShadow:"4px 0 24px rgba(0,0,0,0.5)"}
+
+function GnToolBtn({children,active,onClick,title,disabled,size=36}){
   return(
     <button type="button" title={title} disabled={disabled} onClick={onClick}
       style={{width:size,height:size,borderRadius:8,border:"none",background:active?C.panel:"transparent",color:active?C.accent:(disabled?C.muted:C.icon),cursor:disabled?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",opacity:disabled?0.35:1,transition:"background .12s,color .12s",padding:0,flexShrink:0}}>
@@ -1380,7 +1502,7 @@ function GoodNotesSelectionToolbar({bounds,count,pageW,showShapeOpts,showTextFon
   )
 }
 
-function GoodNotesToolPopup({toolPopup,onClose,color,setColor,sizeMm,setSizeMm,eraserSettings,setEraserSettings,activeCPal,setActiveCPal,activeHPal,setActiveHPal,setTool}){
+function GoodNotesToolPopup({toolPopup,onClose,color,setColor,sizeMm,setSizeMm,eraserSettings,setEraserSettings,activeCPal,setActiveCPal,activeHPal,setActiveHPal,setTool,showColorWheel,setShowColorWheel,wheelRef,customHex,setCustomHex,pickWheel}){
   if(!toolPopup||!["pen","highlight","eraser"].includes(toolPopup))return null
   const brush=BRUSHES.find(b=>Math.abs(b.mm-sizeMm)<0.01)||BRUSHES[2]
   const quickPal=(toolPopup==="highlight"?HPAL[activeHPal||"Standards"]:CPAL[activeCPal||"📐 Plans"]).slice(0,8)
@@ -1397,10 +1519,20 @@ function GoodNotesToolPopup({toolPopup,onClose,color,setColor,sizeMm,setSizeMm,e
           <GoodNotesSlider value={sizeMm} min={0.05} max={10} step={0.05} onChange={setSizeMm}/>
           <span style={{fontSize:11,color:C.muted,whiteSpace:"nowrap"}}>{sizeMm}mm</span>
         </div>
-        {quickPal.map(c=><GnColorDot key={c} c={c} active={color===c} onClick={()=>{setColor(c);setTool(toolPopup)}} size={26}/>)}
+        {quickPal.map(c=><GnColorDot key={c} c={c} active={color===c} onClick={()=>{setColor(c);setCustomHex(c);setTool(toolPopup)}} size={26}/>)}
         <select value={palKey} onChange={e=>setPal(e.target.value)} style={{padding:"6px 10px",borderRadius:8,border:"none",background:C.panel,color:C.text,fontSize:13,cursor:"pointer",maxWidth:120}}>
           {Object.keys(pal).map(p=><option key={p} value={p}>{p}</option>)}
         </select>
+        <button type="button" onClick={()=>setShowColorWheel(v=>!v)} style={{padding:"6px 12px",borderRadius:8,border:"1px solid #38383A",background:showColorWheel?"#2C2C2E":"transparent",color:"#8E8E93",cursor:"pointer",fontSize:12}}>🎡 Roue</button>
+        {showColorWheel&&(
+          <div style={{width:"100%",marginTop:4}}>
+            <canvas ref={wheelRef} width={150} height={150} style={{borderRadius:"50%",cursor:"crosshair",display:"block",margin:"0 auto"}} onClick={pickWheel}/>
+            <div style={{display:"flex",gap:6,marginTop:8,alignItems:"center"}}>
+              <input type="color" value={customHex} onChange={e=>{setCustomHex(e.target.value);setColor(e.target.value)}} style={{width:28,height:28,padding:0,border:"1px solid #38383A",borderRadius:6,cursor:"pointer"}}/>
+              <input value={customHex} onChange={e=>{setCustomHex(e.target.value);if(/^#[0-9a-f]{6}$/i.test(e.target.value))setColor(e.target.value)}} style={{flex:1,padding:"6px 8px",borderRadius:8,border:"1px solid #38383A",background:"#2C2C2E",color:"#FFFFFF",fontSize:12,outline:"none",fontFamily:"monospace"}}/>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
@@ -1441,7 +1573,7 @@ function CanvasRuler({pos,setPos,unitSys,zoom}){
     setPos(p=>({...p,x:startRef.current.ox+dx,y:startRef.current.oy+dy}))
   }
   const handleDragEnd=()=>{dragRef.current=false}
-  const handleRotate=e=>{e.stopPropagation();setPos(p=>({...p,angle:(p.angle+15)%360}))}
+  const handleRotate=e=>{e.stopPropagation();setPos(p=>({...p,angle:(p.angle+90)%360}))}
   const ticks=[]
   const unit=unitSys==="metric"?3.78:9.6
   const bigEvery=unitSys==="metric"?10:8
@@ -1483,7 +1615,7 @@ function CanvasProtractor({pos,setPos,unitSys,zoom}){
     setPos(p=>({...p,x:startRef.current.ox+dx,y:startRef.current.oy+dy}))
   }
   const handleDragEnd=()=>{dragRef.current=false}
-  const handleRotate=e=>{e.stopPropagation();setPos(p=>({...p,angle:(p.angle+15)%360}))}
+  const handleRotate=e=>{e.stopPropagation();setPos(p=>({...p,angle:(p.angle+90)%360}))}
   const ticks=[]
   for(let deg=0;deg<=180;deg+=1){
     const rad=(deg*Math.PI)/180
@@ -1525,7 +1657,7 @@ function CanvasSquare({pos,setPos,unitSys,zoom}){
     setPos(p=>({...p,x:startRef.current.ox+dx,y:startRef.current.oy+dy}))
   }
   const handleDragEnd=()=>{dragRef.current=false}
-  const handleRotate=e=>{e.stopPropagation();setPos(p=>({...p,angle:(p.angle+45)%360}))}
+  const handleRotate=e=>{e.stopPropagation();setPos(p=>({...p,angle:(p.angle+90)%360}))}
   const unit=unitSys==="metric"?3.78:9.6
   const ticks=[]
   for(let i=0;i<=Math.floor(size/unit);i++){
@@ -1576,19 +1708,47 @@ function GoodNotesDimlinePopup({unitSys,setUnitSys,scale,setScale,SCALES_M,SCALE
   )
 }
 
+function GoodNotesArrowHud({show,arrowStyle,setArrowStyle,onClose}){
+  if(!show)return null
+  return(
+    <div style={{position:"absolute",top:56,left:"50%",transform:"translateX(-50%)",background:"#1C1C1E",borderRadius:14,border:"1px solid #38383A",boxShadow:"0 8px 24px rgba(0,0,0,0.6)",padding:"10px 14px",display:"flex",gap:8,zIndex:200}}>
+      {[
+        ["single","→","Simple"],
+        ["double","⇒","Double"],
+        ["dashed","-->","Tirets"],
+        ["openhead","➔","Ouverte"],
+        ["both","↔","Double sens"],
+      ].map(([style,icon,label])=>(
+        <button key={style} type="button" onClick={()=>{setArrowStyle(style);onClose()}} style={{padding:"8px 12px",borderRadius:10,border:`1px solid ${arrowStyle===style?"#0A84FF":"#38383A"}`,background:arrowStyle===style?"rgba(10,132,255,0.15)":"#2C2C2E",color:arrowStyle===style?"#0A84FF":"#FFFFFF",cursor:"pointer",fontSize:16,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+          <span style={{fontSize:20}}>{icon}</span>
+          <span style={{fontSize:9,color:"#8E8E93"}}>{label}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function GoodNotesTopBar({
-  nb,navigate,tool,onToolClick,showPagePanel,setShowPagePanel,
-  showLayers,setShowLayers,showConv,setShowConv,showTimer,setShowTimer,timerRunning,timerSec,
+  nb,navigate,tool,onToolClick,showPagePanel,showLayers,showLib,togglePanel,
+  showTimer,setShowTimer,timerRunning,timerSec,
   showSearchPanel,setShowSearchPanel,showNotebookDropdown,setShowNotebookDropdown,
   showMoreMenu,setShowMoreMenu,notebooks,canUndo,canRedo,
   setShowShare,setShowPageSettings,setShowTheme,setShowPresent,readOnly,setReadOnly,
   setShowCalc,setShowFlash,setShowHistory,setPencilOnly,pencilOnly,
   handleImport,exportPNG,exporting,importInputRef,
-  showLib,setShowLib,unitSys,setUnitSys,scale,setScale,SCALES_M,SCALES_I,
+  unitSys,setUnitSys,scale,setScale,SCALES_M,SCALES_I,
   showMeasureHUD,setShowMeasureHUD,showRuler,setShowRuler,showProtractor,setShowProtractor,showSquare,setShowSquare,
 }){
   const nbRef=useRef(null)
   const moreRef=useRef(null)
+  const[narrowBar,setNarrowBar]=useState(false)
+  const[showExtraShapes,setShowExtraShapes]=useState(false)
+  useEffect(()=>{
+    const check=()=>setNarrowBar(window.innerWidth<=1024)
+    check()
+    window.addEventListener("resize",check)
+    return()=>window.removeEventListener("resize",check)
+  },[])
   useEffect(()=>{
     if(!showMoreMenu&&!showNotebookDropdown)return
     const close=e=>{
@@ -1604,96 +1764,132 @@ function GoodNotesTopBar({
     </button>
   )
   const moreSep=()=><div style={{height:1,background:C.border,margin:"4px 0"}}/>
-  const shapeTools=[{id:"line",Icon:Minus},{id:"rect",Icon:Square},{id:"circle",Icon:Circle},{id:"shape-arrow",Icon:ArrowRight},{id:"dimline",Icon:Ruler},{id:"cloud",Icon:MessageSquare}]
+  const primaryShapes=[{id:"line",Icon:Minus},{id:"rect",Icon:Square},{id:"circle",Icon:Circle},{id:"shape-arrow",Icon:ArrowRight}]
+  const extraShapes=[{id:"dimline",Icon:Ruler},{id:"cloud",Icon:MessageSquare}]
+  const groupStyle={display:"flex",alignItems:"center",gap:3,flexShrink:0}
   return(
-    <div style={{height:TOP_BAR_H,flexShrink:0,background:C.bar,borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 10px",gap:6,zIndex:30,position:"relative"}}>
-      <button type="button" onClick={()=>navigate("/")} title="Bibliothèque" style={{background:"transparent",border:"none",color:C.accent,cursor:"pointer",borderRadius:8,padding:6,display:"flex",alignItems:"center"}}>{HOME_SVG}</button>
+    <div style={{height:TOP_BAR_H,flexShrink:0,background:C.bar,borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 8px",gap:8,zIndex:30,position:"relative"}}>
+      <div style={groupStyle}>
+        <button type="button" onClick={()=>navigate("/")} title="Accueil" style={{width:36,height:36,background:"transparent",border:"none",color:C.accent,cursor:"pointer",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>{HOME_SVG}</button>
+        <div ref={nbRef} style={{position:"relative"}}>
+          <button type="button" onClick={()=>setShowNotebookDropdown(v=>!v)} style={{background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:4,padding:"4px 6px",borderRadius:8,maxWidth:160,height:36}}>
+            <span style={{fontSize:14,fontWeight:600,color:C.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nb.title}</span>
+            <span style={{fontSize:11,color:C.muted}}>▾</span>
+          </button>
+          {showNotebookDropdown&&(
+            <div style={{position:"absolute",top:52,left:0,minWidth:240,background:C.bar,borderRadius:12,border:`1px solid ${C.border}`,boxShadow:"0 8px 32px rgba(0,0,0,0.6)",zIndex:200,overflow:"hidden"}}>
+              {(notebooks||[]).map(n=>(
+                <button key={n.id} type="button" onClick={()=>{setShowNotebookDropdown(false);if(n.id===nb.id)navigate("/");else navigate(`/editor/${n.id}`)}} style={{width:"100%",height:44,padding:"0 14px",border:"none",background:"transparent",color:n.id===nb.id?C.accent:C.text,cursor:"pointer",fontSize:14,textAlign:"left",display:"flex",alignItems:"center",gap:10}}>
+                  <span>📓</span>{n.title}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       <GnSep/>
-      <div ref={nbRef} style={{position:"relative",flexShrink:0}}>
-        <button type="button" onClick={()=>setShowNotebookDropdown(v=>!v)} style={{background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:4,padding:"4px 8px",borderRadius:8,maxWidth:180}}>
-          <span style={{fontSize:15,fontWeight:600,color:C.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nb.title}</span>
-          <span style={{fontSize:12,color:C.muted}}>▾</span>
+      <div style={groupStyle}>
+        <GnToolBtn onClick={()=>window.__undo?.()} title="Annuler" disabled={!canUndo}><Undo2 size={18}/></GnToolBtn>
+        <GnToolBtn onClick={()=>window.__redo?.()} title="Refaire" disabled={!canRedo}><Redo2 size={18}/></GnToolBtn>
+      </div>
+      <GnSep/>
+      <div style={groupStyle}>
+        <GnToolBtn active={showPagePanel} onClick={()=>togglePanel("pages")} title="Pages"><PanelLeft size={18}/></GnToolBtn>
+        <GnToolBtn active={showLayers} onClick={()=>togglePanel("layers")} title="Calques"><Layers size={18}/></GnToolBtn>
+        <button type="button" onClick={()=>togglePanel("library")} title="Bibliothèque" style={{width:36,height:36,borderRadius:8,border:"none",cursor:"pointer",background:showLib?"#2C2C2E":"transparent",color:showLib?"#0A84FF":"#EBEBF5",fontSize:17,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🏗</button>
+      </div>
+      <GnSep/>
+      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8,minWidth:0,overflowX:"auto"}}>
+        <div style={groupStyle}>
+          <GnToolBtn active={tool==="arrow"||tool==="select"} onClick={()=>onToolClick("arrow",false,false)} title="Sélection"><MousePointer2 size={18}/></GnToolBtn>
+        </div>
+        <GnSep h={20}/>
+        <div style={groupStyle}>
+          <GnToolBtn active={tool==="pen"} onClick={()=>onToolClick("pen",true,false)} title="Stylo"><Pen size={18}/></GnToolBtn>
+          <GnToolBtn active={tool==="highlight"} onClick={()=>onToolClick("highlight",true,false)} title="Surligneur"><Highlighter size={18}/></GnToolBtn>
+          <GnToolBtn active={tool==="eraser"} onClick={()=>onToolClick("eraser",true,false)} title="Gomme"><Eraser size={18}/></GnToolBtn>
+          <GnToolBtn active={tool==="text"} onClick={()=>onToolClick("text",false,false)} title="Texte"><Type size={18}/></GnToolBtn>
+          <GnToolBtn active={tool==="lasso"||tool==="lasso-rect"} onClick={()=>onToolClick("lasso",false,false)} title="Lasso"><Lasso size={18}/></GnToolBtn>
+        </div>
+        <GnSep h={20}/>
+        <div style={{...groupStyle,position:"relative"}}>
+          {primaryShapes.map(({id,Icon})=>(
+            <GnToolBtn key={id} active={tool===id} onClick={()=>onToolClick(id,false,true)} title={id}><Icon size={18}/></GnToolBtn>
+          ))}
+          {(!narrowBar?extraShapes:[]).map(({id,Icon})=>(
+            <GnToolBtn key={id} active={tool===id} onClick={()=>onToolClick(id,false,true)} title={id}><Icon size={18}/></GnToolBtn>
+          ))}
+          {narrowBar&&(
+            <>
+              <GnToolBtn active={showExtraShapes||extraShapes.some(s=>tool===s.id)} onClick={()=>setShowExtraShapes(v=>!v)} title="Plus de formes"><Plus size={18}/></GnToolBtn>
+              {showExtraShapes&&(
+                <div style={{position:"absolute",top:56,left:"50%",transform:"translateX(-50%)",background:"#1C1C1E",borderRadius:12,border:"1px solid #38383A",padding:8,display:"flex",gap:6,zIndex:200,boxShadow:"0 8px 24px rgba(0,0,0,0.6)"}}>
+                  {extraShapes.map(({id,Icon})=>(
+                    <GnToolBtn key={id} active={tool===id} onClick={()=>{onToolClick(id,false,true);setShowExtraShapes(false)}} title={id}><Icon size={18}/></GnToolBtn>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+      <div style={groupStyle}>
+        <div style={{display:"flex",background:"#2C2C2E",borderRadius:8,padding:2,gap:1}}>
+          <button type="button" onClick={()=>{setUnitSys("metric");setScale("1:50")}} style={{padding:"4px 8px",borderRadius:6,border:"none",cursor:"pointer",fontSize:11,fontWeight:600,background:unitSys==="metric"?"#0A84FF":"transparent",color:unitSys==="metric"?"#FFFFFF":"#8E8E93"}}>mm</button>
+          <button type="button" onClick={()=>{setUnitSys("imperial");setScale('1/4"=1\'')}} style={{padding:"4px 8px",borderRadius:6,border:"none",cursor:"pointer",fontSize:11,fontWeight:600,background:unitSys==="imperial"?"#0A84FF":"transparent",color:unitSys==="imperial"?"#FFFFFF":"#8E8E93"}}>in</button>
+        </div>
+        <select value={scale} onChange={e=>setScale(e.target.value)} style={{padding:"4px 6px",borderRadius:8,border:"1px solid #38383A",background:"#2C2C2E",color:"#FFFFFF",fontSize:10,outline:"none",cursor:"pointer"}}>
+          {(unitSys==="metric"?SCALES_M:SCALES_I).map(s=><option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+      <GnSep/>
+      <div style={groupStyle}>
+        <button type="button" onClick={()=>setShowMeasureHUD(v=>!v)} title="Mesure" style={{width:36,height:36,borderRadius:8,border:"none",cursor:"pointer",background:(showRuler||showProtractor||showSquare)?"#2C2C2E":"transparent",color:(showRuler||showProtractor||showSquare)?"#0A84FF":"#EBEBF5",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>📐</button>
+        <button type="button" onClick={()=>setShowTimer(v=>!v)} title="Focus" style={{height:36,padding:"0 8px",borderRadius:8,border:"none",cursor:"pointer",background:showTimer?"#2C2C2E":"transparent",color:showTimer?"#0A84FF":"#EBEBF5",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
+          <span style={{fontSize:15}}>⏱</span>
+          <span>Focus</span>
+          {timerRunning&&<span style={{fontSize:10,color:C.text,fontFamily:"monospace"}}>{String(Math.floor(timerSec/60)).padStart(2,"0")}:{String(timerSec%60).padStart(2,"0")}</span>}
         </button>
-        {showNotebookDropdown&&(
-          <div style={{position:"absolute",top:52,left:0,minWidth:240,background:C.bar,borderRadius:12,border:`1px solid ${C.border}`,boxShadow:"0 8px 32px rgba(0,0,0,0.6)",zIndex:200,overflow:"hidden"}}>
-            {(notebooks||[]).map(n=>(
-              <button key={n.id} type="button" onClick={()=>{setShowNotebookDropdown(false);if(n.id===nb.id)navigate("/");else navigate(`/editor/${n.id}`)}} style={{width:"100%",height:44,padding:"0 14px",border:"none",background:"transparent",color:n.id===nb.id?C.accent:C.text,cursor:"pointer",fontSize:14,textAlign:"left",display:"flex",alignItems:"center",gap:10}}>
-                <span>📓</span>{n.title}
+        {showMeasureHUD&&(
+          <div style={{position:"absolute",top:56,right:100,background:"#1C1C1E",borderRadius:14,border:"1px solid #38383A",boxShadow:"0 8px 24px rgba(0,0,0,0.6)",padding:"10px 12px",display:"flex",gap:8,zIndex:200}}>
+            {[
+              [showRuler,setShowRuler,"📏","Règle"],
+              [showProtractor,setShowProtractor,"📐","Rapporteur"],
+              [showSquare,setShowSquare,"📏","Équerre"],
+            ].map(([active,setter,icon,label])=>(
+              <button key={label} type="button" onClick={()=>{setter(v=>!v);setShowMeasureHUD(false)}} style={{padding:"8px 14px",borderRadius:10,border:`1px solid ${active?"#0A84FF":"#38383A"}`,background:active?"rgba(10,132,255,0.15)":"#2C2C2E",color:active?"#0A84FF":"#FFFFFF",cursor:"pointer",fontSize:13,fontWeight:500,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+                <span style={{fontSize:20}}>{icon}</span>
+                <span style={{fontSize:10}}>{label}</span>
               </button>
             ))}
           </div>
         )}
       </div>
       <GnSep/>
-      <GnToolBtn onClick={()=>window.__undo?.()} title="Annuler" disabled={!canUndo}><Undo2 size={20}/></GnToolBtn>
-      <GnToolBtn onClick={()=>window.__redo?.()} title="Refaire" disabled={!canRedo}><Redo2 size={20}/></GnToolBtn>
-      <GnToolBtn active={showPagePanel} onClick={()=>setShowPagePanel(v=>!v)} title="Pages"><PanelLeft size={20}/></GnToolBtn>
-      <button type="button" onClick={()=>setShowLib(v=>!v)} title="Bibliothèque" style={{width:38,height:38,borderRadius:8,border:"none",cursor:"pointer",background:showLib?"#2C2C2E":"transparent",color:showLib?"#0A84FF":"#EBEBF5",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🏗</button>
-      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:2,minWidth:0,overflowX:"auto"}}>
-        <GnToolBtn active={tool==="arrow"||tool==="select"} onClick={()=>onToolClick("arrow",false,false)} title="Sélection"><MousePointer2 size={20}/></GnToolBtn>
-        <GnSep h={24}/>
-        <GnToolBtn active={tool==="pen"} onClick={()=>onToolClick("pen",true,false)} title="Stylo"><Pen size={20}/></GnToolBtn>
-        <GnToolBtn active={tool==="highlight"} onClick={()=>onToolClick("highlight",true,false)} title="Surligneur"><Highlighter size={20}/></GnToolBtn>
-        <GnToolBtn active={tool==="eraser"} onClick={()=>onToolClick("eraser",true,false)} title="Gomme"><Eraser size={20}/></GnToolBtn>
-        <GnToolBtn active={tool==="text"} onClick={()=>onToolClick("text",false,false)} title="Texte"><Type size={20}/></GnToolBtn>
-        <GnToolBtn active={tool==="lasso"||tool==="lasso-rect"} onClick={()=>onToolClick("lasso",false,false)} title="Lasso"><Lasso size={20}/></GnToolBtn>
-        <GnSep h={24}/>
-        {shapeTools.map(({id,Icon})=>(
-          <GnToolBtn key={id} active={tool===id} onClick={()=>onToolClick(id,false,true)} title={id}><Icon size={20}/></GnToolBtn>
-        ))}
-        <GnSep h={24}/>
-        <GnToolBtn active={showLayers} onClick={()=>setShowLayers(v=>!v)} title="Calques"><Layers size={20}/></GnToolBtn>
-      </div>
-      <div style={{display:"flex",background:"#2C2C2E",borderRadius:8,padding:2,gap:1,flexShrink:0}}>
-        <button type="button" onClick={()=>{setUnitSys("metric");setScale("1:50")}} style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:unitSys==="metric"?"#0A84FF":"transparent",color:unitSys==="metric"?"#FFFFFF":"#8E8E93"}}>mm</button>
-        <button type="button" onClick={()=>{setUnitSys("imperial");setScale('1/4"=1\'')}} style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:unitSys==="imperial"?"#0A84FF":"transparent",color:unitSys==="imperial"?"#FFFFFF":"#8E8E93"}}>in</button>
-      </div>
-      <select value={scale} onChange={e=>setScale(e.target.value)} style={{padding:"4px 8px",borderRadius:8,border:"1px solid #38383A",background:"#2C2C2E",color:"#FFFFFF",fontSize:11,outline:"none",cursor:"pointer",flexShrink:0}}>
-        {(unitSys==="metric"?SCALES_M:SCALES_I).map(s=><option key={s} value={s}>{s}</option>)}
-      </select>
-      <GnToolBtn active={showConv} onClick={()=>setShowConv(v=>!v)} title="Convertisseur"><Ruler size={20}/></GnToolBtn>
-      <GnToolBtn active={showTimer} onClick={()=>setShowTimer(v=>!v)} title="Pomodoro">
-        <div style={{display:"flex",alignItems:"center",gap:4}}>
-          <span style={{fontSize:16,lineHeight:1}}>⏱</span>
-          {timerRunning&&<span style={{fontSize:10,color:C.text,fontFamily:"monospace"}}>{String(Math.floor(timerSec/60)).padStart(2,"0")}:{String(timerSec%60).padStart(2,"0")}</span>}
+      <div style={groupStyle}>
+        <GnToolBtn active={showSearchPanel} onClick={()=>setShowSearchPanel(v=>!v)} title="Rechercher"><Search size={18}/></GnToolBtn>
+        <div ref={moreRef} style={{position:"relative"}}>
+          <GnToolBtn active={showMoreMenu} onClick={()=>setShowMoreMenu(v=>!v)} title="Plus"><MoreHorizontal size={18}/></GnToolBtn>
+          {showMoreMenu&&(
+            <div style={{position:"absolute",top:52,right:0,width:280,background:C.bar,borderRadius:14,boxShadow:"0 8px 32px rgba(0,0,0,0.6)",border:`1px solid ${C.border}`,padding:"6px 0",zIndex:200,maxHeight:"calc(100dvh - 64px)",overflowY:"auto"}}>
+              {moreItem("📐 Convertisseur",()=>togglePanel("converter"))}
+              {moreItem("📎 Importer image",()=>importInputRef.current?.click())}
+              <input ref={importInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{handleImport(e);setShowMoreMenu(false)}}/>
+              {moreItem(exporting?"⬇️ Export…":"⬇️ Exporter PNG",()=>exportPNG())}
+              {moreItem("🤝 Partager",()=>setShowShare(true))}
+              {moreSep()}
+              {moreItem("🎨 Fond & Grille",()=>setShowPageSettings(true))}
+              {moreItem("✨ Thème",()=>setShowTheme(true))}
+              {moreItem("📽 Présentation",()=>setShowPresent(true))}
+              {moreItem(readOnly?"🔒 Lecture seule (actif)":"🔒 Lecture seule",()=>setReadOnly(v=>!v),{active:readOnly})}
+              {moreSep()}
+              {moreItem("🔢 Calculatrice",()=>setShowCalc(v=>!v))}
+              {moreItem("🃏 Flashcards",()=>setShowFlash(v=>!v))}
+              {moreItem("🕐 Historique",()=>setShowHistory(v=>!v))}
+              {moreItem(pencilOnly?"✏️ Apple Pencil (actif)":"✏️ Mode Apple Pencil",()=>{setPencilOnly(v=>{const n=!v;try{localStorage.setItem("forma_pencil_only",n?"1":"0")}catch{};return n})},{active:pencilOnly})}
+            </div>
+          )}
         </div>
-      </GnToolBtn>
-      <button type="button" onClick={()=>setShowMeasureHUD(v=>!v)} title="Mesure" style={{width:38,height:38,borderRadius:8,border:"none",cursor:"pointer",background:(showRuler||showProtractor||showSquare)?"#2C2C2E":"transparent",color:(showRuler||showProtractor||showSquare)?"#0A84FF":"#EBEBF5",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>📐</button>
-      {showMeasureHUD&&(
-        <div style={{position:"absolute",top:56,right:120,background:"#1C1C1E",borderRadius:14,border:"1px solid #38383A",boxShadow:"0 8px 24px rgba(0,0,0,0.6)",padding:"10px 12px",display:"flex",gap:8,zIndex:200}}>
-          {[
-            [showRuler,setShowRuler,"📏","Règle"],
-            [showProtractor,setShowProtractor,"📐","Rapporteur"],
-            [showSquare,setShowSquare,"📏","Équerre"],
-          ].map(([active,setter,icon,label])=>(
-            <button key={label} type="button" onClick={()=>{setter(v=>!v);setShowMeasureHUD(false)}} style={{padding:"8px 14px",borderRadius:10,border:`1px solid ${active?"#0A84FF":"#38383A"}`,background:active?"rgba(10,132,255,0.15)":"#2C2C2E",color:active?"#0A84FF":"#FFFFFF",cursor:"pointer",fontSize:13,fontWeight:500,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-              <span style={{fontSize:20}}>{icon}</span>
-              <span style={{fontSize:10}}>{label}</span>
-            </button>
-          ))}
-        </div>
-      )}
-      <GnToolBtn active={showSearchPanel} onClick={()=>setShowSearchPanel(v=>!v)} title="Rechercher"><Search size={20}/></GnToolBtn>
-      <div ref={moreRef} style={{position:"relative"}}>
-        <GnToolBtn active={showMoreMenu} onClick={()=>setShowMoreMenu(v=>!v)} title="Plus"><MoreHorizontal size={20}/></GnToolBtn>
-        {showMoreMenu&&(
-          <div style={{position:"absolute",top:52,right:8,width:280,background:C.bar,borderRadius:14,boxShadow:"0 8px 32px rgba(0,0,0,0.6)",border:`1px solid ${C.border}`,padding:"6px 0",zIndex:200,maxHeight:"calc(100dvh - 64px)",overflowY:"auto"}}>
-            {moreItem("📎 Importer image",()=>importInputRef.current?.click())}
-            <input ref={importInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{handleImport(e);setShowMoreMenu(false)}}/>
-            {moreItem(exporting?"⬇️ Export…":"⬇️ Exporter PNG",()=>exportPNG())}
-            {moreItem("🤝 Partager",()=>setShowShare(true))}
-            {moreSep()}
-            {moreItem("🎨 Fond & Grille",()=>setShowPageSettings(true))}
-            {moreItem("✨ Thème",()=>setShowTheme(true))}
-            {moreItem("📽 Présentation",()=>setShowPresent(true))}
-            {moreItem(readOnly?"🔒 Lecture seule (actif)":"🔒 Lecture seule",()=>setReadOnly(v=>!v),{active:readOnly})}
-            {moreSep()}
-            {moreItem("🔢 Calculatrice",()=>setShowCalc(v=>!v))}
-            {moreItem("🃏 Flashcards",()=>setShowFlash(v=>!v))}
-            {moreItem("🕐 Historique",()=>setShowHistory(v=>!v))}
-            {moreItem(pencilOnly?"✏️ Apple Pencil (actif)":"✏️ Mode Apple Pencil",()=>{setPencilOnly(v=>{const n=!v;try{localStorage.setItem("forma_pencil_only",n?"1":"0")}catch{};return n})},{active:pencilOnly})}
-          </div>
-        )}
       </div>
     </div>
   )
@@ -1703,7 +1899,7 @@ function EditorPagesPanel({open,onClose,page,pagesCount,pages,nb,T,goToPage,addP
   if(!open)return null
   const gnT={...T,accent:C.accent,border:C.border,bg:C.panel,muted:C.muted}
   return(
-    <div style={{position:"absolute",top:TOP_BAR_H,left:0,bottom:BOTTOM_BAR_H,width:280,background:C.bar,borderRight:`1px solid ${C.border}`,zIndex:100,display:"flex",flexDirection:"column",transform:"translateX(0)",transition:"transform 250ms ease",boxShadow:"4px 0 24px rgba(0,0,0,0.5)"}}>
+    <div style={{...LEFT_PANEL_STYLE,width:280,background:C.bar,borderRight:`1px solid ${C.border}`,zIndex:100}}>
       <div style={{padding:"14px 16px 10px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
         <span style={{fontSize:17,fontWeight:600,color:C.text}}>Pages</span>
         <button type="button" onClick={onClose} style={{background:"none",border:"none",color:C.muted,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
@@ -1722,6 +1918,67 @@ function EditorPagesPanel({open,onClose,page,pagesCount,pages,nb,T,goToPage,addP
   )
 }
 
+function EditorConverterPanel({open,onClose,T,convValue,setConvValue,convCategory,setConvCategory,convFromUnit,setConvFromUnit,convToUnit,setConvToUnit,scale,setScale}){
+  if(!open)return null
+  return(
+    <div style={{...LEFT_PANEL_STYLE,width:300,background:"#1C1C1E",borderRight:"1px solid #38383A"}}>
+      <div style={{padding:"14px 16px 10px",borderBottom:"1px solid #38383A",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+        <span style={{fontSize:17,fontWeight:600,color:"#FFFFFF"}}>Convertisseur</span>
+        <button type="button" onClick={onClose} style={{background:"none",border:"none",color:"#8E8E93",fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+      </div>
+      <div style={{flex:1,overflowY:"auto",minHeight:0}}>
+        <UnitConverter T={T} variant="embedded" open value={convValue} setValue={setConvValue} category={convCategory} setCategory={setConvCategory} fromUnit={convFromUnit} setFromUnit={setConvFromUnit} toUnit={convToUnit} setToUnit={setConvToUnit} scale={scale} setScale={setScale}/>
+      </div>
+    </div>
+  )
+}
+
+function EditorLayersPanel({open,onClose,T,layers,setLayers,activeLayerId,setActiveLayerId,renamingLayer,setRenamingLayer,renameVal,setRenameVal,commitLayerRename,dragLayerIdx,setDragLayerIdx,handleDeleteLayer,scheduleSave}){
+  if(!open)return null
+  return(
+    <div style={{...LEFT_PANEL_STYLE,width:300,background:"#1C1C1E",borderRight:"1px solid #38383A"}}>
+      <div style={{padding:"14px 16px 10px",borderBottom:"1px solid #38383A",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+        <span style={{fontSize:17,fontWeight:600,color:"#FFFFFF"}}>Calques</span>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <button type="button" onClick={()=>{const nl=createLayer(layers.length,layers);setLayers(p=>[...p,nl]);setActiveLayerId(nl.id);scheduleSave()}} style={{background:C.accent,border:"none",cursor:"pointer",color:"#fff",fontSize:13,width:24,height:24,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>+</button>
+          <button type="button" onClick={onClose} style={{background:"none",border:"none",color:"#8E8E93",fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"8px 10px",display:"flex",flexDirection:"column",gap:3,minHeight:0}}>
+        {[...layers].reverse().map(l=>{
+          const i=layers.findIndex(x=>x.id===l.id)
+          const lc=l.color||T.accent
+          const isActive=activeLayerId===l.id
+          const strokeCount=(window.__getStrokes?.()||[]).filter(s=>(s.layerId||layers[0]?.id)===l.id).length
+          return(
+            <div key={l.id} draggable onDragStart={()=>setDragLayerIdx(i)} onDragOver={e=>e.preventDefault()} onDrop={()=>{if(dragLayerIdx===null||dragLayerIdx===i)return;setLayers(p=>reorderLayers(p,dragLayerIdx,i));setDragLayerIdx(null);scheduleSave()}} onClick={()=>setActiveLayerId(l.id)}
+              style={{borderRadius:10,background:isActive?`${lc}14`:T.bg,border:`1px solid ${isActive?lc:l.v?lc+"44":T.border}`,overflow:"hidden",cursor:"pointer"}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,padding:"7px 8px"}}>
+                <div style={{fontSize:9,color:T.muted,opacity:.7,cursor:"grab",userSelect:"none"}}>⠿</div>
+                <div style={{width:10,height:10,borderRadius:3,background:l.v?lc:T.muted,flexShrink:0}}/>
+                {renamingLayer===l.id?(
+                  <input value={renameVal} autoFocus onChange={e=>setRenameVal(e.target.value)} onBlur={commitLayerRename} onKeyDown={e=>{if(e.key==="Enter")commitLayerRename();if(e.key==="Escape")setRenamingLayer(null)}} onClick={e=>e.stopPropagation()}
+                    style={{flex:1,minWidth:0,padding:"2px 4px",borderRadius:5,border:`1px solid ${T.accent}`,background:T.bg,color:T.ink,fontSize:10,outline:"none"}}/>
+                ):(
+                  <div onDoubleClick={e=>{e.stopPropagation();setRenamingLayer(l.id);setRenameVal(l.n)}} style={{flex:1,fontSize:10,color:l.v?T.ink:T.muted,fontWeight:isActive?800:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{l.n}</div>
+                )}
+                <span style={{fontSize:8,color:T.muted,flexShrink:0}}>{strokeCount||""}</span>
+                <button type="button" onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,v:!x.v}:x));scheduleSave()}} style={{background:"none",border:"none",cursor:"pointer",color:l.v?lc:T.muted+"66",fontSize:11,padding:"0 2px",flexShrink:0}}>{l.v?"◉":"○"}</button>
+                <button type="button" onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,locked:!x.locked}:x));scheduleSave()}} style={{background:"none",border:"none",cursor:"pointer",color:l.locked?T.accent:T.muted+"66",fontSize:10,padding:"0 1px",flexShrink:0}}>{l.locked?"🔒":"🔓"}</button>
+                {layers.length>1&&<button type="button" onClick={e=>{e.stopPropagation();handleDeleteLayer(l.id)}} style={{background:"none",border:"none",cursor:"pointer",color:"#e94560",fontSize:10,padding:"0 1px",flexShrink:0}}>×</button>}
+              </div>
+              <div style={{padding:"0 8px 6px",display:"flex",alignItems:"center",gap:6}} onClick={e=>e.stopPropagation()}>
+                <input type="range" min="0.05" max="1" step="0.05" value={l.opacity??1} onChange={e=>setLayers(p=>p.map(x=>x.id===l.id?{...x,opacity:parseFloat(e.target.value)}:x))} onMouseUp={()=>scheduleSave()} style={{flex:1,accentColor:lc,height:4}}/>
+                <span style={{fontSize:8,color:T.muted,minWidth:26,textAlign:"right"}}>{Math.round((l.opacity??1)*100)}%</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function GoodNotesSearchPanel({open,onClose}){
   const[tab,setTab]=useState("notes")
   const[query,setQuery]=useState("")
@@ -1729,7 +1986,7 @@ function GoodNotesSearchPanel({open,onClose}){
   return(
     <>
       <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.4)",zIndex:55}}/>
-      <div style={{position:"fixed",top:0,left:0,bottom:0,width:300,background:C.bar,borderRight:`1px solid ${C.border}`,zIndex:56,display:"flex",flexDirection:"column",boxShadow:"4px 0 32px rgba(0,0,0,.5)"}}>
+      <div style={{position:"fixed",top:TOP_BAR_H,left:0,bottom:BOTTOM_BAR_H,width:300,background:C.bar,borderRight:`1px solid ${C.border}`,zIndex:56,display:"flex",flexDirection:"column",boxShadow:"4px 0 32px rgba(0,0,0,.5)"}}>
         <div style={{padding:"12px 14px",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <span style={{fontSize:17,fontWeight:700,color:C.text}}>Rechercher</span>
           <button type="button" onClick={onClose} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",padding:4,display:"flex"}}><X size={20}/></button>
@@ -1911,7 +2168,7 @@ function GoodNotesLibraryDrawer({open,onClose,unitSys,libMode,setLibMode,libSear
   if(!open)return null
   const libSource=getLibForMode(libMode)
   return(
-    <div style={{position:"absolute",top:TOP_BAR_H,left:0,bottom:BOTTOM_BAR_H,width:300,background:"#1C1C1E",borderRight:"1px solid #38383A",zIndex:110,display:"flex",flexDirection:"column",boxShadow:"4px 0 24px rgba(0,0,0,0.5)"}}>
+    <div style={{...LEFT_PANEL_STYLE,width:300,background:"#1C1C1E",borderRight:"1px solid #38383A"}}>
       <div style={{padding:"14px 16px 10px",borderBottom:"1px solid #38383A",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
         <span style={{fontSize:17,fontWeight:600,color:"#FFFFFF"}}>Bibliothèque</span>
         <button type="button" onClick={onClose} style={{background:"none",border:"none",color:"#8E8E93",fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
@@ -2160,6 +2417,13 @@ export default function EditorPage(){
   const[libSearch,setLibSearch]=useState("")
   const[libPending,setLibPending]=useState(null)
   const[showNewProfile,setShowNewProfile]=useState(false)
+  const[activePanel,setActivePanel]=useState(null)
+  const showLibPanel=activePanel==="library"
+  const showPagePanelOpen=activePanel==="pages"
+  const showConvPanel=activePanel==="converter"
+  const showLayersPanel=activePanel==="layers"
+  useEffect(()=>{setShowLib(showLibPanel);setShowPagePanel(showPagePanelOpen);setShowConv(showConvPanel);setShowLayers(showLayersPanel)},[showLibPanel,showPagePanelOpen,showConvPanel,showLayersPanel])
+  const togglePanel=useCallback(name=>setActivePanel(p=>p===name?null:name),[])
   const[pageBgImage,setPageBgImage]=useState(null)
   const[pageBgOpacity,setPageBgOpacity]=useState(1)
   const pagePhotoInputRef=useRef(null)
@@ -2187,6 +2451,16 @@ export default function EditorPage(){
   const[protractorPos,setProtractorPos]=useState({x:300,y:200,angle:0})
   const[squarePos,setSquarePos]=useState({x:200,y:150,angle:0})
   const[showDimlinePopup,setShowDimlinePopup]=useState(false)
+  const[showArrowHUD,setShowArrowHUD]=useState(false)
+  const[arrowStyle,setArrowStyle]=useState("single")
+  const[showColorWheel,setShowColorWheel]=useState(false)
+  const[customHex,setCustomHex]=useState("#1c1c24")
+  const colorWheelRef=useRef(null)
+  const[focusDuration,setFocusDuration]=useState(25)
+  const[breakDuration,setBreakDuration]=useState(5)
+  const[alarms,setAlarms]=useState([{id:1,label:"Fin focus",enabled:true},{id:2,label:"Fin pause",enabled:true}])
+  const[editingBubble,setEditingBubble]=useState(null)
+  const[bubbleText,setBubbleText]=useState("")
   const[pageId,setPageId]=useState(null)
   const[pencilOnly,setPencilOnly]=useState(()=>{
     try{
@@ -2937,8 +3211,12 @@ export default function EditorPage(){
     return()=>clearInterval(timerRef.current)
   },[timerRunning])
   useEffect(()=>{
-    if(timerSec===0)setTimerMode(m=>{const next=m==="work"?"break":"work";setTimeout(()=>setTimerSec(next==="work"?25*60:5*60),50);return next})
-  },[timerSec])
+    if(timerSec===0)setTimerMode(m=>{
+      const next=m==="work"?"break":"work"
+      setTimeout(()=>setTimerSec(next==="work"?focusDuration*60:breakDuration*60),50)
+      return next
+    })
+  },[timerSec,focusDuration,breakDuration])
 
   // Flashcards — persist per notebook
   useEffect(()=>{
@@ -3190,6 +3468,7 @@ export default function EditorPage(){
 
   // Keyboard shortcuts for lasso selection + mode focus
   const closeSidePanels=useCallback(()=>{
+    setActivePanel(null)
     setShowLib(false)
     setShowPagePanel(false)
     setShowSearchPanel(false)
@@ -3226,6 +3505,19 @@ export default function EditorPage(){
         setTool("dimline")
         setToolPopup(null)
         setShowColorPanel(false)
+      }
+      return
+    }
+    if(id==="shape-arrow"){
+      if(tool==="shape-arrow"){
+        setShowArrowHUD(v=>!v)
+        setToolPopup(null)
+        setShowColorPanel(false)
+      }else{
+        setTool("shape-arrow")
+        setToolPopup(null)
+        setShowColorPanel(false)
+        setShowArrowHUD(false)
       }
       return
     }
@@ -3400,6 +3692,25 @@ export default function EditorPage(){
   },[libPending,isPanMode,panActive,cursorDark,spacePan])
   const SCALES_M=["1:1","1:2","1:5","1:10","1:20","1:50","1:100","1:200","1:500","1:1000"]
   const SCALES_I=['1/4"=1\'','3/16"=1\'','1/8"=1\'','3/32"=1\'','1"=10\'','1"=20\'','1"=40\'','1"=100\'']
+  useEffect(()=>{
+    if(!showColorWheel||!colorWheelRef.current)return
+    const canvas=colorWheelRef.current,ctx=canvas.getContext("2d"),cx=75,cy=75,r=70
+    for(let a=0;a<360;a++){const rad=a*Math.PI/180,g=ctx.createLinearGradient(cx,cy,cx+r*Math.cos(rad),cy+r*Math.sin(rad));g.addColorStop(0,"white");g.addColorStop(1,`hsl(${a},100%,50%)`);ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,rad,(a+1)*Math.PI/180);ctx.fillStyle=g;ctx.fill()}
+    const dg=ctx.createRadialGradient(cx,cy,0,cx,cy,r);dg.addColorStop(0,"rgba(0,0,0,0)");dg.addColorStop(1,"rgba(0,0,0,0.5)");ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=dg;ctx.fill()
+  },[showColorWheel])
+  const pickColorWheel=e=>{
+    if(!colorWheelRef.current)return
+    const r=colorWheelRef.current.getBoundingClientRect(),ctx=colorWheelRef.current.getContext("2d"),px2=ctx.getImageData(e.clientX-r.left,e.clientY-r.top,1,1).data
+    if(px2[3]>0){const h=`#${[px2[0],px2[1],px2[2]].map(v=>v.toString(16).padStart(2,"0")).join("")}`;setColor(h);setCustomHex(h)}
+  }
+  const handleEditBubble=useCallback((id,pts)=>{setEditingBubble({id,pts});setBubbleText("")},[])
+  const confirmBubbleText=useCallback(()=>{
+    if(!editingBubble)return
+    window.__updateStrokeText?.(editingBubble.id,bubbleText)
+    scheduleSave()
+    setEditingBubble(null)
+    setBubbleText("")
+  },[editingBubble,bubbleText,scheduleSave])
   const COLLAB_COLORS=["#e94560","#2196f3","#4ade80","#f5a623","#a855f7","#00bcd4"]
   const calcDrawerW=calcDrawerWidth(calc.calcMode,calc.layout,showCalc)
   useEffect(()=>{
@@ -3495,7 +3806,7 @@ export default function EditorPage(){
         </DraggablePanel>
       )}
       {!focusMode&&showConv&&isTablet&&(
-        <BottomSheet T={T} open onClose={()=>setShowConv(false)} title="📐 Convertisseur">
+        <BottomSheet T={T} open onClose={()=>setActivePanel(null)} title="📐 Convertisseur">
           <UnitConverter
             T={T}
             variant="embedded"
@@ -3512,25 +3823,6 @@ export default function EditorPage(){
             setScale={setScale}
           />
         </BottomSheet>
-      )}
-      {!focusMode&&showConv&&!isTablet&&(
-        <DraggablePanel T={T} id="editor-converter" title="Convertisseur" open onClose={()=>setShowConv(false)} defaultSide="right" width={300}>
-          <UnitConverter
-            T={T}
-            variant="embedded"
-            open
-            value={convValue}
-            setValue={setConvValue}
-            category={convCategory}
-            setCategory={setConvCategory}
-            fromUnit={convFromUnit}
-            setFromUnit={setConvFromUnit}
-            toUnit={convToUnit}
-            setToUnit={setConvToUnit}
-            scale={scale}
-            setScale={setScale}
-          />
-        </DraggablePanel>
       )}
       {!focusMode&&showTranslate&&isTablet&&(
         <BottomSheet T={T} open onClose={()=>setShowTranslate(false)} title="🌐 Traduction">
@@ -3570,10 +3862,10 @@ export default function EditorPage(){
         />
       )}
 
-      {/* ── POMODORO ──────────────────────────────────── */}
-      {!focusMode&&showTimer&&<div style={{position:"fixed",top:60,right:12,width:220,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:89,overflow:"hidden",userSelect:"none"}}>
+      {/* ── FOCUS ──────────────────────────────────── */}
+      {!focusMode&&showTimer&&<div style={{position:"fixed",top:60,right:12,width:240,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:89,overflow:"hidden",userSelect:"none"}}>
         <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:"#fff"}}>⏱ Pomodoro</span>
+          <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:"#fff"}}>⏱ Focus</span>
           <button onClick={()=>setShowTimer(false)} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:18,lineHeight:1}}>×</button>
         </div>
         <div style={{padding:"14px 14px 10px",textAlign:"center"}}>
@@ -3583,7 +3875,7 @@ export default function EditorPage(){
           </div>
           <div style={{height:5,background:T.border,borderRadius:5,marginBottom:12,overflow:"hidden"}}>
             <div style={{height:"100%",background:timerMode==="work"?T.accent:"#4ade80",borderRadius:5,transition:"width 1s linear",
-              width:`${timerMode==="work"?(1-timerSec/(25*60))*100:(1-timerSec/(5*60))*100}%`}}/>
+              width:`${timerMode==="work"?(1-timerSec/(focusDuration*60))*100:(1-timerSec/(breakDuration*60))*100}%`}}/>
           </div>
           <div style={{display:"flex",gap:6,justifyContent:"center",marginBottom:8}}>
             <button onClick={()=>setTimerRunning(v=>!v)} style={{padding:"8px 14px",borderRadius:8,
@@ -3592,15 +3884,38 @@ export default function EditorPage(){
               color:timerRunning?"#e94560":T.accent,cursor:"pointer",fontSize:11,fontWeight:700}}>
               {timerRunning?"⏸ Pause":"▶ Démarrer"}
             </button>
-            <button onClick={()=>{setTimerRunning(false);setTimerSec(timerMode==="work"?25*60:5*60)}}
+            <button onClick={()=>{setTimerRunning(false);setTimerSec(timerMode==="work"?focusDuration*60:breakDuration*60)}}
               style={{padding:"8px 10px",borderRadius:8,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:14}}>↺</button>
           </div>
-          <div style={{display:"flex",gap:4,justifyContent:"center"}}>
-            {[[5,"5min"],[10,"10min"],[25,"25min"]].map(([m,l])=>(
-              <button key={m} onClick={()=>{setTimerRunning(false);setTimerSec(m*60);setTimerMode("work")}}
-                style={{padding:"3px 7px",borderRadius:6,background:T.bg,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:9}}>{l}</button>
-            ))}
+        </div>
+        <div style={{borderTop:"1px solid #38383A",padding:"12px 14px"}}>
+          <div style={{fontSize:11,color:"#8E8E93",marginBottom:10,letterSpacing:0.5}}>RÉGLAGES</div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <span style={{fontSize:13,color:"#FFFFFF"}}>Focus</span>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <button type="button" onClick={()=>{setFocusDuration(d=>Math.max(1,d-5));if(!timerRunning&&timerMode==="work")setTimerSec(Math.max(60,(focusDuration-5)*60))}} style={{width:28,height:28,borderRadius:8,background:"#2C2C2E",border:"1px solid #38383A",color:"#FFFFFF",cursor:"pointer",fontSize:16}}>−</button>
+              <span style={{fontSize:14,fontWeight:700,color:"#FFFFFF",minWidth:36,textAlign:"center",fontFamily:"monospace"}}>{focusDuration}min</span>
+              <button type="button" onClick={()=>{setFocusDuration(d=>Math.min(120,d+5));if(!timerRunning&&timerMode==="work")setTimerSec((focusDuration+5)*60)}} style={{width:28,height:28,borderRadius:8,background:"#2C2C2E",border:"1px solid #38383A",color:"#FFFFFF",cursor:"pointer",fontSize:16}}>+</button>
+            </div>
           </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+            <span style={{fontSize:13,color:"#FFFFFF"}}>Pause</span>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <button type="button" onClick={()=>setBreakDuration(d=>Math.max(1,d-1))} style={{width:28,height:28,borderRadius:8,background:"#2C2C2E",border:"1px solid #38383A",color:"#FFFFFF",cursor:"pointer",fontSize:16}}>−</button>
+              <span style={{fontSize:14,fontWeight:700,color:"#FFFFFF",minWidth:36,textAlign:"center",fontFamily:"monospace"}}>{breakDuration}min</span>
+              <button type="button" onClick={()=>setBreakDuration(d=>Math.min(30,d+1))} style={{width:28,height:28,borderRadius:8,background:"#2C2C2E",border:"1px solid #38383A",color:"#FFFFFF",cursor:"pointer",fontSize:16}}>+</button>
+            </div>
+          </div>
+          <div style={{fontSize:11,color:"#8E8E93",marginBottom:8,letterSpacing:0.5}}>ALARMES</div>
+          {alarms.map(alarm=>(
+            <div key={alarm.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <span style={{fontSize:13,color:"#FFFFFF"}}>{alarm.label}</span>
+              <div onClick={()=>setAlarms(a=>a.map(x=>x.id===alarm.id?{...x,enabled:!x.enabled}:x))} style={{width:44,height:26,borderRadius:13,background:alarm.enabled?"#30D158":"#3A3A3C",cursor:"pointer",position:"relative",transition:"background 0.2s"}}>
+                <div style={{position:"absolute",top:3,left:alarm.enabled?21:3,width:20,height:20,borderRadius:"50%",background:"#FFFFFF",transition:"left 0.2s",boxShadow:"0 1px 3px rgba(0,0,0,0.3)"}}/>
+              </div>
+            </div>
+          ))}
+          <button type="button" onClick={()=>setAlarms(a=>[...a,{id:Date.now(),label:`Alarme ${a.length+1}`,enabled:true}])} style={{width:"100%",padding:8,borderRadius:8,background:"transparent",border:"1px dashed #3A3A3C",color:"#8E8E93",cursor:"pointer",fontSize:12,marginTop:4}}>+ Ajouter alarme</button>
         </div>
       </div>}
 
@@ -3689,7 +4004,7 @@ export default function EditorPage(){
         </DraggablePanel>
       )}
 
-      {!focusMode&&!propsCollapsed&&showPropsPanel&&(
+      {!focusMode&&!propsCollapsed&&showPropsPanel&&false&&(
         <DraggablePanel T={T} id="editor-props" title="Couleurs & taille" open onClose={()=>{setPropsCollapsed(true);setShowPropsPanel(false)}} defaultSide="right" width={240}>
           <PropertiesPanelContent T={GN_T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont} useBrushGrid/>
         </DraggablePanel>
@@ -3738,12 +4053,10 @@ export default function EditorPage(){
             navigate={navigate}
             tool={tool}
             onToolClick={handleToolClick}
-            showPagePanel={showPagePanel}
-            setShowPagePanel={setShowPagePanel}
-            showLayers={showLayers}
-            setShowLayers={setShowLayers}
-            showConv={showConv}
-            setShowConv={setShowConv}
+            showPagePanel={showPagePanelOpen}
+            showLayers={showLayersPanel}
+            showLib={showLibPanel}
+            togglePanel={togglePanel}
             showTimer={showTimer}
             setShowTimer={setShowTimer}
             timerRunning={timerRunning}
@@ -3772,8 +4085,6 @@ export default function EditorPage(){
             exportPNG={exportPNG}
             exporting={exporting}
             importInputRef={importInputRef}
-            showLib={showLib}
-            setShowLib={setShowLib}
             unitSys={unitSys}
             setUnitSys={setUnitSys}
             scale={scale}
@@ -3803,16 +4114,29 @@ export default function EditorPage(){
             activeHPal={activeHPal}
             setActiveHPal={setActiveHPal}
             setTool={setTool}
+            showColorWheel={showColorWheel}
+            setShowColorWheel={setShowColorWheel}
+            wheelRef={colorWheelRef}
+            customHex={customHex}
+            setCustomHex={setCustomHex}
+            pickWheel={pickColorWheel}
           />
           {showShapesHUD&&<GoodNotesShapeHud tool={tool} setTool={setTool} showColorPanel={showColorPanel} setShowColorPanel={setShowColorPanel}/>}
           {showColorPanel&&showShapesHUD&&<ShapeColorPanel color={color} setColor={setColor} activeCPal={activeCPal} setActiveCPal={setActiveCPal} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} onClose={()=>setShowColorPanel(false)}/>}
           {showDimlinePopup&&<GoodNotesDimlinePopup unitSys={unitSys} setUnitSys={setUnitSys} scale={scale} setScale={setScale} SCALES_M={SCALES_M} SCALES_I={SCALES_I} color={color} setColor={setColor} activeCPal={activeCPal} setActiveCPal={setActiveCPal}/>}
+          {showArrowHUD&&<GoodNotesArrowHud show arrowStyle={arrowStyle} setArrowStyle={setArrowStyle} onClose={()=>setShowArrowHUD(false)}/>}
           </div>
         )}
         <div style={{display:"flex",flex:1,minHeight:0,...(!focusMode?{height:readOnly?`calc(100dvh - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px - 24px)`:`calc(100dvh - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px)`}:{})}}>
           <div style={{flex:1,position:"relative",minWidth:0,display:"flex",flexDirection:"column",minHeight:0}}>
-              {!focusMode&&showPagePanel&&(
-                <EditorPagesPanel open={showPagePanel} onClose={()=>setShowPagePanel(false)} page={page} pagesCount={pagesCount} pages={pages} nb={nb} T={T} goToPage={goToPage} addPage={addPage}/>
+              {!focusMode&&showPagePanelOpen&&(
+                <EditorPagesPanel open={showPagePanelOpen} onClose={()=>setActivePanel(null)} page={page} pagesCount={pagesCount} pages={pages} nb={nb} T={T} goToPage={goToPage} addPage={addPage}/>
+              )}
+              {!focusMode&&showConvPanel&&!isTablet&&(
+                <EditorConverterPanel open={showConvPanel} onClose={()=>setActivePanel(null)} T={T} convValue={convValue} setConvValue={setConvValue} convCategory={convCategory} setConvCategory={setConvCategory} convFromUnit={convFromUnit} setConvFromUnit={setConvFromUnit} convToUnit={convToUnit} setConvToUnit={setConvToUnit} scale={scale} setScale={setScale}/>
+              )}
+              {!focusMode&&showLayersPanel&&(
+                <EditorLayersPanel open={showLayersPanel} onClose={()=>setActivePanel(null)} T={T} layers={layers} setLayers={setLayers} activeLayerId={activeLayerId} setActiveLayerId={setActiveLayerId} renamingLayer={renamingLayer} setRenamingLayer={setRenamingLayer} renameVal={renameVal} setRenameVal={setRenameVal} commitLayerRename={commitLayerRename} dragLayerIdx={dragLayerIdx} setDragLayerIdx={setDragLayerIdx} handleDeleteLayer={handleDeleteLayer} scheduleSave={scheduleSave}/>
               )}
               {!focusMode&&libPending&&<div style={{position:"absolute",bottom:12,left:"50%",transform:"translateX(-50%)",zIndex:50,background:"rgba(28,28,30,.9)",color:"#fff",padding:"7px 14px",borderRadius:20,fontSize:11,pointerEvents:"none",boxShadow:"0 4px 16px rgba(0,0,0,.3)"}}>
                 📍 Clic sur la feuille → <strong>{libPending.l}</strong> — Échap pour annuler
@@ -3823,7 +4147,7 @@ export default function EditorPage(){
                   <button type="button" onClick={()=>setTextToolToast(false)} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",padding:0,display:"flex",flexShrink:0}}><X size={16}/></button>
                 </div>
               )}
-              {!focusMode&&<GoodNotesLibraryDrawer open={showLib} onClose={()=>setShowLib(false)} unitSys={unitSys} libMode={libMode} setLibMode={setLibMode} libSearch={libSearch} setLibSearch={setLibSearch} libCat={libCat} setLibCat={setLibCat} libItems={libItems} libPending={libPending} setLibPending={setLibPending} showNewProfile={showNewProfile} setShowNewProfile={setShowNewProfile} addCustomProfile={addCustomProfile} addNotification={addNotification} getLibForMode={getLibForMode} customProfiles={customProfiles} removeCustomProfile={removeCustomProfile} setPlaced={setPlaced} toPageCoords={toPageCoords} pushAction={pushAction} scheduleSave={scheduleSave} renderEl={renderEl} renderSym={renderSym} T={T}/>}
+              {!focusMode&&<GoodNotesLibraryDrawer open={showLibPanel} onClose={()=>setActivePanel(null)} unitSys={unitSys} libMode={libMode} setLibMode={setLibMode} libSearch={libSearch} setLibSearch={setLibSearch} libCat={libCat} setLibCat={setLibCat} libItems={libItems} libPending={libPending} setLibPending={setLibPending} showNewProfile={showNewProfile} setShowNewProfile={setShowNewProfile} addCustomProfile={addCustomProfile} addNotification={addNotification} getLibForMode={getLibForMode} customProfiles={customProfiles} removeCustomProfile={removeCustomProfile} setPlaced={setPlaced} toPageCoords={toPageCoords} pushAction={pushAction} scheduleSave={scheduleSave} renderEl={renderEl} renderSym={renderSym} T={T}/>}
               <div style={{flex:1,overflow:"hidden",background:focusMode?T.panel:"#404040",position:"relative",cursor:areaCursor,touchAction:"none",minHeight:0,transition:"background .35s ease"}}
           id="canvas-area"
           data-pan-tool={isPanMode?"1":"0"}
@@ -3923,6 +4247,17 @@ export default function EditorPage(){
               {pageBgImage&&!infiniteMode&&(
                 <img src={pageBgImage} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:pageBgOpacity,pointerEvents:"none",zIndex:1}}/>
               )}
+              {editingBubble&&(()=>{
+                const[a,b]=editingBubble.pts
+                const left=Math.min(a.x,b.x)+10
+                const top=Math.min(a.y,b.y)+10
+                const w=Math.max(Math.abs(b.x-a.x)-20,60)
+                const h=Math.max(Math.abs(b.y-a.y)-30,30)
+                return(
+                  <textarea autoFocus value={bubbleText} onChange={e=>setBubbleText(e.target.value)} onBlur={confirmBubbleText} onKeyDown={e=>{if(e.key==="Escape")setEditingBubble(null);if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();confirmBubbleText()}}}
+                    style={{position:"absolute",left,top,width:w,height:h,background:"transparent",border:"none",outline:"none",color,fontSize:13,fontFamily:"Nunito, sans-serif",resize:"none",zIndex:120,textAlign:"center",pointerEvents:"all"}}/>
+                )
+              })()}
 
               {/* Imported images */}
               {importedImages.map(img=>{
@@ -3976,7 +4311,7 @@ export default function EditorPage(){
               {showProtractor&&<CanvasProtractor pos={protractorPos} setPos={setProtractorPos} unitSys={unitSys} zoom={zoom}/>}
               {showSquare&&<CanvasSquare pos={squarePos} setPos={setSquarePos} unitSys={unitSys} zoom={zoom}/>}
 
-              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={5}/>}
+              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={5} arrowStyle={arrowStyle} onEditBubble={handleEditBubble}/>}
               {!eraserActive&&canvasSelection?.shapeBounds&&canvasSelection.count===1&&!textEdit&&(
                 <ShapeTransformHandles
                   T={T}
@@ -4061,42 +4396,6 @@ export default function EditorPage(){
       </div>
 
       {!focusMode&&<GoodNotesSearchPanel open={showSearchPanel} onClose={()=>setShowSearchPanel(false)}/>}
-
-      {!focusMode&&(
-        <DraggablePanel T={T} id="editor-layers" title="Calques" open={showLayers} onClose={()=>setShowLayers(false)} width={240} defaultSide="right"
-          headerExtra={<button type="button" onClick={()=>{const nl=createLayer(layers.length,layers);setLayers(p=>[...p,nl]);setActiveLayerId(nl.id);scheduleSave()}} style={{background:T.accent,border:"none",cursor:"pointer",color:"#fff",fontSize:13,width:20,height:20,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>+</button>}>
-          <div style={{padding:"6px 5px",display:"flex",flexDirection:"column",gap:3}}>
-            {[...layers].reverse().map(l=>{
-              const i=layers.findIndex(x=>x.id===l.id)
-              const lc=l.color||T.accent
-              const isActive=activeLayerId===l.id
-              const strokeCount=(window.__getStrokes?.()||[]).filter(s=>(s.layerId||layers[0]?.id)===l.id).length
-              return(
-              <div key={l.id} draggable onDragStart={()=>setDragLayerIdx(i)} onDragOver={e=>e.preventDefault()} onDrop={()=>{if(dragLayerIdx===null||dragLayerIdx===i)return;setLayers(p=>reorderLayers(p,dragLayerIdx,i));setDragLayerIdx(null);scheduleSave()}} onClick={()=>setActiveLayerId(l.id)}
-                style={{borderRadius:10,background:isActive?`${lc}14`:T.bg,border:`1px solid ${isActive?lc:l.v?lc+"44":T.border}`,overflow:"hidden",cursor:"pointer"}}>
-                <div style={{display:"flex",alignItems:"center",gap:6,padding:"7px 8px"}}>
-                  <div style={{fontSize:9,color:T.muted,opacity:.7,cursor:"grab",userSelect:"none"}}>⠿</div>
-                  <div style={{width:10,height:10,borderRadius:3,background:l.v?lc:T.muted,flexShrink:0}}/>
-                  {renamingLayer===l.id?(
-                    <input value={renameVal} autoFocus onChange={e=>setRenameVal(e.target.value)} onBlur={commitLayerRename} onKeyDown={e=>{if(e.key==="Enter")commitLayerRename();if(e.key==="Escape")setRenamingLayer(null)}} onClick={e=>e.stopPropagation()}
-                      style={{flex:1,minWidth:0,padding:"2px 4px",borderRadius:5,border:`1px solid ${T.accent}`,background:T.bg,color:T.ink,fontSize:10,outline:"none"}}/>
-                  ):(
-                    <div onDoubleClick={e=>{e.stopPropagation();setRenamingLayer(l.id);setRenameVal(l.n)}} style={{flex:1,fontSize:10,color:l.v?T.ink:T.muted,fontWeight:isActive?800:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{l.n}</div>
-                  )}
-                  <span style={{fontSize:8,color:T.muted,flexShrink:0}}>{strokeCount||""}</span>
-                  <button type="button" onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,v:!x.v}:x));scheduleSave()}} style={{background:"none",border:"none",cursor:"pointer",color:l.v?lc:T.muted+"66",fontSize:11,padding:"0 2px",flexShrink:0}}>{l.v?"◉":"○"}</button>
-                  <button type="button" onClick={e=>{e.stopPropagation();setLayers(p=>p.map(x=>x.id===l.id?{...x,locked:!x.locked}:x));scheduleSave()}} style={{background:"none",border:"none",cursor:"pointer",color:l.locked?T.accent:T.muted+"66",fontSize:10,padding:"0 1px",flexShrink:0}}>{l.locked?"🔒":"🔓"}</button>
-                  {layers.length>1&&<button type="button" onClick={e=>{e.stopPropagation();handleDeleteLayer(l.id)}} style={{background:"none",border:"none",cursor:"pointer",color:"#e94560",fontSize:10,padding:"0 1px",flexShrink:0}}>×</button>}
-                </div>
-                <div style={{padding:"0 8px 6px",display:"flex",alignItems:"center",gap:6}} onClick={e=>e.stopPropagation()}>
-                  <input type="range" min="0.05" max="1" step="0.05" value={l.opacity??1} onChange={e=>setLayers(p=>p.map(x=>x.id===l.id?{...x,opacity:parseFloat(e.target.value)}:x))} onMouseUp={()=>scheduleSave()} style={{flex:1,accentColor:lc,height:4}}/>
-                  <span style={{fontSize:8,color:T.muted,minWidth:26,textAlign:"right"}}>{Math.round((l.opacity??1)*100)}%</span>
-                </div>
-              </div>
-            )})}
-          </div>
-        </DraggablePanel>
-      )}
 
     </div>
   )
