@@ -2114,6 +2114,45 @@ export default function EditorPage(){
     }
   },[placed,importedImages])
 
+  const startObjectGroupDrag=useCallback((e,{kind,item})=>{
+    if(readOnly||tool==="eraser")return
+    e.stopPropagation()
+    window.__clearSelection?.()
+    setCanvasSelection(null)
+    let placedIds=[...selectedObjects.placed]
+    let imageIds=[...selectedObjects.images]
+    if(kind==="placed"){
+      if(!placedIds.includes(item.id)){
+        placedIds=[item.id]
+        imageIds=[]
+        setSelected(item.id)
+        setSelectedObjects({placed:placedIds,images:[]})
+      }
+    }else if(!imageIds.includes(item.id)){
+      placedIds=[]
+      imageIds=[item.id]
+      setSelected(null)
+      setSelectedObjects({placed:[],images:imageIds})
+    }
+    const startX=e.clientX,startY=e.clientY
+    const snapPlaced=placed.filter(p=>placedIds.includes(p.id)).map(p=>({id:p.id,x:p.x,y:p.y}))
+    const snapImages=importedImages.filter(i=>imageIds.includes(i.id)).map(i=>({id:i.id,x:i.x,y:i.y}))
+    const mm=(ev)=>{
+      const dx=(ev.clientX-startX)/zoom,dy=(ev.clientY-startY)/zoom
+      setPlaced(prev=>prev.map(it=>{
+        const o=snapPlaced.find(s=>s.id===it.id)
+        return o?{...it,x:Math.max(0,o.x+dx),y:Math.max(0,o.y+dy)}:it
+      }))
+      setImportedImages(prev=>prev.map(it=>{
+        const o=snapImages.find(s=>s.id===it.id)
+        return o?{...it,x:Math.max(0,o.x+dx),y:Math.max(0,o.y+dy)}:it
+      }))
+    }
+    const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu);scheduleSaveRef.current?.()}
+    window.addEventListener("mousemove",mm)
+    window.addEventListener("mouseup",mu)
+  },[readOnly,tool,selectedObjects,placed,importedImages,zoom])
+
   const handleEraseZone=useCallback((poly)=>{
     if(!poly?.length)return
     setPlaced(p=>p.filter(it=>{
@@ -2802,7 +2841,7 @@ export default function EditorPage(){
           T={T}
           title={nb.title}
           page={page}
-          pagesCount={nb.pages_count}
+          pagesCount={pagesCount}
           tool={tool}
           setTool={setTool}
           color={color}
@@ -3027,7 +3066,7 @@ export default function EditorPage(){
                 const imgSel=selectedObjects.images.includes(img.id)
                 return(
                 <div key={img.id}style={{position:"absolute",left:img.x,top:img.y,zIndex:3,cursor:readOnly||eraserActive?"default":"move",userSelect:"none",pointerEvents:eraserActive?"none":"auto",outline:imgSel?"2px solid #c8622a":"none",outlineOffset:2}}
-                  onMouseDown={e=>{if(readOnly)return;e.stopPropagation();setSelectedObjects({placed:[],images:[img.id]});const ox=e.clientX/zoom-img.x,oy=e.clientY/zoom-img.y;const mm=ev=>setImportedImages(p=>p.map(i=>i.id===img.id?{...i,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:i));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu);scheduleSave()};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
+                  onMouseDown={e=>startObjectGroupDrag(e,{kind:"image",item:img})}>
                   <img src={img.src}alt=""style={{width:img.w,height:img.h,display:"block",opacity:.88,pointerEvents:"none"}}/>
                   {!readOnly&&!eraserActive&&<button onClick={()=>{setImportedImages(p=>p.filter(i=>i.id!==img.id));scheduleSave()}}style={{position:"absolute",top:-8,right:-8,width:18,height:18,borderRadius:"50%",background:"#e94560",border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontWeight:700}}>×</button>}
                 </div>
@@ -3052,7 +3091,7 @@ export default function EditorPage(){
                   transform:rot?`rotate(${rot}deg)`:"none",
                   transformOrigin:"center center",
                 }}
-                  onMouseDown={e=>{if(readOnly)return;e.stopPropagation();window.__clearSelection?.();setCanvasSelection(null);setSelected(item.id);setSelectedObjects({placed:[item.id],images:[]});const ox=e.clientX/zoom-item.x,oy=e.clientY/zoom-item.y;const mm=ev=>setPlaced(p=>p.map(e=>e.id===item.id?{...e,x:ev.clientX/zoom-ox,y:ev.clientY/zoom-oy}:e));const mu=()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu);scheduleSave()};window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu)}}>
+                  onMouseDown={e=>startObjectGroupDrag(e,{kind:"placed",item})}>
                   <div style={{width:"100%",height:"100%",outline:sel?"2px solid #c8622a":"none",outlineOffset:2,pointerEvents:"none"}}>
                     {item.el.type==="sym"?renderSym(item.el,1/50,sx,sy):renderEl(item.el,1/50,sx,sy)}
                   </div>
