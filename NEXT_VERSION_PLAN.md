@@ -185,7 +185,7 @@ _Généré le 2026-05-26 · Branch: claude/stoic-wright-3X38O_
 
 ## ⚠️ Notes techniques importantes
 
-1. **Push bloqué (403)** : Le push depuis ce conteneur échoue. L'utilisateur doit pusher depuis son Windows Git Bash (dossier projet). Livraison via ZIP.
+1. **Push** : Fonctionne directement depuis le worktree (`git push origin <branche>`).
 
 2. **Branche** : `claude/stoic-wright-3X38O`
 
