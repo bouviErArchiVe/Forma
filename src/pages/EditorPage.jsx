@@ -152,11 +152,15 @@ const SHAPE_HUD_EXTRA=[
   {id:'cloud',Icon:MessageSquare,label:'Bulle'},
 ]
 const BRUSHES = [
-  { id: 'fine', label: 'Fin', mm: 0.18, icon: '•' },
-  { id: 'medium', label: 'Moyen', mm: 0.5, icon: '●' },
-  { id: 'bold', label: 'Épais', mm: 1.0, icon: '⬤' },
-  { id: 'marker', label: 'Marker', mm: 2.0, icon: '▮' },
+  { id: 'fineliner', label: 'Fineliner', mm: 0.18, icon: '•' },
+  { id: 'crayon', label: 'Crayon', mm: 0.35, icon: '✏' },
+  { id: 'stylo', label: 'Stylo', mm: 0.5, icon: '●' },
+  { id: 'feutre', label: 'Feutre', mm: 1.0, icon: '⬤' },
+  { id: 'pinceau', label: 'Pinceau', mm: 2.0, icon: '▮' },
+  { id: 'broad', label: 'Broad', mm: 5.0, icon: '█' },
 ]
+const HOME_SVG=<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+const POPUP_STYLE={position:"absolute",top:56,left:"50%",transform:"translateX(-50%)",background:C.bar,borderRadius:14,border:`1px solid ${C.border}`,boxShadow:"0 8px 24px rgba(0,0,0,0.6)",zIndex:45,animation:"gnPopupIn .15s ease"}
 const GN_T = {
   accent: COLORS.accent, border: COLORS.panelBorder, bg: COLORS.panelBg,
   ink: COLORS.text, muted: COLORS.textSecondary, surface: COLORS.toolbar,
@@ -1251,34 +1255,18 @@ function GoodNotesSectionLabel({children}){
   return<div style={{fontSize:11,fontWeight:600,color:COLORS.textSecondary,textTransform:"uppercase",letterSpacing:0.6,marginBottom:6}}>{children}</div>
 }
 
-function GoodNotesToolRail({tool,setTool,setShowLib}){
+function GnSep({h=20}){return<div style={{width:1,height:h,background:C.border,margin:"0 4px",flexShrink:0}}/>}
+
+function GnToolBtn({children,active,onClick,title,disabled,size=38}){
   return(
-    <div style={{width:56,flexShrink:0,background:COLORS.toolbar,borderRight:`1px solid ${COLORS.toolbarBorder}`,display:"flex",flexDirection:"column",alignItems:"center",padding:"8px 0",gap:2,zIndex:10}}>
-      {EDITOR_TOOLS_LIST.map((grp,gi)=>(
-        <div key={grp.g} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,width:"100%"}}>
-          {grp.items.map(t=>{
-            const Icon=TOOL_ICON_MAP[t.id]
-            const active=tool===t.id
-            return(
-              <button key={t.id} type="button" title={t.l} onClick={()=>setTool(t.id)}
-                style={{width:40,height:40,borderRadius:8,border:"none",background:active?`${COLORS.accent}22`:"transparent",color:active?COLORS.accent:COLORS.textSecondary,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"background .15s,color .15s"}}>
-                {Icon?<Icon size={18} strokeWidth={active?2.2:1.8}/>:<span style={{fontSize:14}}>{t.i}</span>}
-              </button>
-            )
-          })}
-          {gi<EDITOR_TOOLS_LIST.length-1&&<div style={{width:28,height:1,background:COLORS.separator,margin:"4px 0"}}/>}
-        </div>
-      ))}
-      <div style={{flex:1}}/>
-      <button type="button" title="Bibliothèque" onClick={()=>setShowLib(true)}
-        style={{width:40,height:40,borderRadius:8,border:"none",background:"transparent",color:COLORS.textSecondary,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:4}}>
-        <BookOpen size={18}/>
-      </button>
-    </div>
+    <button type="button" title={title} disabled={disabled} onClick={onClick}
+      style={{width:size,height:size,borderRadius:8,border:"none",background:active?C.panel:"transparent",color:active?C.accent:(disabled?C.muted:C.icon),cursor:disabled?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",opacity:disabled?0.35:1,transition:"background .12s,color .12s",padding:0,flexShrink:0}}>
+      {children}
+    </button>
   )
 }
 
-function GnIconBtn({children,active,onClick,title,disabled,size=40}){
+function GnIconBtn({children,active,onClick,title,disabled,size=36}){
   return(
     <button type="button" title={title} disabled={disabled} onClick={onClick}
       style={{width:size,height:size,borderRadius:8,border:"none",background:active?C.panel:"transparent",color:active?C.accent:(disabled?C.muted:C.icon),cursor:disabled?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",opacity:disabled?0.3:1,transition:"background .12s,color .12s",padding:6,flexShrink:0}}>
@@ -1293,15 +1281,45 @@ function GnColorDot({c,active,onClick,size=26}){
   )
 }
 
-function GoodNotesShapeHud({tool,setTool}){
-  const[showExtra,setShowExtra]=useState(false)
-  const extraRef=useRef(null)
-  useEffect(()=>{
-    if(!showExtra)return
-    const close=e=>{if(extraRef.current&&!extraRef.current.contains(e.target))setShowExtra(false)}
-    window.addEventListener("pointerdown",close)
-    return()=>window.removeEventListener("pointerdown",close)
-  },[showExtra])
+function ShapeColorPanel({color,setColor,activeCPal,setActiveCPal,shapeStyle,setShapeStyle,onClose}){
+  const[tab,setTab]=useState("presets")
+  const colors=(CPAL[activeCPal]||CPAL["📐 Plans"]).slice(0,32)
+  return(
+    <div style={{...POPUP_STYLE,top:108,width:420,padding:16,flexDirection:"column",alignItems:"stretch",gap:12,display:"flex"}} onPointerDown={e=>e.stopPropagation()}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <span style={{fontSize:20,color:C.muted}}>≡</span>
+        <span style={{fontSize:17,fontWeight:600,color:C.text}}>Couleur</span>
+        <button type="button" onClick={onClose} style={{background:"none",border:"none",color:C.accent,cursor:"pointer",fontSize:15}}>Modifier</button>
+      </div>
+      <div style={{display:"flex",gap:6}}>
+        {[["presets","Préréglages"],["custom","Personnaliser"],["history","Historique"]].map(([id,l])=>(
+          <button key={id} type="button" onClick={()=>setTab(id)} style={{flex:1,padding:"8px 0",borderRadius:8,border:"none",background:tab===id?C.panel:"transparent",color:tab===id?C.text:C.muted,cursor:"pointer",fontSize:13}}>{l}</button>
+        ))}
+      </div>
+      {tab==="presets"&&<>
+        <select value={activeCPal} onChange={e=>setActiveCPal(e.target.value)} style={{padding:"6px 10px",borderRadius:8,border:`1px solid ${C.border}`,background:C.panel,color:C.text,fontSize:13}}>
+          {Object.keys(CPAL).map(p=><option key={p} value={p}>{p}</option>)}
+        </select>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(8,1fr)",gap:8}}>
+          {colors.map(c=><button key={c} type="button" onClick={()=>setColor(c)} style={{width:36,height:36,borderRadius:"50%",background:c,border:color===c?`2px solid ${C.text}`:"2px solid transparent",cursor:"pointer"}}/>)}
+        </div>
+      </>}
+      {tab==="custom"&&<input type="color" value={color} onChange={e=>setColor(e.target.value)} style={{width:"100%",height:40,border:"none",background:"none",cursor:"pointer"}}/>}
+      {tab==="history"&&<div style={{fontSize:13,color:C.muted,textAlign:"center",padding:12}}>Couleurs récentes non disponibles</div>}
+      <label style={{display:"flex",alignItems:"center",justifyContent:"space-between",fontSize:14,color:C.text,cursor:"pointer"}}>
+        Couleur de remplissage
+        <input type="checkbox" checked={shapeStyle?.useFill!==false} onChange={e=>setShapeStyle(s=>({...s,useFill:e.target.checked}))}/>
+      </label>
+      <div style={{display:"flex",alignItems:"center",gap:8}}>
+        <span style={{fontSize:13,color:C.muted,minWidth:56}}>Opacité</span>
+        <input type="range" min="0" max="1" step="0.05" value={shapeStyle?.fillOpacity??0.22} onChange={e=>setShapeStyle(s=>({...s,fillOpacity:parseFloat(e.target.value)}))} style={{flex:1,accentColor:C.accent}}/>
+      </div>
+    </div>
+  )
+}
+
+function GoodNotesShapeHud({tool,setTool,showColorPanel,setShowColorPanel}){
+  const allShapes=[...SHAPE_HUD_PRIMARY,...SHAPE_HUD_EXTRA]
   const shapeBtn=({id,Icon,label})=>{
     const active=tool===id
     return(
@@ -1312,18 +1330,11 @@ function GoodNotesShapeHud({tool,setTool}){
   }
   return(
     <div style={{position:"absolute",top:56,left:"50%",transform:"translateX(-50%)",background:"#1C1C1E",borderRadius:20,padding:"8px 12px",boxShadow:"0 4px 20px rgba(0,0,0,0.6)",display:"flex",alignItems:"center",gap:4,zIndex:45,animation:"gnShapeHudIn .15s ease"}}>
-      {SHAPE_HUD_PRIMARY.map(shapeBtn)}
-      <div style={{width:1,height:24,background:"#38383A",margin:"0 4px",flexShrink:0}}/>
-      <div ref={extraRef} style={{position:"relative",flexShrink:0}}>
-        <button type="button" onClick={()=>setShowExtra(v=>!v)} title="Autres formes" style={{width:32,height:32,borderRadius:"50%",border:"none",background:C.accent,color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <ChevronDown size={18} style={{transform:showExtra?"rotate(180deg)":"none",transition:"transform .15s"}}/>
-        </button>
-        {showExtra&&(
-          <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"#1C1C1E",borderRadius:12,padding:8,boxShadow:"0 8px 24px rgba(0,0,0,.6)",display:"flex",flexDirection:"column",gap:4,minWidth:148,zIndex:50}}>
-            {SHAPE_HUD_EXTRA.map(shapeBtn)}
-          </div>
-        )}
-      </div>
+      {allShapes.map(shapeBtn)}
+      <GnSep h={24}/>
+      <button type="button" onClick={()=>setShowColorPanel(v=>!v)} title="Couleurs forme" style={{width:32,height:32,borderRadius:"50%",border:"none",background:showColorPanel?C.accent:"#0A84FF",color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+        <ChevronDown size={18}/>
+      </button>
     </div>
   )
 }
@@ -1369,216 +1380,318 @@ function GoodNotesSelectionToolbar({bounds,count,pageW,showShapeOpts,showTextFon
   )
 }
 
-function GoodNotesToolPopup({toolPopup,onClose,color,setColor,sizeMm,setSizeMm,eraserSettings,setEraserSettings,unitSys,canvasTextFont,setCanvasTextFont,favorites,setFavorites,setTool,setPropsCollapsed,setShowPropsPanel,lassoType,setLassoType,lassoInclude,setLassoInclude,pencilOnly,setPencilOnly,textSize,setTextSize}){
-  if(!toolPopup)return null
-  const popupStyle={position:"absolute",top:TOP_BAR_H+4,left:"50%",transform:"translateX(-50%)",background:C.bar,borderRadius:14,border:`1px solid ${C.border}`,boxShadow:"0 8px 24px rgba(0,0,0,.6)",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,zIndex:45,flexWrap:"wrap",maxWidth:"min(92vw,720px)",animation:"gnPopupIn .15s ease"}
-  const quickPal=(toolPopup==="highlight"?HPAL["Standards"]:CPAL["📐 Plans"]).slice(0,8)
-  const favColors=favorites.filter(Boolean).slice(0,3).map(f=>f.color)
+function GoodNotesToolPopup({toolPopup,onClose,color,setColor,sizeMm,setSizeMm,eraserSettings,setEraserSettings,activeCPal,setActiveCPal,activeHPal,setActiveHPal,setTool}){
+  if(!toolPopup||!["pen","highlight","eraser"].includes(toolPopup))return null
+  const brush=BRUSHES.find(b=>Math.abs(b.mm-sizeMm)<0.01)||BRUSHES[2]
+  const quickPal=(toolPopup==="highlight"?HPAL[activeHPal||"Standards"]:CPAL[activeCPal||"📐 Plans"]).slice(0,8)
   if(toolPopup==="pen"||toolPopup==="highlight"){
+    const pal=toolPopup==="highlight"?HPAL:CPAL
+    const palKey=toolPopup==="highlight"?activeHPal:activeCPal
+    const setPal=toolPopup==="highlight"?setActiveHPal:setActiveCPal
     return(
-      <div style={popupStyle}>
-        <select value={sizeMm} onChange={e=>setSizeMm(parseFloat(e.target.value))} style={{padding:"6px 10px",borderRadius:8,border:"none",background:C.panel,color:C.text,fontSize:13,cursor:"pointer"}}>
-          {BRUSHES.map(b=><option key={b.id} value={b.mm}>{b.label} · {b.mm}mm</option>)}
+      <div style={{...POPUP_STYLE,padding:"10px 14px",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap",maxWidth:"min(92vw,640px)"}} onPointerDown={e=>e.stopPropagation()}>
+        <select value={brush.id} onChange={e=>{const b=BRUSHES.find(x=>x.id===e.target.value);if(b)setSizeMm(b.mm)}} style={{padding:"6px 10px",borderRadius:8,border:"none",background:C.panel,color:C.text,fontSize:13,cursor:"pointer"}}>
+          {BRUSHES.map(b=><option key={b.id} value={b.id}>{b.label} ▾</option>)}
         </select>
-        {favColors.map(c=><GnColorDot key={c} c={c} active={color===c} onClick={()=>setColor(c)}/>)}
-        {quickPal.map(c=><GnColorDot key={c} c={c} active={color===c} onClick={()=>{setColor(c);setTool(toolPopup)}}/>)}
-        <button type="button" onClick={()=>{setShowPropsPanel(true);setPropsCollapsed(false);onClose()}} title="Réglages complets" style={{width:36,height:36,borderRadius:8,border:"none",background:C.panel,color:C.icon,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><SlidersHorizontal size={18}/></button>
+        <div style={{display:"flex",alignItems:"center",gap:8,minWidth:120,flex:1}}>
+          <GoodNotesSlider value={sizeMm} min={0.05} max={10} step={0.05} onChange={setSizeMm}/>
+          <span style={{fontSize:11,color:C.muted,whiteSpace:"nowrap"}}>{sizeMm}mm</span>
+        </div>
+        {quickPal.map(c=><GnColorDot key={c} c={c} active={color===c} onClick={()=>{setColor(c);setTool(toolPopup)}} size={26}/>)}
+        <select value={palKey} onChange={e=>setPal(e.target.value)} style={{padding:"6px 10px",borderRadius:8,border:"none",background:C.panel,color:C.text,fontSize:13,cursor:"pointer",maxWidth:120}}>
+          {Object.keys(pal).map(p=><option key={p} value={p}>{p}</option>)}
+        </select>
       </div>
     )
   }
   if(toolPopup==="eraser"){
-    const sizeMm=eraserSettings.sizeMm
-    const setSizeMm=v=>setEraserSettings(s=>({...s,sizeMm:typeof v==="function"?v(s.sizeMm):v}))
+    const eraserMm=eraserSettings.sizeMm
+    const setEraserMm=v=>setEraserSettings(s=>({...s,sizeMm:typeof v==="function"?v(s.sizeMm):v}))
     return(
-      <div style={{...popupStyle,flexDirection:"column",alignItems:"stretch",gap:10,minWidth:280}}>
+      <div style={{...POPUP_STYLE,padding:"12px 14px",display:"flex",flexDirection:"column",gap:10,width:240}} onPointerDown={e=>e.stopPropagation()}>
         <div style={{display:"flex",gap:6}}>
           {ERASER_MODES.map(m=>(
             <button key={m.id} type="button" onClick={()=>setEraserSettings(s=>({...s,mode:m.id}))} style={{flex:1,padding:"8px 6px",borderRadius:8,border:"none",background:eraserSettings.mode===m.id?C.accent:C.panel,color:C.text,fontSize:12,cursor:"pointer"}}>{m.label}</button>
           ))}
         </div>
+        <div style={{fontSize:11,fontWeight:600,color:C.muted,textTransform:"uppercase"}}>Taille</div>
         <div style={{display:"flex",flexWrap:"wrap",gap:6,justifyContent:"center"}}>
           {ERASER_SIZES_MM.map(s=>(
-            <button key={s} type="button" onClick={()=>setSizeMm(s)} style={{width:32,height:32,borderRadius:8,border:"none",background:sizeMm===s?C.accent:C.panel,color:C.text,fontSize:10,cursor:"pointer",fontFamily:"monospace"}}>{s}</button>
+            <button key={s} type="button" onClick={()=>setEraserMm(s)} style={{minWidth:32,height:32,padding:"0 6px",borderRadius:8,border:"none",background:eraserMm===s?C.accent:C.panel,color:C.text,fontSize:10,cursor:"pointer",fontFamily:"monospace"}}>{s}</button>
           ))}
         </div>
-        <GoodNotesSlider value={sizeMm} min={0.5} max={30} step={0.5} onChange={setSizeMm}/>
-      </div>
-    )
-  }
-  if(toolPopup==="text"){
-    const sizes=[12,14,16,18,24,32,48]
-    const fontLabel=CANVAS_TEXT_FONTS.find(f=>f.id===canvasTextFont)?.label||"Moderne"
-    return(
-      <div style={popupStyle}>
-        <GnColorDot c={color} active onClick={()=>{setShowPropsPanel(true);setPropsCollapsed(false)}} size={28}/>
-        <select value={textSize} onChange={e=>setTextSize(parseInt(e.target.value,10))} style={{padding:"6px 10px",borderRadius:8,border:"none",background:C.panel,color:C.text,fontSize:13}}>
-          {sizes.map(s=><option key={s} value={s}>{s}px</option>)}
-        </select>
-        <select value={canvasTextFont} onChange={e=>setCanvasTextFont(e.target.value)} style={{padding:"6px 10px",borderRadius:8,border:"none",background:C.panel,color:C.text,fontSize:13,maxWidth:140}}>
-          {CANVAS_TEXT_FONTS.map(f=><option key={f.id} value={f.id}>{f.label}</option>)}
-        </select>
-        <span style={{fontSize:11,color:C.muted,whiteSpace:"nowrap"}}>{fontLabel}</span>
-        <button type="button" onClick={()=>setTool("text")} style={{padding:"6px 10px",borderRadius:8,border:"none",background:C.panel,color:C.text,fontSize:12,cursor:"pointer",whiteSpace:"nowrap"}}>↖ Épingler Texte</button>
-      </div>
-    )
-  }
-  if(toolPopup==="lasso"){
-    const toggles=[["handwriting","Écriture manuscrite"],["images","Images"],["shapes","Formes"],["arrows","Flèches"],["text","Zones de texte"],["equations","Équations"]]
-    return(
-      <div style={{...popupStyle,flexDirection:"column",alignItems:"stretch",gap:12,minWidth:300,maxWidth:360}}>
-        <div style={{fontSize:17,fontWeight:700,color:C.text}}>Outil Lasso</div>
-        <div>
-          <GoodNotesSectionLabel>Type de lasso</GoodNotesSectionLabel>
-          <div style={{display:"flex",gap:8}}>
-            {[["free","À main levée","lasso"],["rect","Rectangulaire","lasso-rect"]].map(([id,l,tid])=>(
-              <button key={id} type="button" onClick={()=>{setLassoType(id);setTool(tid)}} style={{flex:1,padding:"12px 8px",borderRadius:10,border:lassoType===id?`1.5px solid ${C.text}`:`1px solid ${C.border}`,background:lassoType===id?C.border2:C.panel,color:C.text,fontSize:13,cursor:"pointer"}}>{l}</button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <GoodNotesSectionLabel>Contenus à inclure</GoodNotesSectionLabel>
-          {toggles.map(([k,l])=>(
-            <div key={k} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 0",borderBottom:`1px solid ${C.border}`}}>
-              <span style={{fontSize:14,color:C.text}}>{l}</span>
-              <button type="button" onClick={()=>setLassoInclude(s=>({...s,[k]:!s[k]}))} style={{width:44,height:26,borderRadius:13,border:"none",background:lassoInclude[k]?C.success:C.border2,cursor:"pointer",position:"relative",transition:"background .15s"}}>
-                <span style={{position:"absolute",top:3,left:lassoInclude[k]?22:3,width:20,height:20,borderRadius:"50%",background:C.text,transition:"left .15s"}}/>
-              </button>
-            </div>
-          ))}
-        </div>
-        <button type="button" onClick={()=>{setPencilOnly(v=>{const n=!v;try{localStorage.setItem("forma_pencil_only",n?"1":"0")}catch{};return n})}} style={{background:"none",border:"none",color:C.danger,fontSize:14,cursor:"pointer",textAlign:"left",padding:"4px 0"}}>
-          {pencilOnly?"Déconnecter l'Apple Pencil":"Connecter Apple Pencil uniquement"}
-        </button>
+        <GoodNotesSlider value={eraserMm} min={0.5} max={30} step={0.5} onChange={setEraserMm}/>
+        <div style={{fontSize:11,color:C.muted,textAlign:"center"}}>{eraserMm}mm</div>
       </div>
     )
   }
   return null
 }
 
+function CanvasRuler({pos,setPos,unitSys,zoom}){
+  const length=500
+  const height=40
+  const dragRef=useRef(false)
+  const startRef=useRef(null)
+  const handleDragStart=e=>{dragRef.current=true;startRef.current={mx:e.clientX,my:e.clientY,ox:pos.x,oy:pos.y};e.stopPropagation()}
+  const handleDragMove=e=>{
+    if(!dragRef.current||!startRef.current)return
+    const dx=(e.clientX-startRef.current.mx)/zoom
+    const dy=(e.clientY-startRef.current.my)/zoom
+    setPos(p=>({...p,x:startRef.current.ox+dx,y:startRef.current.oy+dy}))
+  }
+  const handleDragEnd=()=>{dragRef.current=false}
+  const handleRotate=e=>{e.stopPropagation();setPos(p=>({...p,angle:(p.angle+15)%360}))}
+  const ticks=[]
+  const unit=unitSys==="metric"?3.78:9.6
+  const bigEvery=unitSys==="metric"?10:8
+  const labelEvery=unitSys==="metric"?50:16
+  const totalUnits=Math.floor(length/unit)
+  for(let i=0;i<=totalUnits;i++){
+    const x=i*unit
+    const isBig=i%bigEvery===0
+    const isMed=i%(bigEvery/2)===0
+    const tickH=isBig?18:isMed?12:7
+    ticks.push(<line key={i} x1={x} y1={0} x2={x} y2={tickH} stroke="#555" strokeWidth={isBig?1:0.5}/>)
+    if(i%labelEvery===0&&i>0){
+      const label=unitSys==="metric"?`${i}`:`${i/8}"`
+      ticks.push(<text key={`t${i}`} x={x} y={26} fontSize={8} fill="#888" textAnchor="middle" fontFamily="monospace">{label}</text>)
+    }
+  }
+  return(
+    <div style={{position:"absolute",left:pos.x,top:pos.y,transform:`rotate(${pos.angle}deg)`,transformOrigin:"left center",zIndex:50,userSelect:"none",pointerEvents:"all"}}
+      onPointerDown={handleDragStart} onPointerMove={handleDragMove} onPointerUp={handleDragEnd} onPointerLeave={handleDragEnd}>
+      <svg width={length} height={height} style={{cursor:"grab",display:"block"}}>
+        <rect width={length} height={height} rx={4} fill="rgba(230,220,180,0.92)" stroke="#bba" strokeWidth={1}/>
+        {ticks}
+        <text x={8} y={36} fontSize={8} fill="#888" fontFamily="monospace">{unitSys==="metric"?"mm":"in"}</text>
+      </svg>
+      <div onClick={handleRotate} style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#0A84FF",border:"2px solid #1C1C1E",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff",zIndex:51}}>↻</div>
+    </div>
+  )
+}
+
+function CanvasProtractor({pos,setPos,unitSys,zoom}){
+  const r=120
+  const dragRef=useRef(false)
+  const startRef=useRef(null)
+  const handleDragStart=e=>{dragRef.current=true;startRef.current={mx:e.clientX,my:e.clientY,ox:pos.x,oy:pos.y};e.stopPropagation()}
+  const handleDragMove=e=>{
+    if(!dragRef.current||!startRef.current)return
+    const dx=(e.clientX-startRef.current.mx)/zoom
+    const dy=(e.clientY-startRef.current.my)/zoom
+    setPos(p=>({...p,x:startRef.current.ox+dx,y:startRef.current.oy+dy}))
+  }
+  const handleDragEnd=()=>{dragRef.current=false}
+  const handleRotate=e=>{e.stopPropagation();setPos(p=>({...p,angle:(p.angle+15)%360}))}
+  const ticks=[]
+  for(let deg=0;deg<=180;deg+=1){
+    const rad=(deg*Math.PI)/180
+    const isBig=deg%10===0
+    const isMed=deg%5===0
+    const len=isBig?14:isMed?9:5
+    const x1=r*Math.cos(Math.PI-rad)
+    const y1=-r*Math.sin(Math.PI-rad)
+    const x2=(r-len)*Math.cos(Math.PI-rad)
+    const y2=-(r-len)*Math.sin(Math.PI-rad)
+    ticks.push(<line key={deg} x1={x1+r} y1={y1+r} x2={x2+r} y2={y2+r} stroke="#555" strokeWidth={isBig?1:0.5}/>)
+    if(isBig&&deg>0&&deg<180){
+      ticks.push(<text key={`t${deg}`} x={(r-20)*Math.cos(Math.PI-rad)+r} y={-(r-20)*Math.sin(Math.PI-rad)+r} fontSize={7} fill="#888" textAnchor="middle" fontFamily="monospace">{deg}</text>)
+    }
+  }
+  return(
+    <div style={{position:"absolute",left:pos.x,top:pos.y,transform:`rotate(${pos.angle}deg)`,transformOrigin:"center center",zIndex:50,userSelect:"none",pointerEvents:"all"}}
+      onPointerDown={handleDragStart} onPointerMove={handleDragMove} onPointerUp={handleDragEnd} onPointerLeave={handleDragEnd}>
+      <svg width={r*2} height={r+10} style={{cursor:"grab",display:"block"}}>
+        <path d={`M 0 ${r} A ${r} ${r} 0 0 1 ${r*2} ${r} Z`} fill="rgba(200,220,255,0.88)" stroke="#aab" strokeWidth={1}/>
+        <line x1={0} y1={r} x2={r*2} y2={r} stroke="#888" strokeWidth={1}/>
+        {ticks}
+        <text x={r} y={r-8} fontSize={8} fill="#888" textAnchor="middle" fontFamily="monospace">°</text>
+      </svg>
+      <div onClick={handleRotate} style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#0A84FF",border:"2px solid #1C1C1E",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff",zIndex:51}}>↻</div>
+    </div>
+  )
+}
+
+function CanvasSquare({pos,setPos,unitSys,zoom}){
+  const size=150
+  const dragRef=useRef(false)
+  const startRef=useRef(null)
+  const handleDragStart=e=>{dragRef.current=true;startRef.current={mx:e.clientX,my:e.clientY,ox:pos.x,oy:pos.y};e.stopPropagation()}
+  const handleDragMove=e=>{
+    if(!dragRef.current||!startRef.current)return
+    const dx=(e.clientX-startRef.current.mx)/zoom
+    const dy=(e.clientY-startRef.current.my)/zoom
+    setPos(p=>({...p,x:startRef.current.ox+dx,y:startRef.current.oy+dy}))
+  }
+  const handleDragEnd=()=>{dragRef.current=false}
+  const handleRotate=e=>{e.stopPropagation();setPos(p=>({...p,angle:(p.angle+45)%360}))}
+  const unit=unitSys==="metric"?3.78:9.6
+  const ticks=[]
+  for(let i=0;i<=Math.floor(size/unit);i++){
+    const x=i*unit
+    const isBig=unitSys==="metric"?i%10===0:i%8===0
+    const h=isBig?10:5
+    ticks.push(<line key={`h${i}`} x1={x} y1={size} x2={x} y2={size-h} stroke="#555" strokeWidth={isBig?1:0.5}/>)
+  }
+  for(let i=0;i<=Math.floor(size/unit);i++){
+    const y=size-i*unit
+    const isBig=unitSys==="metric"?i%10===0:i%8===0
+    const h=isBig?10:5
+    ticks.push(<line key={`v${i}`} x1={0} y1={y} x2={h} y2={y} stroke="#555" strokeWidth={isBig?1:0.5}/>)
+  }
+  return(
+    <div style={{position:"absolute",left:pos.x,top:pos.y,transform:`rotate(${pos.angle}deg)`,transformOrigin:"bottom left",zIndex:50,userSelect:"none",pointerEvents:"all"}}
+      onPointerDown={handleDragStart} onPointerMove={handleDragMove} onPointerUp={handleDragEnd} onPointerLeave={handleDragEnd}>
+      <svg width={size+10} height={size+10} style={{cursor:"grab",display:"block"}}>
+        <polygon points={`0,${size} ${size},${size} 0,0`} fill="rgba(200,240,210,0.88)" stroke="#8b8" strokeWidth={1}/>
+        {ticks}
+        <text x={20} y={size-10} fontSize={8} fill="#888" fontFamily="monospace">90°</text>
+        <text x={size/2} y={size+8} fontSize={8} fill="#888" fontFamily="monospace">45°</text>
+      </svg>
+      <div onClick={handleRotate} style={{position:"absolute",top:-10,right:-10,width:20,height:20,borderRadius:"50%",background:"#0A84FF",border:"2px solid #1C1C1E",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff",zIndex:51}}>↻</div>
+    </div>
+  )
+}
+
+function GoodNotesDimlinePopup({unitSys,setUnitSys,scale,setScale,SCALES_M,SCALES_I,color,setColor,activeCPal,setActiveCPal}){
+  const quickPal=(CPAL[activeCPal||"📐 Plans"]||[]).slice(0,8)
+  return(
+    <div style={{position:"absolute",top:56,left:"50%",transform:"translateX(-50%)",background:C.bar,borderRadius:14,border:`1px solid ${C.border}`,boxShadow:"0 8px 24px rgba(0,0,0,0.6)",padding:"12px 16px",zIndex:200,display:"flex",flexDirection:"column",gap:10,minWidth:280,animation:"gnPopupIn 150ms ease"}}>
+      <div style={{fontSize:13,fontWeight:600,color:C.text}}>Cotation</div>
+      <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+        <div style={{display:"flex",background:"#2C2C2E",borderRadius:8,padding:2,gap:1}}>
+          <button type="button" onClick={()=>{setUnitSys("metric");setScale("1:50")}} style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:unitSys==="metric"?"#0A84FF":"transparent",color:unitSys==="metric"?"#FFFFFF":"#8E8E93"}}>mm</button>
+          <button type="button" onClick={()=>{setUnitSys("imperial");setScale('1/4"=1\'')}} style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:unitSys==="imperial"?"#0A84FF":"transparent",color:unitSys==="imperial"?"#FFFFFF":"#8E8E93"}}>in</button>
+        </div>
+        <select value={scale} onChange={e=>setScale(e.target.value)} style={{padding:"4px 8px",borderRadius:8,border:"1px solid #38383A",background:"#2C2C2E",color:"#FFFFFF",fontSize:11,outline:"none",cursor:"pointer"}}>
+          {(unitSys==="metric"?SCALES_M:SCALES_I).map(s=><option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+        {quickPal.map(c=><GnColorDot key={c} c={c} active={color===c} onClick={()=>setColor(c)} size={24}/>)}
+        <input type="color" value={color} onChange={e=>setColor(e.target.value)} style={{width:28,height:28,border:"none",background:"none",cursor:"pointer",padding:0}}/>
+      </div>
+    </div>
+  )
+}
+
 function GoodNotesTopBar({
-  nb,navigate,updateNotebook,tool,setTool,onToolClick,readOnly,setReadOnly,readOnlyLocked,
-  setShowPresent,setShowShare,showPagePanel,setShowPagePanel,setShowSearchPanel,
-  setShowLib,setShowLayers,setShowHistory,setShowCalc,setShowConv,setShowTranslate,setShowDictation,
-  setShowTimer,setShowFlash,setShowPropsPanel,setPropsCollapsed,setShowPageSettings,
-  showHistory,showCalc,showConv,showTranslate,showDictation,showTimer,showFlash,showLayers,
-  infiniteMode,applyPageSettings,page,pagesCount,pageRotation,deletePage,goToPage,pencilOnly,setPencilOnly,toggleFocusMode,handleImport,
-  exportPNG,exporting,unitSys,setUnitSys,scale,setScale,scalesM,scalesI,actionLogLength,
-  flashCardsLength,timerRunning,timerSec,propsCollapsed,collabCursors,collabColors,notebooks,
-  canUndo,canRedo,
+  nb,navigate,tool,onToolClick,showPagePanel,setShowPagePanel,
+  showLayers,setShowLayers,showConv,setShowConv,showTimer,setShowTimer,timerRunning,timerSec,
+  showSearchPanel,setShowSearchPanel,showNotebookDropdown,setShowNotebookDropdown,
+  showMoreMenu,setShowMoreMenu,notebooks,canUndo,canRedo,
+  setShowShare,setShowPageSettings,setShowTheme,setShowPresent,readOnly,setReadOnly,
+  setShowCalc,setShowFlash,setShowHistory,setPencilOnly,pencilOnly,
+  handleImport,exportPNG,exporting,importInputRef,
+  showLib,setShowLib,unitSys,setUnitSys,scale,setScale,SCALES_M,SCALES_I,
+  showMeasureHUD,setShowMeasureHUD,showRuler,setShowRuler,showProtractor,setShowProtractor,showSquare,setShowSquare,
 }){
-  const[showNbDrop,setShowNbDrop]=useState(false)
-  const[showMore,setShowMore]=useState(false)
   const nbRef=useRef(null)
   const moreRef=useRef(null)
-  const siblingNbs=(notebooks||[]).filter(n=>n.subject===nb.subject&&n.id!==nb.id)
   useEffect(()=>{
-    if(!showMore&&!showNbDrop)return
+    if(!showMoreMenu&&!showNotebookDropdown)return
     const close=e=>{
-      if(showMore&&moreRef.current&&!moreRef.current.contains(e.target))setShowMore(false)
-      if(showNbDrop&&nbRef.current&&!nbRef.current.contains(e.target))setShowNbDrop(false)
+      if(showMoreMenu&&moreRef.current&&!moreRef.current.contains(e.target))setShowMoreMenu(false)
+      if(showNotebookDropdown&&nbRef.current&&!nbRef.current.contains(e.target))setShowNotebookDropdown(false)
     }
     window.addEventListener("pointerdown",close)
     return()=>window.removeEventListener("pointerdown",close)
-  },[showMore,showNbDrop])
-  const moreItem=(label,fn,{icon:Icon,danger,active,disabled}={})=>(
-    <button key={label} type="button" disabled={disabled} onClick={()=>{if(disabled)return;fn();setShowMore(false)}} style={{width:"100%",height:48,padding:"0 16px",border:"none",background:active?`${C.accent}18`:"transparent",color:danger?C.danger:disabled?C.border:C.text,cursor:disabled?"default":"pointer",fontSize:15,textAlign:"left",display:"flex",alignItems:"center",gap:12,opacity:disabled?0.45:1}}>
-      {Icon&&<Icon size={20} color={danger?C.danger:disabled?C.border:C.text}/>}
+  },[showMoreMenu,showNotebookDropdown,setShowMoreMenu,setShowNotebookDropdown])
+  const moreItem=(label,fn,{danger,active}={})=>(
+    <button key={label} type="button" onClick={()=>{fn();setShowMoreMenu(false)}} style={{width:"100%",height:48,padding:"0 16px",border:"none",background:active?`${C.accent}18`:"transparent",color:danger?C.danger:C.text,cursor:"pointer",fontSize:15,textAlign:"left",display:"flex",alignItems:"center",gap:12}}>
       {label}
     </button>
   )
-  const moreSep=()=><div style={{height:1,background:"#38383A",margin:"4px 0"}}/>
-  const moreSection=label=><div style={{padding:"8px 16px 4px",fontSize:11,fontWeight:600,color:"#8E8E93",letterSpacing:0.5,textTransform:"uppercase"}}>{label}</div>
+  const moreSep=()=><div style={{height:1,background:C.border,margin:"4px 0"}}/>
+  const shapeTools=[{id:"line",Icon:Minus},{id:"rect",Icon:Square},{id:"circle",Icon:Circle},{id:"shape-arrow",Icon:ArrowRight},{id:"dimline",Icon:Ruler},{id:"cloud",Icon:MessageSquare}]
   return(
-    <div style={{height:TOP_BAR_H,flexShrink:0,background:C.bar,borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 8px",gap:4,zIndex:30,position:"relative"}}>
-      <GnIconBtn active={showPagePanel} onClick={()=>setShowPagePanel(v=>!v)} title="Pages"><PanelLeft size={22}/></GnIconBtn>
-      <button type="button" onClick={()=>navigate("/")} style={{background:"none",border:"none",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:2,padding:"4px 6px",fontSize:15,flexShrink:0}}>
-        <ChevronLeft size={18}/><span style={{maxWidth:80,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>Bibliothèque</span>
-      </button>
+    <div style={{height:TOP_BAR_H,flexShrink:0,background:C.bar,borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 10px",gap:6,zIndex:30,position:"relative"}}>
+      <button type="button" onClick={()=>navigate("/")} title="Bibliothèque" style={{background:"transparent",border:"none",color:C.accent,cursor:"pointer",borderRadius:8,padding:6,display:"flex",alignItems:"center"}}>{HOME_SVG}</button>
+      <GnSep/>
       <div ref={nbRef} style={{position:"relative",flexShrink:0}}>
-        <button type="button" onClick={()=>setShowNbDrop(v=>!v)} style={{background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:4,padding:"4px 8px",maxWidth:180}}>
-          <span style={{fontSize:16,fontWeight:600,color:C.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nb.title}</span>
-          <ChevronDown size={14} color={C.muted}/>
+        <button type="button" onClick={()=>setShowNotebookDropdown(v=>!v)} style={{background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:4,padding:"4px 8px",borderRadius:8,maxWidth:180}}>
+          <span style={{fontSize:15,fontWeight:600,color:C.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nb.title}</span>
+          <span style={{fontSize:12,color:C.muted}}>▾</span>
         </button>
-        {showNbDrop&&(
-          <div style={{position:"absolute",top:"100%",left:0,marginTop:6,minWidth:220,background:C.bar,borderRadius:12,border:`1px solid ${C.border}`,boxShadow:"0 8px 32px rgba(0,0,0,.6)",zIndex:100,overflow:"hidden"}}>
-            <button type="button" onClick={()=>setShowNbDrop(false)} style={{width:"100%",height:44,padding:"0 14px",border:"none",background:"transparent",color:C.accent,cursor:"default",fontSize:15,textAlign:"left",display:"flex",alignItems:"center",gap:10}}><BookOpen size={18}/>{nb.title}</button>
-            {siblingNbs.map(n=>(
-              <button key={n.id} type="button" onClick={()=>{setShowNbDrop(false);navigate(`/editor/${n.id}`)}} style={{width:"100%",height:44,padding:"0 14px",border:"none",background:"transparent",color:C.text,cursor:"pointer",fontSize:15,textAlign:"left",display:"flex",alignItems:"center",gap:10}}><BookOpen size={18}/>{n.title}</button>
+        {showNotebookDropdown&&(
+          <div style={{position:"absolute",top:52,left:0,minWidth:240,background:C.bar,borderRadius:12,border:`1px solid ${C.border}`,boxShadow:"0 8px 32px rgba(0,0,0,0.6)",zIndex:200,overflow:"hidden"}}>
+            {(notebooks||[]).map(n=>(
+              <button key={n.id} type="button" onClick={()=>{setShowNotebookDropdown(false);if(n.id===nb.id)navigate("/");else navigate(`/editor/${n.id}`)}} style={{width:"100%",height:44,padding:"0 14px",border:"none",background:"transparent",color:n.id===nb.id?C.accent:C.text,cursor:"pointer",fontSize:14,textAlign:"left",display:"flex",alignItems:"center",gap:10}}>
+                <span>📓</span>{n.title}
+              </button>
             ))}
           </div>
         )}
       </div>
-      {Array.isArray(collabCursors)&&collabCursors.length>0&&(
-        <div style={{display:"flex",gap:2}}>
-          {collabCursors.slice(0,4).map((c,i)=>(
-            <div key={c.userId} title={c.userName} style={{width:18,height:18,borderRadius:"50%",background:collabColors[i%6],display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:700,color:"#fff"}}>{(c.userName||"?")[0].toUpperCase()}</div>
+      <GnSep/>
+      <GnToolBtn onClick={()=>window.__undo?.()} title="Annuler" disabled={!canUndo}><Undo2 size={20}/></GnToolBtn>
+      <GnToolBtn onClick={()=>window.__redo?.()} title="Refaire" disabled={!canRedo}><Redo2 size={20}/></GnToolBtn>
+      <GnToolBtn active={showPagePanel} onClick={()=>setShowPagePanel(v=>!v)} title="Pages"><PanelLeft size={20}/></GnToolBtn>
+      <button type="button" onClick={()=>setShowLib(v=>!v)} title="Bibliothèque" style={{width:38,height:38,borderRadius:8,border:"none",cursor:"pointer",background:showLib?"#2C2C2E":"transparent",color:showLib?"#0A84FF":"#EBEBF5",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🏗</button>
+      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:2,minWidth:0,overflowX:"auto"}}>
+        <GnToolBtn active={tool==="arrow"||tool==="select"} onClick={()=>onToolClick("arrow",false,false)} title="Sélection"><MousePointer2 size={20}/></GnToolBtn>
+        <GnSep h={24}/>
+        <GnToolBtn active={tool==="pen"} onClick={()=>onToolClick("pen",true,false)} title="Stylo"><Pen size={20}/></GnToolBtn>
+        <GnToolBtn active={tool==="highlight"} onClick={()=>onToolClick("highlight",true,false)} title="Surligneur"><Highlighter size={20}/></GnToolBtn>
+        <GnToolBtn active={tool==="eraser"} onClick={()=>onToolClick("eraser",true,false)} title="Gomme"><Eraser size={20}/></GnToolBtn>
+        <GnToolBtn active={tool==="text"} onClick={()=>onToolClick("text",false,false)} title="Texte"><Type size={20}/></GnToolBtn>
+        <GnToolBtn active={tool==="lasso"||tool==="lasso-rect"} onClick={()=>onToolClick("lasso",false,false)} title="Lasso"><Lasso size={20}/></GnToolBtn>
+        <GnSep h={24}/>
+        {shapeTools.map(({id,Icon})=>(
+          <GnToolBtn key={id} active={tool===id} onClick={()=>onToolClick(id,false,true)} title={id}><Icon size={20}/></GnToolBtn>
+        ))}
+        <GnSep h={24}/>
+        <GnToolBtn active={showLayers} onClick={()=>setShowLayers(v=>!v)} title="Calques"><Layers size={20}/></GnToolBtn>
+      </div>
+      <div style={{display:"flex",background:"#2C2C2E",borderRadius:8,padding:2,gap:1,flexShrink:0}}>
+        <button type="button" onClick={()=>{setUnitSys("metric");setScale("1:50")}} style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:unitSys==="metric"?"#0A84FF":"transparent",color:unitSys==="metric"?"#FFFFFF":"#8E8E93"}}>mm</button>
+        <button type="button" onClick={()=>{setUnitSys("imperial");setScale('1/4"=1\'')}} style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,background:unitSys==="imperial"?"#0A84FF":"transparent",color:unitSys==="imperial"?"#FFFFFF":"#8E8E93"}}>in</button>
+      </div>
+      <select value={scale} onChange={e=>setScale(e.target.value)} style={{padding:"4px 8px",borderRadius:8,border:"1px solid #38383A",background:"#2C2C2E",color:"#FFFFFF",fontSize:11,outline:"none",cursor:"pointer",flexShrink:0}}>
+        {(unitSys==="metric"?SCALES_M:SCALES_I).map(s=><option key={s} value={s}>{s}</option>)}
+      </select>
+      <GnToolBtn active={showConv} onClick={()=>setShowConv(v=>!v)} title="Convertisseur"><Ruler size={20}/></GnToolBtn>
+      <GnToolBtn active={showTimer} onClick={()=>setShowTimer(v=>!v)} title="Pomodoro">
+        <div style={{display:"flex",alignItems:"center",gap:4}}>
+          <span style={{fontSize:16,lineHeight:1}}>⏱</span>
+          {timerRunning&&<span style={{fontSize:10,color:C.text,fontFamily:"monospace"}}>{String(Math.floor(timerSec/60)).padStart(2,"0")}:{String(timerSec%60).padStart(2,"0")}</span>}
+        </div>
+      </GnToolBtn>
+      <button type="button" onClick={()=>setShowMeasureHUD(v=>!v)} title="Mesure" style={{width:38,height:38,borderRadius:8,border:"none",cursor:"pointer",background:(showRuler||showProtractor||showSquare)?"#2C2C2E":"transparent",color:(showRuler||showProtractor||showSquare)?"#0A84FF":"#EBEBF5",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>📐</button>
+      {showMeasureHUD&&(
+        <div style={{position:"absolute",top:56,right:120,background:"#1C1C1E",borderRadius:14,border:"1px solid #38383A",boxShadow:"0 8px 24px rgba(0,0,0,0.6)",padding:"10px 12px",display:"flex",gap:8,zIndex:200}}>
+          {[
+            [showRuler,setShowRuler,"📏","Règle"],
+            [showProtractor,setShowProtractor,"📐","Rapporteur"],
+            [showSquare,setShowSquare,"📏","Équerre"],
+          ].map(([active,setter,icon,label])=>(
+            <button key={label} type="button" onClick={()=>{setter(v=>!v);setShowMeasureHUD(false)}} style={{padding:"8px 14px",borderRadius:10,border:`1px solid ${active?"#0A84FF":"#38383A"}`,background:active?"rgba(10,132,255,0.15)":"#2C2C2E",color:active?"#0A84FF":"#FFFFFF",cursor:"pointer",fontSize:13,fontWeight:500,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+              <span style={{fontSize:20}}>{icon}</span>
+              <span style={{fontSize:10}}>{label}</span>
+            </button>
           ))}
         </div>
       )}
-      <GnIconBtn onClick={()=>window.__undo?.()} title="Annuler" disabled={!canUndo}><Undo2 size={20}/></GnIconBtn>
-      <GnIconBtn onClick={()=>window.__redo?.()} title="Refaire" disabled={!canRedo}><Redo2 size={20}/></GnIconBtn>
-      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:2,minWidth:0,overflowX:"auto"}}>
-        {TOP_TOOL_GROUPS.map((grp,gi)=>(
-          <div key={gi} style={{display:"flex",alignItems:"center",gap:2,flexShrink:0}}>
-            {grp.map(({id,Icon,label,popup,shape})=>{
-              const active=tool===id||(id==="lasso"&&(tool==="lasso"||tool==="lasso-rect"))
-              return(
-                <GnIconBtn key={id} active={active} title={`${label}`} onClick={()=>onToolClick(id,!!popup,!!shape)}>
-                  <Icon size={22} strokeWidth={active?2.2:1.8}/>
-                </GnIconBtn>
-              )
-            })}
-            {gi<TOP_TOOL_GROUPS.length-1&&<div style={{width:1,height:24,background:C.border,margin:"0 4px"}}/>}
-          </div>
-        ))}
-      </div>
-      <GnIconBtn onClick={()=>setShowSearchPanel(true)} title="Rechercher"><Search size={20}/></GnIconBtn>
+      <GnToolBtn active={showSearchPanel} onClick={()=>setShowSearchPanel(v=>!v)} title="Rechercher"><Search size={20}/></GnToolBtn>
       <div ref={moreRef} style={{position:"relative"}}>
-        <GnIconBtn active={showMore} onClick={()=>setShowMore(v=>!v)} title="Plus"><MoreHorizontal size={20}/></GnIconBtn>
-        {showMore&&(
-          <div style={{position:"absolute",top:52,right:8,width:280,background:"#1C1C1E",borderRadius:14,boxShadow:"0 8px 32px rgba(0,0,0,0.6)",padding:"6px 0",zIndex:100,maxHeight:"calc(100dvh - 64px)",overflowY:"auto"}}>
-            {moreItem("Présentation",()=>setShowPresent(true),{icon:Presentation})}
-            {moreItem("Partager",()=>setShowShare(true),{icon:Share2})}
-            {moreItem("Faire pivoter la page",()=>applyPageSettings(page,{rotation:(pageRotation+90)%360}),{icon:RotateCw})}
-            {moreItem("Changer de modèle",()=>setShowPageSettings(true),{icon:FileText})}
-            {moreItem("Accéder à la page",()=>setShowPagePanel(true),{icon:List})}
+        <GnToolBtn active={showMoreMenu} onClick={()=>setShowMoreMenu(v=>!v)} title="Plus"><MoreHorizontal size={20}/></GnToolBtn>
+        {showMoreMenu&&(
+          <div style={{position:"absolute",top:52,right:8,width:280,background:C.bar,borderRadius:14,boxShadow:"0 8px 32px rgba(0,0,0,0.6)",border:`1px solid ${C.border}`,padding:"6px 0",zIndex:200,maxHeight:"calc(100dvh - 64px)",overflowY:"auto"}}>
+            {moreItem("📎 Importer image",()=>importInputRef.current?.click())}
+            <input ref={importInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{handleImport(e);setShowMoreMenu(false)}}/>
+            {moreItem(exporting?"⬇️ Export…":"⬇️ Exporter PNG",()=>exportPNG())}
+            {moreItem("🤝 Partager",()=>setShowShare(true))}
             {moreSep()}
-            {moreItem("Calques",()=>setShowLayers(v=>!v),{icon:Layers,active:showLayers})}
-            {moreItem("Bibliothèque archi",()=>setShowLib(true),{icon:BookOpen})}
-            {moreItem(`Historique${actionLogLength>0?` (${actionLogLength})`:""}`,()=>setShowHistory(v=>!v),{icon:Undo2,active:showHistory})}
-            {moreItem("Calculatrice",()=>setShowCalc(v=>!v),{active:showCalc})}
-            {moreItem("Convertisseur",()=>setShowConv(v=>!v),{active:showConv})}
-            {moreItem("Traduction",()=>setShowTranslate(v=>!v),{active:showTranslate})}
-            {moreItem("Dictée",()=>setShowDictation(v=>!v),{active:showDictation})}
-            {moreItem(timerRunning?`Pomodoro ${String(Math.floor(timerSec/60)).padStart(2,"0")}:${String(timerSec%60).padStart(2,"0")}`:"Pomodoro",()=>setShowTimer(v=>!v),{active:showTimer})}
-            {moreItem(`Flashcards${flashCardsLength>0?` (${flashCardsLength})`:""}`,()=>setShowFlash(v=>!v),{active:showFlash})}
+            {moreItem("🎨 Fond & Grille",()=>setShowPageSettings(true))}
+            {moreItem("✨ Thème",()=>setShowTheme(true))}
+            {moreItem("📽 Présentation",()=>setShowPresent(true))}
+            {moreItem(readOnly?"🔒 Lecture seule (actif)":"🔒 Lecture seule",()=>setReadOnly(v=>!v),{active:readOnly})}
             {moreSep()}
-            {moreItem("Effacer la page",()=>window.__clear?.(),{icon:TrashIcon,danger:true})}
-            {moreItem("Placer la page dans la corbeille",()=>deletePage(page),{icon:TrashIcon,danger:true,disabled:pagesCount<=1})}
-            {moreSep()}
-            {moreSection("Réglages")}
-            {moreItem(readOnly?"Désactiver lecture seule":"Ajouter un verrouillage",()=>{if(!readOnlyLocked)setReadOnly(v=>!v)},{icon:Lock,active:readOnly,disabled:readOnlyLocked})}
-            {moreItem(`Canvas infini${infiniteMode?" ✓":""}`,()=>applyPageSettings(page,{infinite:!infiniteMode}),{active:infiniteMode})}
-            {moreItem(`Apple Pencil${pencilOnly?" ✓":""}`,()=>{setPencilOnly(v=>{const n=!v;try{localStorage.setItem("forma_pencil_only",n?"1":"0")}catch{};return n})},{active:pencilOnly})}
-            {moreItem("Mode focus",toggleFocusMode)}
-            {moreItem("Couleurs & taille",()=>{setShowPropsPanel(true);setPropsCollapsed(false)},{icon:SlidersHorizontal,active:!propsCollapsed})}
-            {moreItem("Déplacer (main)",()=>setTool("hand"),{icon:Hand,active:tool==="hand"})}
-            {moreItem("Pipette",()=>setTool("eyedropper"),{icon:Pipette,active:tool==="eyedropper"})}
-            {moreSep()}
-            <div style={{padding:"0 16px 8px",display:"flex",gap:6}}>
-              <button type="button" onClick={()=>{setUnitSys("metric");setScale("1:50");setShowMore(false)}} style={{flex:1,height:36,borderRadius:8,border:`1px solid ${unitSys==="metric"?C.accent:"#38383A"}`,background:unitSys==="metric"?`${C.accent}18`:"transparent",color:unitSys==="metric"?C.accent:"#8E8E93",cursor:"pointer",fontSize:13}}>mm</button>
-              <button type="button" onClick={()=>{setUnitSys("imperial");setScale('1/4"=1\'');setShowMore(false)}} style={{flex:1,height:36,borderRadius:8,border:`1px solid ${unitSys==="imperial"?C.accent:"#38383A"}`,background:unitSys==="imperial"?`${C.accent}18`:"transparent",color:unitSys==="imperial"?C.accent:"#8E8E93",cursor:"pointer",fontSize:13}}>in</button>
-            </div>
-            <div style={{padding:"0 16px 8px"}}>
-              <select value={scale} onChange={e=>setScale(e.target.value)} style={{width:"100%",height:36,padding:"0 10px",borderRadius:8,border:"1px solid #38383A",background:"#2C2C2E",color:"#EBEBF5",fontSize:13,outline:"none"}}>
-                {(unitSys==="metric"?scalesM:scalesI).map(s=><option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            {moreSep()}
-            <label style={{display:"flex",alignItems:"center",gap:12,height:48,padding:"0 16px",cursor:"pointer",fontSize:15,color:C.text}}>
-              Importer<input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{handleImport(e);setShowMore(false)}}/>
-            </label>
-            {moreItem(exporting?"Export…":"Export PNG",()=>exportPNG(),{disabled:exporting})}
+            {moreItem("🔢 Calculatrice",()=>setShowCalc(v=>!v))}
+            {moreItem("🃏 Flashcards",()=>setShowFlash(v=>!v))}
+            {moreItem("🕐 Historique",()=>setShowHistory(v=>!v))}
+            {moreItem(pencilOnly?"✏️ Apple Pencil (actif)":"✏️ Mode Apple Pencil",()=>{setPencilOnly(v=>{const n=!v;try{localStorage.setItem("forma_pencil_only",n?"1":"0")}catch{};return n})},{active:pencilOnly})}
           </div>
         )}
       </div>
@@ -1586,45 +1699,26 @@ function GoodNotesTopBar({
   )
 }
 
-function GoodNotesPagesSlidePanel({open,onClose,page,pagesCount,pages,nb,T,goToPage,addPage,duplicatePage,setPageMenu,applyPageSettings,pageFormat,customPageMm,nextPageFmt,nextPageCustomMm,setNextPageFmt,setNextPageCustomMm}){
-  const[viewMode,setViewMode]=useState("grid")
+function EditorPagesPanel({open,onClose,page,pagesCount,pages,nb,T,goToPage,addPage}){
   if(!open)return null
+  const gnT={...T,accent:C.accent,border:C.border,bg:C.panel,muted:C.muted}
   return(
-    <>
-      <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.4)",zIndex:55}}/>
-      <div style={{position:"fixed",top:0,left:0,bottom:0,width:300,background:C.bar,borderRight:`1px solid ${C.border}`,zIndex:56,display:"flex",flexDirection:"column",transform:open?"translateX(0)":"translateX(-300px)",transition:"transform .25s ease",boxShadow:"4px 0 32px rgba(0,0,0,.5)"}}>
-        <div style={{padding:"12px 14px",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",flexShrink:0}}>
-          <span style={{fontSize:17,fontWeight:700,color:C.text}}>Pages</span>
-          <button type="button" onClick={onClose} style={{position:"absolute",right:12,background:"none",border:"none",color:C.muted,cursor:"pointer",padding:4,display:"flex"}}><X size={20}/></button>
-        </div>
-        <div style={{padding:"8px 12px",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-          <div style={{display:"flex",gap:4}}>
-            {[["grid",Grid3x3],["list",List],["outline",LayoutList]].map(([m,Icon])=>(
-              <button key={m} type="button" onClick={()=>setViewMode(m)} style={{width:32,height:32,borderRadius:8,border:"none",background:viewMode===m?C.panel:"transparent",color:viewMode===m?C.accent:C.muted,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Icon size={18}/></button>
-            ))}
-          </div>
-          <span style={{fontSize:12,color:C.muted}}>Toutes les pages ▾</span>
-        </div>
-        <div style={{flex:1,overflowY:"auto",padding:10}}>
-          <div style={{display:viewMode==="list"?"flex":"grid",flexDirection:viewMode==="list"?"column":"unset",gridTemplateColumns:viewMode==="grid"?"1fr 1fr":"unset",gap:10}}>
-            {Array.from({length:pagesCount},(_,i)=>{
-              const n=i+1
-              const pageData=pages.find(p=>p.page_number===n)
-              const gnT={...T,accent:C.accent,border:C.border,bg:C.panel,muted:C.muted}
-              return(
-                <div key={n}>
-                  <PageThumbnail pageData={pageData} pageNum={n} current={page===n} T={gnT} notebookTemplate={nb.template} compact={viewMode==="grid"} onClick={()=>{goToPage(n);onClose()}} onMenu={(e,num)=>setPageMenu({x:e.clientX,y:e.clientY,pageNum:num})}/>
-                </div>
-              )
-            })}
-            <button type="button" onClick={()=>addPage()} style={{minHeight:viewMode==="grid"?160:56,borderRadius:8,border:`2px dashed ${C.border}`,background:"transparent",color:C.muted,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}}>+</button>
-          </div>
-        </div>
-        <div style={{padding:"8px 12px",borderTop:`1px solid ${C.border}`,flexShrink:0}}>
-          <PageFormatPicker T={T} format={pageFormat} customMm={customPageMm} compact onChange={(partial)=>applyPageSettings(page,partial)}/>
-        </div>
+    <div style={{position:"absolute",top:TOP_BAR_H,left:0,bottom:BOTTOM_BAR_H,width:280,background:C.bar,borderRight:`1px solid ${C.border}`,zIndex:100,display:"flex",flexDirection:"column",transform:"translateX(0)",transition:"transform 250ms ease",boxShadow:"4px 0 24px rgba(0,0,0,0.5)"}}>
+      <div style={{padding:"14px 16px 10px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+        <span style={{fontSize:17,fontWeight:600,color:C.text}}>Pages</span>
+        <button type="button" onClick={onClose} style={{background:"none",border:"none",color:C.muted,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
       </div>
-    </>
+      <div style={{flex:1,overflowY:"auto",padding:12,display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,alignContent:"start"}}>
+        {Array.from({length:pagesCount||1},(_,i)=>{
+          const n=i+1
+          const pageData=pages.find(p=>p.page_number===n)
+          return(
+            <PageThumbnail key={n} pageData={pageData} pageNum={n} current={page===n} T={gnT} notebookTemplate={nb.template} compact onClick={()=>{goToPage(n);onClose()}}/>
+          )
+        })}
+        <button type="button" onClick={()=>addPage()} style={{aspectRatio:"3/4",borderRadius:8,border:`1.5px dashed ${C.border2}`,background:"transparent",color:C.accent,cursor:"pointer",fontSize:28,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
+      </div>
+    </div>
   )
 }
 
@@ -1661,39 +1755,40 @@ function GoodNotesSearchPanel({open,onClose}){
   )
 }
 
-function GoodNotesBottomBar({page,pagesCount,goToPage,addPage,pagePhotoInputRef,handlePagePhotoPick,pages,nb,setPageMenu,zoom,zoomBy,resetViewport,viewSize,setShowLayers,setShowPageSettings}){
+function GoodNotesBottomBar({page,pagesCount,goToPage,addPage,pages,nb,zoom,zoomBy,viewSize,saveStatus}){
   const thumbRef=useRef(null)
   useEffect(()=>{
     if(!thumbRef.current)return
     const el=thumbRef.current.querySelector(`[data-page="${page}"]`)
     el?.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"})
   },[page])
+  const saving=saveStatus==="saving"||saveStatus==="syncing_cloud"||saveStatus==="dirty"
+  const saved=saveStatus==="saved"||saveStatus==="saved_local"||saveStatus==="synced"
   return(
-    <div style={{height:BOTTOM_BAR_H,flexShrink:0,background:C.bar,borderTop:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 16px",gap:8,zIndex:20}}>
-      <span style={{fontSize:13,color:C.text,whiteSpace:"nowrap"}}>{page} sur {pagesCount}</span>
-      <button type="button" onClick={()=>goToPage(Math.max(1,page-1))} disabled={page===1} style={{background:"none",border:"none",color:page===1?C.border:C.accent,cursor:page===1?"default":"pointer",padding:2,display:"flex"}}><ChevronLeft size={20}/></button>
-      <button type="button" onClick={()=>goToPage(Math.min(pagesCount,page+1))} style={{background:"none",border:"none",color:C.accent,cursor:"pointer",padding:2,display:"flex"}}><ChevronRight size={20}/></button>
+    <div style={{height:BOTTOM_BAR_H,flexShrink:0,background:C.bar,borderTop:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 12px",gap:8,zIndex:20}}>
+      <button type="button" onClick={()=>goToPage(Math.max(1,page-1))} disabled={page===1} style={{background:"none",border:"none",color:page===1?C.border:C.accent,cursor:page===1?"default":"pointer",padding:2,display:"flex"}}><ChevronLeft size={18}/></button>
+      <span style={{fontSize:13,color:C.text,whiteSpace:"nowrap"}}>{page} sur {pagesCount||1}</span>
+      <button type="button" onClick={()=>goToPage(Math.min(pagesCount,page+1))} disabled={page>=pagesCount} style={{background:"none",border:"none",color:page>=pagesCount?C.border:C.accent,cursor:page>=pagesCount?"default":"pointer",padding:2,display:"flex"}}><ChevronRight size={18}/></button>
       <button type="button" onClick={()=>addPage()} title="Nouvelle page" style={{background:"none",border:"none",color:C.accent,cursor:"pointer",padding:2,display:"flex"}}><Plus size={18}/></button>
-      <button type="button" onClick={()=>setShowPageSettings(true)} title="Modèle de feuille" style={{background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:16,padding:2}}>📄</button>
-      <input ref={pagePhotoInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>handlePagePhotoPick(e,"new")}/>
-      <div ref={thumbRef} style={{flex:1,display:"flex",gap:8,overflowX:"auto",padding:"2px 0",minWidth:0,alignItems:"flex-end"}}>
-        {Array.from({length:pagesCount},(_,i)=>{
+      <div style={{width:1,height:20,background:C.border,flexShrink:0}}/>
+      <div ref={thumbRef} style={{flex:1,display:"flex",gap:6,overflowX:"auto",padding:"2px 0",minWidth:0,alignItems:"center"}}>
+        {Array.from({length:pagesCount||1},(_,i)=>{
           const n=i+1
           const pageData=pages.find(p=>p.page_number===n)
           return(
-            <div key={n} data-page={n} style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
-              <div style={{width:36,height:48,borderRadius:4,border:`${page===n?2:1}px solid ${page===n?C.accent:C.border}`,overflow:"hidden",background:C.panel}}>
-                <PageThumbnail pageData={pageData} pageNum={n} current={page===n} T={{accent:C.accent,border:C.border,bg:C.panel,muted:C.muted}} notebookTemplate={nb.template} mini onClick={()=>goToPage(n)} onMenu={(e,num)=>setPageMenu({x:e.clientX,y:e.clientY,pageNum:num})}/>
-              </div>
-              <span style={{fontSize:10,color:C.muted}}>Page {n}</span>
+            <div key={n} data-page={n} onClick={()=>goToPage(n)} style={{flexShrink:0,width:28,height:38,borderRadius:4,border:`${page===n?2:1}px solid ${page===n?C.accent:C.border}`,overflow:"hidden",background:C.panel,cursor:"pointer"}}>
+              <PageThumbnail pageData={pageData} pageNum={n} current={page===n} T={{accent:C.accent,border:C.border,bg:C.panel,muted:C.muted}} notebookTemplate={nb.template} mini onClick={()=>goToPage(n)}/>
             </div>
           )
         })}
       </div>
-      <span style={{fontSize:13,color:C.muted,minWidth:36,textAlign:"center"}}>{Math.round(zoom*100)}%</span>
-      <button type="button" onClick={()=>zoomBy(1/1.1,{x:viewSize.w/2,y:viewSize.h/2})} style={{background:"none",border:"none",color:C.accent,cursor:"pointer",padding:2,display:"flex"}}><ZoomOut size={20}/></button>
-      <button type="button" onClick={()=>zoomBy(1.1,{x:viewSize.w/2,y:viewSize.h/2})} style={{background:"none",border:"none",color:C.accent,cursor:"pointer",padding:2,display:"flex"}}><ZoomIn size={20}/></button>
-      <button type="button" onClick={()=>setShowLayers(v=>!v)} title="Calques" style={{background:"none",border:"none",color:C.muted,cursor:"pointer",padding:2,display:"flex"}}><Layers size={20}/></button>
+      <span style={{fontSize:13,color:C.muted,minWidth:40,textAlign:"center",flexShrink:0}}>{Math.round(zoom*100)}%</span>
+      <button type="button" onClick={()=>zoomBy(1/1.1,{x:viewSize.w/2,y:viewSize.h/2})} style={{background:"none",border:"none",color:C.accent,cursor:"pointer",padding:2,display:"flex"}}><ZoomOut size={18}/></button>
+      <button type="button" onClick={()=>zoomBy(1.1,{x:viewSize.w/2,y:viewSize.h/2})} style={{background:"none",border:"none",color:C.accent,cursor:"pointer",padding:2,display:"flex"}}><ZoomIn size={18}/></button>
+      <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0,marginLeft:4}}>
+        <span style={{width:7,height:7,borderRadius:"50%",background:saving?C.warning:saved?C.success:C.muted,display:"inline-block"}}/>
+        <span style={{fontSize:11,color:C.muted,whiteSpace:"nowrap"}}>{saving?"Sauvegarde…":saved?"Sauvegardé":"Prêt"}</span>
+      </div>
     </div>
   )
 }
@@ -1812,91 +1907,63 @@ function PropertiesPanelContent({T,color,setColor,sizeMm,setSizeMm,tool,setTool,
   )
 }
 
-function GoodNotesLibraryDrawer({open,onClose,T,libMode,setLibMode,libSearch,setLibSearch,libCat,setLibCat,libCats,libItems,libPending,setLibPending,showNewProfile,setShowNewProfile,addCustomProfile,addNotification,getLibForMode,customProfiles,removeCustomProfile,setPlaced,toPageCoords,pushAction,scheduleSave,renderEl,renderSym}){
+function GoodNotesLibraryDrawer({open,onClose,unitSys,libMode,setLibMode,libSearch,setLibSearch,libCat,setLibCat,libItems,libPending,setLibPending,showNewProfile,setShowNewProfile,addCustomProfile,addNotification,getLibForMode,customProfiles,removeCustomProfile,setPlaced,toPageCoords,pushAction,scheduleSave,renderEl,renderSym,T}){
   if(!open)return null
+  const libSource=getLibForMode(libMode)
   return(
-    <>
-      <div onClick={onClose} style={{position:"absolute",inset:0,background:"rgba(0,0,0,.45)",zIndex:40}}/>
-      <div style={{position:"absolute",top:0,left:0,bottom:0,width:300,background:COLORS.panelBg,borderRight:`1px solid ${COLORS.panelBorder}`,zIndex:41,display:"flex",flexDirection:"column",boxShadow:"4px 0 24px rgba(0,0,0,.4)"}}>
-        <div style={{height:44,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 12px",borderBottom:`1px solid ${COLORS.panelBorder}`}}>
-          <span style={{fontSize:14,fontWeight:600,color:COLORS.text}}>Bibliothèque</span>
-          <button type="button" onClick={onClose} style={{background:"none",border:"none",color:COLORS.textSecondary,cursor:"pointer",padding:2,display:"flex"}}><X size={18}/></button>
-        </div>
-        <div style={{display:"flex",borderBottom:`1px solid ${COLORS.panelBorder}`,flexShrink:0}}>
-          {[["metric","📏 mm"],["imperial","📐 in"],["symbols","🏠 Sym."]].map(([m,l],i,arr)=>(
-            <button key={m} type="button" onClick={()=>{setLibMode(m);setLibSearch("");setLibCat(Object.keys(getLibForMode(m))[0]||"")}}
-              style={{flex:1,padding:"8px 0",border:"none",background:libMode===m?`${COLORS.accent}18`:COLORS.toolbar,color:libMode===m?COLORS.accent:COLORS.textSecondary,cursor:"pointer",fontSize:11,fontWeight:libMode===m?600:400,borderRight:i<arr.length-1?`1px solid ${COLORS.panelBorder}`:"none"}}>{l}</button>
-          ))}
-        </div>
-        <div style={{padding:"6px 10px",borderBottom:`1px solid ${COLORS.panelBorder}`}}>
-          <input value={libSearch} onChange={e=>setLibSearch(e.target.value)} placeholder="Chercher…" style={{width:"100%",padding:"6px 10px",borderRadius:8,border:`1px solid ${COLORS.panelBorder}`,fontSize:11,outline:"none",background:COLORS.toolbar,color:COLORS.text,boxSizing:"border-box"}}/>
-        </div>
-        <div style={{padding:"6px 10px",borderBottom:`1px solid ${COLORS.panelBorder}`,display:"flex",gap:6,flexShrink:0}}>
-          <button type="button" onClick={()=>setShowNewProfile(v=>!v)} style={{flex:1,padding:"6px 0",borderRadius:8,border:`1px solid ${showNewProfile?COLORS.accent:COLORS.panelBorder}`,background:showNewProfile?`${COLORS.accent}12`:COLORS.toolbar,color:showNewProfile?COLORS.accent:COLORS.textSecondary,cursor:"pointer",fontSize:10,fontWeight:600}}>+ Profil perso</button>
-        </div>
-        {showNewProfile&&(
-          <CustomProfileForm T={T} onCancel={()=>setShowNewProfile(false)} onSave={p=>{addCustomProfile(p);setLibCat("⭐ Mes profils");setShowNewProfile(false);addNotification(`Profil « ${p.name} » ajouté`,"success")}}/>
-        )}
-        <div style={{overflowX:"auto",borderBottom:`1px solid ${COLORS.panelBorder}`,flexShrink:0}}>
-          <div style={{display:"flex",gap:4,padding:"6px 8px",whiteSpace:"nowrap"}}>
-            {libCats.map(c=><button key={c} type="button" onClick={e=>{e.stopPropagation();setLibCat(c);setLibPending(null)}} style={{padding:"3px 8px",borderRadius:10,border:`1px solid ${libCat===c?COLORS.accent:COLORS.panelBorder}`,background:libCat===c?`${COLORS.accent}15`:COLORS.toolbar,color:libCat===c?COLORS.accent:COLORS.textSecondary,fontSize:9,cursor:"pointer",whiteSpace:"nowrap"}}>{c}</button>)}
-          </div>
-        </div>
-        <div style={{padding:"4px 10px",borderBottom:`1px solid ${COLORS.panelBorder}`,background:`${COLORS.accent}08`,flexShrink:0}}>
-          <div style={{fontSize:9,color:COLORS.textSecondary,textAlign:"center"}}>{libPending?`📍 Clic feuille → "${libPending.l}"`:"Clic = sélect · glisser aussi"}</div>
-        </div>
-        <div style={{padding:6,display:"flex",flexDirection:"column",gap:4,flex:1,minHeight:0,overflow:"auto"}}>
-          {libItems.length===0?(
-            <div style={{padding:"24px 12px",textAlign:"center",color:COLORS.textSecondary,fontSize:11,lineHeight:1.5}}>
-              {libSearch?`Aucun objet pour « ${libSearch} ».`:"Aucun objet dans cette catégorie."}
-            </div>
-          ):libItems.map(el=>(
-            <div key={el.id} onClick={()=>setLibPending(libPending?.id===el.id?null:el)} draggable
-              onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc;const pt=toPageCoords(e.clientX-r.left,e.clientY-r.top,r.width,r.height);setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,pt.x-elW/2),y:Math.max(0,pt.y-elH/2)}]);pushAction({type:"element_placed",detail:el.l});setLibPending(null);scheduleSave()}}
-              style={{padding:"6px 8px",borderRadius:8,border:`1px solid ${libPending?.id===el.id?COLORS.accent:COLORS.panelBorder}`,background:libPending?.id===el.id?`${COLORS.accent}10`:COLORS.toolbar,cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
-              <div style={{width:32,height:32,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>{el.type==="sym"?renderSym(el,1/300):renderEl(el,1/300)}</div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:10,fontWeight:600,color:COLORS.text,lineHeight:1.2}}>{el.l}</div>
-                <div style={{fontSize:8,color:COLORS.textSecondary,fontFamily:"monospace",marginTop:1}}>{el.w}×{el.h}mm</div>
-              </div>
-              {el.custom&&<button type="button" onClick={e=>{e.stopPropagation();const profile=customProfiles.find(p=>customProfileToLibEntry(p).id===el.id);if(profile)removeCustomProfile(profile.id)}} title="Supprimer" style={{background:"none",border:"none",color:COLORS.destructive,cursor:"pointer",fontSize:12,padding:"0 4px"}}>×</button>}
-            </div>
-          ))}
-        </div>
+    <div style={{position:"absolute",top:TOP_BAR_H,left:0,bottom:BOTTOM_BAR_H,width:300,background:"#1C1C1E",borderRight:"1px solid #38383A",zIndex:110,display:"flex",flexDirection:"column",boxShadow:"4px 0 24px rgba(0,0,0,0.5)"}}>
+      <div style={{padding:"14px 16px 10px",borderBottom:"1px solid #38383A",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
+        <span style={{fontSize:17,fontWeight:600,color:"#FFFFFF"}}>Bibliothèque</span>
+        <button type="button" onClick={onClose} style={{background:"none",border:"none",color:"#8E8E93",fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
       </div>
-    </>
-  )
-}
-
-/* ══ FLOATING PANEL ══════════════════════════════════ */
-function FloatingPanel({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle,canvasTextFont,setCanvasTextFont,focusMode,open=true,collapsed=false,onClose,onExpand,dock=false}){
-  if(focusMode||!open)return null
-  if(dock)return null
-  const isEraser=tool==="eraser"
-  return(
-    <DraggablePanel
-      T={T}
-      id="editor-properties"
-      title="Outils & couleurs"
-      open
-      collapsed={collapsed}
-      onExpand={onExpand}
-      onClose={onClose}
-      defaultSide="left"
-      width={220}
-      zIndexOffset={2}
-      collapsedPreview={(
-        <div className="forma-animate-scale" style={{width:36,height:36,borderRadius:"50%",background:isEraser?"#eee":color,border:"2px solid rgba(255,255,255,.55)",boxShadow:TOKENS.shadow.float,cursor:"pointer",outline:`2px solid ${T.accent}`,backdropFilter:"blur(8px)"}}/>
+      <div style={{display:"flex",borderBottom:"1px solid #38383A",flexShrink:0}}>
+        {[["metric","📐 mm"],["imperial","📏 in"],["symbols","🏠 Sym."]].map(([m,l])=>(
+          <button key={m} type="button" onClick={()=>{setLibMode(m);setLibSearch("");setLibCat(Object.keys(getLibForMode(m))[0]||"")}}
+            style={{flex:1,padding:"10px 0",border:"none",cursor:"pointer",fontSize:12,fontWeight:libMode===m?700:400,background:libMode===m?"#2C2C2E":"transparent",color:libMode===m?"#0A84FF":"#8E8E93",borderBottom:libMode===m?"2px solid #0A84FF":"2px solid transparent"}}>{l}</button>
+        ))}
+      </div>
+      <div style={{padding:"10px 12px",borderBottom:"1px solid #38383A",flexShrink:0}}>
+        <input value={libSearch} onChange={e=>setLibSearch(e.target.value)} placeholder="Rechercher..." style={{width:"100%",padding:"8px 12px",borderRadius:10,border:"1px solid #3A3A3C",background:"#2C2C2E",color:"#FFFFFF",fontSize:13,outline:"none",boxSizing:"border-box"}}/>
+      </div>
+      <div style={{padding:"6px 10px",borderBottom:"1px solid #38383A",flexShrink:0}}>
+        <button type="button" onClick={()=>setShowNewProfile(v=>!v)} style={{width:"100%",padding:"6px 0",borderRadius:8,border:`1px solid ${showNewProfile?"#0A84FF":"#3A3A3C"}`,background:showNewProfile?"rgba(10,132,255,0.1)":"#2C2C2E",color:showNewProfile?"#0A84FF":"#8E8E93",cursor:"pointer",fontSize:10,fontWeight:600}}>+ Profil perso</button>
+      </div>
+      {showNewProfile&&(
+        <CustomProfileForm T={T} onCancel={()=>setShowNewProfile(false)} onSave={p=>{addCustomProfile(p);setLibCat("⭐ Mes profils");setShowNewProfile(false);addNotification(`Profil « ${p.name} » ajouté`,"success")}}/>
       )}
-      headerExtra={(
-        <div style={{display:"flex",gap:4,alignItems:"center"}}>
-          <div style={{width:10,height:10,borderRadius:"50%",background:isEraser?"#eee":color,border:`1px solid ${T.border}`}}/>
-          <span style={{fontSize:8,color:T.muted,fontFamily:"monospace"}}>{formatDimension(isEraser?eraserMm:sizeMm,unitSys)}</span>
+      <div style={{display:"flex",flexDirection:"row",borderBottom:"1px solid #38383A",flexShrink:0,overflowX:"auto"}}>
+        {Object.keys(libSource).map(cat=>(
+          <button key={cat} type="button" onClick={()=>{setLibCat(cat);setLibPending(null)}}
+            style={{padding:"8px 12px",border:"none",cursor:"pointer",fontSize:11,whiteSpace:"nowrap",flexShrink:0,background:libCat===cat?"#2C2C2E":"transparent",color:libCat===cat?"#0A84FF":"#8E8E93",borderBottom:libCat===cat?"2px solid #0A84FF":"2px solid transparent"}}>{cat}</button>
+        ))}
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:10,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,minHeight:0}}>
+        {libItems.length===0?(
+          <div style={{gridColumn:"1 / -1",padding:"24px 12px",textAlign:"center",color:"#8E8E93",fontSize:11,lineHeight:1.5}}>
+            {libSearch?`Aucun objet pour « ${libSearch} ».`:"Aucun objet dans cette catégorie."}
+          </div>
+        ):libItems.map(el=>(
+          <div key={el.id} onClick={()=>setLibPending(libPending?.id===el.id?null:el)} draggable
+            onDragEnd={e=>{const r=document.getElementById("canvas-area")?.getBoundingClientRect();if(!r)return;const sc=3.78/50,elW=(el.fw||el.w)*sc,elH=el.h*sc;const pt=toPageCoords(e.clientX-r.left,e.clientY-r.top,r.width,r.height);setPlaced(p=>[...p,{id:Date.now(),el,x:Math.max(0,pt.x-elW/2),y:Math.max(0,pt.y-elH/2)}]);pushAction({type:"element_placed",detail:el.l});setLibPending(null);scheduleSave()}}
+            style={{borderRadius:12,border:`1.5px solid ${libPending?.id===el.id?"#0A84FF":"#3A3A3C"}`,background:libPending?.id===el.id?"rgba(10,132,255,0.1)":"#2C2C2E",cursor:"pointer",padding:10,display:"flex",flexDirection:"column",alignItems:"center",gap:6,transition:"all 0.15s",position:"relative"}}>
+            <div style={{width:60,height:60,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+              {el.type==="sym"?renderSym(el,1/200):renderEl(el,1/200)}
+            </div>
+            <div style={{fontSize:10,color:"#FFFFFF",textAlign:"center",lineHeight:1.3,overflow:"hidden",textOverflow:"ellipsis",width:"100%",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{el.l}</div>
+            <div style={{fontSize:9,color:"#8E8E93",fontFamily:"monospace"}}>
+              {unitSys==="metric"?`${el.w}×${el.h}mm`:`${Math.round(el.w/25.4*10)/10}×${Math.round(el.h/25.4*10)/10}in`}
+            </div>
+            {el.custom&&<button type="button" onClick={e=>{e.stopPropagation();const profile=customProfiles.find(p=>customProfileToLibEntry(p).id===el.id);if(profile)removeCustomProfile(profile.id)}} title="Supprimer" style={{position:"absolute",top:4,right:4,background:"none",border:"none",color:"#FF453A",cursor:"pointer",fontSize:12,padding:0}}>×</button>}
+          </div>
+        ))}
+      </div>
+      {libPending&&(
+        <div style={{padding:"10px 14px",background:"rgba(10,132,255,0.15)",borderTop:"1px solid #0A84FF44",fontSize:12,color:"#0A84FF",textAlign:"center",flexShrink:0}}>
+          Glisser sur la page — <strong>{libPending.l}</strong>
+          <button type="button" onClick={()=>setLibPending(null)} style={{marginLeft:8,background:"none",border:"none",color:"#8E8E93",cursor:"pointer",fontSize:14}}>×</button>
         </div>
       )}
-    >
-      <PropertiesPanelContent T={T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont} onExpand={onExpand}/>
-    </DraggablePanel>
+    </div>
   )
 }
 
@@ -2114,6 +2181,12 @@ export default function EditorPage(){
   const[showShare,setShowShare]=useState(false)
   const[showRuler,setShowRuler]=useState(false)
   const[showProt,setShowProt]=useState(false)
+  const[showProtractor,setShowProtractor]=useState(false)
+  const[showSquare,setShowSquare]=useState(false)
+  const[showMeasureHUD,setShowMeasureHUD]=useState(false)
+  const[protractorPos,setProtractorPos]=useState({x:300,y:200,angle:0})
+  const[squarePos,setSquarePos]=useState({x:200,y:150,angle:0})
+  const[showDimlinePopup,setShowDimlinePopup]=useState(false)
   const[pageId,setPageId]=useState(null)
   const[pencilOnly,setPencilOnly]=useState(()=>{
     try{
@@ -2165,6 +2238,17 @@ export default function EditorPage(){
   const[saveIndicatorVisible,setSaveIndicatorVisible]=useState(true)
   const[toolPopup,setToolPopup]=useState(null)
   const[showSearchPanel,setShowSearchPanel]=useState(false)
+  const[showNotebookDropdown,setShowNotebookDropdown]=useState(false)
+  const[showMoreMenu,setShowMoreMenu]=useState(false)
+  const[showTheme,setShowTheme]=useState(false)
+  const[showPenPopup,setShowPenPopup]=useState(false)
+  const[showHLPopup,setShowHLPopup]=useState(false)
+  const[showEraserPopup,setShowEraserPopup]=useState(false)
+  const[showShapesHUD,setShowShapesHUD]=useState(false)
+  const[showColorPanel,setShowColorPanel]=useState(false)
+  const[activeCPal,setActiveCPal]=useState("📐 Plans")
+  const[activeHPal,setActiveHPal]=useState("Standards")
+  const importInputRef=useRef(null)
   const[lassoType,setLassoType]=useState("free")
   const[lassoInclude,setLassoInclude]=useState({handwriting:true,images:true,shapes:true,arrows:true,text:true,equations:true})
   const[textToolToast,setTextToolToast]=useState(true)
@@ -3118,26 +3202,57 @@ export default function EditorPage(){
     setShowDictation(false)
     setShowFlash(false)
     setToolPopup(null)
+    setShowMoreMenu(false)
+    setShowNotebookDropdown(false)
   },[])
+
+  useEffect(()=>{
+    setShowPenPopup(toolPopup==="pen")
+    setShowHLPopup(toolPopup==="highlight")
+    setShowEraserPopup(toolPopup==="eraser")
+    setShowShapesHUD(toolPopup==="shapes")
+    setShowDimlinePopup(toolPopup==="dimline")
+  },[toolPopup])
+
+  useEffect(()=>{setShowProt(showProtractor)},[showProtractor])
 
   const handleToolClick=useCallback((id,hasPopup,isShape)=>{
     const resolved=id==="lasso"?(lassoType==="rect"?"lasso-rect":"lasso"):id
-    if(isShape||SHAPE_TOOL_IDS.includes(id)){
-      if(tool===id){
-        setToolPopup(p=>p==="shapes"?null:"shapes")
+    if(id==="dimline"){
+      if(tool==="dimline"){
+        setToolPopup(p=>p==="dimline"?null:"dimline")
+        setShowColorPanel(false)
       }else{
-        setTool(id)
+        setTool("dimline")
         setToolPopup(null)
+        setShowColorPanel(false)
       }
       return
     }
-    if(tool===resolved&&hasPopup){
-      setToolPopup(p=>p===id?null:id)
-    }else{
-      setTool(resolved)
-      setToolPopup(null)
-      if(id==="text")setTextToolToast(true)
+    if(isShape||SHAPE_TOOL_IDS.includes(id)){
+      if(tool===id){
+        setToolPopup(p=>p==="shapes"?null:"shapes")
+        setShowColorPanel(false)
+      }else{
+        setTool(id)
+        setToolPopup(null)
+        setShowColorPanel(false)
+      }
+      return
     }
+    if(hasPopup){
+      if(tool===resolved){
+        setToolPopup(p=>p===id?null:id)
+      }else{
+        setTool(resolved)
+        setToolPopup(id)
+      }
+      return
+    }
+    setTool(resolved)
+    setToolPopup(null)
+    setShowColorPanel(false)
+    if(id==="text")setTextToolToast(true)
   },[tool,lassoType])
 
   const handleCanvasDoubleTap=useCallback((clientX,clientY)=>{
@@ -3443,6 +3558,8 @@ export default function EditorPage(){
         </DraggablePanel>
       )}
 
+      {showTheme&&<ThemePicker current={T} onChange={setTheme} onClose={()=>setShowTheme(false)}/>}
+
       {textEdit&&(
         <CanvasTextEditor
           T={T}
@@ -3454,7 +3571,7 @@ export default function EditorPage(){
       )}
 
       {/* ── POMODORO ──────────────────────────────────── */}
-      {!focusMode&&showTimer&&<div style={{position:"fixed",bottom:72,right:20,width:220,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:89,overflow:"hidden",userSelect:"none"}}>
+      {!focusMode&&showTimer&&<div style={{position:"fixed",top:60,right:12,width:220,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:89,overflow:"hidden",userSelect:"none"}}>
         <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:"#fff"}}>⏱ Pomodoro</span>
           <button onClick={()=>setShowTimer(false)} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:18,lineHeight:1}}>×</button>
@@ -3492,7 +3609,7 @@ export default function EditorPage(){
         const flashOffset=20+(showTimer?240:0)
         const card=flashCards[flashIdx]
         return(
-        <div style={{position:"fixed",bottom:72,right:flashOffset,width:280,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:87,overflow:"hidden",userSelect:"none"}}>
+        <div style={{position:"fixed",top:60,right:12+flashOffset,width:280,background:T.surface,borderRadius:16,boxShadow:"0 8px 36px rgba(0,0,0,.35)",border:`1px solid ${T.border}`,zIndex:87,overflow:"hidden",userSelect:"none"}}>
           <div style={{background:T.panel,padding:"9px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:"#fff"}}>🃏 Flashcards ({flashCards.length})</span>
             <div style={{display:"flex",gap:6,alignItems:"center"}}>
@@ -3619,67 +3736,58 @@ export default function EditorPage(){
           <GoodNotesTopBar
             nb={nb}
             navigate={navigate}
-            updateNotebook={updateNotebook}
             tool={tool}
-            setTool={setTool}
             onToolClick={handleToolClick}
-            readOnly={readOnly}
-            setReadOnly={setReadOnly}
-            readOnlyLocked={readOnlyLocked}
-            setShowPresent={setShowPresent}
-            setShowShare={setShowShare}
             showPagePanel={showPagePanel}
             setShowPagePanel={setShowPagePanel}
-            setShowSearchPanel={setShowSearchPanel}
-            setShowPageSettings={setShowPageSettings}
-            setShowLayers={setShowLayers}
-            setShowHistory={setShowHistory}
-            setShowCalc={setShowCalc}
-            setShowConv={setShowConv}
-            setShowTranslate={setShowTranslate}
-            setShowDictation={setShowDictation}
-            setShowTimer={setShowTimer}
-            setShowFlash={setShowFlash}
-            setShowPropsPanel={setShowPropsPanel}
-            setPropsCollapsed={setPropsCollapsed}
-            showHistory={showHistory}
-            showCalc={showCalc}
-            showConv={showConv}
-            showTranslate={showTranslate}
-            showDictation={showDictation}
-            showTimer={showTimer}
-            showFlash={showFlash}
             showLayers={showLayers}
-            infiniteMode={infiniteMode}
-            applyPageSettings={applyPageSettings}
-            page={page}
-            pagesCount={pagesCount}
-            pageRotation={pageRotation}
-            deletePage={deletePage}
-            goToPage={goToPage}
-            pencilOnly={pencilOnly}
+            setShowLayers={setShowLayers}
+            showConv={showConv}
+            setShowConv={setShowConv}
+            showTimer={showTimer}
+            setShowTimer={setShowTimer}
+            timerRunning={timerRunning}
+            timerSec={timerSec}
+            showSearchPanel={showSearchPanel}
+            setShowSearchPanel={setShowSearchPanel}
+            showNotebookDropdown={showNotebookDropdown}
+            setShowNotebookDropdown={setShowNotebookDropdown}
+            showMoreMenu={showMoreMenu}
+            setShowMoreMenu={setShowMoreMenu}
+            notebooks={notebooks}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            setShowShare={setShowShare}
+            setShowPageSettings={setShowPageSettings}
+            setShowTheme={setShowTheme}
+            setShowPresent={setShowPresent}
+            readOnly={readOnly}
+            setReadOnly={setReadOnly}
+            setShowCalc={setShowCalc}
+            setShowFlash={setShowFlash}
+            setShowHistory={setShowHistory}
             setPencilOnly={setPencilOnly}
-            toggleFocusMode={toggleFocusMode}
+            pencilOnly={pencilOnly}
             handleImport={handleImport}
             exportPNG={exportPNG}
             exporting={exporting}
+            importInputRef={importInputRef}
+            showLib={showLib}
+            setShowLib={setShowLib}
             unitSys={unitSys}
             setUnitSys={setUnitSys}
             scale={scale}
             setScale={setScale}
-            scalesM={SCALES_M}
-            scalesI={SCALES_I}
-            actionLogLength={actionLog.length}
-            flashCardsLength={flashCards.length}
-            timerRunning={timerRunning}
-            timerSec={timerSec}
-            propsCollapsed={propsCollapsed}
-            setShowLib={setShowLib}
-            collabCursors={notebookCollab.remoteCursors}
-            collabColors={COLLAB_COLORS}
-            notebooks={notebooks}
-            canUndo={canUndo}
-            canRedo={canRedo}
+            SCALES_M={SCALES_M}
+            SCALES_I={SCALES_I}
+            showMeasureHUD={showMeasureHUD}
+            setShowMeasureHUD={setShowMeasureHUD}
+            showRuler={showRuler}
+            setShowRuler={setShowRuler}
+            showProtractor={showProtractor}
+            setShowProtractor={setShowProtractor}
+            showSquare={showSquare}
+            setShowSquare={setShowSquare}
           />
           <GoodNotesToolPopup
             toolPopup={toolPopup}
@@ -3690,50 +3798,32 @@ export default function EditorPage(){
             setSizeMm={setSizeMm}
             eraserSettings={eraserSettings}
             setEraserSettings={setEraserSettings}
-            unitSys={unitSys}
-            canvasTextFont={canvasTextFont}
-            setCanvasTextFont={setCanvasTextFont}
-            favorites={favorites}
-            setFavorites={setFavorites}
+            activeCPal={activeCPal}
+            setActiveCPal={setActiveCPal}
+            activeHPal={activeHPal}
+            setActiveHPal={setActiveHPal}
             setTool={setTool}
-            setPropsCollapsed={setPropsCollapsed}
-            setShowPropsPanel={setShowPropsPanel}
-            lassoType={lassoType}
-            setLassoType={setLassoType}
-            lassoInclude={lassoInclude}
-            setLassoInclude={setLassoInclude}
-            pencilOnly={pencilOnly}
-            setPencilOnly={setPencilOnly}
-            textSize={Math.round(sizeMm*3.78)}
-            setTextSize={px=>setSizeMm(px/3.78)}
           />
-          {toolPopup==="shapes"&&<GoodNotesShapeHud tool={tool} setTool={setTool}/>}
+          {showShapesHUD&&<GoodNotesShapeHud tool={tool} setTool={setTool} showColorPanel={showColorPanel} setShowColorPanel={setShowColorPanel}/>}
+          {showColorPanel&&showShapesHUD&&<ShapeColorPanel color={color} setColor={setColor} activeCPal={activeCPal} setActiveCPal={setActiveCPal} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} onClose={()=>setShowColorPanel(false)}/>}
+          {showDimlinePopup&&<GoodNotesDimlinePopup unitSys={unitSys} setUnitSys={setUnitSys} scale={scale} setScale={setScale} SCALES_M={SCALES_M} SCALES_I={SCALES_I} color={color} setColor={setColor} activeCPal={activeCPal} setActiveCPal={setActiveCPal}/>}
           </div>
         )}
         <div style={{display:"flex",flex:1,minHeight:0,...(!focusMode?{height:readOnly?`calc(100dvh - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px - 24px)`:`calc(100dvh - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px)`}:{})}}>
           <div style={{flex:1,position:"relative",minWidth:0,display:"flex",flexDirection:"column",minHeight:0}}>
+              {!focusMode&&showPagePanel&&(
+                <EditorPagesPanel open={showPagePanel} onClose={()=>setShowPagePanel(false)} page={page} pagesCount={pagesCount} pages={pages} nb={nb} T={T} goToPage={goToPage} addPage={addPage}/>
+              )}
               {!focusMode&&libPending&&<div style={{position:"absolute",bottom:12,left:"50%",transform:"translateX(-50%)",zIndex:50,background:"rgba(28,28,30,.9)",color:"#fff",padding:"7px 14px",borderRadius:20,fontSize:11,pointerEvents:"none",boxShadow:"0 4px 16px rgba(0,0,0,.3)"}}>
                 📍 Clic sur la feuille → <strong>{libPending.l}</strong> — Échap pour annuler
               </div>}
-              {!focusMode&&saveIndicatorVisible&&(
-                <div style={{position:"absolute",bottom:BOTTOM_BAR_H+8,right:16,zIndex:50,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:8,pointerEvents:"none",transition:"opacity .4s ease",opacity:saveIndicatorVisible?1:0}}>
-                  {(saveStatus==="saving"||saveStatus==="syncing_cloud"||saveStatus==="dirty")&&(
-                    <div style={{background:"rgba(28,28,30,0.92)",borderRadius:10,padding:"7px 14px",fontSize:12,color:C.muted,display:"flex",alignItems:"center",gap:8}}>
-                      <span style={{display:"inline-block",width:12,height:12,border:`2px solid ${C.muted}`,borderTopColor:"transparent",borderRadius:"50%",animation:"gnSpin .8s linear infinite"}}/>Sauvegarde…
-                    </div>
-                  )}
-                  {(saveStatus==="saved"||saveStatus==="saved_local"||saveStatus==="synced")&&saveLabel&&(
-                    <div style={{background:"rgba(28,28,30,0.92)",borderRadius:10,padding:"7px 14px",fontSize:12,color:C.success}}>Sauvegardé ✓</div>
-                  )}
-                </div>
-              )}
               {!focusMode&&tool==="text"&&textToolToast&&(
                 <div style={{position:"absolute",bottom:BOTTOM_BAR_H+16,left:"50%",transform:"translateX(-50%)",zIndex:50,background:C.bar,borderRadius:20,padding:"10px 16px",fontSize:13,color:C.text,display:"flex",alignItems:"center",gap:10,maxWidth:"90%",boxShadow:"0 4px 20px rgba(0,0,0,.5)",border:`1px solid ${C.border}`}}>
                   <span>ⓘ Appuyez pour ajouter une zone de texte ou faites un appui prolongé pour commencer à saisir.</span>
                   <button type="button" onClick={()=>setTextToolToast(false)} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",padding:0,display:"flex",flexShrink:0}}><X size={16}/></button>
                 </div>
               )}
-              {!focusMode&&<GoodNotesLibraryDrawer open={showLib} onClose={()=>setShowLib(false)} T={T} libMode={libMode} setLibMode={setLibMode} libSearch={libSearch} setLibSearch={setLibSearch} libCat={libCat} setLibCat={setLibCat} libCats={libCats} libItems={libItems} libPending={libPending} setLibPending={setLibPending} showNewProfile={showNewProfile} setShowNewProfile={setShowNewProfile} addCustomProfile={addCustomProfile} addNotification={addNotification} getLibForMode={getLibForMode} customProfiles={customProfiles} removeCustomProfile={removeCustomProfile} setPlaced={setPlaced} toPageCoords={toPageCoords} pushAction={pushAction} scheduleSave={scheduleSave} renderEl={renderEl} renderSym={renderSym}/>}
+              {!focusMode&&<GoodNotesLibraryDrawer open={showLib} onClose={()=>setShowLib(false)} unitSys={unitSys} libMode={libMode} setLibMode={setLibMode} libSearch={libSearch} setLibSearch={setLibSearch} libCat={libCat} setLibCat={setLibCat} libItems={libItems} libPending={libPending} setLibPending={setLibPending} showNewProfile={showNewProfile} setShowNewProfile={setShowNewProfile} addCustomProfile={addCustomProfile} addNotification={addNotification} getLibForMode={getLibForMode} customProfiles={customProfiles} removeCustomProfile={removeCustomProfile} setPlaced={setPlaced} toPageCoords={toPageCoords} pushAction={pushAction} scheduleSave={scheduleSave} renderEl={renderEl} renderSym={renderSym} T={T}/>}
               <div style={{flex:1,overflow:"hidden",background:focusMode?T.panel:"#404040",position:"relative",cursor:areaCursor,touchAction:"none",minHeight:0,transition:"background .35s ease"}}
           id="canvas-area"
           data-pan-tool={isPanMode?"1":"0"}
@@ -3875,15 +3965,16 @@ export default function EditorPage(){
                 </div>
               )})}
 
-              {/* Ruler */}
-              {showRuler&&<div style={{position:"absolute",left:rulerPos.x,top:rulerPos.y,width:Math.min(PW,1180),height:28,background:T.surface,border:`1px solid ${T.border}`,zIndex:20,opacity:.95,borderRadius:4,boxShadow:"0 2px 10px rgba(0,0,0,.12)",transform:`rotate(${rulerRotation}deg)`,transformOrigin:"left center",touchAction:"none",pointerEvents:eraserActive?"none":"auto"}}>
-                <div data-ruler-handle
-                  onPointerDown={e=>{if(rulerLocked)return;e.preventDefault();e.stopPropagation();setRulerDrag({startX:rulerPos.x,startY:rulerPos.y,ptrX:e.clientX,ptrY:e.clientY})}}
-                  style={{position:"absolute",left:0,top:0,width:22,height:28,cursor:rulerLocked?"not-allowed":rulerDrag?"grabbing":"grab",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:T.muted,borderRight:`1px solid ${T.border}`,userSelect:"none",touchAction:"none"}}>⠿</div>
-                <button type="button" onClick={e=>{e.stopPropagation();setRulerRotation(r=>r+90);try{localStorage.setItem(`forma_ruler_${nb.id}`,JSON.stringify({...rulerPosRef.current,rotation:(rulerRotation+90)%360,locked:rulerLocked}))}catch{}}} title="Rotation 90°" style={{position:"absolute",right:26,top:4,background:T.bg,border:`1px solid ${T.border}`,borderRadius:4,cursor:"pointer",fontSize:9,color:T.muted,padding:"1px 4px",zIndex:2}}>↻</button>
-                <button type="button" onClick={e=>{e.stopPropagation();setRulerLocked(v=>!v);try{localStorage.setItem(`forma_ruler_${nb.id}`,JSON.stringify({...rulerPosRef.current,rotation:rulerRotation,locked:!rulerLocked}))}catch{}}} title={rulerLocked?"Déverrouiller":"Verrouiller"} style={{position:"absolute",right:4,top:4,background:rulerLocked?`${T.accent}22`:T.bg,border:`1px solid ${rulerLocked?T.accent:T.border}`,borderRadius:4,cursor:"pointer",fontSize:9,color:rulerLocked?T.accent:T.muted,padding:"1px 4px",zIndex:2}}>{rulerLocked?"🔒":"🔓"}</button>
-                <RulerSvg widthPx={Math.min(PW, 1158)} unitSys={unitSys} scale={scale} zoom={zoom} strokeColor={T.muted} />
-              </div>}
+              {/* Outils de mesure déplaçables */}
+              {showRuler&&<CanvasRuler pos={{x:rulerPos.x,y:rulerPos.y,angle:rulerRotation}} setPos={fn=>{
+                const cur={x:rulerPos.x,y:rulerPos.y,angle:rulerRotation}
+                const next=typeof fn==="function"?fn(cur):fn
+                setRulerPos({x:next.x,y:next.y})
+                if(next.angle!=null)setRulerRotation(next.angle)
+                try{localStorage.setItem(`forma_ruler_${nb.id}`,JSON.stringify({x:next.x,y:next.y,rotation:next.angle??rulerRotation,locked:rulerLocked}))}catch{}
+              }} unitSys={unitSys} zoom={zoom}/>}
+              {showProtractor&&<CanvasProtractor pos={protractorPos} setPos={setProtractorPos} unitSys={unitSys} zoom={zoom}/>}
+              {showSquare&&<CanvasSquare pos={squarePos} setPos={setSquarePos} unitSys={unitSys} zoom={zoom}/>}
 
               {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={5}/>}
               {!eraserActive&&canvasSelection?.shapeBounds&&canvasSelection.count===1&&!textEdit&&(
@@ -3965,32 +4056,10 @@ export default function EditorPage(){
           </div>
         </div>
           </div>
-        {!focusMode&&<GoodNotesBottomBar page={page} pagesCount={pagesCount} goToPage={goToPage} addPage={addPage} pagePhotoInputRef={pagePhotoInputRef} handlePagePhotoPick={handlePagePhotoPick} pages={pages} nb={nb} setPageMenu={setPageMenu} zoom={zoom} zoomBy={zoomBy} resetViewport={resetViewport} viewSize={viewSize} setShowLayers={setShowLayers} setShowPageSettings={setShowPageSettings}/>}
+        {!focusMode&&<GoodNotesBottomBar page={page} pagesCount={pagesCount} goToPage={goToPage} addPage={addPage} pages={pages} nb={nb} zoom={zoom} zoomBy={zoomBy} viewSize={viewSize} saveStatus={saveStatus}/>}
         </div>
       </div>
 
-      {!focusMode&&(
-        <GoodNotesPagesSlidePanel
-          open={showPagePanel}
-          onClose={()=>setShowPagePanel(false)}
-          page={page}
-          pagesCount={pagesCount}
-          pages={pages}
-          nb={nb}
-          T={T}
-          goToPage={goToPage}
-          addPage={addPage}
-          duplicatePage={duplicatePage}
-          setPageMenu={setPageMenu}
-          applyPageSettings={applyPageSettings}
-          pageFormat={pageFormat}
-          customPageMm={customPageMm}
-          nextPageFmt={nextPageFmt}
-          nextPageCustomMm={nextPageCustomMm}
-          setNextPageFmt={setNextPageFmt}
-          setNextPageCustomMm={setNextPageCustomMm}
-        />
-      )}
       {!focusMode&&<GoodNotesSearchPanel open={showSearchPanel} onClose={()=>setShowSearchPanel(false)}/>}
 
       {!focusMode&&(
