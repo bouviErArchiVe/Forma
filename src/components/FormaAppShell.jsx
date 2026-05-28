@@ -4,7 +4,7 @@ import {
   BookOpen, Star, Search, FolderOpen, LayoutDashboard, Calculator, Ruler,
   Languages, Sparkles, Palette, Gamepad2, Pencil, Image, Table2, FileText,
   CalendarDays, Paperclip, MessageCircle, Presentation, Library, MessagesSquare,
-  Globe2, Handshake, Share2, User,
+  Globe2, Handshake, Share2,
 } from 'lucide-react'
 import { BRAND, MODULES } from '@/config/branding'
 import { useTheme } from '@/hooks/useAppearance'
@@ -15,7 +15,6 @@ import {
   getFormaShellColors,
   LIBRARY_SIDEBAR,
   MODULE_LINKS,
-  ACCOUNT_LINKS,
   useFormaShellColors,
 } from '@/lib/formaShell'
 
@@ -238,11 +237,6 @@ export default function FormaAppShell({
                 onClick={() => navigate(MODULES.fPause.route)}
               />
               </>}
-              <SidebarSectionToggle open={sectionsOpen.account} onClick={() => toggleSection('account')}>Compte</SidebarSectionToggle>
-              {sectionsOpen.account && ACCOUNT_LINKS.map((m) => (
-                <SidebarNavItem key={m.route} label={m.label} Icon={SIDEBAR_ICONS[m.icon]} active={routeActive(m.route)} onClick={() => navigate(m.route)} />
-              ))}
-              {sectionsOpen.account && <SidebarNavItem label="Profil" Icon={User} active={false} onClick={openProfile} />}
             </nav>
             <div
               role="button"
