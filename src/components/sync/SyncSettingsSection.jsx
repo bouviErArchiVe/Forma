@@ -6,6 +6,7 @@ import { CLOUD_PROVIDERS, resolveSyncModeLabel } from '@/lib/sync/cloudProviders
 import { isSupabaseConfigured } from '@/lib/supabase'
 import LocalStorageSection from '@/components/settings/LocalStorageSection'
 import VersionHistoryPanel from '@/components/sync/VersionHistoryPanel'
+import FormaCloudSection from '@/components/sync/FormaCloudSection'
 
 export default function SyncSettingsSection({ T }) {
   const cloudEnabled = useSyncStore((s) => s.cloudEnabled)
@@ -46,8 +47,10 @@ export default function SyncSettingsSection({ T }) {
         Priorité à la sauvegarde sur votre appareil. Le cloud est optionnel.
       </p>
 
+      <FormaCloudSection T={T} />
+
       <div style={card(T)}>
-        <h3 style={sectionTitle}>État</h3>
+        <h3 style={sectionTitle}>État FormaSync</h3>
         <StatRow label="Mode" value={mode.label} T={T} />
         <StatRow label="Détail" value={mode.detail} T={T} />
         <StatRow label="Connexion réseau" value={online ? 'En ligne' : 'Hors ligne — mode local actif'} T={T} />

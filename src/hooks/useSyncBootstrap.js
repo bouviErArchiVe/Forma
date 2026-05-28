@@ -3,6 +3,8 @@ import useSyncStore from '@/stores/useSyncStore'
 import { getPendingRecovery, clearOldJournal } from '@/lib/sync/journal'
 import { getCloudQueueCount, processCloudQueue } from '@/lib/sync/cloudQueue'
 import { getOfflineQueueCount, processOfflineQueue } from '@/lib/sync/offlineQueue'
+import { getFormaCloudQueueCount, processFormaCloudQueueIfNeeded } from '@/lib/formacloud/sync'
+import useFormaCloudStore from '@/stores/useFormaCloudStore'
 import { migrateLocalStorageToIdb, hydrateFromIdb } from '@/lib/sync/idbVault'
 import { hydrateProjectStore } from '@/lib/projectPersistence'
 import { syncNotebookPageToCloud } from '@/lib/sync/cloudSync'
@@ -51,6 +53,11 @@ export function useSyncBootstrap() {
       }
     } else if (offline.processed === 0) {
       setGlobalStatus(SYNC_STATUS.idle)
+    }
+
+    const formaCloud = useFormaCloudStore.getState()
+    if (formaCloud.connected && formaCloud.autoSync && getFormaCloudQueueCount() > 0) {
+      await processFormaCloudQueueIfNeeded(useFormaCloudStore)
     }
   }, [cloudEnabled, autoCloudSync, setCloudQueueCount, setOfflineQueueCount, setLastCloudSyncAt, setGlobalStatus])
 

@@ -3,6 +3,8 @@ import { appendJournalEntry, commitJournalEntry } from './journal'
 import { maybeSaveVersion, saveVersionNow } from './versions'
 import { enqueueCloudSync } from './cloudQueue'
 import { saveNotebookPagesIdb } from './idbVault'
+import { notifyFormaCloudDirty } from '@/lib/formacloud/queue'
+import useFormaCloudStore from '@/stores/useFormaCloudStore'
 
 /**
  * Sauvegarde prioritaire locale (IndexedDB + miroir LS), puis cloud optionnel.
@@ -59,6 +61,14 @@ export async function saveResource({
     enqueueCloudSync({ resourceType, resourceId, label })
     cloudQueued = true
   }
+
+  notifyFormaCloudDirty(async () => {
+    const s = useFormaCloudStore.getState()
+    if (s.connected && s.autoSync) {
+      const { processFormaCloudQueueIfNeeded } = await import('@/lib/formacloud/sync')
+      processFormaCloudQueueIfNeeded(useFormaCloudStore).catch(() => {})
+    }
+  })
 
   return { savedAt: Date.now(), local: true, cloudQueued }
 }
