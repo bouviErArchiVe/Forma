@@ -143,6 +143,13 @@ export default function FormulasPage() {
     addNotification('Formule personnalisée supprimée', 'success')
   }, [addNotification])
 
+  const duplicateCustomFormula = useCallback((formula) => {
+    const copy = { ...formula, id: `custom-${Date.now()}`, title: `${formula.title} (copie)` }
+    setCustomFormulas((list) => [copy, ...list])
+    setActiveCustomId(copy.id)
+    addNotification('Formule dupliquée', 'success')
+  }, [addNotification])
+
   const handleCopy = useCallback(async (text) => {
     try {
       await navigator.clipboard.writeText(text)
@@ -213,7 +220,7 @@ export default function FormulasPage() {
         />
 
         {activeCustom ? (
-          <CustomFormulaDetail T={T} formula={activeCustom} onBack={() => setActiveCustomId(null)} onEdit={() => setCustomDraft(activeCustom)} onDelete={() => deleteCustomFormula(activeCustom.id)} onCopy={handleCopy} />
+          <CustomFormulaDetail T={T} formula={activeCustom} onBack={() => setActiveCustomId(null)} onEdit={() => setCustomDraft(activeCustom)} onDelete={() => deleteCustomFormula(activeCustom.id)} onDuplicate={() => duplicateCustomFormula(activeCustom)} onCopy={handleCopy} />
         ) : activeFormula ? (
           <FormulaCalculator
             T={T}
@@ -299,7 +306,7 @@ export default function FormulasPage() {
   )
 }
 
-function CustomFormulaDetail({ T, formula, onBack, onEdit, onDelete, onCopy }) {
+function CustomFormulaDetail({ T, formula, onBack, onEdit, onDelete, onDuplicate, onCopy }) {
   return (
     <main style={{ flex: 1, overflow: 'auto', padding: '22px 24px' }}>
       <button type="button" onClick={onBack} style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 12, color: T.ink }}>← Retour</button>
@@ -311,6 +318,7 @@ function CustomFormulaDetail({ T, formula, onBack, onEdit, onDelete, onCopy }) {
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button type="button" onClick={() => onCopy(`${formula.title}\n${formula.formulaText}`)} style={smallBtn(T, true)}>Copier</button>
           <button type="button" onClick={onEdit} style={smallBtn(T)}>Modifier</button>
+          <button type="button" onClick={onDuplicate} style={smallBtn(T)}>Dupliquer</button>
           <button type="button" onClick={onDelete} style={{ ...smallBtn(T), color: '#e94560', borderColor: '#e9456044' }}>Supprimer</button>
         </div>
       </div>

@@ -101,11 +101,8 @@ const DEFAULT_SUBJECTS=[
 const SUBJECTS_KEY = "forma_subjects_v1"
 function loadSubjects() {
   try {
-    const saved = JSON.parse(localStorage.getItem(SUBJECTS_KEY) || "[]")
-    if (Array.isArray(saved) && saved.length) {
-      const baseIds = new Set(DEFAULT_SUBJECTS.map((s) => s.id))
-      return [...DEFAULT_SUBJECTS, ...saved.filter((s) => s?.id && !baseIds.has(s.id))]
-    }
+    const saved = JSON.parse(localStorage.getItem(SUBJECTS_KEY) || "null")
+    if (Array.isArray(saved) && saved.length) return saved
   } catch {}
   return DEFAULT_SUBJECTS
 }
@@ -833,7 +830,7 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
   const [subjColor, setSubjColor] = useState("#c8622a")
 
   useEffect(() => {
-    try { localStorage.setItem(SUBJECTS_KEY, JSON.stringify(subjects.filter((s) => s.custom))) } catch {}
+    try { localStorage.setItem(SUBJECTS_KEY, JSON.stringify(subjects)) } catch {}
   }, [subjects])
 
   useEffect(() => {
@@ -1989,7 +1986,14 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
                           <span style={{ fontSize: 18 }}>{s.e}</span>
                           <span style={{ fontSize: 12, fontWeight: 700, color: s.c }}>{s.l}</span>
                           <span style={{ fontSize: 10, color: `${s.c}aa` }}>{notebooks.filter(n => n.subject === s.id).length} carnets</span>
-                          {s.custom && <button type="button" onClick={() => setSubjects(p => p.filter(x => x.id !== s.id))} style={{ background: 'none', border: 'none', color: s.c, cursor: 'pointer', fontSize: 13, opacity: 0.6, padding: 0 }}>×</button>}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!s.custom && !window.confirm(`Supprimer la matière "${s.l}" ?`)) return
+                              setSubjects(p => p.filter(x => x.id !== s.id))
+                            }}
+                            style={{ background: 'none', border: 'none', color: s.c, cursor: 'pointer', fontSize: 13, opacity: 0.6, padding: 0 }}
+                          >×</button>
                         </div>
                       ))}
                       <button type="button" onClick={() => setShowNewSubject(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderRadius: 22, background: C.sidebar, border: `1px dashed ${C.cardBorder}`, color: C.textSecondary, cursor: 'pointer', fontSize: 12 }}>

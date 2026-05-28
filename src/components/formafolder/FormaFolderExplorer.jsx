@@ -200,6 +200,15 @@ export default function FormaFolderExplorer({
     const key = itemKey(item)
     const isSel = selected.has(key)
     const sz = folderIconSize
+    const folderColor = item.kind === 'folder' ? item.raw?.color : null
+    const cardBg = isSel
+      ? `${T.accent || FF_DARK.accent}14`
+      : folderColor
+        ? `${folderColor}28`
+        : T.surface || FF_DARK.panel
+    const cardBorder = isSel
+      ? (T.accent || FF_DARK.accent)
+      : folderColor || (T.border || FF_DARK.border)
     return (
       <div
         key={key}
@@ -214,8 +223,8 @@ export default function FormaFolderExplorer({
         onContextMenu={(e) => { e.preventDefault(); setContextMenu({ x: e.clientX, y: e.clientY, item }) }}
         style={{
           padding: 12, borderRadius: 12, cursor: 'pointer',
-          background: isSel ? `${T.accent || FF_DARK.accent}14` : T.surface || FF_DARK.panel,
-          border: `1px solid ${isSel ? (T.accent || FF_DARK.accent) : (T.border || FF_DARK.border)}`,
+          background: cardBg,
+          border: `1px solid ${cardBorder}`,
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, minHeight: sz + 48,
         }}
       >
