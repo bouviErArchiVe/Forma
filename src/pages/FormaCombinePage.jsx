@@ -77,27 +77,31 @@ export default function FormaCombinePage() {
 
   const addPages = (newPages) => {
     if (!newPages?.length) return
-    updateProject({ pages: [...(project.pages || []), ...newPages] })
+    setProject((prev) => ({
+      ...prev,
+      pages: [...(prev?.pages || []), ...newPages],
+      updatedAt: Date.now(),
+    }))
     setSelectedId(newPages[0].id)
   }
 
   const handleFiles = async (files) => {
     if (!files?.length || !project) return
     setBusy(true)
-    let imported = 0
+    const allPages = []
     try {
       for (const file of files) {
         try {
           const pages = await importFiles([file])
-          if (pages.length) {
-            addPages(pages)
-            imported += pages.length
-          }
+          allPages.push(...pages)
         } catch (err) {
           addNotification(`${file.name} : ${err.message || 'Import échoué'}`, 'error')
         }
       }
-      if (imported) addNotification(`${imported} page(s) importée(s)`, 'success')
+      if (allPages.length) {
+        addPages(allPages)
+        addNotification(`${allPages.length} page(s) importée(s) (${files.length} fichier${files.length > 1 ? 's' : ''})`, 'success')
+      }
     } finally {
       setBusy(false)
     }
