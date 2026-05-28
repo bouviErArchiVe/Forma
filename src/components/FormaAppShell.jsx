@@ -39,7 +39,6 @@ const SIDEBAR_ICONS = {
   Gamepad2,
   Handshake,
   Share2,
-  User,
 }
 
 function SidebarSectionLabel({ children }) {
