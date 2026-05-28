@@ -21,7 +21,7 @@ export default function GlobalSyncStatus() {
       style={{
         position: 'fixed',
         bottom: 12,
-        left: 12,
+        right: 12,
         zIndex: 9400,
         display: 'flex',
         alignItems: 'center',

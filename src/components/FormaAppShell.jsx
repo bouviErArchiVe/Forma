@@ -13,7 +13,6 @@ import {
   getFormaShellColors,
   LIBRARY_SIDEBAR,
   MODULE_LINKS,
-  ACCOUNT_LINKS,
   useFormaShellColors,
 } from '@/lib/formaShell'
 
@@ -24,14 +23,36 @@ const SIDEBAR_ICONS = {
   LayoutDashboard,
 }
 
-function SidebarSectionLabel({ children }) {
+function SidebarSection({ label, open, onToggle, children }) {
   const C = useFormaShellColors()
   return (
-    <div style={{
-      fontSize: 11, fontWeight: 700, color: C.textSecondary,
-      letterSpacing: 0.5, textTransform: 'uppercase', padding: '8px 16px 4px',
-    }}>
-      {children}
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', padding: '8px 16px 4px',
+          background: 'none', border: 'none', cursor: 'pointer',
+        }}
+      >
+        <span style={{ fontSize: 11, fontWeight: 700, color: C.textSecondary, letterSpacing: 0.5, textTransform: 'uppercase' }}>
+          {label}
+        </span>
+        <span style={{
+          fontSize: 9, color: C.textSecondary,
+          display: 'inline-block',
+          transition: 'transform 200ms ease',
+          transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
+        }}>▶</span>
+      </button>
+      <div style={{
+        overflow: 'hidden',
+        maxHeight: open ? '800px' : '0',
+        transition: 'max-height 220ms ease',
+      }}>
+        {children}
+      </div>
     </div>
   )
 }
@@ -84,6 +105,8 @@ export default function FormaAppShell({
   const C = useMemo(() => getFormaShellColors(T), [T])
 
   const isHome = location.pathname === '/'
+  const [openSections, setOpenSections] = useState({ library: false, modules: false, tools: false })
+  const toggleSection = (key) => setOpenSections((s) => ({ ...s, [key]: !s[key] }))
   const avatarLetter = (collab.user?.email || user?.email || 'F')[0]?.toUpperCase() || 'F'
   const userLabel = collab.user?.email || user?.email || 'Invité'
 
@@ -139,78 +162,76 @@ export default function FormaAppShell({
             </div>
             <div style={{ height: 1, background: C.separator, margin: '0 12px' }} />
             <nav style={{ flex: 1, overflowY: 'auto', padding: '8px 10px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <SidebarSectionLabel>Bibliothèque</SidebarSectionLabel>
-              {LIBRARY_SIDEBAR.map((item) => {
-                const Icon = SIDEBAR_ICONS[item.icon]
-                return (
+              <SidebarSection label="Bibliothèque" open={openSections.library} onToggle={() => toggleSection('library')}>
+                {LIBRARY_SIDEBAR.map((item) => {
+                  const Icon = SIDEBAR_ICONS[item.icon]
+                  return (
+                    <SidebarNavItem
+                      key={item.id}
+                      label={item.label}
+                      Icon={Icon}
+                      emoji={item.emoji}
+                      active={isHome && libraryTab === item.tab}
+                      onClick={() => goLibraryTab(item.tab)}
+                    />
+                  )
+                })}
+              </SidebarSection>
+              <SidebarSection label="Modules Forma" open={openSections.modules} onToggle={() => toggleSection('modules')}>
+                {MODULE_LINKS.map((m) => (
                   <SidebarNavItem
-                    key={item.id}
-                    label={item.label}
-                    Icon={Icon}
-                    emoji={item.emoji}
-                    active={isHome && libraryTab === item.tab}
-                    onClick={() => goLibraryTab(item.tab)}
+                    key={m.route}
+                    label={m.label}
+                    emoji={m.emoji}
+                    active={routeActive(m.route)}
+                    onClick={() => navigate(m.route)}
                   />
-                )
-              })}
-              <SidebarSectionLabel>Modules Forma</SidebarSectionLabel>
-              {MODULE_LINKS.map((m) => (
+                ))}
+              </SidebarSection>
+              <SidebarSection label="Outils" open={openSections.tools} onToggle={() => toggleSection('tools')}>
                 <SidebarNavItem
-                  key={m.route}
-                  label={m.label}
-                  emoji={m.emoji}
-                  active={routeActive(m.route)}
-                  onClick={() => navigate(m.route)}
+                  label="Calculatrice"
+                  Icon={Calculator}
+                  active={!!toolStates?.calc?.active}
+                  onClick={toolStates?.calc?.toggle || (() => navigate('/', { state: { tool: 'calc' } }))}
                 />
-              ))}
-              <SidebarSectionLabel>Outils</SidebarSectionLabel>
-              <SidebarNavItem
-                label="Calculatrice"
-                Icon={Calculator}
-                active={!!toolStates?.calc?.active}
-                onClick={toolStates?.calc?.toggle || (() => navigate('/', { state: { tool: 'calc' } }))}
-              />
-              <SidebarNavItem
-                label="Convertisseur"
-                Icon={Ruler}
-                active={!!toolStates?.converter?.active}
-                onClick={toolStates?.converter?.toggle || (() => navigate('/', { state: { tool: 'converter' } }))}
-              />
-              <SidebarNavItem
-                label="Traduction"
-                Icon={Languages}
-                active={!!toolStates?.translate?.active}
-                onClick={toolStates?.translate?.toggle || (() => navigate('/translate'))}
-              />
-              <SidebarNavItem
-                label="Recherche globale"
-                Icon={Search}
-                active={false}
-                onClick={() => window.dispatchEvent(new CustomEvent('forma:open-search'))}
-              />
-              <SidebarNavItem
-                label={MODULES.formaAI.name}
-                Icon={Sparkles}
-                active={routeActive(MODULES.formaAI.route)}
-                onClick={() => navigate(MODULES.formaAI.route)}
-              />
-              <SidebarNavItem
-                label={MODULES.fTheme.name}
-                Icon={Palette}
-                active={false}
-                onClick={openTheme}
-              />
-              <SidebarNavItem
-                label={MODULES.fPause.name}
-                Icon={Gamepad2}
-                active={routeActive(MODULES.fPause.route)}
-                onClick={() => navigate(MODULES.fPause.route)}
-              />
-              <SidebarSectionLabel>Compte</SidebarSectionLabel>
-              {ACCOUNT_LINKS.map((m) => (
-                <SidebarNavItem key={m.route} label={m.label} emoji={m.emoji} active={routeActive(m.route)} onClick={() => navigate(m.route)} />
-              ))}
-              <SidebarNavItem label="Profil" emoji="👤" active={false} onClick={openProfile} />
+                <SidebarNavItem
+                  label="Convertisseur"
+                  Icon={Ruler}
+                  active={!!toolStates?.converter?.active}
+                  onClick={toolStates?.converter?.toggle || (() => navigate('/', { state: { tool: 'converter' } }))}
+                />
+                <SidebarNavItem
+                  label="Traduction"
+                  Icon={Languages}
+                  active={!!toolStates?.translate?.active}
+                  onClick={toolStates?.translate?.toggle || (() => navigate('/translate'))}
+                />
+                <SidebarNavItem
+                  label="Recherche globale"
+                  Icon={Search}
+                  active={false}
+                  onClick={() => window.dispatchEvent(new CustomEvent('forma:open-search'))}
+                />
+                <SidebarNavItem
+                  label={MODULES.formaAI.name}
+                  Icon={Sparkles}
+                  active={routeActive(MODULES.formaAI.route)}
+                  onClick={() => navigate(MODULES.formaAI.route)}
+                />
+                <SidebarNavItem
+                  label={MODULES.fTheme.name}
+                  Icon={Palette}
+                  active={false}
+                  onClick={openTheme}
+                />
+                <SidebarNavItem
+                  label={MODULES.fPause.name}
+                  Icon={Gamepad2}
+                  active={routeActive(MODULES.fPause.route)}
+                  onClick={() => navigate(MODULES.fPause.route)}
+                />
+              </SidebarSection>
             </nav>
             <div
               role="button"
