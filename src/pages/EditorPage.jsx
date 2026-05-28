@@ -3,9 +3,6 @@ import { useNavigate, useParams } from "react-router-dom"
 import useAppStore from "@/stores/useAppStore"
 import { supabase } from "@/lib/supabase"
 import { THEMES } from "@/lib/themes"
-import FloatingSelectionToolbar from "@/components/FloatingSelectionToolbar"
-import CanvasTextEditor from "@/components/CanvasTextEditor"
-import TextFontPicker from "@/components/TextFontPicker"
 import ShapeTransformHandles from "@/components/ShapeTransformHandles"
 import { drawShapeStroke, shapeStylePayload, getShapeBounds, isTransformableShape, resizeShapeBox, SHAPE_TYPES } from "@/lib/shapeStroke"
 import { canvasFontCss, ensureCanvasTextFontsLoaded, preloadCanvasFont } from "@/lib/fontUtils"
@@ -14,17 +11,18 @@ import { TOKENS } from "@/theme/tokens"
 import { getToolCursor, getPlacementCursor, isDarkSurface } from "@/theme/cursors"
 import { normalizeCanvasData, serializeCanvasData, DEFAULT_LAYERS, defaultActiveLayerId, createLayer, reorderLayers, deleteLayer } from "@/lib/layers"
 import { collectSnapLines, snapDelta, snapPoint, drawSnapGuides } from "@/lib/snap"
-import { shouldShowMinimap } from "@/lib/minimap"
-import CanvasMinimap from "@/components/CanvasMinimap"
 import FocusToolbar from "@/components/FocusToolbar"
+import CanvasTextEditor from "@/components/CanvasTextEditor"
+import TextFontPicker from "@/components/TextFontPicker"
 import { EDITOR_TOOLS_LIST } from "@/components/FloatingToolsToolbar"
 import BottomSheet from "@/components/ui/BottomSheet"
 import {
   ChevronLeft, Pen, Highlighter, Eraser, Type, Lasso, MousePointer2, Undo2, Redo2,
   Presentation, Lock, Share2, MoreHorizontal, Minus, Square, Circle, ArrowRight,
-  MessageSquare, Ruler, Pipette, BookOpen, PanelRight, PanelLeft, ChevronRight, Plus, ZoomIn,
+  MessageSquare, Ruler, Pipette, BookOpen, PanelLeft, ChevronRight, Plus, ZoomIn,
   ZoomOut, Maximize2, Move, Copy, Clipboard, Layers, Trash2, X, Monitor, Hand,
-  Search, Sparkles, SlidersHorizontal, ChevronDown, Grid3x3, List, LayoutList,
+  Search, SlidersHorizontal, ChevronDown, Grid3x3, List, LayoutList,
+  RotateCw, Trash2 as TrashIcon, FileText,
 } from "lucide-react"
 import { CANVAS_TEXT_FONTS } from "@/lib/fontUtils"
 import { useTabletLayout } from "@/hooks/useTabletLayout"
@@ -139,8 +137,19 @@ const BOTTOM_BAR_H = 44
 const TOP_TOOL_GROUPS = [
   [{ id: 'arrow', Icon: MousePointer2, label: 'Sélection', key: 'V' }, { id: 'lasso', Icon: Lasso, label: 'Lasso', key: 'L', popup: true }],
   [{ id: 'pen', Icon: Pen, label: 'Stylo', key: 'P', popup: true }, { id: 'highlight', Icon: Highlighter, label: 'Surligneur', key: 'H', popup: true }, { id: 'eraser', Icon: Eraser, label: 'Gomme', key: 'E', popup: true }, { id: 'text', Icon: Type, label: 'Texte', key: 'T', popup: true }],
-  [{ id: 'line', Icon: Minus, label: 'Ligne', key: '1' }, { id: 'rect', Icon: Square, label: 'Rectangle', key: '2' }, { id: 'circle', Icon: Circle, label: 'Cercle', key: '3' }, { id: 'shape-arrow', Icon: ArrowRight, label: 'Flèche', key: 'A' }],
-  [{ id: 'dimline', Icon: Ruler, label: 'Cotation', key: 'D' }, { id: 'cloud', Icon: MessageSquare, label: 'Bulle', key: 'C' }],
+  [{ id: 'line', Icon: Minus, label: 'Ligne', key: '1', shape: true }, { id: 'rect', Icon: Square, label: 'Rectangle', key: '2', shape: true }, { id: 'circle', Icon: Circle, label: 'Cercle', key: '3', shape: true }, { id: 'shape-arrow', Icon: ArrowRight, label: 'Flèche', key: 'A', shape: true }],
+  [{ id: 'dimline', Icon: Ruler, label: 'Cotation', key: 'D', shape: true }, { id: 'cloud', Icon: MessageSquare, label: 'Bulle', key: 'C', shape: true }],
+]
+const SHAPE_TOOL_IDS=['line','rect','circle','shape-arrow','dimline','cloud']
+const SHAPE_HUD_PRIMARY=[
+  {id:'line',Icon:Minus,label:'Ligne'},
+  {id:'rect',Icon:Square,label:'Rectangle'},
+  {id:'circle',Icon:Circle,label:'Cercle'},
+  {id:'shape-arrow',Icon:ArrowRight,label:'Flèche'},
+]
+const SHAPE_HUD_EXTRA=[
+  {id:'dimline',Icon:Ruler,label:'Cotation'},
+  {id:'cloud',Icon:MessageSquare,label:'Bulle'},
 ]
 const BRUSHES = [
   { id: 'fine', label: 'Fin', mm: 0.18, icon: '•' },
@@ -1284,6 +1293,82 @@ function GnColorDot({c,active,onClick,size=26}){
   )
 }
 
+function GoodNotesShapeHud({tool,setTool}){
+  const[showExtra,setShowExtra]=useState(false)
+  const extraRef=useRef(null)
+  useEffect(()=>{
+    if(!showExtra)return
+    const close=e=>{if(extraRef.current&&!extraRef.current.contains(e.target))setShowExtra(false)}
+    window.addEventListener("pointerdown",close)
+    return()=>window.removeEventListener("pointerdown",close)
+  },[showExtra])
+  const shapeBtn=({id,Icon,label})=>{
+    const active=tool===id
+    return(
+      <button key={id} type="button" title={label} onClick={()=>setTool(id)} style={{width:36,height:36,borderRadius:8,border:"none",background:active?"#3A3A3C":"transparent",color:active?"#fff":"#EBEBF5",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+        <Icon size={20} strokeWidth={active?2.2:1.8}/>
+      </button>
+    )
+  }
+  return(
+    <div style={{position:"absolute",top:56,left:"50%",transform:"translateX(-50%)",background:"#1C1C1E",borderRadius:20,padding:"8px 12px",boxShadow:"0 4px 20px rgba(0,0,0,0.6)",display:"flex",alignItems:"center",gap:4,zIndex:45,animation:"gnShapeHudIn .15s ease"}}>
+      {SHAPE_HUD_PRIMARY.map(shapeBtn)}
+      <div style={{width:1,height:24,background:"#38383A",margin:"0 4px",flexShrink:0}}/>
+      <div ref={extraRef} style={{position:"relative",flexShrink:0}}>
+        <button type="button" onClick={()=>setShowExtra(v=>!v)} title="Autres formes" style={{width:32,height:32,borderRadius:"50%",border:"none",background:C.accent,color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <ChevronDown size={18} style={{transform:showExtra?"rotate(180deg)":"none",transition:"transform .15s"}}/>
+        </button>
+        {showExtra&&(
+          <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"#1C1C1E",borderRadius:12,padding:8,boxShadow:"0 8px 24px rgba(0,0,0,.6)",display:"flex",flexDirection:"column",gap:4,minWidth:148,zIndex:50}}>
+            {SHAPE_HUD_EXTRA.map(shapeBtn)}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function GoodNotesSelectionToolbar({bounds,count,pageW,showShapeOpts,showTextFont,showRotation,textFont,rotation,onDelete,onDuplicate,onColor,onSize,onOpacity,onFill,onFillOpacity,onRotation,onFont,onClose}){
+  if(!bounds||!count)return null
+  const top=Math.max(8,bounds.y1-(showShapeOpts||showTextFont||showRotation?72:44))
+  const left=Math.min(Math.max(8,bounds.x1),pageW-260)
+  return(
+    <div onPointerDown={e=>e.stopPropagation()} style={{position:"absolute",left,top,zIndex:25,background:"rgba(28,28,30,0.85)",borderRadius:12,padding:"6px 10px",display:"flex",flexDirection:"column",gap:6,minWidth:200,maxWidth:280,backdropFilter:"blur(8px)"}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:6}}>
+        <span style={{fontSize:13,color:"rgba(235,235,245,0.7)"}}>{count} élément{count>1?"s":""} · glisser pour déplacer</span>
+        <button type="button" onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",color:"rgba(235,235,245,0.5)",fontSize:14,padding:"0 2px",lineHeight:1}}>×</button>
+      </div>
+      <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+        <button type="button" onClick={onDuplicate} style={{padding:"4px 8px",borderRadius:8,border:"none",background:"rgba(58,58,60,0.9)",color:"#EBEBF5",fontSize:12,cursor:"pointer"}}>Dupliquer</button>
+        <button type="button" onClick={onDelete} style={{padding:"4px 8px",borderRadius:8,border:"none",background:"rgba(255,69,58,0.15)",color:"#FF453A",fontSize:12,cursor:"pointer"}}>Supprimer</button>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+        <input type="color" defaultValue="#1c1c24" onChange={e=>onColor(e.target.value)} title="Couleur trait" style={{width:24,height:24,border:"none",background:"none",cursor:"pointer",padding:0}}/>
+        {showShapeOpts&&<input type="color" defaultValue="#1c1c24" onChange={e=>onFill(e.target.value)} title="Remplissage" style={{width:24,height:24,border:"2px dashed rgba(142,142,147,0.5)",borderRadius:6,background:"none",cursor:"pointer",padding:0}}/>}
+        <select defaultValue="2" onChange={e=>onSize(parseFloat(e.target.value))} title="Épaisseur" style={{flex:1,minWidth:64,padding:"3px 6px",borderRadius:6,border:"none",background:"rgba(58,58,60,0.9)",color:"#EBEBF5",fontSize:11}}>
+          {[0.5,1,2,3,5,8,12].map(s=><option key={s} value={s}>{s} mm</option>)}
+        </select>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:6}}>
+        <span style={{fontSize:11,color:"rgba(142,142,147,0.9)",minWidth:40}}>Opacité</span>
+        <input type="range" min="0.1" max="1" step="0.05" defaultValue="1" onChange={e=>onOpacity(parseFloat(e.target.value))} style={{flex:1,accentColor:C.accent,height:3}}/>
+        {showShapeOpts&&<>
+          <span style={{fontSize:11,color:"rgba(142,142,147,0.9)",minWidth:24}}>Fill</span>
+          <input type="range" min="0" max="1" step="0.05" defaultValue="0.25" onChange={e=>onFillOpacity(parseFloat(e.target.value))} style={{flex:1,accentColor:C.accent,height:3}}/>
+        </>}
+      </div>
+      {showTextFont&&<TextFontPicker T={GN_T} value={textFont} onChange={onFont} compact/>}
+      {showRotation&&count===1&&(
+        <div style={{display:"flex",alignItems:"center",gap:6}}>
+          <span style={{fontSize:11,color:"rgba(142,142,147,0.9)",minWidth:40}}>Rotation</span>
+          <input type="range" min="-180" max="180" step="1" value={rotation??0} onChange={e=>onRotation(parseInt(e.target.value,10))} style={{flex:1,accentColor:C.accent,height:3}}/>
+          <span style={{fontSize:11,color:"rgba(142,142,147,0.9)",minWidth:24,fontFamily:"monospace"}}>{rotation??0}°</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function GoodNotesToolPopup({toolPopup,onClose,color,setColor,sizeMm,setSizeMm,eraserSettings,setEraserSettings,unitSys,canvasTextFont,setCanvasTextFont,favorites,setFavorites,setTool,setPropsCollapsed,setShowPropsPanel,lassoType,setLassoType,lassoInclude,setLassoInclude,pencilOnly,setPencilOnly,textSize,setTextSize}){
   if(!toolPopup)return null
   const popupStyle={position:"absolute",top:TOP_BAR_H+4,left:"50%",transform:"translateX(-50%)",background:C.bar,borderRadius:14,border:`1px solid ${C.border}`,boxShadow:"0 8px 24px rgba(0,0,0,.6)",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,zIndex:45,flexWrap:"wrap",maxWidth:"min(92vw,720px)",animation:"gnPopupIn .15s ease"}
@@ -1376,7 +1461,7 @@ function GoodNotesTopBar({
   setShowLib,setShowLayers,setShowHistory,setShowCalc,setShowConv,setShowTranslate,setShowDictation,
   setShowTimer,setShowFlash,setShowPropsPanel,setPropsCollapsed,setShowPageSettings,
   showHistory,showCalc,showConv,showTranslate,showDictation,showTimer,showFlash,showLayers,
-  infiniteMode,applyPageSettings,page,pencilOnly,setPencilOnly,toggleFocusMode,handleImport,
+  infiniteMode,applyPageSettings,page,pagesCount,pageRotation,deletePage,goToPage,pencilOnly,setPencilOnly,toggleFocusMode,handleImport,
   exportPNG,exporting,unitSys,setUnitSys,scale,setScale,scalesM,scalesI,actionLogLength,
   flashCardsLength,timerRunning,timerSec,propsCollapsed,collabCursors,collabColors,notebooks,
   canUndo,canRedo,
@@ -1395,9 +1480,14 @@ function GoodNotesTopBar({
     window.addEventListener("pointerdown",close)
     return()=>window.removeEventListener("pointerdown",close)
   },[showMore,showNbDrop])
-  const menuBtn=(label,fn,active)=>(
-    <button key={label} type="button" onClick={()=>{fn();setShowMore(false)}} style={{width:"100%",padding:"8px 12px",border:"none",background:active?`${C.accent}18`:"transparent",color:active?C.accent:C.text,cursor:"pointer",fontSize:12,textAlign:"left",borderRadius:6}}>{label}</button>
+  const moreItem=(label,fn,{icon:Icon,danger,active,disabled}={})=>(
+    <button key={label} type="button" disabled={disabled} onClick={()=>{if(disabled)return;fn();setShowMore(false)}} style={{width:"100%",height:48,padding:"0 16px",border:"none",background:active?`${C.accent}18`:"transparent",color:danger?C.danger:disabled?C.border:C.text,cursor:disabled?"default":"pointer",fontSize:15,textAlign:"left",display:"flex",alignItems:"center",gap:12,opacity:disabled?0.45:1}}>
+      {Icon&&<Icon size={20} color={danger?C.danger:disabled?C.border:C.text}/>}
+      {label}
+    </button>
   )
+  const moreSep=()=><div style={{height:1,background:"#38383A",margin:"4px 0"}}/>
+  const moreSection=label=><div style={{padding:"8px 16px 4px",fontSize:11,fontWeight:600,color:"#8E8E93",letterSpacing:0.5,textTransform:"uppercase"}}>{label}</div>
   return(
     <div style={{height:TOP_BAR_H,flexShrink:0,background:C.bar,borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 8px",gap:4,zIndex:30,position:"relative"}}>
       <GnIconBtn active={showPagePanel} onClick={()=>setShowPagePanel(v=>!v)} title="Pages"><PanelLeft size={22}/></GnIconBtn>
@@ -1430,10 +1520,10 @@ function GoodNotesTopBar({
       <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:2,minWidth:0,overflowX:"auto"}}>
         {TOP_TOOL_GROUPS.map((grp,gi)=>(
           <div key={gi} style={{display:"flex",alignItems:"center",gap:2,flexShrink:0}}>
-            {grp.map(({id,Icon,label,popup})=>{
+            {grp.map(({id,Icon,label,popup,shape})=>{
               const active=tool===id||(id==="lasso"&&(tool==="lasso"||tool==="lasso-rect"))
               return(
-                <GnIconBtn key={id} active={active} title={`${label}`} onClick={()=>onToolClick(id,!!popup)}>
+                <GnIconBtn key={id} active={active} title={`${label}`} onClick={()=>onToolClick(id,!!popup,!!shape)}>
                   <Icon size={22} strokeWidth={active?2.2:1.8}/>
                 </GnIconBtn>
               )
@@ -1443,43 +1533,52 @@ function GoodNotesTopBar({
         ))}
       </div>
       <GnIconBtn onClick={()=>setShowSearchPanel(true)} title="Rechercher"><Search size={20}/></GnIconBtn>
-      <GnIconBtn onClick={()=>window.dispatchEvent(new Event("forma:open-ai"))} title="IA"><Sparkles size={20}/></GnIconBtn>
-      <GnIconBtn onClick={()=>setShowLib(true)} title="Bibliothèque archi"><BookOpen size={20}/></GnIconBtn>
-      <GnIconBtn onClick={()=>setShowShare(true)} title="Partager"><Share2 size={20}/></GnIconBtn>
       <div ref={moreRef} style={{position:"relative"}}>
         <GnIconBtn active={showMore} onClick={()=>setShowMore(v=>!v)} title="Plus"><MoreHorizontal size={20}/></GnIconBtn>
         {showMore&&(
-          <div style={{position:"absolute",top:"100%",right:0,marginTop:6,width:220,background:C.panel,border:`1px solid ${C.border}`,borderRadius:10,boxShadow:"0 8px 32px rgba(0,0,0,.5)",padding:6,zIndex:100,maxHeight:"70vh",overflowY:"auto"}}>
-            {menuBtn("Présentation",()=>setShowPresent(true),false)}
-            {menuBtn(readOnly?"Désactiver lecture seule":"Lecture seule",()=>{if(!readOnlyLocked)setReadOnly(v=>!v)},readOnly)}
-            {menuBtn("Calques",()=>setShowLayers(v=>!v),showLayers)}
-            {menuBtn("Style de page",()=>setShowPageSettings(true),false)}
-            {menuBtn(`Historique${actionLogLength>0?` (${actionLogLength})`:""}`,()=>setShowHistory(v=>!v),showHistory)}
-            {menuBtn("Calculatrice",()=>setShowCalc(v=>!v),showCalc)}
-            {menuBtn("Convertisseur",()=>setShowConv(v=>!v),showConv)}
-            {menuBtn("Traduction",()=>setShowTranslate(v=>!v),showTranslate)}
-            {menuBtn("Dictée",()=>setShowDictation(v=>!v),showDictation)}
-            {menuBtn(timerRunning?`Pomodoro ${String(Math.floor(timerSec/60)).padStart(2,"0")}:${String(timerSec%60).padStart(2,"0")}`:"Pomodoro",()=>setShowTimer(v=>!v),showTimer)}
-            {menuBtn(`Flashcards${flashCardsLength>0?` (${flashCardsLength})`:""}`,()=>setShowFlash(v=>!v),showFlash)}
-            {menuBtn(`Canvas infini${infiniteMode?" ✓":""}`,()=>applyPageSettings(page,{infinite:!infiniteMode}),infiniteMode)}
-            {menuBtn(`Apple Pencil${pencilOnly?" ✓":""}`,()=>{setPencilOnly(v=>{const n=!v;try{localStorage.setItem("forma_pencil_only",n?"1":"0")}catch{};return n})},pencilOnly)}
-            {menuBtn("Mode focus",toggleFocusMode,false)}
-            {menuBtn("Couleurs & taille",()=>{setShowPropsPanel(true);setPropsCollapsed(false)},!propsCollapsed)}
-            {menuBtn("Déplacer (main)",()=>setTool("hand"),tool==="hand")}
-            {menuBtn("Pipette",()=>setTool("eyedropper"),tool==="eyedropper")}
-            <div style={{height:1,background:C.border,margin:"4px 0"}}/>
-            <div style={{padding:"4px 8px",display:"flex",gap:4}}>
-              <button type="button" onClick={()=>{setUnitSys("metric");setScale("1:50");setShowMore(false)}} style={{flex:1,padding:"4px 0",borderRadius:6,border:`1px solid ${unitSys==="metric"?C.accent:C.border}`,background:unitSys==="metric"?`${C.accent}18`:C.bar,color:unitSys==="metric"?C.accent:C.muted,cursor:"pointer",fontSize:10}}>mm</button>
-              <button type="button" onClick={()=>{setUnitSys("imperial");setScale('1/4"=1\'');setShowMore(false)}} style={{flex:1,padding:"4px 0",borderRadius:6,border:`1px solid ${unitSys==="imperial"?C.accent:C.border}`,background:unitSys==="imperial"?`${C.accent}18`:C.bar,color:unitSys==="imperial"?C.accent:C.muted,cursor:"pointer",fontSize:10}}>in</button>
+          <div style={{position:"absolute",top:52,right:8,width:280,background:"#1C1C1E",borderRadius:14,boxShadow:"0 8px 32px rgba(0,0,0,0.6)",padding:"6px 0",zIndex:100,maxHeight:"calc(100dvh - 64px)",overflowY:"auto"}}>
+            {moreItem("Présentation",()=>setShowPresent(true),{icon:Presentation})}
+            {moreItem("Partager",()=>setShowShare(true),{icon:Share2})}
+            {moreItem("Faire pivoter la page",()=>applyPageSettings(page,{rotation:(pageRotation+90)%360}),{icon:RotateCw})}
+            {moreItem("Changer de modèle",()=>setShowPageSettings(true),{icon:FileText})}
+            {moreItem("Accéder à la page",()=>setShowPagePanel(true),{icon:List})}
+            {moreSep()}
+            {moreItem("Calques",()=>setShowLayers(v=>!v),{icon:Layers,active:showLayers})}
+            {moreItem("Bibliothèque archi",()=>setShowLib(true),{icon:BookOpen})}
+            {moreItem(`Historique${actionLogLength>0?` (${actionLogLength})`:""}`,()=>setShowHistory(v=>!v),{icon:Undo2,active:showHistory})}
+            {moreItem("Calculatrice",()=>setShowCalc(v=>!v),{active:showCalc})}
+            {moreItem("Convertisseur",()=>setShowConv(v=>!v),{active:showConv})}
+            {moreItem("Traduction",()=>setShowTranslate(v=>!v),{active:showTranslate})}
+            {moreItem("Dictée",()=>setShowDictation(v=>!v),{active:showDictation})}
+            {moreItem(timerRunning?`Pomodoro ${String(Math.floor(timerSec/60)).padStart(2,"0")}:${String(timerSec%60).padStart(2,"0")}`:"Pomodoro",()=>setShowTimer(v=>!v),{active:showTimer})}
+            {moreItem(`Flashcards${flashCardsLength>0?` (${flashCardsLength})`:""}`,()=>setShowFlash(v=>!v),{active:showFlash})}
+            {moreSep()}
+            {moreItem("Effacer la page",()=>window.__clear?.(),{icon:TrashIcon,danger:true})}
+            {moreItem("Placer la page dans la corbeille",()=>deletePage(page),{icon:TrashIcon,danger:true,disabled:pagesCount<=1})}
+            {moreSep()}
+            {moreSection("Réglages")}
+            {moreItem(readOnly?"Désactiver lecture seule":"Ajouter un verrouillage",()=>{if(!readOnlyLocked)setReadOnly(v=>!v)},{icon:Lock,active:readOnly,disabled:readOnlyLocked})}
+            {moreItem(`Canvas infini${infiniteMode?" ✓":""}`,()=>applyPageSettings(page,{infinite:!infiniteMode}),{active:infiniteMode})}
+            {moreItem(`Apple Pencil${pencilOnly?" ✓":""}`,()=>{setPencilOnly(v=>{const n=!v;try{localStorage.setItem("forma_pencil_only",n?"1":"0")}catch{};return n})},{active:pencilOnly})}
+            {moreItem("Mode focus",toggleFocusMode)}
+            {moreItem("Couleurs & taille",()=>{setShowPropsPanel(true);setPropsCollapsed(false)},{icon:SlidersHorizontal,active:!propsCollapsed})}
+            {moreItem("Déplacer (main)",()=>setTool("hand"),{icon:Hand,active:tool==="hand"})}
+            {moreItem("Pipette",()=>setTool("eyedropper"),{icon:Pipette,active:tool==="eyedropper"})}
+            {moreSep()}
+            <div style={{padding:"0 16px 8px",display:"flex",gap:6}}>
+              <button type="button" onClick={()=>{setUnitSys("metric");setScale("1:50");setShowMore(false)}} style={{flex:1,height:36,borderRadius:8,border:`1px solid ${unitSys==="metric"?C.accent:"#38383A"}`,background:unitSys==="metric"?`${C.accent}18`:"transparent",color:unitSys==="metric"?C.accent:"#8E8E93",cursor:"pointer",fontSize:13}}>mm</button>
+              <button type="button" onClick={()=>{setUnitSys("imperial");setScale('1/4"=1\'');setShowMore(false)}} style={{flex:1,height:36,borderRadius:8,border:`1px solid ${unitSys==="imperial"?C.accent:"#38383A"}`,background:unitSys==="imperial"?`${C.accent}18`:"transparent",color:unitSys==="imperial"?C.accent:"#8E8E93",cursor:"pointer",fontSize:13}}>in</button>
             </div>
-            <select value={scale} onChange={e=>setScale(e.target.value)} style={{width:"100%",margin:"4px 0",padding:"4px 8px",borderRadius:6,border:`1px solid ${C.border}`,background:C.bar,color:C.muted,fontSize:10,outline:"none"}}>
-              {(unitSys==="metric"?scalesM:scalesI).map(s=><option key={s} value={s}>{s}</option>)}
-            </select>
-            <label style={{display:"flex",alignItems:"center",gap:6,padding:"6px 8px",cursor:"pointer",fontSize:11,color:C.muted}}>
-              📎 Importer<input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{handleImport(e);setShowMore(false)}}/>
+            <div style={{padding:"0 16px 8px"}}>
+              <select value={scale} onChange={e=>setScale(e.target.value)} style={{width:"100%",height:36,padding:"0 10px",borderRadius:8,border:"1px solid #38383A",background:"#2C2C2E",color:"#EBEBF5",fontSize:13,outline:"none"}}>
+                {(unitSys==="metric"?scalesM:scalesI).map(s=><option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            {moreSep()}
+            <label style={{display:"flex",alignItems:"center",gap:12,height:48,padding:"0 16px",cursor:"pointer",fontSize:15,color:C.text}}>
+              Importer<input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{handleImport(e);setShowMore(false)}}/>
             </label>
-            <button type="button" onClick={()=>{exportPNG();setShowMore(false)}} disabled={exporting} style={{width:"100%",padding:"6px 8px",border:"none",background:"transparent",color:C.text,cursor:exporting?"default":"pointer",fontSize:11,textAlign:"left",borderRadius:6}}>{exporting?"Export…":"Export PNG"}</button>
-            <button type="button" onClick={()=>{window.__clear?.();setShowMore(false)}} style={{width:"100%",padding:"6px 8px",border:"none",background:"transparent",color:C.danger,cursor:"pointer",fontSize:11,textAlign:"left",borderRadius:6}}>Effacer canvas</button>
+            {moreItem(exporting?"Export…":"Export PNG",()=>exportPNG(),{disabled:exporting})}
           </div>
         )}
       </div>
@@ -1713,18 +1812,6 @@ function PropertiesPanelContent({T,color,setColor,sizeMm,setSizeMm,tool,setTool,
   )
 }
 
-function GoodNotesPropsPanel({color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle,canvasTextFont,setCanvasTextFont,onClose}){
-  return(
-    <div style={{width:240,flexShrink:0,background:COLORS.panelBg,borderLeft:`1px solid ${COLORS.panelBorder}`,display:"flex",flexDirection:"column",overflow:"hidden",zIndex:10}}>
-      <div style={{height:44,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 12px",borderBottom:`1px solid ${COLORS.panelBorder}`}}>
-        <span style={{fontSize:13,fontWeight:600,color:COLORS.text}}>Propriétés</span>
-        <button type="button" onClick={onClose} style={{background:"none",border:"none",color:COLORS.textSecondary,cursor:"pointer",padding:2,display:"flex"}}><PanelRight size={18}/></button>
-      </div>
-      <PropertiesPanelContent T={GN_T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont} useBrushGrid/>
-    </div>
-  )
-}
-
 function GoodNotesLibraryDrawer({open,onClose,T,libMode,setLibMode,libSearch,setLibSearch,libCat,setLibCat,libCats,libItems,libPending,setLibPending,showNewProfile,setShowNewProfile,addCustomProfile,addNotification,getLibForMode,customProfiles,removeCustomProfile,setPlaced,toPageCoords,pushAction,scheduleSave,renderEl,renderSym}){
   if(!open)return null
   return(
@@ -1902,30 +1989,6 @@ function PageThumbnail({pageData,pageNum,current,T,onClick,onMenu,notebookTempla
   )
 }
 
-function EraserOptionsPanel({T,settings,setSettings,unitSys,formatDimension}){
-  const sizeMm=settings.sizeMm
-  const setSizeMm=v=>setSettings(s=>({...s,sizeMm:typeof v==="function"?v(s.sizeMm):v}))
-  return(
-    <div style={{padding:"8px 10px",userSelect:"none"}}>
-      <div style={{fontSize:9,fontWeight:700,color:T.accent,marginBottom:6}}>GOMME</div>
-      <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:8}}>
-        {ERASER_MODES.map(m=>(
-          <button key={m.id}type="button"onClick={()=>setSettings(s=>({...s,mode:m.id}))}title={m.desc}style={{padding:"5px 8px",borderRadius:7,border:`1px solid ${settings.mode===m.id?T.accent:T.border}`,background:settings.mode===m.id?`${T.accent}18`:T.bg,color:settings.mode===m.id?T.accent:T.ink,cursor:"pointer",fontSize:9,textAlign:"left"}}>
-            {m.label}
-          </button>
-        ))}
-      </div>
-      <div style={{fontSize:8,color:T.muted,marginBottom:4}}>TAILLE</div>
-      <div style={{display:"flex",flexWrap:"wrap",gap:3,marginBottom:6}}>
-        {ERASER_SIZES_MM.map(s=><button key={s}type="button"onClick={()=>setSizeMm(s)}style={{padding:"2px 5px",borderRadius:5,border:`1px solid ${sizeMm===s?T.accent:T.border}`,background:sizeMm===s?`${T.accent}18`:T.bg,color:sizeMm===s?T.accent:T.muted,cursor:"pointer",fontSize:8,fontFamily:"monospace"}}>{s}</button>)}
-      </div>
-      <input type="range"min={1}max={20}step={0.5}value={sizeMm}onChange={e=>setSizeMm(parseFloat(e.target.value))}style={{width:"100%",accentColor:T.accent}}/>
-      <div style={{fontSize:8,color:T.muted,textAlign:"center",marginTop:4,fontFamily:"monospace"}}>{formatDimension(sizeMm,unitSys)}</div>
-    </div>
-  )
-}
-
-/* ══ MODALS ═══════════════════════════════════════════ */
 function ThemePicker({current,onChange,onClose}){
   const [draftId,setDraftId]=useState(current?.id||THEMES[0]?.id)
   const draft=THEMES.find(t=>t.id===draftId)||THEMES[0]
@@ -2100,7 +2163,6 @@ export default function EditorPage(){
   const[showPropsPanel,setShowPropsPanel]=useState(true)
   const[propsCollapsed,setPropsCollapsed]=useState(true)
   const[saveIndicatorVisible,setSaveIndicatorVisible]=useState(true)
-  const[showEraserPanel,setShowEraserPanel]=useState(false)
   const[toolPopup,setToolPopup]=useState(null)
   const[showSearchPanel,setShowSearchPanel]=useState(false)
   const[lassoType,setLassoType]=useState("free")
@@ -2111,8 +2173,9 @@ export default function EditorPage(){
   const activePointersRef=useRef(new Map())
   const pinchRef=useRef({dist:null,lastMid:null})
   const pinchModeRef=useRef(false)
+  const lastCanvasTapRef=useRef({t:0,x:0,y:0})
+  const doubleTapStateRef=useRef(0)
   const[infiniteMode,setInfiniteMode]=useState(false)
-  useEffect(()=>{if(tool==="eraser")setShowEraserPanel(true)},[tool])
   const[pageFormat,setPageFormat]=useState("a4")
   const[nextPageFmt,setNextPageFmt]=useState("a4")
   const[nextPageCustomMm,setNextPageCustomMm]=useState({w:210,h:297})
@@ -3057,8 +3120,17 @@ export default function EditorPage(){
     setToolPopup(null)
   },[])
 
-  const handleToolClick=useCallback((id,hasPopup)=>{
+  const handleToolClick=useCallback((id,hasPopup,isShape)=>{
     const resolved=id==="lasso"?(lassoType==="rect"?"lasso-rect":"lasso"):id
+    if(isShape||SHAPE_TOOL_IDS.includes(id)){
+      if(tool===id){
+        setToolPopup(p=>p==="shapes"?null:"shapes")
+      }else{
+        setTool(id)
+        setToolPopup(null)
+      }
+      return
+    }
     if(tool===resolved&&hasPopup){
       setToolPopup(p=>p===id?null:id)
     }else{
@@ -3067,6 +3139,27 @@ export default function EditorPage(){
       if(id==="text")setTextToolToast(true)
     }
   },[tool,lassoType])
+
+  const handleCanvasDoubleTap=useCallback((clientX,clientY)=>{
+    const now=Date.now()
+    const last=lastCanvasTapRef.current
+    const dt=now-last.t
+    const dx=Math.abs(clientX-last.x)
+    const dy=Math.abs(clientY-last.y)
+    if(dt<300&&dx<30&&dy<30){
+      if(doubleTapStateRef.current===0){
+        resetViewport()
+        doubleTapStateRef.current=1
+      }else{
+        fitToPage(displayW,displayH)
+        doubleTapStateRef.current=0
+      }
+      lastCanvasTapRef.current={t:0,x:0,y:0}
+      return true
+    }
+    lastCanvasTapRef.current={t:now,x:clientX,y:clientY}
+    return false
+  },[resetViewport,fitToPage,displayW,displayH])
 
   const handlePinchPointerDown=useCallback((e)=>{
     if(e.pointerType!=="touch"&&e.pointerType!=="pen")return false
@@ -3184,8 +3277,6 @@ export default function EditorPage(){
   const eraserActive=tool==="eraser"&&!readOnly
   const eraserAuto=eraserActive&&eraserSettings.mode==="auto"
   const cursorDark=useMemo(()=>isDarkSurface(T),[T])
-  const showMinimap=useMemo(()=>!focusMode&&!showPresent&&shouldShowMinimap({pageW:displayW,pageH:displayH,viewW:viewSize.w,viewH:viewSize.h,zoom,panX,panY}),[focusMode,showPresent,displayW,displayH,viewSize,zoom,panX,panY])
-  const handleMinimapPan=useCallback((x,y)=>setPan(x,y),[setPan])
   const areaCursor=useMemo(()=>{
     if(spacePan)return panActive?"grabbing":"grab"
     if(libPending) return getPlacementCursor(cursorDark)
@@ -3481,9 +3572,9 @@ export default function EditorPage(){
         </DraggablePanel>
       )}
 
-      {!focusMode&&tool==="eraser"&&showEraserPanel&&(
-        <DraggablePanel T={T} id="editor-eraser" title="Gomme" open onClose={()=>setShowEraserPanel(false)} defaultSide="left" width={220} zIndexOffset={1}>
-          <EraserOptionsPanel T={T} settings={eraserSettings} setSettings={setEraserSettings} unitSys={unitSys} formatDimension={formatDimension}/>
+      {!focusMode&&!propsCollapsed&&showPropsPanel&&(
+        <DraggablePanel T={T} id="editor-props" title="Couleurs & taille" open onClose={()=>{setPropsCollapsed(true);setShowPropsPanel(false)}} defaultSide="right" width={240}>
+          <PropertiesPanelContent T={GN_T} color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont} useBrushGrid/>
         </DraggablePanel>
       )}
 
@@ -3516,7 +3607,7 @@ export default function EditorPage(){
       )}
 
       <div style={focusMode?{display:"flex",flex:1,overflow:"hidden",minHeight:0}:{height:"100dvh",overflow:"hidden",background:COLORS.bg,display:"flex",flexDirection:"column",flex:1,minHeight:0}}>
-        <style>{`@keyframes gnSpin{to{transform:rotate(360deg)}}@keyframes gnPopupIn{from{opacity:0;transform:translateX(-50%) translateY(-4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}`}</style>
+        <style>{`@keyframes gnSpin{to{transform:rotate(360deg)}}@keyframes gnPopupIn{from{opacity:0;transform:translateX(-50%) translateY(-4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}@keyframes gnShapeHudIn{from{opacity:0;transform:translateX(-50%) translateY(-4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}`}</style>
         {!focusMode&&readOnly&&(
           <div style={{height:24,flexShrink:0,background:COLORS.destructive,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:600,gap:8,zIndex:50}}>
             <Lock size={12}/> Mode lecture seule
@@ -3562,6 +3653,10 @@ export default function EditorPage(){
             infiniteMode={infiniteMode}
             applyPageSettings={applyPageSettings}
             page={page}
+            pagesCount={pagesCount}
+            pageRotation={pageRotation}
+            deletePage={deletePage}
+            goToPage={goToPage}
             pencilOnly={pencilOnly}
             setPencilOnly={setPencilOnly}
             toggleFocusMode={toggleFocusMode}
@@ -3612,6 +3707,7 @@ export default function EditorPage(){
             textSize={Math.round(sizeMm*3.78)}
             setTextSize={px=>setSizeMm(px/3.78)}
           />
+          {toolPopup==="shapes"&&<GoodNotesShapeHud tool={tool} setTool={setTool}/>}
           </div>
         )}
         <div style={{display:"flex",flex:1,minHeight:0,...(!focusMode?{height:readOnly?`calc(100dvh - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px - 24px)`:`calc(100dvh - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px)`}:{})}}>
@@ -3629,11 +3725,6 @@ export default function EditorPage(){
                   {(saveStatus==="saved"||saveStatus==="saved_local"||saveStatus==="synced")&&saveLabel&&(
                     <div style={{background:"rgba(28,28,30,0.92)",borderRadius:10,padding:"7px 14px",fontSize:12,color:C.success}}>Sauvegardé ✓</div>
                   )}
-                  {saveStatus!=="saving"&&saveStatus!=="syncing_cloud"&&saveStatus!=="dirty"&&(
-                    <div style={{background:C.panel,borderRadius:20,padding:"6px 14px",fontSize:12,color:C.text,display:"flex",alignItems:"center",gap:8}}>
-                      <span style={{width:8,height:8,borderRadius:"50%",background:C.success,display:"inline-block"}}/>Prêt
-                    </div>
-                  )}
                 </div>
               )}
               {!focusMode&&tool==="text"&&textToolToast&&(
@@ -3649,6 +3740,9 @@ export default function EditorPage(){
           {...canvasHandlers}
           onPointerDownCapture={(e)=>{
             if(handlePinchPointerDown(e))return
+            if(e.pointerType!=="pen"&&activePointersRef.current.size===1){
+              handleCanvasDoubleTap(e.clientX,e.clientY)
+            }
             canvasHandlers.onPointerDownCapture?.(e)
           }}
           onPointerDown={(e)=>{
@@ -3844,8 +3938,7 @@ export default function EditorPage(){
                 />
               )}
               {canvasSelection&&!readOnly&&!eraserActive&&(
-                <FloatingSelectionToolbar
-                  T={{...T,...GN_T}}
+                <GoodNotesSelectionToolbar
                   bounds={canvasSelection.bounds}
                   count={canvasSelection.count}
                   pageW={PW}
@@ -3861,7 +3954,7 @@ export default function EditorPage(){
                   onOpacity={o=>window.__setSelectionOpacity?.(o)}
                   onFill={c=>window.__setSelectionFill?.(c)}
                   onFillOpacity={o=>window.__setSelectionFill?.(null,o)}
-                  onRotation={deg=>window.__setSelectionRotation?.(deg)}
+                  onRotation={deg=>{window.__setSelectionRotation?.(deg);scheduleSave()}}
                   onFont={f=>{window.__setSelectionFont?.(f);scheduleSave()}}
                   onClose={()=>{window.__clearSelection?.();setCanvasSelection(null)}}
                 />
@@ -3870,15 +3963,8 @@ export default function EditorPage(){
               </div>
             </div>
           </div>
-
-          {showMinimap&&<CanvasMinimap T={T} pageW={displayW} pageH={displayH} viewW={viewSize.w} viewH={viewSize.h} zoom={zoom} panX={panX} panY={panY} onPanChange={handleMinimapPan} getStrokes={()=>window.__getStrokes?.()||[]} placed={placed} importedImages={importedImages} revision={canvasRevision} paperColor={pageColor||T.paper}/>}
-            {!focusMode&&!propsCollapsed&&showPropsPanel&&(
-              <div style={{position:"absolute",top:0,right:0,bottom:0,zIndex:35,pointerEvents:"auto"}}>
-                <GoodNotesPropsPanel color={color} setColor={setColor} sizeMm={sizeMm} setSizeMm={setSizeMm} tool={tool} setTool={setTool} eraserMm={eraserMm} setEraserMm={setEraserMm} favorites={favorites} setFavorites={setFavorites} unitSys={unitSys} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} canvasTextFont={canvasTextFont} setCanvasTextFont={setCanvasTextFont} onClose={()=>setPropsCollapsed(true)}/>
-              </div>
-            )}
-          </div>
         </div>
+          </div>
         {!focusMode&&<GoodNotesBottomBar page={page} pagesCount={pagesCount} goToPage={goToPage} addPage={addPage} pagePhotoInputRef={pagePhotoInputRef} handlePagePhotoPick={handlePagePhotoPick} pages={pages} nb={nb} setPageMenu={setPageMenu} zoom={zoom} zoomBy={zoomBy} resetViewport={resetViewport} viewSize={viewSize} setShowLayers={setShowLayers} setShowPageSettings={setShowPageSettings}/>}
         </div>
       </div>
