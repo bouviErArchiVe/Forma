@@ -20,6 +20,7 @@ const FormaLibraryPage = lazy(() => import('@/pages/FormaLibraryPage'))
 const FormaAIPage = lazy(() => import('@/pages/FormaAIPage'))
 const FormaDicoPage = lazy(() => import('@/pages/FormaDicoPage'))
 const FormaMessagePage = lazy(() => import('@/pages/FormaMessagePage'))
+const FormaHubPage = lazy(() => import('@/pages/FormaHubPage'))
 import GamesPage from '@/pages/GamesPage'
 import TranslateScanPage from '@/pages/TranslateScanPage'
 import AccountPage from '@/pages/AccountPage'
@@ -94,6 +95,7 @@ export default function App() {
           <Route path="/formaai" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaAI"><Suspense fallback={<AppLoading />}><FormaAIPage /></Suspense></ErrorBoundary></ProtectedRoute>} />
           <Route path="/formadico" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaDico"><Suspense fallback={<AppLoading />}><FormaDicoPage /></Suspense></ErrorBoundary></ProtectedRoute>} />
           <Route path="/formamessage" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaMessage"><Suspense fallback={<AppLoading />}><FormaMessagePage /></Suspense></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/formahub" element={<ProtectedRoute><ErrorBoundary title="Erreur FormaHub"><Suspense fallback={<AppLoading />}><FormaHubPage /></Suspense></ErrorBoundary></ProtectedRoute>} />
           <Route path="/games" element={<ProtectedRoute><ErrorBoundary title="Erreur FPause"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/fpause" element={<ProtectedRoute><ErrorBoundary title="Erreur FPause"><GamesPage /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/translate" element={<ProtectedRoute><ErrorBoundary title="Erreur traduction scan"><TranslateScanPage /></ErrorBoundary></ProtectedRoute>} />

@@ -23,6 +23,7 @@ export const MODULES = {
   formaAI: { name: 'FormaAI', route: '/formaai' },
   formaDico: { name: 'FormaDico', route: '/formadico' },
   formaMessage: { name: 'FormaMessage', route: '/formamessage' },
+  formaHub: { name: 'FormaHub', route: '/formahub' },
   fTheme: { name: 'FTheme', route: null },
   fMoodboard: { name: 'FMoodboard', route: '/fmoodboard', legacyRoute: '/moodboard' },
   fPause: { name: 'FPause', route: '/fpause', legacyRoute: '/games' },
