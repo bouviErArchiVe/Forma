@@ -1,6 +1,7 @@
 import { createSafePersistStorage } from '@/lib/storage'
 import { createFolder, createItem } from './model'
 import { LIBRARY_PRESETS } from './constants'
+import { putBlob, getBlobUrl, deleteBlob, shouldUseBlobStorage } from '@/lib/storage/blobStore'
 
 const KEY = 'forma-library'
 
@@ -90,11 +91,51 @@ export function deleteFolder(id) {
 export function saveItem(item) {
   const store = readStore()
   const idx = store.items.findIndex((i) => i.id === item.id)
-  const next = { ...item, updatedAt: Date.now() }
+  const payload = { ...item }
+  if (payload._blobUrl) {
+    delete payload._blobUrl
+    delete payload.dataUrl
+    delete payload.previewUrl
+  }
+  const next = { ...payload, updatedAt: Date.now() }
   if (idx >= 0) store.items[idx] = next
   else store.items.unshift(next)
   writeStore(store)
   return next
+}
+
+/** Persiste le fichier volumineux en IndexedDB et garde les métadonnées en localStorage. */
+export async function saveItemWithBlob(item) {
+  if (!item) return null
+  let next = { ...item }
+  const src = item.dataUrl || item.previewUrl
+  if (src && !item.blobId && shouldUseBlobStorage(item.size || src.length)) {
+    const blobId = item.blobId || `flb_${item.id}`
+    const ok = await putBlob(blobId, src)
+    if (ok) {
+      next = { ...next, blobId, dataUrl: null, previewUrl: null }
+    }
+  }
+  return saveItem(next)
+}
+
+export async function hydrateLibraryItem(item) {
+  if (!item?.blobId) return item
+  const url = await getBlobUrl(item.blobId)
+  if (!url) return item
+  return { ...item, dataUrl: url, previewUrl: url, _blobUrl: true }
+}
+
+export async function hydrateLibraryItems(items) {
+  return Promise.all((items || []).map(hydrateLibraryItem))
+}
+
+export async function deleteItemWithBlob(id) {
+  const store = readStore()
+  const item = store.items.find((i) => i.id === id)
+  if (item?.blobId) await deleteBlob(item.blobId)
+  store.items = store.items.filter((i) => i.id !== id)
+  writeStore(store)
 }
 
 export function createAndSaveItem(partial) {
@@ -103,6 +144,8 @@ export function createAndSaveItem(partial) {
 
 export function deleteItem(id) {
   const store = readStore()
+  const item = store.items.find((i) => i.id === id)
+  if (item?.blobId) deleteBlob(item.blobId).catch(() => {})
   store.items = store.items.filter((i) => i.id !== id)
   writeStore(store)
 }

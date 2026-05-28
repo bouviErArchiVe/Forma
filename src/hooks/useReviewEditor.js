@@ -9,7 +9,7 @@ import {
 import { DEFAULT_MARKUP, MARKUP_COLORS } from '@/lib/formareview/constants'
 
 export function useReviewEditor(session, setSession) {
-  const [tool, setTool] = useState('select')
+  const [tool, setTool] = useState('draw')
   const [selectedPinId, setSelectedPinId] = useState(null)
   const [color, setColor] = useState(MARKUP_COLORS[0])
   const draftRef = useRef(null)
@@ -81,11 +81,51 @@ export function useReviewEditor(session, setSession) {
         color, width: DEFAULT_MARKUP.arrow.width,
       })
     }
+    if (type === 'rect' && start && end) {
+      const x = Math.min(start.x, end.x)
+      const y = Math.min(start.y, end.y)
+      const w = Math.abs(end.x - start.x)
+      const h = Math.abs(end.y - start.y)
+      if (w < 4 || h < 4) return null
+      return addMarkup(pageId, 'rect', { x, y, w, h, color, width: DEFAULT_MARKUP.arrow.width })
+    }
+    if (type === 'circle' && start && end) {
+      const x = Math.min(start.x, end.x)
+      const y = Math.min(start.y, end.y)
+      const w = Math.abs(end.x - start.x)
+      const h = Math.abs(end.y - start.y)
+      if (w < 4 || h < 4) return null
+      return addMarkup(pageId, 'circle', { x, y, w, h, color, width: DEFAULT_MARKUP.arrow.width })
+    }
     if (type === 'draw' && points?.length > 1) {
       return addMarkup(pageId, 'draw', { points, color, width: DEFAULT_MARKUP.draw.width })
     }
     return null
   }
+
+  const eraseAt = useCallback((pageId, x, y, radius = 28) => {
+    setSession((prev) => ({
+      ...prev,
+      markups: (prev.markups || []).filter((m) => {
+        if (m.pageId !== pageId) return true
+        const d = m.data || {}
+        if (m.type === 'draw' && d.points?.length) {
+          return !d.points.some((p) => Math.hypot(p.x - x, p.y - y) < radius)
+        }
+        if (['highlight', 'rect', 'circle'].includes(m.type)) {
+          return !(x >= d.x && x <= d.x + d.w && y >= d.y && y <= d.y + d.h)
+        }
+        if (m.type === 'arrow') {
+          return Math.hypot((d.x1 + d.x2) / 2 - x, (d.y1 + d.y2) / 2 - y) > radius
+        }
+        if (m.type === 'text') {
+          return Math.hypot((d.x || 0) - x, (d.y || 0) - y) > radius
+        }
+        return true
+      }),
+      updatedAt: Date.now(),
+    }))
+  }, [setSession])
 
   const addTextMarkup = (pageId, x, y, text) => {
     if (!text?.trim()) return null
@@ -128,6 +168,7 @@ export function useReviewEditor(session, setSession) {
     addPin, addMarkup, addTextMarkup,
     startDraft, updateDraft, commitDraft,
     addComment, editComment, resolveComment, deleteComment, resolvePin,
+    eraseAt,
     getPageData,
   }
 }

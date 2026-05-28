@@ -1,7 +1,7 @@
 /** IndexedDB bas niveau — Forma */
 
 const DB_NAME = 'forma-storage'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 let dbPromise = null
 
@@ -19,6 +19,7 @@ function openDb() {
         if (!db.objectStoreNames.contains('offline_queue')) db.createObjectStore('offline_queue', { keyPath: 'id' })
         if (!db.objectStoreNames.contains('versions')) db.createObjectStore('versions', { keyPath: 'id' })
         if (!db.objectStoreNames.contains('journal')) db.createObjectStore('journal', { keyPath: 'id' })
+        if (!db.objectStoreNames.contains('blobs')) db.createObjectStore('blobs', { keyPath: 'id' })
       }
       req.onsuccess = () => resolve(req.result)
       req.onerror = () => reject(req.error || new Error('IndexedDB open failed'))
@@ -89,4 +90,5 @@ export const IDB_STORES = {
   offline_queue: 'offline_queue',
   versions: 'versions',
   journal: 'journal',
+  blobs: 'blobs',
 }

@@ -4,7 +4,7 @@ import {
   FLB_DARK, TYPE_FILTERS, SORT_OPTIONS, categoryIcon, categoryLabel,
 } from '@/lib/formalibrary/constants'
 import { searchLibrary } from '@/lib/formalibrary/search'
-import { moveItem } from '@/lib/formalibrary/persistence'
+import { moveItem, hydrateLibraryItem } from '@/lib/formalibrary/persistence'
 import HighlightText from '@/components/formalibrary/HighlightText'
 import LibrarySidebar from '@/components/formalibrary/LibrarySidebar'
 import LibraryPreview from '@/components/formalibrary/LibraryPreview'
@@ -95,8 +95,17 @@ export default function LibraryExplorer({
     if (url) window.open(url, '_blank')
   }, [])
 
-  const handleAnnotateItem = useCallback((item) => {
-    sessionStorage.setItem('formareview-pending-library', JSON.stringify(item))
+  const handleAnnotateItem = useCallback(async (item) => {
+    const payload = item.blobId && !item.dataUrl ? await hydrateLibraryItem(item) : item
+    sessionStorage.setItem('formareview-pending-library', JSON.stringify({
+      id: payload.id,
+      name: payload.name,
+      dataUrl: payload.dataUrl || payload.previewUrl,
+      previewUrl: payload.previewUrl || payload.dataUrl,
+      blobId: payload.blobId || null,
+      mimeType: payload.mimeType,
+      category: payload.category,
+    }))
     navigate('/formareview')
     addNotification?.('Ouverture dans FormaReview…', 'success')
   }, [navigate, addNotification])

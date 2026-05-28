@@ -338,7 +338,7 @@ export default function EditorTopBar({
           <button type="button" onClick={() => setShowHistory((v) => !v)} title="Historique" className="forma-btn-glass" style={btnStyle(T, { active: showHistory })}>
             🕐{actionLogLength > 0 ? actionLogLength : ''}
           </button>
-          <button type="button" onClick={() => setPencilOnly((v) => !v)} title="Apple Pencil uniquement" className="forma-btn-glass" style={btnStyle(T, { purple: true, active: pencilOnly })}>
+          <button type="button" onClick={() => { setPencilOnly((v) => { const n = !v; try { localStorage.setItem('forma_pencil_only', n ? '1' : '0') } catch {} return n }); }} title="Apple Pencil uniquement" className="forma-btn-glass" style={btnStyle(T, { purple: true, active: pencilOnly })}>
             ✏️{pencilOnly ? '✓' : ''}
           </button>
           <button

@@ -14,6 +14,7 @@ export function useCanvasViewport({
   viewH = 0,
   enabled = true,
   allowPan = true,
+  touchPan = false,
   initialZoom = ZOOM_DEFAULT,
   minZoom = ZOOM_MIN,
   maxZoom = ZOOM_MAX,
@@ -265,11 +266,12 @@ export function useCanvasViewport({
       const space = spaceDown.current
       const middle = e.button === 1
       const toolPan = e.button === 0 && e.currentTarget.dataset.panTool === '1'
-      if (!middle && !space && !toolPan) return
-      if (middle || space) e.preventDefault()
-      if (middle || space || toolPan) {
+      const fingerPan = touchPan && e.button === 0 && e.pointerType === 'touch'
+      if (!middle && !space && !toolPan && !fingerPan) return
+      if (middle || space || fingerPan) e.preventDefault()
+      if (middle || space || toolPan || fingerPan) {
         e.stopPropagation()
-        beginPan(e.clientX, e.clientY, { toolMode: toolPan || false })
+        beginPan(e.clientX, e.clientY, { toolMode: toolPan || fingerPan || false })
       }
     },
     onPointerMove: (e) => {

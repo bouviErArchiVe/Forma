@@ -64,6 +64,22 @@ export function drawMarkup(ctx, markup, scale = 1) {
       ctx.stroke()
       break
     }
+    case 'rect': {
+      const { x, y, w, h, color, width } = data
+      ctx.strokeStyle = color || DEFAULT_MARKUP.arrow.color
+      ctx.lineWidth = (width || DEFAULT_MARKUP.arrow.width) * scale
+      ctx.strokeRect(x * scale, y * scale, w * scale, h * scale)
+      break
+    }
+    case 'circle': {
+      const { x, y, w, h, color, width } = data
+      ctx.strokeStyle = color || DEFAULT_MARKUP.arrow.color
+      ctx.lineWidth = (width || DEFAULT_MARKUP.arrow.width) * scale
+      ctx.beginPath()
+      ctx.ellipse((x + w / 2) * scale, (y + h / 2) * scale, Math.abs(w / 2) * scale, Math.abs(h / 2) * scale, 0, 0, Math.PI * 2)
+      ctx.stroke()
+      break
+    }
     default:
       break
   }

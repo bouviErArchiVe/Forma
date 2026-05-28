@@ -800,6 +800,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
 
   const dn=e=>{
     if(pencilOnly&&e.pointerType==="touch")return
+    if(pencilOnly&&e.pointerType==="pen"&&tool==="hand")return
     if(tool==="arrow"||tool==="select")return
     const p=gP(e)
     if(tool==="eyedropper"){
@@ -1517,7 +1518,14 @@ export default function EditorPage(){
   const[showRuler,setShowRuler]=useState(false)
   const[showProt,setShowProt]=useState(false)
   const[pageId,setPageId]=useState(null)
-  const[pencilOnly,setPencilOnly]=useState(false)
+  const[pencilOnly,setPencilOnly]=useState(()=>{
+    try{
+      const stored=localStorage.getItem("forma_pencil_only")
+      if(stored!==null)return stored!=="0"
+    }catch{}
+    return typeof window!=="undefined"&&("ontouchstart"in window||navigator.maxTouchPoints>0)
+  })
+  const penTapRef=useRef({t:0,x:0,y:0})
   const[importedImages,setImportedImages]=useState([])
   const[exporting,setExporting]=useState(false)
   const[readOnly,setReadOnly]=useState(false)
@@ -1760,6 +1768,7 @@ export default function EditorPage(){
     viewH:viewSize.h,
     enabled:!readOnly,
     allowPan:!readOnly,
+    touchPan:pencilOnly&&isTablet,
     documentPage,
   })
   const pageFitKey=`${page}-${pageFormat}-${pageRotation}-${infiniteMode}-${displayW}x${displayH}`
@@ -2400,15 +2409,26 @@ export default function EditorPage(){
     reader.readAsDataURL(file);e.target.value=""
   }
 
-  // Apple Pencil double-tap: switch eraser/pen
+  // Apple Pencil double-tap / barrel : alterner crayon ↔ gomme
   useEffect(()=>{
-    const handleDblTap=e=>{
-      if(e.pointerType==="pen"&&e.buttons===2){// barrel button or double-tap
+    const handlePenTap=e=>{
+      if(e.pointerType!=="pen")return
+      if(e.buttons===2){
         setTool(t=>t==="eraser"?"pen":"eraser")
+        return
+      }
+      const now=Date.now()
+      const last=penTapRef.current
+      const dist=Math.hypot(e.clientX-last.x,e.clientY-last.y)
+      if(now-last.t<400&&dist<48){
+        setTool(t=>t==="eraser"?"pen":"eraser")
+        penTapRef.current={t:0,x:0,y:0}
+      }else{
+        penTapRef.current={t:now,x:e.clientX,y:e.clientY}
       }
     }
-    window.addEventListener("pointerdown",handleDblTap)
-    return()=>window.removeEventListener("pointerdown",handleDblTap)
+    window.addEventListener("pointerdown",handlePenTap)
+    return()=>window.removeEventListener("pointerdown",handlePenTap)
   },[])
 
   useEffect(()=>()=>{saveNowRef.current?.()},[])

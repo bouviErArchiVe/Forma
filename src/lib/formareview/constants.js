@@ -19,12 +19,15 @@ export const A4_PX = { width: 794, height: 1123 }
 
 export const REVIEW_TOOLS = {
   select: { id: 'select', label: 'Sélection', icon: '↖' },
-  pin: { id: 'pin', label: 'Pin', icon: '📍' },
-  highlight: { id: 'highlight', label: 'Surlignage', icon: '🖍' },
+  hand: { id: 'hand', label: 'Déplacer', icon: '✋' },
+  draw: { id: 'draw', label: 'Crayon', icon: '✎' },
+  eraser: { id: 'eraser', label: 'Gomme', icon: '◻' },
+  highlight: { id: 'highlight', label: 'Surligneur', icon: '🖍' },
   text: { id: 'text', label: 'Texte', icon: 'T' },
   arrow: { id: 'arrow', label: 'Flèche', icon: '→' },
-  draw: { id: 'draw', label: 'Dessin', icon: '✎' },
-  hand: { id: 'hand', label: 'Déplacer', icon: '✋' },
+  rect: { id: 'rect', label: 'Rectangle', icon: '▭' },
+  circle: { id: 'circle', label: 'Cercle', icon: '○' },
+  pin: { id: 'pin', label: 'Pin', icon: '📍' },
 }
 
 export const REVIEW_MODES = {

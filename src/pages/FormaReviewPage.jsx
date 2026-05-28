@@ -14,6 +14,8 @@ import {
   listSessions, getSession, saveSession, createAndSaveSession, deleteSession, autosaveSession,
 } from '@/lib/formareview/persistence'
 import { importFiles, importFromLibraryItem } from '@/lib/formareview/import'
+import { hydrateLibraryItem } from '@/lib/formalibrary/persistence'
+import { useTabletLayout } from '@/hooks/useTabletLayout'
 
 export default function FormaReviewPage() {
   const navigate = useNavigate()
@@ -26,6 +28,7 @@ export default function FormaReviewPage() {
   const [session, setSession] = useState(null)
   const [selectedPageId, setSelectedPageId] = useState(null)
   const [busy, setBusy] = useState(false)
+  const isTablet = useTabletLayout()
 
   const editor = useReviewEditor(session || {}, setSession)
 
@@ -35,20 +38,25 @@ export default function FormaReviewPage() {
 
   useEffect(() => {
     const pending = sessionStorage.getItem('formareview-pending-library')
-    if (!pending) return
+    if (!pending) return undefined
     sessionStorage.removeItem('formareview-pending-library')
-    let item
-    try { item = JSON.parse(pending) } catch { return }
-    if (!item?.dataUrl && !item?.previewUrl) return
-    const s = createAndSaveSession(`Révision — ${item.name || 'Document'}`, { mode: 'plans' })
-    const page = importFromLibraryItem(item)
-    const full = { ...s, pages: [page], updatedAt: Date.now() }
-    saveSession(full)
-    refresh()
-    setSession(JSON.parse(JSON.stringify(full)))
-    setSelectedPageId(page.id)
-    setView('editor')
-    addNotification('Document ouvert dans FormaReview', 'success')
+    let cancelled = false
+    ;(async () => {
+      let item
+      try { item = JSON.parse(pending) } catch { return }
+      if (item?.blobId && !item.dataUrl) item = await hydrateLibraryItem(item)
+      if (cancelled || (!item?.dataUrl && !item?.previewUrl)) return
+      const s = createAndSaveSession(`Révision — ${item.name || 'Document'}`, { mode: 'plans' })
+      const page = importFromLibraryItem(item)
+      const full = { ...s, pages: [page], updatedAt: Date.now() }
+      saveSession(full)
+      refresh()
+      setSession(JSON.parse(JSON.stringify(full)))
+      setSelectedPageId(page.id)
+      setView('editor')
+      addNotification('Document ouvert dans FormaReview', 'success')
+    })()
+    return () => { cancelled = true }
   }, [refresh, addNotification])
 
   useEffect(() => {
@@ -238,6 +246,7 @@ export default function FormaReviewPage() {
           pins={pagePins}
           markups={pageMarkups}
           tool={editor.tool}
+          color={editor.color}
           selectedPinId={editor.selectedPinId}
           onPinClick={editor.setSelectedPinId}
           onPlacePin={handlePlacePin}
@@ -245,7 +254,9 @@ export default function FormaReviewPage() {
           onUpdateDraft={editor.updateDraft}
           onCommitDraft={() => currentPage && editor.commitDraft(currentPage.id)}
           onAddText={(x, y, text) => currentPage && editor.addTextMarkup(currentPage.id, x, y, text)}
+          onEraseAt={(pageId, x, y) => editor.eraseAt(pageId, x, y)}
           draftRef={editor.draftRef}
+          pencilOnly={isTablet}
         />
 
         <ReviewThreadPanel

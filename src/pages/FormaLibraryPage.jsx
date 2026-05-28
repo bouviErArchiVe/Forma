@@ -9,7 +9,8 @@ import { importFiles, linkInternalSource } from '@/lib/formalibrary/import'
 import { invalidateSearchIndex } from '@/lib/formaai/search/indexer'
 import {
   ensureLibraryPresets, saveLibrary,
-  createAndSaveFolder, saveItem, deleteItem,
+  createAndSaveFolder, saveItem, saveItemWithBlob, deleteItem,
+  hydrateLibraryItems, hydrateLibraryItem,
 } from '@/lib/formalibrary/persistence'
 
 export default function FormaLibraryPage() {
@@ -21,16 +22,22 @@ export default function FormaLibraryPage() {
   const [items, setItems] = useState([])
   const [currentFolderId, setCurrentFolderId] = useState(null)
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     const data = ensureLibraryPresets()
+    const hydrated = await hydrateLibraryItems(data.items)
     setFolders(data.folders)
-    setItems(data.items)
+    setItems(hydrated)
   }, [])
 
   useEffect(() => { refresh() }, [refresh])
 
   useEffect(() => {
-    saveLibrary({ folders, items })
+    const itemsForStore = items.map((item) => {
+      if (!item.blobId) return item
+      const { _blobUrl, dataUrl, previewUrl, ...rest } = item
+      return { ...rest, dataUrl: null, previewUrl: null }
+    })
+    saveLibrary({ folders, items: itemsForStore })
     invalidateSearchIndex()
   }, [folders, items])
 
@@ -51,8 +58,9 @@ export default function FormaLibraryPage() {
     addNotification('Sous-dossier créé', 'success')
   }
 
-  const handleSaveItem = (item) => {
-    const saved = saveItem(item)
+  const handleSaveItem = async (item) => {
+    let saved = item?.dataUrl && !item._blobUrl ? await saveItemWithBlob(item) : saveItem(item)
+    saved = await hydrateLibraryItem(saved)
     setItems((prev) => {
       const idx = prev.findIndex((i) => i.id === saved.id)
       if (idx >= 0) {
@@ -62,6 +70,7 @@ export default function FormaLibraryPage() {
       }
       return [saved, ...prev]
     })
+    return saved
   }
 
   const handleDeleteItem = (id) => {
@@ -84,10 +93,12 @@ export default function FormaLibraryPage() {
     }
 
     const imported = await importFiles(files, targetFolderId)
+    const saved = []
     for (const item of imported) {
-      saveItem(item)
+      saved.push(await saveItemWithBlob(item))
     }
-    setItems((prev) => [...imported, ...prev])
+    const hydrated = await hydrateLibraryItems(saved)
+    setItems((prev) => [...hydrated, ...prev])
   }
 
   const handleImportInternal = (source) => {

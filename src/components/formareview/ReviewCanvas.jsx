@@ -10,6 +10,7 @@ export default function ReviewCanvas({
   pins = [],
   markups = [],
   tool,
+  color,
   selectedPinId,
   onPinClick,
   onPlacePin,
@@ -17,7 +18,9 @@ export default function ReviewCanvas({
   onUpdateDraft,
   onCommitDraft,
   onAddText,
+  onEraseAt,
   draftRef,
+  pencilOnly = true,
 }) {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
@@ -26,6 +29,8 @@ export default function ReviewCanvas({
   const [drawing, setDrawing] = useState(false)
   const [bgReady, setBgReady] = useState(false)
   const imgRef = useRef(null)
+  const panStart = useRef(null)
+  const activePointer = useRef(null)
 
   useEffect(() => {
     const el = containerRef.current
@@ -75,18 +80,10 @@ export default function ReviewCanvas({
     const canvas = canvasRef.current
     if (!canvas || !page) return
     const ctx = canvas.getContext('2d')
-    const scale = viewport.zoom
-    const w = page.width * scale
-    const h = page.height * scale
     canvas.width = viewSize.w
     canvas.height = viewSize.h
     ctx.clearRect(0, 0, viewSize.w, viewSize.h)
 
-    const { sx: ox, sy: oy } = pageToScreen({
-      px: 0, py: 0, viewW: viewSize.w, viewH: viewSize.h,
-      pageW: page.width, pageH: page.height,
-      zoom: viewport.zoom, panX: viewport.panX, panY: viewport.panY,
-    })
     const topLeft = pageToScreen({
       px: 0, py: 0, viewW: viewSize.w, viewH: viewSize.h,
       pageW: page.width, pageH: page.height,
@@ -122,13 +119,33 @@ export default function ReviewCanvas({
         const rh = Math.abs(d.end.y - d.start.y) * localScale
         ctx.fillStyle = 'rgba(244,224,77,0.35)'
         ctx.fillRect(x, y, rw, rh)
-      } else if (d.type === 'arrow' && d.start && d.end) {
-        drawMarkup(ctx, {
-          type: 'arrow',
-          data: { x1: d.start.x, y1: d.start.y, x2: d.end.x, y2: d.end.y, color: '#e85d5d', width: 3 },
-        }, localScale)
+      } else if (['arrow', 'rect', 'circle'].includes(d.type) && d.start && d.end) {
+        if (d.type === 'arrow') {
+          drawMarkup(ctx, {
+            type: 'arrow',
+            data: { x1: d.start.x, y1: d.start.y, x2: d.end.x, y2: d.end.y, color: color || '#e85d5d', width: 3 },
+          }, localScale)
+        } else if (d.type === 'rect') {
+          drawMarkup(ctx, {
+            type: 'rect',
+            data: {
+              x: Math.min(d.start.x, d.end.x), y: Math.min(d.start.y, d.end.y),
+              w: Math.abs(d.end.x - d.start.x), h: Math.abs(d.end.y - d.start.y),
+              color: color || '#e85d5d', width: 3,
+            },
+          }, localScale)
+        } else {
+          drawMarkup(ctx, {
+            type: 'circle',
+            data: {
+              x: Math.min(d.start.x, d.end.x), y: Math.min(d.start.y, d.end.y),
+              w: Math.abs(d.end.x - d.start.x), h: Math.abs(d.end.y - d.start.y),
+              color: color || '#e85d5d', width: 3,
+            },
+          }, localScale)
+        }
       } else if (d.type === 'draw' && d.points?.length) {
-        drawMarkup(ctx, { type: 'draw', data: { points: d.points, color: '#5d9ee8', width: 3 } }, localScale)
+        drawMarkup(ctx, { type: 'draw', data: { points: d.points, color: color || '#5d9ee8', width: 3 } }, localScale)
       }
     }
 
@@ -136,12 +153,14 @@ export default function ReviewCanvas({
       drawPinMarker(ctx, pin, i, localScale, pin.id === selectedPinId)
     })
     ctx.restore()
-  }, [page, markups, pins, selectedPinId, viewport, viewSize, draftRef, bgReady])
+  }, [page, markups, pins, selectedPinId, viewport, viewSize, draftRef, bgReady, color])
 
   useEffect(() => { paint() }, [paint])
 
+  const isTouchNav = (e) => pencilOnly && e.pointerType === 'touch' && tool !== 'text'
+
   const handleWheel = (e) => {
-    if (tool !== 'hand' && !e.ctrlKey) return
+    if (tool !== 'hand' && !e.ctrlKey && !e.metaKey) return
     e.preventDefault()
     const rect = containerRef.current?.getBoundingClientRect()
     if (!rect) return
@@ -149,16 +168,27 @@ export default function ReviewCanvas({
     setViewport((v) => zoomByFactor(v, factor, { x: e.clientX - rect.left, y: e.clientY - rect.top }, viewSize.w, viewSize.h))
   }
 
+  const beginPan = (e) => {
+    panStart.current = { x: e.clientX, y: e.clientY, panX: viewport.panX, panY: viewport.panY }
+    activePointer.current = e.pointerId
+    setDrawing(true)
+    containerRef.current?.setPointerCapture(e.pointerId)
+  }
+
   const handlePointerDown = (e) => {
     if (!page) return
-    const pt = pageCoords(e.clientX, e.clientY)
-    if (!pt) return
-
-    if (tool === 'hand') {
-      setDrawing(true)
-      containerRef.current?.setPointerCapture(e.pointerId)
+    if (isTouchNav(e) || tool === 'hand') {
+      beginPan(e)
       return
     }
+    if (pencilOnly && e.pointerType === 'pen' && tool === 'hand') {
+      beginPan(e)
+      return
+    }
+    if (pencilOnly && e.pointerType === 'touch') return
+
+    const pt = pageCoords(e.clientX, e.clientY)
+    if (!pt) return
 
     if (tool === 'pin') {
       onPlacePin?.(pt.x, pt.y)
@@ -171,29 +201,32 @@ export default function ReviewCanvas({
       return
     }
 
-    if (['highlight', 'arrow', 'draw'].includes(tool)) {
+    if (tool === 'eraser') {
       setDrawing(true)
+      activePointer.current = e.pointerId
+      onEraseAt?.(page.id, pt.x, pt.y)
+      containerRef.current?.setPointerCapture(e.pointerId)
+      return
+    }
+
+    if (['highlight', 'arrow', 'draw', 'rect', 'circle'].includes(tool)) {
+      setDrawing(true)
+      activePointer.current = e.pointerId
       onStartDraft?.(tool, pt)
       containerRef.current?.setPointerCapture(e.pointerId)
+      return
     }
 
     if (tool === 'select') {
-      const hit = pins.find((pin) => {
-        const dist = Math.hypot(pin.x - pt.x, pin.y - pt.y)
-        return dist < 20 / viewport.zoom
-      })
+      const hit = pins.find((pin) => Math.hypot(pin.x - pt.x, pin.y - pt.y) < 20 / viewport.zoom)
       if (hit) onPinClick?.(hit.id)
     }
   }
 
-  const panStart = useRef(null)
   const handlePointerMove = (e) => {
-    if (!drawing) return
-    if (tool === 'hand') {
-      if (!panStart.current) {
-        panStart.current = { x: e.clientX, y: e.clientY, panX: viewport.panX, panY: viewport.panY }
-        return
-      }
+    if (!drawing || activePointer.current !== e.pointerId) return
+
+    if (panStart.current) {
       const dx = e.clientX - panStart.current.x
       const dy = e.clientY - panStart.current.y
       const next = clampDocumentPan({
@@ -206,17 +239,30 @@ export default function ReviewCanvas({
       setViewport((v) => ({ ...v, ...next }))
       return
     }
+
     const pt = pageCoords(e.clientX, e.clientY)
-    if (pt) onUpdateDraft?.(pt)
-    paint()
+    if (!pt) return
+
+    if (tool === 'eraser') {
+      onEraseAt?.(page.id, pt.x, pt.y)
+      paint()
+      return
+    }
+
+    if (['highlight', 'arrow', 'draw', 'rect', 'circle'].includes(tool)) {
+      onUpdateDraft?.(pt)
+      paint()
+    }
   }
 
   const handlePointerUp = (e) => {
-    if (tool === 'hand') {
+    if (activePointer.current !== e.pointerId) return
+    if (panStart.current) {
       panStart.current = null
-    } else if (['highlight', 'arrow', 'draw'].includes(tool)) {
+    } else if (['highlight', 'arrow', 'draw', 'rect', 'circle'].includes(tool)) {
       onCommitDraft?.()
     }
+    activePointer.current = null
     setDrawing(false)
     try { containerRef.current?.releasePointerCapture(e.pointerId) } catch { /* ignore */ }
     paint()
@@ -235,13 +281,15 @@ export default function ReviewCanvas({
       ref={containerRef}
       style={{
         flex: 1, position: 'relative', overflow: 'hidden',
-        background: '#0a0c10', cursor: tool === 'hand' ? 'grab' : tool === 'pin' ? 'crosshair' : 'default',
+        background: '#0a0c10',
+        cursor: tool === 'hand' || (pencilOnly && tool !== 'text') ? 'grab' : tool === 'pin' ? 'crosshair' : 'default',
         touchAction: 'none',
       }}
       onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       onPointerLeave={handlePointerUp}
     >
       <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />

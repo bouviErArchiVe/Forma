@@ -16,7 +16,7 @@ import {
   exportCombinedPdf,
 } from '@/lib/formacombine/export'
 import {
-  listCombineExports, saveCombineExport, deleteCombineExport, downloadExport, openExport, exportSizeLabel,
+  listCombineExports, saveCombineExport, deleteCombineExport, downloadExport, openExport, shareExport, exportSizeLabel,
 } from '@/lib/formacombine/exportsStore'
 
 export default function FormaCombinePage() {
@@ -125,19 +125,13 @@ export default function FormaCombinePage() {
     if (!project?.pages?.length) return
     setBusy(true)
     try {
-      if (kind === 'pdf') {
+      if (kind === 'pdf' || kind === 'pdf-dl') {
         const blob = await exportCombinedPdf(project)
-        const pdfDataUrl = await new Promise((resolve, reject) => {
-          const r = new FileReader()
-          r.onload = () => resolve(r.result)
-          r.onerror = reject
-          r.readAsDataURL(blob)
-        })
-        saveCombineExport({
+        await saveCombineExport({
           name: project.name,
           pageCount: project.pages.length,
           fileCount: project.pages.length,
-          pdfDataUrl,
+          pdfBlob: blob,
         })
         const a = document.createElement('a')
         a.href = URL.createObjectURL(blob)
@@ -145,8 +139,17 @@ export default function FormaCombinePage() {
         a.click()
         URL.revokeObjectURL(a.href)
         refresh()
-      } else if (kind === 'pdf-dl') await downloadCombinedPdf(project)
-      else if (kind === 'png') await downloadCombinedZip(project, 'png')
+      } else if (kind === 'pdf-share') {
+        const blob = await exportCombinedPdf(project)
+        const entry = await saveCombineExport({
+          name: project.name,
+          pageCount: project.pages.length,
+          fileCount: project.pages.length,
+          pdfBlob: blob,
+        })
+        if (entry) await shareExport(entry)
+        refresh()
+      } else if (kind === 'png') await downloadCombinedZip(project, 'png')
       else if (kind === 'jpg') await downloadCombinedZip(project, 'jpeg')
       else if (kind === 'folder') await downloadProjectBundle(project)
       else if (kind === 'pages-png') await downloadAllPagesIndividually(project, 'png')
@@ -208,6 +211,7 @@ export default function FormaCombinePage() {
                   </div>
                   <Btn onClick={() => openExport(ex)}>Ouvrir</Btn>
                   <Btn primary onClick={() => downloadExport(ex)}>Télécharger</Btn>
+                  <Btn onClick={() => shareExport(ex)}>Partager</Btn>
                   <Btn danger onClick={() => { deleteCombineExport(ex.id); refresh() }}>Suppr.</Btn>
                 </div>
               ))}
@@ -243,6 +247,8 @@ export default function FormaCombinePage() {
           if (t) addPages([titlePage(t)])
         }}>Titre</Btn>
         <Btn onClick={() => addPages([separatorPage()])}>Sépar.</Btn>
+        <Btn primary onClick={() => handleExport('pdf-dl')} disabled={busy || !project?.pages?.length}>⬇ PDF</Btn>
+        <Btn onClick={() => handleExport('pdf-share')} disabled={busy || !project?.pages?.length}>Partager</Btn>
         <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: FCMB_DARK.muted }}>
           <input
             type="checkbox"
@@ -258,7 +264,8 @@ export default function FormaCombinePage() {
           defaultValue=""
         >
           <option value="" disabled>Exporter…</option>
-          <option value="pdf">PDF combiné</option>
+          <option value="pdf-dl">PDF combiné + télécharger</option>
+          <option value="pdf-share">PDF combiné + partager</option>
           <option value="png">ZIP PNG</option>
           <option value="jpg">ZIP JPG</option>
           <option value="folder">Dossier complet (ZIP)</option>
