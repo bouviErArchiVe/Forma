@@ -63,7 +63,12 @@ git push -u origin main
    - `VITE_SUPABASE_ANON_KEY` = ta clé anon
 5. Clique **Deploy**
 
-🎉 En 2 minutes, ton app est en ligne à `forma-xxx.vercel.app` !
+🎉 En 2 minutes, ton app est en ligne !
+
+**URL production actuelle :** https://forma-iota-six.vercel.app
+
+> ⚠️ N'utilise pas `forma.vercel.app` — ce domaine pointe vers une autre application.  
+> Voir [DEPLOY_PIPELINE.md](./DEPLOY_PIPELINE.md) pour le diagnostic complet Git/Vercel.
 
 ---
 
@@ -77,7 +82,7 @@ git push -u origin main
 Si tu es étudiant, [education.github.com](https://education.github.com) donne des crédits chez Name.com
 
 ### Option C — reste sur vercel.app
-`forma.vercel.app` c'est parfait pour commencer !
+`forma-iota-six.vercel.app` (production actuelle) — voir `DEPLOY_PIPELINE.md`
 
 ---
 
