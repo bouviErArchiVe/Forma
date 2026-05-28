@@ -240,8 +240,8 @@ export default function FormaAppShell({
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
           {(title || headerExtra) && (
             <header style={{
-              height: 64, flexShrink: 0, background: C.header,
-              borderBottom: `1px solid ${C.separator}`,
+              height: 52, flexShrink: 0, background: '#1C1C1E',
+              borderBottom: '1px solid #38383A',
               display: 'flex', alignItems: 'center', padding: '0 20px', gap: 12,
             }}>
               <div style={{ minWidth: 0, flex: headerExtra ? '0 1 auto' : 1 }}>

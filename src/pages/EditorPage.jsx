@@ -1729,7 +1729,7 @@ function GoodNotesArrowHud({show,arrowStyle,setArrowStyle,onClose}){
 }
 
 function GoodNotesTopBar({
-  nb,navigate,tool,onToolClick,showPagePanel,showLayers,showLib,togglePanel,
+  nb,onBack,setActiveNotebook,tool,onToolClick,showPagePanel,showLayers,showLib,togglePanel,
   showTimer,setShowTimer,timerRunning,timerSec,
   showSearchPanel,setShowSearchPanel,showNotebookDropdown,setShowNotebookDropdown,
   showMoreMenu,setShowMoreMenu,notebooks,canUndo,canRedo,
@@ -1770,7 +1770,7 @@ function GoodNotesTopBar({
   return(
     <div style={{height:TOP_BAR_H,flexShrink:0,background:C.bar,borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 8px",gap:8,zIndex:30,position:"relative"}}>
       <div style={groupStyle}>
-        <button type="button" onClick={()=>navigate("/")} title="Accueil" style={{width:36,height:36,background:"transparent",border:"none",color:C.accent,cursor:"pointer",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>{HOME_SVG}</button>
+        <button type="button" onClick={()=>{if(onBack)onBack()}} title="Accueil" style={{width:36,height:36,background:"transparent",border:"none",color:C.accent,cursor:"pointer",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>{HOME_SVG}</button>
         <div ref={nbRef} style={{position:"relative"}}>
           <button type="button" onClick={()=>setShowNotebookDropdown(v=>!v)} style={{background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:4,padding:"4px 6px",borderRadius:8,maxWidth:160,height:36}}>
             <span style={{fontSize:14,fontWeight:600,color:C.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nb.title}</span>
@@ -1779,7 +1779,7 @@ function GoodNotesTopBar({
           {showNotebookDropdown&&(
             <div style={{position:"absolute",top:52,left:0,minWidth:240,background:C.bar,borderRadius:12,border:`1px solid ${C.border}`,boxShadow:"0 8px 32px rgba(0,0,0,0.6)",zIndex:200,overflow:"hidden"}}>
               {(notebooks||[]).map(n=>(
-                <button key={n.id} type="button" onClick={()=>{setShowNotebookDropdown(false);if(n.id===nb.id)navigate("/");else navigate(`/editor/${n.id}`)}} style={{width:"100%",height:44,padding:"0 14px",border:"none",background:"transparent",color:n.id===nb.id?C.accent:C.text,cursor:"pointer",fontSize:14,textAlign:"left",display:"flex",alignItems:"center",gap:10}}>
+                <button key={n.id} type="button" onClick={()=>{setShowNotebookDropdown(false);if(n.id===nb.id){if(onBack)onBack()}else setActiveNotebook(n)}} style={{width:"100%",height:44,padding:"0 14px",border:"none",background:"transparent",color:n.id===nb.id?C.accent:C.text,cursor:"pointer",fontSize:14,textAlign:"left",display:"flex",alignItems:"center",gap:10}}>
                   <span>📓</span>{n.title}
                 </button>
               ))}
@@ -2359,7 +2359,7 @@ function PageSettingsBody({T,pageColor,setPageColor,gridColor,setGridColor,gridS
 }
 
 /* ══ MAIN EDITOR ══════════════════════════════════════ */
-export default function EditorPage(){
+export default function EditorPage({ onBack }){
   const navigate=useNavigate()
   const { id: routeNotebookId } = useParams()
   const{activeNotebook,updateNotebook,setActiveNotebook,setTheme,canvasTextFont,setCanvasTextFont,addNotification,pendingFormulaNote,setPendingFormulaNote,pendingSpreadsheetInsert,setPendingSpreadsheetInsert,pendingDocInsert,setPendingDocInsert,notebooks,customProfiles,addCustomProfile,removeCustomProfile}=useAppStore()
@@ -2384,11 +2384,11 @@ export default function EditorPage(){
           if(!cancelled&&data){setActiveNotebook(data);return}
         }
       }catch{/* ignore */}
-      if(!cancelled)navigate("/",{replace:true})
+      if(!cancelled){if(onBack)onBack();else navigate("/",{replace:true})}
     }
     loadNb()
     return()=>{cancelled=true}
-  },[routeNotebookId,activeNotebook,setActiveNotebook,navigate])
+  },[routeNotebookId,activeNotebook,setActiveNotebook,navigate,onBack])
   const cRef=useRef()
 
   const[tool,setTool]=useState("pen")
@@ -4050,7 +4050,8 @@ export default function EditorPage(){
           <div style={{position:"relative",flexShrink:0,zIndex:30}}>
           <GoodNotesTopBar
             nb={nb}
-            navigate={navigate}
+            onBack={onBack}
+            setActiveNotebook={setActiveNotebook}
             tool={tool}
             onToolClick={handleToolClick}
             showPagePanel={showPagePanelOpen}

@@ -1,13 +1,30 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useTheme } from '@/hooks/useAppearance'
 import useMoodboardStore from '@/stores/useMoodboardStore'
-import BrandLogo from '@/components/BrandLogo'
 import CalculatorDrawer from '@/components/CalculatorDrawer'
 import { useCalculator } from '@/hooks/useCalculator'
 import { distributeMasonry, masonryColumnCount } from '@/lib/masonryLayout'
 import { downloadMoodboardPng, downloadMoodboardPdf, copyMoodboardLink } from '@/lib/moodboard/export'
 import { TOKENS } from '@/theme/tokens'
+
+const UI = {
+  HEADER_BG: '#1C1C1E',
+  HEADER_BORDER: '#38383A',
+  HEADER_HEIGHT: 52,
+  ACCENT: '#0A84FF',
+  TEXT: '#FFFFFF',
+  MUTED: '#8E8E93',
+  PANEL_BG: '#2C2C2E',
+  PANEL_BORDER: '#3A3A3C',
+}
+
+const HOME_SVG = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+    <polyline points="9 22 9 12 15 12 15 22" />
+  </svg>
+)
 
 const EMOJIS = ['🌅','🎨','🏛','🌿','🌊','🔥','💎','🌙','⭐','🎭','🏙','🌸','🦋','🪨','🌈','🎯','📐','✏','🖼','🗺']
 const mkId = () => Date.now().toString() + Math.random().toString(36).slice(2,6)
@@ -129,8 +146,7 @@ function CanvasImg({ img, selected, T, onSelect, onUpdate, onDelete, onBringToFr
   )
 }
 
-export default function MoodboardPage() {
-  const navigate = useNavigate()
+export default function MoodboardPage({ onBack }) {
   const [searchParams] = useSearchParams()
   const { T } = useTheme()
   const { boards, images, addBoard, updateBoard, deleteBoard, archiveBoard, addImage, updateImage, deleteImage, toggleStar, bringToFront } = useMoodboardStore()
@@ -349,7 +365,7 @@ export default function MoodboardPage() {
   )
 
   return (
-    <div className="forma-page-shell" style={{ display: 'flex', height: '100dvh', overflow: 'hidden' }}>
+    <div className="forma-page-shell" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
 
       <CalculatorDrawer
         T={T}
@@ -360,12 +376,86 @@ export default function MoodboardPage() {
         {...calc}
       />
 
+      <header style={{
+        height: UI.HEADER_HEIGHT,
+        flexShrink: 0,
+        background: UI.HEADER_BG,
+        borderBottom: `1px solid ${UI.HEADER_BORDER}`,
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 12px',
+        gap: 8,
+        position: 'relative',
+        zIndex: 20,
+      }}>
+        <button
+          type="button"
+          onClick={() => { if (onBack) onBack() }}
+          title="Accueil"
+          style={{
+            width: 36, height: 36, background: 'transparent', border: 'none',
+            color: UI.ACCENT, cursor: 'pointer', borderRadius: 8,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0,
+          }}
+        >
+          {HOME_SVG}
+        </button>
+        <div style={{
+          position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+          fontSize: 16, fontWeight: 600, color: UI.TEXT, pointerEvents: 'none',
+        }}>
+          Moodboard
+        </div>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <button type="button" onClick={() => setShowCalc(v => !v)} title="Calculatrice"
+            style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${showCalc ? UI.ACCENT : UI.PANEL_BORDER}`, background: showCalc ? `${UI.ACCENT}18` : 'transparent', color: showCalc ? UI.ACCENT : UI.TEXT, cursor: 'pointer', fontSize: 14 }}>
+            🧮
+          </button>
+          {activeId && displayImages.length > 0 && (
+            <>
+              <button type="button" disabled={exporting} onClick={handleExportPng} title="Export PNG"
+                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${UI.PANEL_BORDER}`, background: UI.PANEL_BG, color: UI.TEXT, cursor: exporting ? 'wait' : 'pointer', fontSize: 11 }}>
+                {exporting ? '⏳' : '⬇ PNG'}
+              </button>
+              <button type="button" disabled={exporting} onClick={handleExportPdf} title="Export PDF"
+                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${UI.PANEL_BORDER}`, background: UI.PANEL_BG, color: UI.TEXT, cursor: exporting ? 'wait' : 'pointer', fontSize: 11 }}>
+                PDF
+              </button>
+              <button type="button" onClick={handleShareLink} title="Copier le lien du board"
+                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${UI.PANEL_BORDER}`, background: UI.PANEL_BG, color: UI.TEXT, cursor: 'pointer', fontSize: 11 }}>
+                🔗
+              </button>
+            </>
+          )}
+          {activeId && (
+            <div ref={addMenuRef} style={{ position: 'relative' }}>
+              <button onClick={() => setShowAddMenu(v => !v)}
+                style={{ background: UI.ACCENT, color: '#fff', border: 'none', borderRadius: 8, padding: '7px 13px', cursor: 'pointer', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>
+                + Ajouter ▾
+              </button>
+              {showAddMenu && (
+                <div style={{ position: 'absolute', right: 0, top: '110%', background: UI.PANEL_BG, border: `1px solid ${UI.PANEL_BORDER}`, borderRadius: 10, overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,.4)', zIndex: 50, minWidth: 180 }}>
+                  <button onClick={() => { fileInputRef.current?.click(); setShowAddMenu(false) }}
+                    style={{ display: 'block', width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: UI.TEXT, textAlign: 'left' }}>
+                    📁 Importer des fichiers
+                  </button>
+                  <button onClick={() => { setShowUrlInput(v => !v); setShowAddMenu(false) }}
+                    style={{ display: 'block', width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: UI.TEXT, textAlign: 'left' }}>
+                    🔗 Depuis une URL
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          <input ref={fileInputRef} type='file' accept='image/*' multiple style={{ display: 'none' }} onChange={e => { handleFiles(e.target.files); e.target.value = '' }}/>
+        </div>
+      </header>
+
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
+
       {/* SIDEBAR */}
       <div style={SB}>
         <div style={{ padding: collapsed ? '14px 10px' : '14px 12px', borderBottom: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <button type="button" onClick={() => navigate('/')} title="Accueil" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0 }}>
-            <BrandLogo T={T} size="sm" showText={false} />
-          </button>
           {!collapsed && <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: T.ink, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>FMoodboard</span>}
           <button onClick={() => setCollapsed(c => !c)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: T.muted, padding: '2px 4px', borderRadius: 6, lineHeight: 1, flexShrink: 0, marginLeft: 'auto' }}>{collapsed ? '»' : '«'}</button>
         </div>
@@ -440,52 +530,6 @@ export default function MoodboardPage() {
                 style={{ padding: '6px 12px', border: 'none', background: mode === m ? `${T.accent}22` : 'transparent', color: mode === m ? T.accent : T.muted, cursor: 'pointer', fontSize: 11, fontWeight: mode === m ? 700 : 400, transition: 'all .15s' }}>{l}</button>
             ))}
           </div>
-          <button type="button" onClick={() => setShowCalc(v => !v)} title="Calculatrice"
-            style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${showCalc ? T.accent : T.border}`, background: showCalc ? `${T.accent}18` : 'transparent', color: showCalc ? T.accent : T.ink, cursor: 'pointer', fontSize: 14, flexShrink: 0 }}>
-            🧮
-          </button>
-          {activeId && displayImages.length > 0 && (
-            <>
-              <button type="button" disabled={exporting} onClick={handleExportPng} title="Export PNG"
-                className="forma-btn-glass"
-                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, cursor: exporting ? 'wait' : 'pointer', fontSize: 11, flexShrink: 0 }}>
-                {exporting ? '⏳' : '⬇ PNG'}
-              </button>
-              <button type="button" disabled={exporting} onClick={handleExportPdf} title="Export PDF"
-                className="forma-btn-glass"
-                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, cursor: exporting ? 'wait' : 'pointer', fontSize: 11, flexShrink: 0 }}>
-                PDF
-              </button>
-              <button type="button" onClick={handleShareLink} title="Copier le lien du board"
-                className="forma-btn-glass"
-                style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, cursor: 'pointer', fontSize: 11, flexShrink: 0 }}>
-                🔗
-              </button>
-            </>
-          )}
-          {activeId && (
-            <div ref={addMenuRef} style={{ position: 'relative', flexShrink: 0 }}>
-              <button onClick={() => setShowAddMenu(v => !v)}
-                style={{ background: `linear-gradient(135deg,${T.accent},${T.a2})`, color: '#fff', border: 'none', borderRadius: 8, padding: '7px 13px', cursor: 'pointer', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>
-                + Ajouter ▾
-              </button>
-              {showAddMenu && (
-                <div style={{ position: 'absolute', right: 0, top: '110%', background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10, overflow: 'hidden', boxShadow: `0 8px 24px rgba(0,0,0,.12)`, zIndex: 50, minWidth: 180 }}>
-                  <button onClick={() => { fileInputRef.current?.click(); setShowAddMenu(false) }}
-                    style={{ display: 'block', width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: T.ink, textAlign: 'left' }}
-                    onMouseEnter={e => e.currentTarget.style.background = `${T.accent}11`} onMouseLeave={e => e.currentTarget.style.background = 'none'}>
-                    📁 Importer des fichiers
-                  </button>
-                  <button onClick={() => { setShowUrlInput(v => !v); setShowAddMenu(false) }}
-                    style={{ display: 'block', width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: T.ink, textAlign: 'left' }}
-                    onMouseEnter={e => e.currentTarget.style.background = `${T.accent}11`} onMouseLeave={e => e.currentTarget.style.background = 'none'}>
-                    🔗 Depuis une URL
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-          <input ref={fileInputRef} type='file' accept='image/*' multiple style={{ display: 'none' }} onChange={e => { handleFiles(e.target.files); e.target.value = '' }}/>
         </div>
 
         {/* URL BAR */}
@@ -624,6 +668,7 @@ export default function MoodboardPage() {
             </div>
           )}
         </div>
+      </div>
       </div>
 
       {/* NEW BOARD MODAL */}

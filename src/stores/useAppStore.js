@@ -206,6 +206,13 @@ const useAppStore = create(
         notebooks: s.notebooks.map(n => n.id === id ? { ...n, starred: !n.starred } : n)
       })),
 
+      // ── Navigation globale (AppLayout) ───────────────────
+      activeView: 'library',
+      setActiveView: (view) => {
+        set({ activeView: view })
+        if (typeof window !== 'undefined') window.scrollTo(0, 0)
+      },
+
       // ── Active Notebook / Editor ──────────────────────────
       activeNotebook: null,
       setActiveNotebook: (nb) => set({ activeNotebook: nb }),

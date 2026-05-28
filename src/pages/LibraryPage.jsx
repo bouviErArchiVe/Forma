@@ -63,6 +63,17 @@ import {
 
 const FOLDER_EMOJIS = ["📁","📂","🏗","🏛","📐","⚙","🎨","📚","🌿","🔥","⭐","💡","🎯","🏆","🔬","🌍","🏠","🚀","💎","🗂"]
 
+const UI = {
+  HEADER_BG: '#1C1C1E',
+  HEADER_BORDER: '#38383A',
+  HEADER_HEIGHT: 52,
+  ACCENT: '#0A84FF',
+  TEXT: '#FFFFFF',
+  MUTED: '#8E8E93',
+  PANEL_BG: '#2C2C2E',
+  PANEL_BORDER: '#3A3A3C',
+}
+
 const DEFAULT_SUBJECTS=[
   {id:"arch",    l:"Architecture",    c:"#c8622a",e:"🏛",custom:false},
   {id:"struct",  l:"Structure",       c:"#3d6b8c",e:"⚙", custom:false},
@@ -365,12 +376,13 @@ function StatChip({e, v, l, tab, activeTab, setActiveTab, T, action}) {
       className={`forma-stat-chip ${clickable ? 'forma-stat-chip--clickable' : ''}`}
       onClick={() => action ? action() : (tab && setActiveTab(tab))}
       style={{
-        background: isActive ? `${T.accent}18` : T.surface,
-        border:`1px solid ${isActive ? T.accent : T.border}`,
+        background: isActive ? `${UI.ACCENT}18` : UI.PANEL_BG,
+        border:`1px solid ${isActive ? UI.ACCENT : UI.PANEL_BORDER}`,
+        borderRadius: 10,
         cursor: clickable ? "pointer" : "default",
       }}
-      onMouseEnter={e2 => { if (clickable) e2.currentTarget.style.borderColor = T.accent + "66" }}
-      onMouseLeave={e2 => { if (clickable) e2.currentTarget.style.borderColor = isActive ? T.accent : T.border }}
+      onMouseEnter={e2 => { if (clickable) e2.currentTarget.style.borderColor = UI.ACCENT + "66" }}
+      onMouseLeave={e2 => { if (clickable) e2.currentTarget.style.borderColor = isActive ? UI.ACCENT : UI.PANEL_BORDER }}
     >
       <span style={{fontSize:13}}>{e}</span>
       <span style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:14,color:isActive?T.accent:T.ink,lineHeight:1}}>{v}</span>
@@ -718,7 +730,7 @@ function ThemePicker({ onClose }) {
   )
 }
 
-export default function LibraryPage() {
+export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
   const navigate = useNavigate()
   const location = useLocation()
   const C = useFormaShellColors()
@@ -946,7 +958,7 @@ export default function LibraryPage() {
     saveRecent(nb.id)
     setRecentIds(safeJsonParse(safeGetLocalStorage(RECENT_KEY, '[]'), []))
     setActiveNotebook(nb)
-    navigate(`/editor/${nb.id}`)
+    if (onOpenEditor) onOpenEditor()
   }
 
   const toggleStar = async (id, e) => {
@@ -1688,6 +1700,18 @@ export default function LibraryPage() {
             <HeaderIconBtn active={showCalc} onClick={() => setShowCalc(v => !v)} title="Calculatrice"><Calculator size={20} /></HeaderIconBtn>
             <HeaderIconBtn active={showConverter} onClick={() => setShowConverter(v => !v)} title="Convertisseur"><Ruler size={20} /></HeaderIconBtn>
             <HeaderIconBtn active={showTranslate} onClick={() => setShowTranslate(v => !v)} title="Traduction"><Languages size={20} /></HeaderIconBtn>
+            <button
+              type="button"
+              onClick={() => onOpenMoodboard?.()}
+              style={{
+                padding: '8px 14px', borderRadius: 9,
+                background: 'transparent',
+                border: `1px solid ${UI.PANEL_BORDER}`,
+                color: UI.MUTED, fontWeight: 600, fontSize: 12, cursor: 'pointer',
+              }}
+            >
+              🖼 Moodboard
+            </button>
             <HeaderIconBtn active={false} onClick={() => window.dispatchEvent(new CustomEvent('forma:open-search'))} title="Recherche"><Search size={22} /></HeaderIconBtn>
             <HeaderIconBtn active={false} onClick={() => navigate('/formaai')} title="FormaAI"><Sparkles size={20} /></HeaderIconBtn>
             {userId && (
@@ -1715,7 +1739,7 @@ export default function LibraryPage() {
                 <button
                   type="button"
                   onClick={() => setShowNew(true)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 10, border: 'none', background: C.accent, color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 10, border: 'none', background: UI.ACCENT, color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
                 >
                   <Plus size={16} />
                   Nouveau
@@ -1936,7 +1960,7 @@ export default function LibraryPage() {
                     onCreateFolder={(parentId) => { setNewFolderParentId(parentId || null); setShowNewFolder(true) }}
                     onEditFolder={openEditFolder}
                     onAssignNotebooks={assignFolderBatch}
-                    onOpenNotebook={(nb) => { setActiveNotebook(nb); navigate(`/editor/${nb.id}`) }}
+                    onOpenNotebook={(nb) => { setActiveNotebook(nb); if (onOpenEditor) onOpenEditor() }}
                     renderNotebook={renderNotebook}
                     addNotification={addNotification}
                     showHeader={false}
