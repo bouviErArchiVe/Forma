@@ -105,7 +105,7 @@ export default function FormaAppShell({
   const C = useMemo(() => getFormaShellColors(T), [T])
 
   const isHome = location.pathname === '/'
-  const [openSections, setOpenSections] = useState({ library: false, modules: false, tools: false })
+  const [openSections, setOpenSections] = useState({ library: true, modules: false, tools: false })
   const toggleSection = (key) => setOpenSections((s) => ({ ...s, [key]: !s[key] }))
   const avatarLetter = (collab.user?.email || user?.email || 'F')[0]?.toUpperCase() || 'F'
   const userLabel = collab.user?.email || user?.email || 'Invité'
