@@ -105,8 +105,6 @@ export function buildSearchIndex({ force = false } = {}) {
     })
   }
 
-  // Proforma désactivé — indexation ignorée
-
   // FormaCombine
   for (const proj of listCombine()) {
     const pageText = (proj.pages || []).map((p) => [p.name, p.text, p.sourceType].filter(Boolean).join(' ')).join(' ')

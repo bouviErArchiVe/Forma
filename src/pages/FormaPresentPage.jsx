@@ -164,7 +164,7 @@ export default function FormaPresentPage() {
 
         <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '24px 32px max(24px, env(safe-area-inset-bottom))', maxWidth: 960, margin: '0 auto', width: '100%' }}>
           <p style={{ color: FPR_DARK.muted, fontSize: 14, marginBottom: 24 }}>
-            Présentations intégrées — slides, texte, images, vidéos, Proforma, FormaTab, moodboards. Mode plein écran avec laser et notes.
+            Présentations intégrées — slides, texte, images, vidéos, FormaTab, moodboards. Mode plein écran avec laser et notes.
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12, marginBottom: 32 }}>

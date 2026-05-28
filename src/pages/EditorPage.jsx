@@ -381,7 +381,7 @@ function renderEl(el,sc=1/50,sx=1,sy=1){
   if(el.type==="win")return<svg width={W}height={H}style={{display:"block"}}><rect width={W}height={H}fill="rgba(122,181,212,.25)"stroke="#4a90b8"strokeWidth={1.5}/><line x1={W/2}y1={0}x2={W/2}y2={H}stroke="#4a90b8"strokeWidth={.8}/><line x1={0}y1={H/2}x2={W}y2={H/2}stroke="#4a90b8"strokeWidth={.8}/></svg>
   if(el.type==="spreadsheet")return<SpreadsheetPlacedStatic el={el} sx={sx} sy={sy}/>
   if(el.type==="document")return<DocPlacedStatic el={el} sx={sx} sy={sy}/>
-  if(el.type==="proforma"&&el.imageSrc)return<img src={el.imageSrc} alt={el.l||"Proforma"} style={{width:W,height:H,objectFit:"contain",display:"block"}}/>
+  if(el.type==="proforma"&&el.imageSrc)return<img src={el.imageSrc} alt={el.l||"Image"} style={{width:W,height:H,objectFit:"contain",display:"block"}}/>
   if(el.type==="drawn"&&el.sketchUrl)return<img src={el.sketchUrl} alt={el.l||"Profil"} style={{width:W,height:H,objectFit:"contain",display:"block"}}/>
   return<div style={{width:W,height:H,background:"#ccc",border:"1px solid #999",fontSize:8,overflow:"hidden"}}>{el.l}</div>
 }

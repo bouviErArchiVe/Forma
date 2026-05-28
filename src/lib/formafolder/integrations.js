@@ -26,10 +26,6 @@ export function openItemInModule(navigate, item, addNotification) {
       addNotification?.(`Ouvrir « ${raw.name} » dans FormaTab`, 'info')
       return true
     }
-    if (mod === 'proforma') {
-      addNotification?.('Proforma a été retiré de Forma', 'info')
-      return true
-    }
     if (raw.type === 'pdf' && raw.dataUrl) {
       navigate(MODULES.formaDoc.route)
       addNotification?.('PDF — ouvrir dans FormaDoc pour annotation', 'info')

@@ -176,7 +176,7 @@ export default function FormaCombinePage() {
         </FormaModuleHeader>
         <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '24px 24px max(24px, env(safe-area-inset-bottom))', maxWidth: 900, margin: '0 auto', width: '100%' }}>
           <p style={{ color: FCMB_DARK.muted, marginBottom: 20 }}>
-            Regroupez PDF, images, textes, Proforma, FormaDoc, FormaTab et pages Forma en un document exportable.
+            Regroupez PDF, images, textes, FormaDoc, FormaTab et pages Forma en un document exportable.
           </p>
           {projects.length === 0 ? (
             <div style={cardStyle}>

@@ -30,3 +30,6 @@ Aucune mise à jour partielle. Chaque pack doit être exécuté et validé en en
 3. Bugs rencontrés
 4. Limites techniques
 5. Modules testés
+
+## Direction produit
+Voir [DEVELOPMENT_DIRECTION.md](./DEVELOPMENT_DIRECTION.md) — modules cibles, ordre de complétion, retrait définitif de Proforma.
