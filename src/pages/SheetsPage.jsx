@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { loadLocalNotebooks } from '@/lib/projectPersistence'
 import useAppStore from '@/stores/useAppStore'
-import FormaModuleHeader from '@/components/FormaModuleHeader'
+import FormaAppShell from '@/components/FormaAppShell'
 import BrandLogo from '@/components/BrandLogo'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassButton from '@/components/ui/GlassButton'
@@ -210,12 +210,11 @@ export default function SheetsPage() {
   }
 
   return (
-    <div style={{ minHeight: '100dvh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
-      <FormaModuleHeader
-        title="FormaTab"
-        subtitle={`${listed.length} tableau${listed.length !== 1 ? 'x' : ''}`}
-        sticky
-      >
+    <FormaAppShell
+      title="FormaTab"
+      subtitle={`${listed.length} tableau${listed.length !== 1 ? 'x' : ''}`}
+      headerExtra={(
+        <>
         <div style={{ position: 'relative', flex: '1 1 220px', maxWidth: 320 }}>
           <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: T.muted }}>🔍</span>
           <input
@@ -232,9 +231,10 @@ export default function SheetsPage() {
           <option value="name-desc">Nom Z→A</option>
         </select>
         <GlassButton T={T} size="md" onClick={handleNew}>+ Nouveau tableau</GlassButton>
-      </FormaModuleHeader>
-
-      <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px 24px max(40px, env(safe-area-inset-bottom))', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+        </>
+      )}
+    >
+      <div style={{ padding: '20px 24px max(40px, env(safe-area-inset-bottom))', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
         {listed.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px', color: T.muted }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>📊</div>
@@ -264,7 +264,7 @@ export default function SheetsPage() {
             ))}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </FormaAppShell>
   )
 }

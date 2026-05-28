@@ -22,7 +22,7 @@ function rgbToHex({ r, g, b }) {
   return `#${to(r)}${to(g)}${to(b)}`
 }
 
-function mix(aHex, bHex, t) {
+export function mix(aHex, bHex, t) {
   const a = hexToRgb(aHex)
   const b = hexToRgb(bHex)
   if (!a || !b) return aHex || bHex

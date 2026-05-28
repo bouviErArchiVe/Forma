@@ -1,14 +1,9 @@
 /** FormaReview — constantes UI et outils */
 
+import { FORMA_THEME_VARS } from '@/lib/formaShell'
+
 export const FRV_DARK = {
-  bg: '#0d0f14',
-  surface: '#151820',
-  panel: '#1a1e28',
-  border: '#2a3144',
-  ink: '#e8ecf4',
-  muted: '#8b95a8',
-  accent: '#e8a87c',
-  accent2: '#ffd4a8',
+  ...FORMA_THEME_VARS,
   prof: '#e85d5d',
   student: '#5d9ee8',
   team: '#7bc96f',

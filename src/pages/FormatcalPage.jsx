@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '@/hooks/useAppearance'
 import useAppStore from '@/stores/useAppStore'
-import FormaModuleHeader from '@/components/FormaModuleHeader'
+import FormaAppShell from '@/components/FormaAppShell'
 import FormatcalSidebar from '@/components/formatcal/FormatcalSidebar'
 import FormatcalEventModal from '@/components/formatcal/FormatcalEventModal'
 import {
@@ -125,9 +125,7 @@ export default function FormatcalPage() {
   }
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: FC_DARK.bg, color: FC_DARK.ink }}>
-      <FormaModuleHeader title="FormatCal" dark={FC_DARK} style={{ height: 52, padding: '0 16px', background: FC_DARK.panel }} />
-
+    <FormaAppShell title="FormatCal">
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -185,7 +183,7 @@ export default function FormatcalPage() {
         onSave={handleSave}
         onDelete={handleDelete}
       />
-    </div>
+    </FormaAppShell>
   )
 }
 

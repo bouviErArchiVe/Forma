@@ -51,8 +51,10 @@ function useFormaThemeEngine() {
     '--forma-panel': T.panel,
     '--forma-paper': T.paper || T.surface,
     '--forma-accent': T.accent,
+    '--forma-a2': T.a2 || T.accent,
+    '--forma-a3': T.a3 || T.a2 || T.accent,
     ...(customBg ? { '--app-background-image': `url(${customBg})` } : {}),
-  }), [T.bg, T.ink, T.surface, T.border, T.muted, T.panel, T.paper, T.accent, fontFamily, customBg])
+  }), [T.bg, T.ink, T.surface, T.border, T.muted, T.panel, T.paper, T.accent, T.a2, T.a3, fontFamily, customBg])
 
   useEffect(() => {
     const root = document.documentElement

@@ -1,17 +1,9 @@
 /** FORMATCAL — thème et constantes */
 
+import { FORMA_THEME_VARS } from '@/lib/formaShell'
+
 export const FC_DARK = {
-  bg: '#0e1016',
-  surface: '#161922',
-  panel: '#1a1f2b',
-  border: '#2a3144',
-  ink: '#e8ecf4',
-  muted: '#8b95a8',
-  accent: '#6b8fd4',
-  accent2: '#8ec5ff',
-  danger: '#e94560',
-  success: '#4a7c59',
-  warning: '#f5a623',
+  ...FORMA_THEME_VARS,
 }
 
 export const FC_VIEWS = [

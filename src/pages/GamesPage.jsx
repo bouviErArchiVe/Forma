@@ -4,7 +4,7 @@ import { useTheme } from '@/hooks/useAppearance'
 import { GAMES, getGameById, loadGameComponent } from '@/data/games'
 import { useGameScores } from '@/hooks/useGameScores'
 import GameCard from '@/components/games/GameCard'
-import FormaModuleHeader from '@/components/FormaModuleHeader'
+import FormaAppShell from '@/components/FormaAppShell'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 
 function GameLoader({ gameId, T, onClose, bestScore, onSaveScore }) {
@@ -63,10 +63,8 @@ export default function GamesPage() {
   }, [saveBest])
 
   return (
-    <div style={{ minHeight: '100dvh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column' }}>
-      <FormaModuleHeader title="FPause" subtitle="Mini-jeux · détente rapide" />
-
-      <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', maxWidth: 720, margin: '0 auto', padding: '24px 20px max(48px, env(safe-area-inset-bottom))', width: '100%' }}>
+    <FormaAppShell title="FPause" subtitle="Mini-jeux · détente rapide">
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 20px max(48px, env(safe-area-inset-bottom))', width: '100%' }}>
         <p style={{ fontSize: 13, color: T.muted, lineHeight: 1.6, margin: '0 0 22px', maxWidth: 520 }}>
           Un coin fun discret pour une mini-pause. Les jeux se chargent uniquement quand vous les ouvrez.
         </p>
@@ -82,7 +80,7 @@ export default function GamesPage() {
             />
           ))}
         </div>
-      </main>
+      </div>
 
       {activeGame && (
         <ModalOverlay onClose={() => setActiveGameId(null)}>
@@ -108,6 +106,6 @@ export default function GamesPage() {
           </div>
         </ModalOverlay>
       )}
-    </div>
+    </FormaAppShell>
   )
 }

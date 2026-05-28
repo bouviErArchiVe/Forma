@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import FormaModuleHeader from '@/components/FormaModuleHeader'
+import FormaAppShell from '@/components/FormaAppShell'
 import CombineSidebar from '@/components/formacombine/CombineSidebar'
 import CombinePreview from '@/components/formacombine/CombinePreview'
 import CombineImportModal from '@/components/formacombine/CombineImportModal'
@@ -170,14 +170,12 @@ export default function FormaCombinePage() {
 
   if (view === 'library') {
     return (
-      <div style={{ minHeight: '100dvh', background: FCMB_DARK.bg, color: FCMB_DARK.ink, display: 'flex', flexDirection: 'column' }}>
-        <FormaModuleHeader title="FormaCombine" dark={FCMB_DARK}>
-          <Btn onClick={handleNew}>+ Nouveau</Btn>
-        </FormaModuleHeader>
-        <main style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '24px 24px max(24px, env(safe-area-inset-bottom))', maxWidth: 900, margin: '0 auto', width: '100%' }}>
-          <p style={{ color: FCMB_DARK.muted, marginBottom: 20 }}>
-            Regroupez PDF, images, textes, FormaDoc, FormaTab et pages Forma en un document exportable.
-          </p>
+      <FormaAppShell
+        title="FormaCombine"
+        subtitle="Regroupez PDF, images, textes et pages Forma en un document exportable"
+        headerExtra={<Btn onClick={handleNew}>+ Nouveau</Btn>}
+      >
+        <div style={{ padding: '24px 24px max(24px, env(safe-area-inset-bottom))', maxWidth: 900, margin: '0 auto', width: '100%' }}>
           {projects.length === 0 ? (
             <div style={cardStyle}>
               <p>Aucun projet. Créez une combinaison pour commencer.</p>
@@ -222,8 +220,8 @@ export default function FormaCombinePage() {
               Les PDF combinés exportés apparaîtront ici dans « PDF combinés ».
             </div>
           )}
-        </main>
-      </div>
+        </div>
+      </FormaAppShell>
     )
   }
 

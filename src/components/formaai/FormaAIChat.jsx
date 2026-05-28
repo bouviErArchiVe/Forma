@@ -21,7 +21,7 @@ function saveHistory(messages) {
   } catch { /* quota */ }
 }
 
-export default function FormaAIChat({ fullPage = false, onClose, initialText = '' }) {
+export default function FormaAIChat({ fullPage = false, embedded = false, onClose, initialText = '' }) {
   const apiReady = isAIChatConfigured()
   const [messages, setMessages] = useState(() => loadHistory())
   const [input, setInput] = useState(initialText)
@@ -85,7 +85,9 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
     }
   }, [input, busy, action, messages])
 
-  const shellStyle = fullPage
+  const shellStyle = embedded
+    ? { height: '100%', minHeight: 0, display: 'flex', flexDirection: 'column', background: FAI_DARK.bg, color: FAI_DARK.ink }
+    : fullPage
     ? { minHeight: '100dvh', background: FAI_DARK.bg, color: FAI_DARK.ink, display: 'flex', flexDirection: 'column' }
     : {
       position: 'fixed', bottom: 16, right: 16, width: 'min(380px, calc(100vw - 32px))',
@@ -96,9 +98,9 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
 
   return (
     <div style={shellStyle}>
-      {fullPage ? (
+      {fullPage && !embedded ? (
         <FormaModuleHeader title="FormaAI" subtitle="Discussion · architecture & cours" dark={FAI_DARK} />
-      ) : (
+      ) : !embedded ? (
         <div style={{
           padding: '12px 14px',
           borderBottom: `1px solid ${FAI_DARK.border}`,
@@ -108,7 +110,7 @@ export default function FormaAIChat({ fullPage = false, onClose, initialText = '
           <strong style={{ flex: 1, fontSize: 14 }}>FormaAI</strong>
           {onClose && <button type="button" onClick={onClose} style={iconBtn}>✕</button>}
         </div>
-      )}
+      ) : null}
 
       <div style={{
         margin: fullPage ? '12px 16px 0' : '8px 12px 0',

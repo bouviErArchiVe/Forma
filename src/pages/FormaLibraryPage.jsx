@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import FormaModuleHeader from '@/components/FormaModuleHeader'
+import FormaAppShell from '@/components/FormaAppShell'
 import LibraryExplorer from '@/components/formalibrary/LibraryExplorer'
 import useAppStore from '@/stores/useAppStore'
 import { FLB_DARK } from '@/lib/formalibrary/constants'
@@ -111,13 +111,10 @@ export default function FormaLibraryPage() {
   const initialItemId = params.get('item')
 
   return (
-    <div style={{ height: '100dvh', background: FLB_DARK.bg, color: FLB_DARK.ink, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <FormaModuleHeader
-        title="FormaLibrary"
-        subtitle="Textures · Matériaux · Normes · PDF · Références"
-        dark={FLB_DARK}
-      />
-
+    <FormaAppShell
+      title="FormaLibrary"
+      subtitle="Textures · Matériaux · Normes · PDF · Références"
+    >
       <LibraryExplorer
         folders={folders}
         items={items}
@@ -134,7 +131,7 @@ export default function FormaLibraryPage() {
         addNotification={addNotification}
         initialItemId={initialItemId}
       />
-    </div>
+    </FormaAppShell>
   )
 }
 

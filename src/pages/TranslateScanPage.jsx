@@ -1,39 +1,35 @@
 import useAppStore from '@/stores/useAppStore'
-import { useTheme } from '@/hooks/useAppearance'
-import FormaModuleHeader from '@/components/FormaModuleHeader'
+import FormaAppShell from '@/components/FormaAppShell'
 import DocumentScanTranslator from '@/components/translation/DocumentScanTranslator'
 import { TYPE } from '@/lib/design'
 import { rgbaFromHex } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
+import { useTheme } from '@/hooks/useAppearance'
 
 export default function TranslateScanPage() {
   const { T } = useTheme()
   const notebooks = useAppStore((s) => s.notebooks)
 
   return (
-    <div style={{ minHeight: '100dvh', background: T.bg, color: T.ink }}>
-      <FormaModuleHeader
-        title="Scan & traduction"
-        subtitle="OCR (Tesseract) · PDF multi-pages (jusqu'à 12) · EN ↔ FR"
-        sticky
-      />
-
-      <main style={{ padding: '24px 20px 48px', maxWidth: 1000, margin: '0 auto' }}>
+    <FormaAppShell
+      title="Traduction"
+      subtitle="OCR (Tesseract) · PDF multi-pages (jusqu'à 12) · EN ↔ FR"
+    >
+      <div style={{ padding: '24px 20px 48px', maxWidth: 1000, margin: '0 auto' }}>
         <div style={{
           marginBottom: 20,
           padding: '12px 14px',
           borderRadius: TOKENS.radius.lg,
-          background: `${T.accent}0c`,
+          background: rgbaFromHex(T.accent, 0.08),
           border: `1px solid ${rgbaFromHex(T.accent, 0.25)}`,
-          ...TYPE.caption,
+          fontSize: TYPE.sm,
           color: T.ink,
-          lineHeight: 1.45,
+          lineHeight: 1.55,
         }}>
-          Importez une photo de fiche technique ou un PDF. Le texte est extrait automatiquement, puis traduit.
-          Vous pouvez aussi coller du texte depuis le widget 🌐 avant d&apos;ouvrir cette page.
+          Importez une image ou un PDF scanné — le texte est extrait puis traduit. Vous pouvez envoyer le résultat vers un carnet Forma.
         </div>
-        <DocumentScanTranslator T={T} notebooks={notebooks} embedded />
-      </main>
-    </div>
+        <DocumentScanTranslator T={T} notebooks={notebooks} />
+      </div>
+    </FormaAppShell>
   )
 }

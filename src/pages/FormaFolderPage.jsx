@@ -9,6 +9,8 @@ import {
   loadFolders, loadLocalFoldersForScope, persistFolderCreate, syncFoldersToCloud, resolveFolderUserId,
 } from '@/lib/folderPersistence'
 import { canCreateChildFolder } from '@/lib/folders/tree'
+import FormaAppShell from '@/components/FormaAppShell'
+import { MODULES } from '@/config/branding'
 import FormaFolderExplorer from '@/components/formafolder/FormaFolderExplorer'
 import NotebookLibraryItem from '@/components/NotebookLibraryItem'
 import AppLoading from '@/components/AppLoading'
@@ -131,25 +133,27 @@ export default function FormaFolderPage() {
 
   return (
     <>
-      <FormaFolderExplorer
-        T={T}
-        folders={folders}
-        setFolders={setFolders}
-        notebooks={notebooks}
-        setNotebooks={setNotebooks}
-        subjects={subjects}
-        userId={userId}
-        foldersCloudOk={foldersCloudOk}
-        syncingFolders={syncingFolders}
-        onSyncFolders={syncFolders}
-        onCreateFolder={(parentId) => { setNewFolderParentId(parentId || null); setShowNewFolder(true) }}
-        onEditFolder={() => addNotification('Édition dossier — via bibliothèque', 'info')}
-        onAssignNotebooks={assignFolderBatch}
-        onOpenNotebook={(nb) => { setActiveNotebook(nb); navigate(`/editor/${nb.id}`) }}
-        renderNotebook={renderNotebook}
-        addNotification={addNotification}
-        showHeader
-      />
+      <FormaAppShell title={MODULES.formaFolder.name} subtitle="Organisation avancée des carnets et dossiers">
+        <FormaFolderExplorer
+          T={T}
+          folders={folders}
+          setFolders={setFolders}
+          notebooks={notebooks}
+          setNotebooks={setNotebooks}
+          subjects={subjects}
+          userId={userId}
+          foldersCloudOk={foldersCloudOk}
+          syncingFolders={syncingFolders}
+          onSyncFolders={syncFolders}
+          onCreateFolder={(parentId) => { setNewFolderParentId(parentId || null); setShowNewFolder(true) }}
+          onEditFolder={() => addNotification('Édition dossier — via bibliothèque', 'info')}
+          onAssignNotebooks={assignFolderBatch}
+          onOpenNotebook={(nb) => { setActiveNotebook(nb); navigate(`/editor/${nb.id}`) }}
+          renderNotebook={renderNotebook}
+          addNotification={addNotification}
+          showHeader={false}
+        />
+      </FormaAppShell>
       {showNewFolder && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }} onClick={() => setShowNewFolder(false)}>
           <div style={{ background: T.surface, padding: 24, borderRadius: 12, width: 320 }} onClick={(e) => e.stopPropagation()}>

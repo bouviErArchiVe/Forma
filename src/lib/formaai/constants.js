@@ -1,15 +1,9 @@
 /** FormaAI — constantes */
 
+import { FORMA_THEME_VARS } from '@/lib/formaShell'
+
 export const FAI_DARK = {
-  bg: '#0d0f14',
-  surface: '#151820',
-  panel: '#1a1e28',
-  border: '#2a3144',
-  ink: '#e8ecf4',
-  muted: '#8b95a8',
-  accent: '#a78bfa',
-  accent2: '#c4b5fd',
-  highlight: '#fbbf24',
+  ...FORMA_THEME_VARS,
 }
 
 export const AI_ACTIONS = {

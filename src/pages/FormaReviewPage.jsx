@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import FormaModuleHeader from '@/components/FormaModuleHeader'
+import FormaAppShell from '@/components/FormaAppShell'
 import ReviewSidebar from '@/components/formareview/ReviewSidebar'
 import ReviewCanvas from '@/components/formareview/ReviewCanvas'
 import ReviewToolbar from '@/components/formareview/ReviewToolbar'
@@ -158,14 +158,8 @@ export default function FormaReviewPage() {
 
   if (view === 'library') {
     return (
-      <div style={{ minHeight: '100dvh', background: FRV_DARK.bg, color: FRV_DARK.ink, display: 'flex', flexDirection: 'column' }}>
-        <FormaModuleHeader title="FormaReview" dark={FRV_DARK} />
-
-        <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '24px 32px max(24px, env(safe-area-inset-bottom))', maxWidth: 960, margin: '0 auto', width: '100%' }}>
-          <p style={{ color: FRV_DARK.muted, fontSize: 14, marginBottom: 24 }}>
-            Corrections collaboratives — commentaires, pins, surlignages, flèches et dessins sur vos plans.
-          </p>
-
+      <FormaAppShell title="FormaReview" subtitle="Corrections collaboratives — commentaires, pins, surlignages">
+        <div style={{ padding: '24px 32px max(24px, env(safe-area-inset-bottom))', maxWidth: 960, margin: '0 auto', width: '100%' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12, marginBottom: 32 }}>
             {Object.values(REVIEW_MODES).map((m) => (
               <button
@@ -210,7 +204,7 @@ export default function FormaReviewPage() {
             </div>
           )}
         </div>
-      </div>
+      </FormaAppShell>
     )
   }
 

@@ -11,7 +11,7 @@ import { useFormulaPrefs } from '@/hooks/useFormulaPrefs'
 import FormulaCategoryMenu from '@/components/formulas/FormulaCategoryMenu'
 import FormulaCard from '@/components/formulas/FormulaCard'
 import FormulaCalculator from '@/components/formulas/FormulaCalculator'
-import FormaModuleHeader from '@/components/FormaModuleHeader'
+import FormaAppShell from '@/components/FormaAppShell'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassButton from '@/components/ui/GlassButton'
 
@@ -111,12 +111,11 @@ export default function FormulasPage() {
   }, [sendModal, setPendingFormulaNote, setActiveNotebook, addNotification, navigate])
 
   return (
-    <div style={{ height: '100dvh', background: T.bg, color: T.ink, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <FormaModuleHeader
-        title="Formules"
-        subtitle={`Calculateurs intégrés · ${listedFormulas.length} formules`}
-        sticky
-      >
+    <FormaAppShell
+      title="Formules"
+      subtitle={`Calculateurs intégrés · ${listedFormulas.length} formules`}
+      headerExtra={(
+        <>
         <select
           value={categoryId}
           onChange={(e) => { setCategoryId(e.target.value); setActiveFormulaId(null) }}
@@ -142,9 +141,10 @@ export default function FormulasPage() {
         <button type="button" onClick={() => setCollapsed((v) => !v)} style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, padding: '8px 10px', cursor: 'pointer', fontSize: 12, color: T.muted }}>
           {collapsed ? '☰' : '◧'}
         </button>
-      </FormaModuleHeader>
-
-      <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        </>
+      )}
+    >
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden', height: '100%' }}>
         <FormulaCategoryMenu
           T={T}
           categories={MENU_CATEGORIES}
@@ -231,6 +231,6 @@ export default function FormulasPage() {
           </div>
         </ModalOverlay>
       )}
-    </div>
+    </FormaAppShell>
   )
 }
