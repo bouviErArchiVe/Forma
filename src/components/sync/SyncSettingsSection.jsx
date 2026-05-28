@@ -69,7 +69,7 @@ export default function SyncSettingsSection({ T }) {
   }
 
   const connectSupabase = async () => {
-    if (!isSupabaseConfigured()) {
+    if (!isSupabaseConfigured) {
       notify('Supabase non configuré — ajoutez VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY.', 'error')
       return
     }
@@ -157,7 +157,7 @@ export default function SyncSettingsSection({ T }) {
                   </div>
                   {p.id === 'supabase' && (
                     <ActionBtn T={T} active={cloudProvider === 'supabase' && cloudEnabled} busy={busy === 'supabase'} onClick={connectSupabase}>
-                      {isSupabaseConfigured() ? 'Connecter' : 'Configurer .env'}
+                      {isSupabaseConfigured ? 'Connecter' : 'Configurer .env'}
                     </ActionBtn>
                   )}
                   {p.id === 'icloud' && (
@@ -169,7 +169,7 @@ export default function SyncSettingsSection({ T }) {
               </div>
             ))}
             <Toggle T={T} label="Activer sync Supabase" checked={cloudEnabled} onChange={setCloudEnabled}
-              hint="Multi-appareils via Supabase." disabled={cloudProvider === 'local' || cloudProvider === 'icloud' || !isSupabaseConfigured()} />
+              hint="Multi-appareils via Supabase." disabled={cloudProvider === 'local' || cloudProvider === 'icloud' || !isSupabaseConfigured} />
             <StatRow label="Dernière sync Supabase" value={formatDateTime(lastCloudSyncAt)} T={T} />
             <StatRow label="File en attente" value={String(getCloudQueueCount() || cloudQueueCount)} T={T} />
           </div>
