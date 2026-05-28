@@ -10,6 +10,7 @@ import {
   createEmptySketch, insertSketchEmbed, upsertDocSketch, getDocSketch, strokesToDataUrl,
 } from '@/lib/docs/sketches'
 import DocPreview from '@/components/docs/DocPreview'
+import { useFormaDicoContextMenu } from '@/components/formadico/FormaDicoContextMenu'
 import DocSketchPad from '@/components/docs/DocSketchPad'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 
@@ -22,7 +23,7 @@ function execCmd(cmd, val = null) {
 }
 
 export default function DocEditor({
-  doc, onChange, T, readOnly = false, pageRefs, onFullscreenChange,
+  doc, onChange, T, readOnly = false, pageRefs, onFullscreenChange, onOpenDico,
 }) {
   const [activePage, setActivePage] = useState(0)
   const [sidebar, setSidebar] = useState('pages')
@@ -35,6 +36,7 @@ export default function DocEditor({
   const [sketchModal, setSketchModal] = useState(null)
   const editorRefs = useRef([])
   const containerRef = useRef(null)
+  const { onContextMenu, contextMenu } = useFormaDicoContextMenu(() => onOpenDico?.())
 
   const page = doc.pages[activePage]
   const tocHtml = useMemo(() => buildTocHtml(doc.pages), [doc.pages])
@@ -223,6 +225,7 @@ export default function DocEditor({
           spellCheck
           onInput={() => handleInput(index)}
           onFocus={() => setActivePage(index)}
+          onContextMenu={onContextMenu}
           onDoubleClick={(e) => handleEditorDblClick(e, index)}
           style={{ outline: 'none', minHeight: PAGE_H - (doc.settings?.marginMm || 20) * 2 }}
           className="forma-doc-page"
@@ -279,6 +282,7 @@ export default function DocEditor({
       {btn('⎘ page', () => onChange(duplicatePage(doc, activePage)))}
       {btn('− page', () => { if (doc.pages.length > 1) { onChange(deletePage(doc, activePage)); setActivePage(Math.max(0, activePage - 1)) } })}
       {btn('🔍', () => setFindOpen((v) => !v))}
+      {btn('📖', () => onOpenDico?.(), false, 'FormaDico')}
       {btn(doc.viewMode === 'pages' ? 'Continu' : 'Pages', () => onChange({ ...doc, viewMode: doc.viewMode === 'pages' ? 'continuous' : 'pages' }))}
       {btn('📖', () => setReadingMode(true), readingMode)}
       {btn('⛶', () => setFullscreen((v) => !v), fullscreen)}
@@ -379,6 +383,7 @@ export default function DocEditor({
           <DocSketchPad T={T} sketch={sketchModal} onSave={saveSketch} onClose={() => setSketchModal(null)} />
         </ModalOverlay>
       )}
+      {contextMenu}
     </div>
   )
 }

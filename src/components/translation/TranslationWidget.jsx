@@ -28,6 +28,7 @@ function TranslationBody({
   onCopy,
   onSend,
   onOpenScan,
+  onOpenDico,
   fieldStyle,
   compact,
 }) {
@@ -114,6 +115,9 @@ function TranslationBody({
         {onOpenScan && (
           <GlassButton T={T} onClick={onOpenScan} style={{ flex: '1 1 100%', padding: '8px 6px', fontSize: 10 }}>📷 Scan OCR</GlassButton>
         )}
+        {onOpenDico && (
+          <GlassButton T={T} onClick={onOpenDico} style={{ flex: '1 1 100%', padding: '8px 6px', fontSize: 10 }}>📖 FormaDico</GlassButton>
+        )}
       </div>
     </div>
   )
@@ -140,6 +144,7 @@ export default function TranslationWidget({
     setTranslationTargetLang,
     setTranslationMode,
     setPendingTranslationSourceText,
+    setPendingDicoWord,
   } = useAppStore()
 
   const [sourceText, setSourceText] = useState('')
@@ -243,6 +248,11 @@ export default function TranslationWidget({
     onCopy: handleCopy,
     onSend: () => setSendOpen(true),
     onOpenScan: handleOpenScan,
+    onOpenDico: () => {
+      const w = sourceText.trim().split(/\s+/)[0]?.replace(/[^\p{L}'-]/gu, '')
+      if (w) setPendingDicoWord(w)
+      navigate('/formadico')
+    },
     fieldStyle,
     compact: variant === 'embedded',
   }

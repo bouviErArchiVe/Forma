@@ -85,6 +85,16 @@ const useAppStore = create(
         return text
       },
 
+      pendingDicoWord: '',
+      setPendingDicoWord: (pendingDicoWord) => set({
+        pendingDicoWord: String(pendingDicoWord || '').trim().slice(0, 120),
+      }),
+      consumePendingDicoWord: () => {
+        const word = get().pendingDicoWord
+        set({ pendingDicoWord: '' })
+        return word
+      },
+
       dictationLang: 'fr-FR',
       setDictationLang: (dictationLang) => set({ dictationLang: normalizeDictationLang(dictationLang) }),
 

@@ -1486,6 +1486,7 @@ export default function LibraryPage() {
                 { e: '📽', l: MODULES.formaPresent.name, action: () => navigate(MODULES.formaPresent.route) },
                 { e: '📚', l: MODULES.formaLibrary.name, action: () => navigate(MODULES.formaLibrary.route) },
                 { e: '✦', l: MODULES.formaAI.name, action: () => navigate(MODULES.formaAI.route) },
+                { e: '📖', l: MODULES.formaDico.name, action: () => navigate(MODULES.formaDico.route) },
                 { e: '🔍', l: 'Recherche globale', action: () => window.dispatchEvent(new CustomEvent('forma:open-search')) },
                 { e: '🌐', l: 'Traduction', action: () => navigate('/translate') },
                 { e: '🎮', l: MODULES.fPause.name, action: () => navigate(MODULES.fPause.route) },

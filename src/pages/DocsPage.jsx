@@ -10,6 +10,7 @@ import BrandLogo from '@/components/BrandLogo'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassButton from '@/components/ui/GlassButton'
 import DocEditor from '@/components/docs/DocEditor'
+import FormaDicoWidget from '@/components/formadico/FormaDicoWidget'
 import DocPreview, { docPlainSnippet } from '@/components/docs/DocPreview'
 import { DOC_TEMPLATES } from '@/lib/docs/model'
 import {
@@ -36,6 +37,7 @@ export default function DocsPage() {
   const [insertModal, setInsertModal] = useState(false)
   const [insertMode, setInsertMode] = useState('live')
   const [templateModal, setTemplateModal] = useState(false)
+  const [dicoOpen, setDicoOpen] = useState(false)
   const pageRefs = useRef([])
 
   const refresh = useCallback(() => {
@@ -167,6 +169,7 @@ export default function DocsPage() {
             onBlur={(e) => handleRename(e.target.value)}
             style={{ flex: 1, minWidth: 160, fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17, border: 'none', background: 'transparent', color: T.ink, outline: 'none' }}
           />
+          <GlassButton T={T} size="sm" onClick={() => setDicoOpen(true)}>📖 Dico</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => setInsertModal(true)}>Insérer dans la page</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('txt')}>TXT</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('md')}>MD</GlassButton>
@@ -175,8 +178,10 @@ export default function DocsPage() {
           <GlassButton T={T} size="sm" onClick={() => handleExport('pdf')}>PDF</GlassButton>
         </header>
         <main style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '8px 12px max(20px, env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column' }}>
-          <DocEditor doc={doc} onChange={handleChange} T={T} pageRefs={pageRefs} />
+          <DocEditor doc={doc} onChange={handleChange} T={T} pageRefs={pageRefs} onOpenDico={() => setDicoOpen(true)} />
         </main>
+
+        <FormaDicoWidget T={T} open={dicoOpen} onClose={() => setDicoOpen(false)} variant="sheet" />
 
         {insertModal && (
           <ModalOverlay onClose={() => setInsertModal(false)}>
