@@ -48,6 +48,11 @@ export function notebookCardStyle(T, { selected = false, view = 'grid' } = {}) {
   return { ...base, borderRadius: TOKENS.radius.lg, overflow: 'hidden' }
 }
 
+/** Espace réservé sous le canvas quand la barre iPad est visible */
+export function ipadBottomInset(extra = 0) {
+  return `calc(56px + env(safe-area-inset-bottom) + ${extra}px)`
+}
+
 /** Padding page shell — safe-area iPad */
 export function pageShellPadding(compact = false) {
   if (compact) {

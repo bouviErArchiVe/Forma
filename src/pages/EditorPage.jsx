@@ -20,6 +20,7 @@ import FocusToolbar from "@/components/FocusToolbar"
 import FloatingToolsToolbar, { EDITOR_TOOLS_LIST } from "@/components/FloatingToolsToolbar"
 import EditorSidebar from "@/components/EditorSidebar"
 import BottomSheet from "@/components/ui/BottomSheet"
+import EditorBottomToolbar from "@/components/EditorBottomToolbar"
 import { useTabletLayout } from "@/hooks/useTabletLayout"
 import { useSwipeToolCycle, flattenEditorTools } from "@/hooks/useSwipeToolCycle"
 import HistoryPanel from "@/components/HistoryPanel"
@@ -2518,11 +2519,11 @@ export default function EditorPage(){
   const COLLAB_COLORS=["#e94560","#2196f3","#4ade80","#f5a623","#a855f7","#00bcd4"]
   const calcDrawerW=calcDrawerWidth(calc.calcMode,calc.layout,showCalc)
   const toolbarPad=useMemo(()=>({
-    paddingTop:!focusMode&&toolbarDock==="top"?36:0,
-    paddingBottom:!focusMode&&toolbarDock==="bottom"?36:0,
-    paddingLeft:!focusMode&&toolbarDock==="left"?52:0,
-    paddingRight:!focusMode&&toolbarDock==="right"?52:0,
-  }),[focusMode,toolbarDock])
+    paddingTop:!focusMode&&toolbarDock==="top"&&!isTablet?36:0,
+    paddingBottom:!focusMode&&((toolbarDock==="bottom"&&!isTablet)||isTablet)?56:0,
+    paddingLeft:!focusMode&&toolbarDock==="left"&&!isTablet?52:0,
+    paddingRight:!focusMode&&toolbarDock==="right"&&!isTablet?52:0,
+  }),[focusMode,toolbarDock,isTablet])
 
   // Presentation mode
   if(showPresent){
@@ -2595,7 +2596,26 @@ export default function EditorPage(){
           />
         </DraggablePanel>
       )}
-      {!focusMode&&showConv&&(
+      {!focusMode&&showConv&&isTablet&&(
+        <BottomSheet T={T} open onClose={()=>setShowConv(false)} title="📐 Convertisseur">
+          <UnitConverter
+            T={T}
+            variant="embedded"
+            open
+            value={convValue}
+            setValue={setConvValue}
+            category={convCategory}
+            setCategory={setConvCategory}
+            fromUnit={convFromUnit}
+            setFromUnit={setConvFromUnit}
+            toUnit={convToUnit}
+            setToUnit={setConvToUnit}
+            scale={scale}
+            setScale={setScale}
+          />
+        </BottomSheet>
+      )}
+      {!focusMode&&showConv&&!isTablet&&(
         <DraggablePanel T={T} id="editor-converter" title="Convertisseur" open onClose={()=>setShowConv(false)} defaultSide="right" width={300}>
           <UnitConverter
             T={T}
@@ -2614,7 +2634,17 @@ export default function EditorPage(){
           />
         </DraggablePanel>
       )}
-      {!focusMode&&showTranslate&&(
+      {!focusMode&&showTranslate&&isTablet&&(
+        <BottomSheet T={T} open onClose={()=>setShowTranslate(false)} title="🌐 Traduction">
+          <TranslationWidget
+            T={T}
+            variant="embedded"
+            notebooks={notebooks}
+            onOpenScan={() => { setShowTranslate(false); navigate('/translate') }}
+          />
+        </BottomSheet>
+      )}
+      {!focusMode&&showTranslate&&!isTablet&&(
         <DraggablePanel T={T} id="editor-translate" title="Traduction" open onClose={()=>setShowTranslate(false)} defaultSide="right" width={320}>
           <TranslationWidget
             T={T}
@@ -2888,6 +2918,21 @@ export default function EditorPage(){
           goToPage={goToPage}
           onAddPage={()=>addPage()}
           readOnly={readOnly}
+        />
+      )}
+
+      {!focusMode&&isTablet&&(
+        <EditorBottomToolbar
+          T={T}
+          tool={tool}
+          setTool={setTool}
+          color={color}
+          readOnly={readOnly}
+          onOpenSidebar={()=>setShowEditorSidebar(true)}
+          formatDimension={formatDimension}
+          sizeMm={sizeMm}
+          eraserMm={eraserMm}
+          unitSys={unitSys}
         />
       )}
 

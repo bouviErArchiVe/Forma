@@ -5,6 +5,7 @@ import { PERMISSION_LABELS } from '@/lib/sync/constants'
 import { CLOUD_PROVIDERS, resolveSyncModeLabel } from '@/lib/sync/cloudProviders'
 import { isSupabaseConfigured } from '@/lib/supabase'
 import LocalStorageSection from '@/components/settings/LocalStorageSection'
+import VersionHistoryPanel from '@/components/sync/VersionHistoryPanel'
 
 export default function SyncSettingsSection({ T }) {
   const cloudEnabled = useSyncStore((s) => s.cloudEnabled)

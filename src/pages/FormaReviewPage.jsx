@@ -16,6 +16,9 @@ import {
 import { importFiles, importFromLibraryItem } from '@/lib/formareview/import'
 import { hydrateLibraryItem } from '@/lib/formalibrary/persistence'
 import { useTabletLayout } from '@/hooks/useTabletLayout'
+import BottomSheet from '@/components/ui/BottomSheet'
+import { useTheme } from '@/hooks/useAppearance'
+import { ipadBottomInset } from '@/lib/design'
 
 export default function FormaReviewPage() {
   const navigate = useNavigate()
@@ -29,8 +32,15 @@ export default function FormaReviewPage() {
   const [selectedPageId, setSelectedPageId] = useState(null)
   const [busy, setBusy] = useState(false)
   const isTablet = useTabletLayout()
+  const { T: appT } = useTheme()
+  const [reviewSidebarOpen, setReviewSidebarOpen] = useState(false)
+  const [threadOpen, setThreadOpen] = useState(false)
 
   const editor = useReviewEditor(session || {}, setSession)
+
+  useEffect(() => {
+    if (isTablet && editor.selectedPinId) setThreadOpen(true)
+  }, [isTablet, editor.selectedPinId])
 
   const refresh = useCallback(() => setSessions(listSessions()), [])
 
@@ -204,6 +214,23 @@ export default function FormaReviewPage() {
     )
   }
 
+  const threadPanel = (
+    <ReviewThreadPanel
+      session={session}
+      selectedPinId={editor.selectedPinId}
+      pins={session?.pins || []}
+      onAddComment={(opts) => editor.addComment(opts)}
+      onReply={(parentId, content) => editor.addComment({ parentId, content, pinId: editor.selectedPinId })}
+      onEdit={editor.editComment}
+      onResolve={editor.resolveComment}
+      onDelete={editor.deleteComment}
+      onResolvePin={editor.resolvePin}
+      embedded={isTablet}
+    />
+  )
+
+  const activeComments = (session?.comments || []).filter((c) => !c.resolved).length
+
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: FRV_DARK.bg, color: FRV_DARK.ink }}>
       <FormaModuleHeader title={session?.title || 'FormaReview'} dark={FRV_DARK} style={headerStyle}>
@@ -214,32 +241,62 @@ export default function FormaReviewPage() {
         <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf" multiple style={{ display: 'none' }} onChange={(e) => handleImportPages(e.target.files)} />
       </FormaModuleHeader>
 
-      <ReviewToolbar
-        tool={editor.tool}
-        onToolChange={editor.setTool}
-        color={editor.color}
-        onColorChange={editor.setColor}
-        role={session?.settings?.authorRole || 'prof'}
-        onRoleChange={handleRoleChange}
-      />
-
-      <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-        <ReviewSidebar
-          session={session}
-          selectedPageId={currentPage?.id}
-          onSelectPage={setSelectedPageId}
-          onAddPages={handleImportPages}
-          onDeletePage={(id) => {
-            const nextPages = (session?.pages || []).filter((p) => p.id !== id)
-            if (selectedPageId === id) setSelectedPageId(nextPages[0]?.id || null)
-            setSession((prev) => ({
-              ...prev,
-              pages: prev.pages.filter((p) => p.id !== id),
-              pins: prev.pins.filter((p) => p.pageId !== id),
-              markups: prev.markups.filter((m) => m.pageId !== id),
-            }))
-          }}
+      {!isTablet && (
+        <ReviewToolbar
+          tool={editor.tool}
+          onToolChange={editor.setTool}
+          color={editor.color}
+          onColorChange={editor.setColor}
+          role={session?.settings?.authorRole || 'prof'}
+          onRoleChange={handleRoleChange}
         />
+      )}
+
+      <div style={{ flex: 1, display: 'flex', minHeight: 0, paddingBottom: isTablet ? ipadBottomInset() : 0 }}>
+        {isTablet && (
+          <div
+            className={`forma-sidebar-backdrop ${reviewSidebarOpen ? 'forma-sidebar-backdrop--open' : ''}`}
+            onClick={() => setReviewSidebarOpen(false)}
+            aria-hidden={!reviewSidebarOpen}
+          />
+        )}
+        {isTablet ? (
+          <div className={`forma-review-sidebar-overlay ${reviewSidebarOpen ? 'forma-review-sidebar-overlay--open' : ''}`}>
+            <ReviewSidebar
+              session={session}
+              selectedPageId={currentPage?.id}
+              onSelectPage={(id) => { setSelectedPageId(id); setReviewSidebarOpen(false) }}
+              onAddPages={handleImportPages}
+              onDeletePage={(id) => {
+                const nextPages = (session?.pages || []).filter((p) => p.id !== id)
+                if (selectedPageId === id) setSelectedPageId(nextPages[0]?.id || null)
+                setSession((prev) => ({
+                  ...prev,
+                  pages: prev.pages.filter((p) => p.id !== id),
+                  pins: prev.pins.filter((p) => p.pageId !== id),
+                  markups: prev.markups.filter((m) => m.pageId !== id),
+                }))
+              }}
+            />
+          </div>
+        ) : (
+          <ReviewSidebar
+            session={session}
+            selectedPageId={currentPage?.id}
+            onSelectPage={setSelectedPageId}
+            onAddPages={handleImportPages}
+            onDeletePage={(id) => {
+              const nextPages = (session?.pages || []).filter((p) => p.id !== id)
+              if (selectedPageId === id) setSelectedPageId(nextPages[0]?.id || null)
+              setSession((prev) => ({
+                ...prev,
+                pages: prev.pages.filter((p) => p.id !== id),
+                pins: prev.pins.filter((p) => p.pageId !== id),
+                markups: prev.markups.filter((m) => m.pageId !== id),
+              }))
+            }}
+          />
+        )}
 
         <ReviewCanvas
           page={currentPage}
@@ -259,18 +316,28 @@ export default function FormaReviewPage() {
           pencilOnly={isTablet}
         />
 
-        <ReviewThreadPanel
-          session={session}
-          selectedPinId={editor.selectedPinId}
-          pins={session?.pins || []}
-          onAddComment={(opts) => editor.addComment(opts)}
-          onReply={(parentId, content) => editor.addComment({ parentId, content, pinId: editor.selectedPinId })}
-          onEdit={editor.editComment}
-          onResolve={editor.resolveComment}
-          onDelete={editor.deleteComment}
-          onResolvePin={editor.resolvePin}
-        />
+        {!isTablet && threadPanel}
       </div>
+
+      {isTablet && (
+        <>
+          <ReviewToolbar
+            variant="bottom"
+            tool={editor.tool}
+            onToolChange={editor.setTool}
+            color={editor.color}
+            onColorChange={editor.setColor}
+            role={session?.settings?.authorRole || 'prof'}
+            onRoleChange={handleRoleChange}
+            onOpenSidebar={() => setReviewSidebarOpen(true)}
+            onOpenThread={() => setThreadOpen(true)}
+            threadCount={activeComments}
+          />
+          <BottomSheet T={appT} open={threadOpen} onClose={() => setThreadOpen(false)} title="💬 Commentaires">
+            {threadPanel}
+          </BottomSheet>
+        </>
+      )}
     </div>
   )
 }

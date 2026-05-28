@@ -350,6 +350,141 @@ export function buildGlobalThemeCSS(T, appFont, appearanceMode = 'light') {
       }
     }
 
+    .forma-library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    @media (min-width: 768px) {
+      .forma-library-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 18px;
+      }
+    }
+    @media (min-width: 1024px) {
+      .forma-library-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+      }
+    }
+
+    .forma-ipad-bottom-toolbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: ${TOKENS.zIndex.toolbar + 2};
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      padding: 8px 10px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      padding-left: max(10px, env(safe-area-inset-left));
+      padding-right: max(10px, env(safe-area-inset-right));
+      box-shadow: ${TOKENS.shadow.lg};
+    }
+    .forma-ipad-bottom-toolbar__scroll {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .forma-ipad-bottom-toolbar__scroll::-webkit-scrollbar { display: none; }
+    .forma-ipad-bottom-toolbar__btn {
+      flex: 0 0 auto;
+      min-width: 52px;
+      min-height: 48px;
+      padding: 6px 8px;
+      border-radius: var(--forma-radius-md);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+    .forma-ipad-bottom-toolbar__icon { font-size: 17px; line-height: 1; }
+    .forma-ipad-bottom-toolbar__label {
+      font-size: 8px;
+      font-weight: 700;
+      line-height: 1;
+      opacity: 0.85;
+    }
+    .forma-ipad-bottom-toolbar__meta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex-shrink: 0;
+      padding-left: 4px;
+    }
+    .forma-ipad-bottom-toolbar__more {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--forma-radius-md);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .forma-review-sidebar-overlay {
+      position: fixed;
+      left: 0;
+      top: 46px;
+      bottom: 0;
+      width: min(260px, 82vw);
+      transform: translateX(-105%);
+      transition: transform .28s cubic-bezier(.2,.8,.2,1);
+      z-index: ${TOKENS.zIndex.float + 2};
+      overflow: hidden;
+      box-shadow: ${TOKENS.shadow.panel};
+    }
+    .forma-review-sidebar-overlay--open {
+      transform: translateX(0);
+    }
+    .forma-review-bottom-toolbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: ${TOKENS.zIndex.toolbar + 1};
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      padding-left: max(10px, env(safe-area-inset-left));
+      padding-right: max(10px, env(safe-area-inset-right));
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      box-shadow: 0 -4px 24px rgba(0,0,0,.25);
+    }
+    .forma-review-bottom-toolbar::-webkit-scrollbar { display: none; }
+    .forma-review-bottom-toolbar__btn {
+      flex: 0 0 auto;
+      min-width: 48px;
+      min-height: 48px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 16px;
+      transition: transform var(--forma-transition-fast);
+    }
+    .forma-review-bottom-toolbar__btn:active {
+      transform: scale(.96);
+    }
+
     .forma-stat-chip {
       padding: 8px 14px;
       min-height: 44px;

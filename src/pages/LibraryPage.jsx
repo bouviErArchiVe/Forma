@@ -25,6 +25,8 @@ import { useTheme } from "@/hooks/useAppearance"
 import GlassButton from "@/components/ui/GlassButton"
 import GlassPanel from "@/components/ui/GlassPanel"
 import ModalOverlay from "@/components/ui/ModalOverlay"
+import BottomSheet from "@/components/ui/BottomSheet"
+import { useTabletLayout } from "@/hooks/useTabletLayout"
 import { glassStyle, rgbaFromHex } from "@/theme/glass"
 import { TOKENS } from "@/theme/tokens"
 import { serializePageElements, defaultPageMeta } from "@/lib/pageSettings"
@@ -485,6 +487,7 @@ export default function LibraryPage() {
     activityStreak,
   } = useAppStore()
   const { T } = useTheme()
+  const isTablet = useTabletLayout()
   const [showFocus, setShowFocus] = useState(false)
   const [showSpotify, setShowSpotify] = useState(false)
   const spotifyIframeRef = useRef(null)
@@ -991,17 +994,40 @@ export default function LibraryPage() {
       />
 
       {/* CALCULATOR PANEL */}
-      <CalculatorDrawer
-        T={T}
-        open={showCalc}
-        onClose={() => setShowCalc(false)}
-        stackOffset={0}
-        scale="1:50"
-        {...calc}
-      />
+      {showCalc && isTablet && (
+        <BottomSheet T={T} open onClose={() => setShowCalc(false)} title="🔢 Calculatrice">
+          <CalculatorDrawer T={T} variant="embedded" open onClose={() => setShowCalc(false)} scale="1:50" {...calc} />
+        </BottomSheet>
+      )}
+      {showCalc && !isTablet && (
+        <CalculatorDrawer
+          T={T}
+          open={showCalc}
+          onClose={() => setShowCalc(false)}
+          stackOffset={0}
+          scale="1:50"
+          {...calc}
+        />
+      )}
 
       {/* CONVERTER PANEL */}
-      {showConverter && (
+      {showConverter && isTablet && (
+        <BottomSheet T={T} open onClose={() => setShowConverter(false)} title="📐 Convertisseur">
+          <UnitConverter
+            T={T}
+            variant="embedded"
+            value={convValue}
+            setValue={setConvValue}
+            category={convCategory}
+            setCategory={setConvCategory}
+            fromUnit={convFrom}
+            setFromUnit={setConvFrom}
+            toUnit={convTo}
+            setToUnit={setConvTo}
+          />
+        </BottomSheet>
+      )}
+      {showConverter && !isTablet && (
         <UnitConverter
           T={T}
           variant="float"
@@ -1017,7 +1043,19 @@ export default function LibraryPage() {
         />
       )}
 
-      {showTranslate && (
+      {showTranslate && isTablet && (
+        <BottomSheet T={T} open onClose={() => setShowTranslate(false)} title="🌐 Traduction">
+          <TranslationWidget
+            T={T}
+            variant="embedded"
+            open
+            onClose={() => setShowTranslate(false)}
+            notebooks={notebooks}
+            onOpenScan={() => { setShowTranslate(false); navigate("/translate") }}
+          />
+        </BottomSheet>
+      )}
+      {showTranslate && !isTablet && (
         <TranslationWidget
           T={T}
           open
@@ -1812,7 +1850,7 @@ export default function LibraryPage() {
                     {sortedFiltered.map((nb) => renderNotebook(nb, "list"))}
                   </div>
                 ) : (
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 14 }}>
+                  <div className="forma-library-grid">
                     {sortedFiltered.map((nb) => renderNotebook(nb, "grid"))}
                   </div>
                 )}

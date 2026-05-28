@@ -126,7 +126,8 @@ function CommentItem({
 }
 
 export default function ReviewThreadPanel({
-  session, selectedPinId, pins = [], onAddComment, onReply, onEdit, onResolve, onDelete, onResolvePin,
+  session, selectedPinId, pins = [], onAddComment, onReply, onEdit, onResolve, onDelete,   onResolvePin,
+  embedded = false,
 }) {
   const [newComment, setNewComment] = useState('')
   const selectedPin = pins.find((p) => p.id === selectedPinId)
@@ -149,9 +150,14 @@ export default function ReviewThreadPanel({
 
   return (
     <div style={{
-      width: 300, minWidth: 260, display: 'flex', flexDirection: 'column',
-      background: FRV_DARK.panel, borderLeft: `1px solid ${FRV_DARK.border}`,
-      height: '100%',
+      width: embedded ? '100%' : 300,
+      minWidth: embedded ? undefined : 260,
+      display: 'flex',
+      flexDirection: 'column',
+      background: FRV_DARK.panel,
+      borderLeft: embedded ? 'none' : `1px solid ${FRV_DARK.border}`,
+      height: embedded ? 'auto' : '100%',
+      maxHeight: embedded ? 'min(70vh, 520px)' : undefined,
     }}>
       <div style={{ padding: '12px 14px', borderBottom: `1px solid ${FRV_DARK.border}` }}>
         <h3 style={{ margin: 0, fontSize: 14 }}>Commentaires</h3>
