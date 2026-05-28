@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import useFormaCloudStore from '@/stores/useFormaCloudStore'
+import useAppStore from '@/stores/useAppStore'
 import { FORMA_CLOUD_PROVIDERS, FORMA_CLOUD_STATUS } from '@/lib/formacloud/constants'
 import { listFormaCloudProviders } from '@/lib/formacloud/providers'
 import {
@@ -26,6 +27,7 @@ const STATUS_LABELS = {
 export default function FormaCloudSection({ T }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState(false)
+  const addNotification = useAppStore((s) => s.addNotification)
 
   const connected = useFormaCloudStore((s) => s.connected)
   const provider = useFormaCloudStore((s) => s.provider)
@@ -42,10 +44,25 @@ export default function FormaCloudSection({ T }) {
   const queueCount = getFormaCloudQueueCount()
 
   const handleConnect = async (providerId) => {
+    if (providerId === 'google_drive' && !isGoogleDriveConfigured()) {
+      setError('Ajoutez VITE_GOOGLE_CLIENT_ID dans .env.local (Console Google Cloud → OAuth 2.0).')
+      addNotification?.('Google Drive : client OAuth non configuré', 'error')
+      return
+    }
+    if (providerId === 'icloud' || providerId === 'onedrive' || providerId === 'dropbox') {
+      const msg = providerId === 'icloud'
+        ? 'iCloud nécessite une app native (CloudKit). Utilisez Export/Import Forma ci-dessous.'
+        : 'Ce fournisseur arrive bientôt.'
+      setError(msg)
+      addNotification?.(msg, 'info')
+      return
+    }
     setBusy(true)
     setError(null)
     try {
-      await connectFormaCloud(useFormaCloudStore, providerId)
+      const res = await connectFormaCloud(useFormaCloudStore, providerId)
+      if (res.ok) addNotification?.(res.message || 'FormaCloud connecté', 'success')
+      else addNotification?.(res.message || 'Connexion impossible', 'error')
     } finally {
       setBusy(false)
     }
@@ -98,7 +115,7 @@ export default function FormaCloudSection({ T }) {
   }
 
   return (
-    <div style={card(T)}>
+    <div style={{ ...card(T), position: 'relative', zIndex: 1 }}>
       <h3 style={sectionTitle}>FormaCloud — stockage connecté</h3>
       <p style={hint}>
         Connectez Google Drive, iCloud (bientôt) ou exportez manuellement.
@@ -146,11 +163,19 @@ export default function FormaCloudSection({ T }) {
               </div>
               <button
                 type="button"
-                disabled={busy || p.comingSoon || (p.id === 'google_drive' && !p.available())}
+                disabled={busy}
                 onClick={() => handleConnect(p.id)}
-                style={chipBtn(T, false)}
+                className="forma-btn-glass forma-tap-target"
+                style={{
+                  ...chipBtn(T, connected && provider === p.id),
+                  opacity: busy ? 0.65 : 1,
+                  cursor: busy ? 'wait' : 'pointer',
+                  touchAction: 'manipulation',
+                  position: 'relative',
+                  zIndex: 1,
+                }}
               >
-                Connecter
+                {busy ? '…' : p.comingSoon ? 'Bientôt' : 'Connecter'}
               </button>
             </div>
           ))}
@@ -159,9 +184,9 @@ export default function FormaCloudSection({ T }) {
 
       {connected && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
-          <button type="button" disabled={busy} onClick={() => handleSyncNow(false)} style={chipBtn(T, true)}>↻ Synchroniser maintenant</button>
-          <button type="button" disabled={busy} onClick={handleOpenFolder} style={chipBtn(T, false)}>Ouvrir dossier Forma</button>
-          <button type="button" disabled={busy} onClick={handleDisconnect} style={{ ...chipBtn(T, false), color: '#e94560', borderColor: '#e9456044' }}>Déconnecter</button>
+          <CloudBtn T={T} primary busy={busy} onClick={() => handleSyncNow(false)}>↻ Synchroniser</CloudBtn>
+          <CloudBtn T={T} busy={busy} onClick={handleOpenFolder}>Ouvrir dossier Forma</CloudBtn>
+          <CloudBtn T={T} busy={busy} onClick={handleDisconnect} danger>Déconnecter</CloudBtn>
         </div>
       )}
 
@@ -179,8 +204,8 @@ export default function FormaCloudSection({ T }) {
           Exportez ou importez un fichier Forma (JSON). Utile sans Google Drive ou en attendant iCloud natif.
         </p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button type="button" onClick={() => exportFormaBundle()} style={chipBtn(T, false)}>⬇ Exporter Forma</button>
-          <button type="button" onClick={() => fileRef.current?.click()} style={chipBtn(T, false)}>⬆ Importer Forma</button>
+          <CloudBtn T={T} onClick={() => exportFormaBundle()}>⬇ Exporter Forma</CloudBtn>
+          <CloudBtn T={T} onClick={() => fileRef.current?.click()}>⬆ Importer Forma</CloudBtn>
           <input ref={fileRef} type="file" accept="application/json,.json" style={{ display: 'none' }} onChange={handleImport} />
         </div>
       </div>
@@ -189,6 +214,29 @@ export default function FormaCloudSection({ T }) {
         Structure cloud : /Forma → projects, notebooks, documents, tables, library, exports, settings + forma-index.json
       </div>
     </div>
+  )
+}
+
+function CloudBtn({ children, onClick, disabled, busy, primary, danger, T }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled || busy}
+      className="forma-btn-glass forma-tap-target"
+      style={{
+        ...chipBtn(T, primary),
+        ...(danger ? { color: '#e94560', borderColor: '#e9456044' } : {}),
+        opacity: busy ? 0.65 : 1,
+        cursor: busy ? 'wait' : 'pointer',
+        touchAction: 'manipulation',
+        minHeight: 44,
+        position: 'relative',
+        zIndex: 1,
+      }}
+    >
+      {busy ? '…' : children}
+    </button>
   )
 }
 
@@ -211,7 +259,13 @@ const card = (T) => ({
   marginBottom: 16,
 })
 const chipBtn = (T, primary) => ({
-  padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+  padding: '8px 14px',
+  minHeight: 44,
+  borderRadius: 8,
+  fontSize: 12,
+  fontWeight: 700,
+  cursor: 'pointer',
+  touchAction: 'manipulation',
   border: `1px solid ${primary ? T.accent : T.border}`,
   background: primary ? `${T.accent}22` : T.surface,
   color: primary ? T.accent : T.ink,
