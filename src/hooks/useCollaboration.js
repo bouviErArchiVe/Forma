@@ -11,6 +11,7 @@ import {
   getSharedByMe,
   getSharedFolders,
 } from '@/lib/collaboration'
+import { mapSocialError } from '@/lib/userMessages'
 
 export function useCollaboration() {
   const { user, isAuthenticated } = useAuth()
@@ -60,7 +61,7 @@ export function useCollaboration() {
       setSharedByMe(sbm)
       setSharedFolders(folders)
     } catch (e) {
-      setError(e.message)
+      setError(mapSocialError(e))
     } finally {
       setLoading(false)
     }

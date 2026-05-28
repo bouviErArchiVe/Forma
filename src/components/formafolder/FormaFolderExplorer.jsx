@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BrandLogo from '@/components/BrandLogo'
 import useAppStore from '@/stores/useAppStore'
+import { mapActionError } from '@/lib/userMessages'
 import { getFolderAncestors, buildFolderTree, canCreateChildFolder } from '@/lib/folders/tree'
 import { getFolderStats } from '@/lib/folders/stats'
 import { FOLDER_VIEWS, FOLDER_SORTS } from '@/lib/folders/views'
@@ -145,7 +146,7 @@ export default function FormaFolderExplorer({
       refreshAssets()
       addNotification(`${files.length} fichier(s) importé(s)`, 'success')
     } catch (err) {
-      addNotification(err?.message || 'Import échoué', 'error')
+      addNotification(mapActionError(err, 'Import échoué'), 'error')
     } finally {
       setImporting(false)
     }
@@ -183,7 +184,7 @@ export default function FormaFolderExplorer({
       else await exportFoldersPdf(payload)
       addNotification(`Export ${type.toUpperCase()} terminé`, 'success')
     } catch (err) {
-      addNotification(err?.message || 'Export échoué', 'error')
+      addNotification(mapActionError(err, 'Export échoué'), 'error')
     } finally {
       setExporting(false)
     }

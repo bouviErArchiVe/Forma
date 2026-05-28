@@ -13,6 +13,7 @@ import {
   getFormaCloudQueueCount,
 } from '@/lib/formacloud/sync'
 import { isGoogleDriveConfigured } from '@/lib/formacloud/providers/googleDrive'
+import { mapActionError } from '@/lib/userMessages'
 
 const STATUS_LABELS = {
   [FORMA_CLOUD_STATUS.idle]: 'Inactif',
@@ -103,11 +104,13 @@ export default function FormaCloudSection({ T }) {
         )
         if (ok) {
           await importFormaBundle(file, { confirmOverwrite: true })
-          window.alert('Import terminé. Rechargez la page pour appliquer.')
+          addNotification?.('Import terminé. Rechargez la page pour appliquer.', 'success')
         }
       }
     } catch (err) {
-      setError(err.message)
+      const msg = mapActionError(err, 'Import impossible.')
+      setError(msg)
+      addNotification?.(msg, 'error')
     } finally {
       setBusy(false)
       e.target.value = ''

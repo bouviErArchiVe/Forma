@@ -14,6 +14,7 @@ import {
   getSharedByMe,
   PERMISSIONS,
 } from '@/lib/collaboration'
+import { mapActionError } from '@/lib/userMessages'
 
 const PERM_LABELS = {
   read: 'Lecture seule',
@@ -75,7 +76,7 @@ export default function ShareModal({
       setExisting(rows.filter((r) => r.resource_id === resourceId && r.resource_type === resourceType))
       setSelectedFriend('')
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     } finally {
       setLoading(false)
     }
@@ -109,7 +110,7 @@ export default function ShareModal({
       const rows = await getSharedByMe(ownerId)
       setExisting(rows.filter((r) => r.resource_id === resourceId && r.resource_type === resourceType))
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     } finally {
       setLoading(false)
     }
@@ -122,7 +123,7 @@ export default function ShareModal({
       const rows = await getSharedByMe(ownerId)
       setExisting(rows.filter((r) => r.resource_id === resourceId && r.resource_type === resourceType))
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -133,7 +134,7 @@ export default function ShareModal({
       addNotification('Accès retiré', 'success')
       setExisting((prev) => prev.filter((r) => r.id !== shareId))
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 

@@ -2389,7 +2389,7 @@ export default function EditorPage(){
       const link=document.createElement("a")
       link.download=`${nb.title.replace(/[^a-z0-9]/gi,"-")}-p${page}.png`
       link.href=exp.toDataURL("image/png",1.0);link.click()
-    }catch(e){alert("Export error: "+e.message)}
+    }catch(e){alert('Erreur export PNG. Réessayez.')}
     finally{setExporting(false)}
   }
 
@@ -2827,7 +2827,7 @@ export default function EditorPage(){
       {libPending&&!focusMode&&<div style={{position:"fixed",bottom:52,left:"50%",transform:"translateX(-50%)",zIndex:50,background:T.panel,color:"#fff",padding:"7px 14px",borderRadius:20,fontSize:11,pointerEvents:"none",boxShadow:"0 4px 16px rgba(0,0,0,.3)"}}>
         📍 Clic sur la feuille → <strong>{libPending.l}</strong> — Échap pour annuler
       </div>}
-      {readOnly&&!focusMode&&<div style={{position:"fixed",top:60,left:"50%",transform:"translateX(-50%)",zIndex:50,background:"rgba(233,69,96,.9)",color:"#fff",padding:"6px 14px",borderRadius:20,fontSize:11,fontWeight:700}}>🔒 Mode lecture seule</div>}
+      {readOnly&&!focusMode&&<div style={{position:"fixed",top:60,left:"50%",transform:"translateX(-50%)",zIndex:50,background:"rgba(233,69,96,.9)",color:"#fff",padding:"6px 14px",borderRadius:20,fontSize:11,fontWeight:700,pointerEvents:"none"}}>🔒 Mode lecture seule</div>}
 
       <EditorTopBar
         T={T}

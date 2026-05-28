@@ -15,7 +15,7 @@ export function useExportPDF() {
         (canvasRef?.current && canvasRef.current.closest?.('[data-forma-page]')) ||
         document.querySelector?.('[data-forma-page]') ||
         document.getElementById('forma-page')
-      if (!pageEl) throw new Error('Page element not found')
+      if (!pageEl) throw new Error('Page introuvable pour l\'export PDF')
 
       const notification = document.createElement('div')
       notification.textContent = '⏳ Génération du PDF…'

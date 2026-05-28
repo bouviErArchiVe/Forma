@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useAppearance'
 import { useAuth } from '@/hooks/useAuth'
 import { createLocalProfile, isBackendAuthAvailable } from '@/lib/localUser'
 import { BRAND } from '@/config/branding'
+import { mapAuthError } from '@/lib/userMessages'
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -40,7 +41,7 @@ export default function AuthPage() {
         navigate("/")
       }
     } catch (err) {
-      setError(err.message === "Invalid login credentials" ? "Email ou mot de passe incorrect" : err.message)
+      setError(mapAuthError(err))
     } finally { setLoading(false) }
   }
 

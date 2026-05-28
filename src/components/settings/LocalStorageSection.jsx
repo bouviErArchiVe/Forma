@@ -4,6 +4,7 @@ import {
   downloadFormaProject, exportToLocalDirectory, importFormaProjectFile,
   supportsDirectoryExport, getLocalStorageStats,
 } from '@/lib/localStorage/formaProject'
+import { mapActionError } from '@/lib/userMessages'
 
 export default function LocalStorageSection({ T }) {
   const addNotification = useAppStore((s) => s.addNotification)
@@ -17,7 +18,7 @@ export default function LocalStorageSection({ T }) {
       const res = await downloadFormaProject({ label: 'forma-projet' })
       addNotification(`Export ${res.keyCount} clé(s)${res.compressed ? ' (compressé)' : ''}`, 'success')
     } catch (e) {
-      addNotification(e.message || 'Export échoué', 'error')
+      addNotification(mapActionError(e, 'Export échoué'), 'error')
     } finally {
       setBusy(false)
     }
@@ -29,7 +30,7 @@ export default function LocalStorageSection({ T }) {
       const res = await exportToLocalDirectory({ label: 'forma-backup' })
       addNotification(`Sauvegardé : ${res.fileName}`, 'success')
     } catch (e) {
-      if (e.name !== 'AbortError') addNotification(e.message || 'Export dossier échoué', 'error')
+      if (e.name !== 'AbortError') addNotification(mapActionError(e, 'Export dossier échoué'), 'error')
     } finally {
       setBusy(false)
     }
@@ -45,7 +46,7 @@ export default function LocalStorageSection({ T }) {
       const res = await importFormaProjectFile(file, { merge })
       addNotification(`${res.imported}/${res.total} entrée(s) importée(s). Rechargez la page.`, 'success')
     } catch (err) {
-      addNotification(err.message || 'Import échoué', 'error')
+      addNotification(mapActionError(err, 'Import échoué'), 'error')
     } finally {
       setBusy(false)
     }

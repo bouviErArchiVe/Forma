@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import useAppStore from '@/stores/useAppStore'
+import { mapActionError } from '@/lib/userMessages'
 import { getFolderAncestors, buildFolderTree, canCreateChildFolder, MAX_FOLDER_DEPTH } from '@/lib/folders/tree'
 import { getFolderStats } from '@/lib/folders/stats'
 import { FOLDER_VIEWS, FOLDER_SORTS, CONTENT_FILTERS, sortFolderItems, filterFolderItems } from '@/lib/folders/views'
@@ -166,7 +167,7 @@ export default function FolderExplorer({
       else await exportFoldersPngManifest(payload)
       addNotification(`Export ${type.toUpperCase()} terminé`, 'success')
     } catch (err) {
-      addNotification(err?.message || 'Export échoué', 'error')
+      addNotification(mapActionError(err, 'Export échoué'), 'error')
     } finally {
       setExporting(false)
     }

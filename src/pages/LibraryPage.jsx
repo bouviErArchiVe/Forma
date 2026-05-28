@@ -15,6 +15,7 @@ import UnitConverter from "@/components/UnitConverter"
 import TranslationWidget from "@/components/translation/TranslationWidget"
 import CalculatorDrawer from "@/components/CalculatorDrawer"
 import { checkEasterEggText } from "@/hooks/useEasterEggTrigger"
+import { mapActionError } from "@/lib/userMessages"
 import ProfilePanel from "@/components/ProfilePanel"
 import NotificationPanel, { NotificationBell } from "@/components/NotificationPanel"
 import { useCollaboration } from "@/hooks/useCollaboration"
@@ -723,7 +724,7 @@ export default function LibraryPage() {
       }
     } catch (err) {
       console.error("Notebook creation error:", err)
-      addNotification(err?.message || "Impossible de créer le carnet en ligne — mode local utilisé", "error")
+      addNotification(mapActionError(err, 'Impossible de créer le carnet en ligne — mode local utilisé'), 'error')
       finishCreate(localNb, { persistLocal: true })
     } finally {
       setSaving(false)

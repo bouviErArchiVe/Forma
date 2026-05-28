@@ -11,6 +11,7 @@ import { TOKENS } from '@/theme/tokens'
 import SyncSettingsSection from '@/components/sync/SyncSettingsSection'
 import VisualProfilesSection from '@/components/settings/VisualProfilesSection'
 import { updateLocalProfile } from '@/lib/localUser'
+import { mapActionError } from '@/lib/userMessages'
 import {
   updateProfile,
   uploadAvatar,
@@ -96,7 +97,7 @@ function LocalProfileSection({ T, localProfile, setLocalProfile, addNotification
       setLocalProfile(updated)
       addNotification('Profil local mis à jour', 'success')
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -110,7 +111,7 @@ function LocalProfileSection({ T, localProfile, setLocalProfile, addNotification
         setLocalProfile(updated)
         addNotification('Avatar mis à jour', 'success')
       } catch (err) {
-        addNotification(err.message, 'error')
+        addNotification(mapActionError(err), 'error')
       }
     }
     reader.readAsDataURL(file)
@@ -176,7 +177,7 @@ function ProfileSection({ T, profile, user, refresh }) {
       addNotification('Profil mis à jour', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     } finally {
       setSaving(false)
     }
@@ -191,7 +192,7 @@ function ProfileSection({ T, profile, user, refresh }) {
       addNotification('Photo mise à jour', 'success')
       refresh()
     } catch (err) {
-      addNotification(err.message, 'error')
+      addNotification(mapActionError(err), 'error')
     } finally {
       setSaving(false)
     }
@@ -255,7 +256,7 @@ function SettingsSection({ T, profile, user, refresh, isLocalUser }) {
       addNotification('Préférences enregistrées', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -273,7 +274,7 @@ function SettingsSection({ T, profile, user, refresh, isLocalUser }) {
       await updateUserEmail(email.trim())
       addNotification('E-mail de confirmation envoyé', 'success')
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -289,7 +290,7 @@ function SettingsSection({ T, profile, user, refresh, isLocalUser }) {
       setPwd('')
       setPwd2('')
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -358,7 +359,7 @@ function FriendsSection({ T, userId, profile, friends, friendRequests, refresh }
       const rows = await searchProfiles(query, userId)
       setResults(rows)
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     } finally {
       setSearching(false)
     }
@@ -370,7 +371,7 @@ function FriendsSection({ T, userId, profile, friends, friendRequests, refresh }
       addNotification('Demande envoyée', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -380,7 +381,7 @@ function FriendsSection({ T, userId, profile, friends, friendRequests, refresh }
       addNotification(accept ? 'Ami ajouté' : 'Demande refusée', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -391,7 +392,7 @@ function FriendsSection({ T, userId, profile, friends, friendRequests, refresh }
       addNotification('Ami retiré', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -462,7 +463,7 @@ function SharingSection({ T, userId, profile, sharedWithMe, sharedByMe, refresh 
       const rows = await getComments(id)
       setComments(rows)
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -475,7 +476,7 @@ function SharingSection({ T, userId, profile, sharedWithMe, sharedByMe, refresh 
       addNotification('Commentaire ajouté', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -486,7 +487,7 @@ function SharingSection({ T, userId, profile, sharedWithMe, sharedByMe, refresh 
       addNotification('Partage retiré', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -559,7 +560,7 @@ function SharedFoldersSection({ T, userId, profile, sharedFolders, friends, refr
       addNotification('Dossier créé', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -569,7 +570,7 @@ function SharedFoldersSection({ T, userId, profile, sharedFolders, friends, refr
       const rows = await getFolderItems(folder.id)
       setItems(rows)
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -580,7 +581,7 @@ function SharedFoldersSection({ T, userId, profile, sharedFolders, friends, refr
       addNotification('Membre ajouté', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -592,7 +593,7 @@ function SharedFoldersSection({ T, userId, profile, sharedFolders, friends, refr
       setItems(rows)
       addNotification('Élément ajouté', 'success')
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -688,7 +689,7 @@ function NotificationsSection({ T, notifications, refresh }) {
       addNotification('Toutes lues', 'success')
       refresh()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     }
   }
 
@@ -845,7 +846,7 @@ export default function AccountPage() {
       <main style={{ flex: 1, padding: '28px 32px max(28px, env(safe-area-inset-bottom))', maxWidth: 720, overflowY: 'auto', WebkitOverflowScrolling: 'touch', position: 'relative', zIndex: 1 }}>
         {collab.error && tab !== 'sync' && (
           <div style={{ padding: 12, marginBottom: 16, borderRadius: 10, background: '#4a1a1a22', color: '#f87171', fontSize: 12 }}>
-            {collab.error} — Fonctionnalités sociales indisponibles. La sauvegarde locale reste active.
+            {collab.error} La sauvegarde locale reste active.
           </div>
         )}
         {content}

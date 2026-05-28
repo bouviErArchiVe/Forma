@@ -4,6 +4,7 @@ import { rgbaFromHex } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
 import { markNotificationRead, markAllNotificationsRead } from '@/lib/collaboration'
 import useAppStore from '@/stores/useAppStore'
+import { mapActionError } from '@/lib/userMessages'
 
 const TYPE_ICON = {
   friend_request: '🤝',
@@ -26,7 +27,7 @@ export default function NotificationPanel({ T, open, onClose, notifications, unr
       await markNotificationRead(n.id)
       onRefresh?.()
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     } finally {
       setBusy(null)
     }
@@ -40,7 +41,7 @@ export default function NotificationPanel({ T, open, onClose, notifications, unr
       onRefresh?.()
       addNotification('Toutes les notifications lues', 'success')
     } catch (e) {
-      addNotification(e.message, 'error')
+      addNotification(mapActionError(e), 'error')
     } finally {
       setBusy(null)
     }

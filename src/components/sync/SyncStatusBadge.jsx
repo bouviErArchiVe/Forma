@@ -1,4 +1,5 @@
 import { SYNC_STATUS } from '@/lib/sync/constants'
+import { formatTimeShort } from '@/lib/userMessages'
 
 const STATUS_CONFIG = {
   [SYNC_STATUS.idle]: { color: '#888', label: 'Prêt' },
@@ -14,9 +15,7 @@ const STATUS_CONFIG = {
 
 export default function SyncStatusBadge({ status, lastSavedAt, compact = false }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.idle
-  const time = lastSavedAt
-    ? lastSavedAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-    : null
+  const time = formatTimeShort(lastSavedAt)
 
   if (compact) {
     return (

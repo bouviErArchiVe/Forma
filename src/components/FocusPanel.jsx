@@ -75,7 +75,7 @@ export default function FocusPanel({ T, onClose, spotifyIframeRef }) {
         stream.getTracks().forEach(t => t.stop())
       }
       rec.start(); mediaRef.current = rec; setRecording(true)
-    } catch (e) { alert('Microphone non disponible : ' + e.message) }
+    } catch (e) { alert('Microphone non disponible. Vérifiez les autorisations de l\'appareil.') }
   }
 
   const stopRec = () => { mediaRef.current?.stop(); setRecording(false) }
