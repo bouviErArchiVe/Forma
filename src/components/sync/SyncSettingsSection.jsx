@@ -16,6 +16,13 @@ const TABS = [
   { id: 'schedule', label: 'Programmation', icon: '⏱' },
 ]
 
+function formatDateTime(value) {
+  if (value == null || value === '') return '—'
+  const d = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(d.getTime())) return '—'
+  return d.toLocaleString('fr-FR')
+}
+
 export default function SyncSettingsSection({ T }) {
   const [activeTab, setActiveTab] = useState('cloud')
   const [showHistory, setShowHistory] = useState(false)
@@ -39,7 +46,13 @@ export default function SyncSettingsSection({ T }) {
   const tryConnectProvider = useSyncStore((s) => s.tryConnectProvider)
   const clearSyncError = useSyncStore((s) => s.clearSyncError)
 
-  const versioned = getAllVersionedResources()
+  const versioned = (() => {
+    try {
+      return getAllVersionedResources()
+    } catch {
+      return []
+    }
+  })()
   const totalVersions = versioned.reduce((n, r) => n + r.count, 0)
   const mode = resolveSyncModeLabel({ cloudProvider, cloudEnabled, online, globalStatus, syncError })
 
@@ -119,7 +132,7 @@ export default function SyncSettingsSection({ T }) {
       <div style={card(T)}>
         <StatRow label="Mode" value={mode.label} T={T} />
         <StatRow label="Réseau" value={online ? 'En ligne' : 'Hors ligne'} T={T} />
-        <StatRow label="Dernière sauvegarde locale" value={lastLocalSaveAt ? lastLocalSaveAt.toLocaleString('fr-FR') : '—'} T={T} />
+        <StatRow label="Dernière sauvegarde locale" value={formatDateTime(lastLocalSaveAt)} T={T} />
         {(syncError || syncConflict?.message) && (
           <div style={{ marginTop: 10, padding: 10, borderRadius: 8, background: '#e9456015', border: '1px solid #e9456044', fontSize: 12, color: '#e94560' }}>
             {syncError || syncConflict.message}
@@ -157,7 +170,7 @@ export default function SyncSettingsSection({ T }) {
             ))}
             <Toggle T={T} label="Activer sync Supabase" checked={cloudEnabled} onChange={setCloudEnabled}
               hint="Multi-appareils via Supabase." disabled={cloudProvider === 'local' || cloudProvider === 'icloud' || !isSupabaseConfigured()} />
-            <StatRow label="Dernière sync Supabase" value={lastCloudSyncAt ? lastCloudSyncAt.toLocaleString('fr-FR') : '—'} T={T} />
+            <StatRow label="Dernière sync Supabase" value={formatDateTime(lastCloudSyncAt)} T={T} />
             <StatRow label="File en attente" value={String(getCloudQueueCount() || cloudQueueCount)} T={T} />
           </div>
         </>

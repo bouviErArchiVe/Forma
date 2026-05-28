@@ -135,7 +135,8 @@ export function getAllVersionedResources() {
   const index = readIndex()
   return Object.entries(index).map(([key, versions]) => {
     const [resourceType, ...rest] = key.split(':')
-    return { resourceType, resourceId: rest.join(':'), versions, count: versions.length }
+    const list = Array.isArray(versions) ? versions : []
+    return { resourceType, resourceId: rest.join(':'), versions: list, count: list.length }
   })
 }
 

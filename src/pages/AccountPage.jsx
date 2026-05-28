@@ -758,6 +758,11 @@ export default function AccountPage() {
     if (!authLoading && !isAuthenticated) navigate('/auth')
   }, [authLoading, isAuthenticated, navigate])
 
+  useEffect(() => {
+    if (tab === 'profile' || NAV.some((n) => n.id === tab)) return
+    navigate('/account/profile', { replace: true })
+  }, [tab, navigate])
+
   if (authLoading || (!user && !localProfile)) {
     return <div className="forma-app-loading">Chargement…</div>
   }
@@ -837,10 +842,10 @@ export default function AccountPage() {
         </button>
       </aside>
 
-      <main style={{ flex: 1, padding: '28px 32px max(28px, env(safe-area-inset-bottom))', maxWidth: 720, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        {collab.error && (
+      <main style={{ flex: 1, padding: '28px 32px max(28px, env(safe-area-inset-bottom))', maxWidth: 720, overflowY: 'auto', WebkitOverflowScrolling: 'touch', position: 'relative', zIndex: 1 }}>
+        {collab.error && tab !== 'sync' && (
           <div style={{ padding: 12, marginBottom: 16, borderRadius: 10, background: '#4a1a1a22', color: '#f87171', fontSize: 12 }}>
-            {collab.error} — Exécutez la migration SQL Supabase si ce n'est pas déjà fait.
+            {collab.error} — Fonctionnalités sociales indisponibles. La sauvegarde locale reste active.
           </div>
         )}
         {content}
