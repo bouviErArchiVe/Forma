@@ -19,12 +19,13 @@ import {
 } from '@/lib/docs/persistence'
 import { exportDocPdf, exportDocTxt, exportDocMd, exportDocPng, renderPageToDataUrl } from '@/lib/docs/export'
 import { exportDocDocx } from '@/lib/docs/exportDocx'
+import { requestHubPublish } from '@/lib/formahub/integrations'
 
 export default function DocsPage() {
   const navigate = useNavigate()
   const { T } = useTheme()
   const { userId } = useAuth()
-  const { addNotification, setActiveNotebook, setPendingDocInsert } = useAppStore()
+  const { addNotification, setActiveNotebook, setPendingDocInsert, setPendingHubPublish } = useAppStore()
 
   const [view, setView] = useState('library')
   const [docs, setDocs] = useState([])
@@ -126,6 +127,21 @@ export default function DocsPage() {
     addNotification(`Export ${type.toUpperCase()} lancé`, 'success')
   }, [doc, addNotification])
 
+  const handlePublishHub = useCallback(async () => {
+    if (!doc) return
+    let imageUrl = null
+    if (pageRefs.current[0]) {
+      try { imageUrl = await renderPageToDataUrl(pageRefs.current[0]) } catch { /* ignore */ }
+    }
+    requestHubPublish({
+      title: doc.name,
+      body: docPlainSnippet(doc),
+      type: imageUrl ? 'image' : 'text',
+      imageUrl,
+      tags: ['formadoc'],
+    }, { setPendingHubPublish, navigate, addNotification })
+  }, [doc, setPendingHubPublish, navigate, addNotification])
+
   const confirmInsert = useCallback(async (nb) => {
     if (!doc) return
     saveDoc(doc)
@@ -176,6 +192,7 @@ export default function DocsPage() {
           <GlassButton T={T} size="sm" onClick={() => handleExport('docx')}>DOCX</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('png')}>PNG</GlassButton>
           <GlassButton T={T} size="sm" onClick={() => handleExport('pdf')}>PDF</GlassButton>
+          <GlassButton T={T} size="sm" onClick={handlePublishHub}>🌐 FormaHub</GlassButton>
         </header>
         <main style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '8px 12px max(20px, env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column' }}>
           <DocEditor doc={doc} onChange={handleChange} T={T} pageRefs={pageRefs} onOpenDico={() => setDicoOpen(true)} />

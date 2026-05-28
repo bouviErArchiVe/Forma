@@ -39,6 +39,11 @@ export function listPosts({ feed = 'recent', tradeId, category, query, savedOnly
       || (p.tags || []).some((t) => t.toLowerCase().includes(q)))
   }
   if (savedOnly) posts = posts.filter((p) => store.saved.includes(p.id))
+  if (feed === 'following') {
+    const trades = new Set(store.follows.trades || [])
+    const users = new Set(store.follows.users || [])
+    posts = posts.filter((p) => trades.has(p.tradeId) || users.has(p.authorId))
+  }
   if (feed === 'trending') posts.sort((a, b) => (b.likes || 0) - (a.likes || 0))
   else posts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
   return posts
@@ -128,6 +133,20 @@ export function toggleFollowTrade(tradeId) {
 
 export function isFollowingTrade(tradeId) {
   return (read().follows.trades || []).includes(tradeId)
+}
+
+export function toggleFollowUser(userId) {
+  const store = read()
+  const set = new Set(store.follows.users || [])
+  if (set.has(userId)) set.delete(userId)
+  else set.add(userId)
+  store.follows.users = [...set]
+  write(store)
+  return store.follows.users
+}
+
+export function isFollowingUser(userId) {
+  return (read().follows.users || []).includes(userId)
 }
 
 export function getHubStats() {

@@ -12,6 +12,12 @@ const ITEMS = [
   { id: 'notifications', label: 'Notifications', icon: '🔔', path: '/account/notifications' },
 ]
 
+const MODULE_LINKS = [
+  { id: 'formamessage', label: 'FormaMessage', icon: '💬', path: '/formamessage' },
+  { id: 'formahub', label: 'FormaHub', icon: '🌐', path: '/formahub' },
+  { id: 'formadico', label: 'FormaDico', icon: '📖', path: '/formadico' },
+]
+
 export default function AccountMenu({
   T,
   open,
@@ -112,6 +118,37 @@ export default function AccountMenu({
             {item.id === 'notifications' && unreadCount > 0 && (
               <span style={{ marginLeft: 'auto', background: `${T.accent}22`, color: T.accent, fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 999 }}>{unreadCount}</span>
             )}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ padding: '6px 8px', borderTop: `1px solid ${rgbaFromHex(T.border, 0.35)}` }}>
+        <div style={{ fontSize: 9, fontWeight: 800, color: T.muted, padding: '4px 12px 6px', letterSpacing: 0.5 }}>MODULES FORMA</div>
+        {MODULE_LINKS.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => go(item.path)}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '10px 12px',
+              border: 'none',
+              borderRadius: TOKENS.radius.md,
+              background: 'transparent',
+              cursor: 'pointer',
+              fontSize: 12,
+              fontWeight: 600,
+              color: T.ink,
+              textAlign: 'left',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = `${T.accent}12` }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+          >
+            <span style={{ fontSize: 16, width: 22, textAlign: 'center' }}>{item.icon}</span>
+            {item.label}
           </button>
         ))}
       </div>

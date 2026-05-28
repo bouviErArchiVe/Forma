@@ -77,9 +77,12 @@ function renderBody(m, T, onAttachmentAction) {
 }
 
 function AttachmentActions({ m, T, onAction }) {
+  const actions = m.type === MSG_TYPES.share
+    ? [['open', '↗ Ouvrir'], ['library', '📚 Library'], ['notebook', '📓 Carnet']]
+    : [['library', '📚 Library'], ['notebook', '📓 Carnet'], ['moodboard', '🎭 Moodboard'], ['review', '💬 Review'], ['combine', '📎 Combine'], ['download', '⬇']]
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
-      {[['library', '📚 Library'], ['notebook', '📓 Carnet'], ['moodboard', '🎭 Moodboard'], ['review', '💬 Review'], ['combine', '📎 Combine'], ['download', '⬇']].map(([id, label]) => (
+      {actions.map(([id, label]) => (
         <button key={id} type="button" onClick={() => onAction?.(id, m)} style={reactBtn(T)}>{label}</button>
       ))}
     </div>

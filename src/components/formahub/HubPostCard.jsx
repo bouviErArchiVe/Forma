@@ -1,7 +1,7 @@
 import { FH_TRADES } from '@/lib/formahub/constants'
 import { isLiked, isSaved } from '@/lib/formahub/localStore'
 
-export default function HubPostCard({ post, T, onOpen, onLike, onSave, onShare }) {
+export default function HubPostCard({ post, T, onOpen, onLike, onSave, onShare, onFollowAuthor, followingAuthor }) {
   const trade = FH_TRADES.find((t) => t.id === post.tradeId)
   const liked = isLiked(post.id)
   const saved = isSaved(post.id)
@@ -29,7 +29,12 @@ export default function HubPostCard({ post, T, onOpen, onLike, onSave, onShare }
         <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }} onClick={(e) => e.stopPropagation()}>
           <ActionBtn active={liked} onClick={() => onLike(post.id)} T={T}>♥ {post.likes || 0}</ActionBtn>
           <ActionBtn active={saved} onClick={() => onSave(post.id)} T={T}>★ {post.saves || 0}</ActionBtn>
-          <ActionBtn onClick={() => onShare?.(post)} T={T}>↗</ActionBtn>
+          <ActionBtn onClick={() => onShare?.(post)} T={T} title="Partager">↗</ActionBtn>
+          {onFollowAuthor && post.authorId !== 'local' && (
+            <ActionBtn active={followingAuthor} onClick={() => onFollowAuthor(post)} T={T} title="Suivre auteur">
+              {followingAuthor ? '✓' : '+'}
+            </ActionBtn>
+          )}
         </div>
       </div>
     </article>

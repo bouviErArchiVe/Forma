@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '@/hooks/useAppearance'
 import { useAuth } from '@/hooks/useAuth'
@@ -7,12 +7,13 @@ import FormaModuleHeader from '@/components/FormaModuleHeader'
 import HubPostCard from '@/components/formahub/HubPostCard'
 import ModalOverlay from '@/components/ui/ModalOverlay'
 import GlassButton from '@/components/ui/GlassButton'
-import { FH_CATEGORIES, FH_TRADES, FH_FEEDS, POST_TYPES } from '@/lib/formahub/constants'
+import { FH_CATEGORIES, FH_TRADES, FH_FEEDS, POST_TYPES, getTradeMeta } from '@/lib/formahub/constants'
 import {
   listPosts, getPost, createPost, toggleLike, toggleSave,
-  listComments, addComment, toggleFollowTrade, isFollowingTrade, getHubStats,
+  listComments, addComment, toggleFollowTrade, isFollowingTrade,
+  toggleFollowUser, isFollowingUser, getHubStats,
 } from '@/lib/formahub/localStore'
-import { savePostToLibrary, sendPostToNotebook } from '@/lib/formahub/integrations'
+import { savePostToLibrary, sendPostToNotebook, sharePost } from '@/lib/formahub/integrations'
 import { loadLocalNotebooks } from '@/lib/projectPersistence'
 import { isSupabaseConfigured } from '@/lib/supabase'
 
@@ -23,6 +24,8 @@ export default function FormaHubPage() {
   const addNotification = useAppStore((s) => s.addNotification)
   const setPendingFormulaNote = useAppStore((s) => s.setPendingFormulaNote)
   const setActiveNotebook = useAppStore((s) => s.setActiveNotebook)
+  const pendingHubPublish = useAppStore((s) => s.pendingHubPublish)
+  const setPendingHubPublish = useAppStore((s) => s.setPendingHubPublish)
 
   const [tab, setTab] = useState('feed')
   const [feed, setFeed] = useState('recent')
@@ -48,6 +51,20 @@ export default function FormaHubPage() {
   }), [feed, tradeFilter, selectedTrade, category, search, tick])
 
   const refresh = useCallback(() => setTick((n) => n + 1), [])
+
+  useEffect(() => {
+    if (!pendingHubPublish) return
+    setDraft({
+      title: pendingHubPublish.title || '',
+      body: pendingHubPublish.body || '',
+      tradeId: pendingHubPublish.tradeId || 'architecte',
+      type: pendingHubPublish.type || 'text',
+      tags: (pendingHubPublish.tags || []).join(', '),
+      imageUrl: pendingHubPublish.imageUrl || null,
+    })
+    setShowPublish(true)
+    setPendingHubPublish(null)
+  }, [pendingHubPublish, setPendingHubPublish])
 
   const openPost = (post) => {
     setActivePost(getPost(post.id) || post)
@@ -151,10 +168,34 @@ export default function FormaHubPage() {
               <button type="button" onClick={() => { toggleFollowTrade(selectedTrade.id); refresh() }} style={chip(T, isFollowingTrade(selectedTrade.id))}>
                 {isFollowingTrade(selectedTrade.id) ? '✓ Suivi' : '+ Suivre ce métier'}
               </button>
+              {(() => {
+                const meta = getTradeMeta(selectedTrade.id)
+                return (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginTop: 16 }}>
+                    {[['Outils', meta.tools], ['Logiciels', meta.software], ['Ressources', meta.resources]].map(([label, items]) => (
+                      <div key={label}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: T.accent, marginBottom: 6 }}>{label}</div>
+                        <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: T.muted, lineHeight: 1.6 }}>
+                          {(items || []).map((item) => <li key={item}>{item}</li>)}
+                        </ul>
+                      </div>
+                    ))}
+                    {meta.links?.length > 0 && (
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: T.accent, marginBottom: 6 }}>Liens</div>
+                        {meta.links.map((l) => (
+                          <a key={l.url} href={l.url} target="_blank" rel="noreferrer" style={{ display: 'block', fontSize: 12, color: T.accent, marginBottom: 4 }}>{l.label}</a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })()}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
               {listPosts({ tradeId: selectedTrade.id }).map((p) => (
-                <HubPostCard key={p.id} post={p} T={T} onOpen={openPost} onLike={handleLike} onSave={handleSave} />
+                <HubPostCard key={p.id} post={p} T={T} onOpen={openPost} onLike={handleLike} onSave={handleSave}
+                  onShare={(post) => sharePost(post, addNotification)} />
               ))}
             </div>
           </div>
@@ -163,10 +204,14 @@ export default function FormaHubPage() {
         {tab === 'feed' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
             {posts.length === 0 ? (
-              <div style={{ gridColumn: '1/-1', textAlign: 'center', color: T.muted, padding: 40 }}>Aucune publication — soyez le premier à publier !</div>
+              <div style={{ gridColumn: '1/-1', textAlign: 'center', color: T.muted, padding: 40 }}>
+                {feed === 'following' ? 'Suivez des métiers ou auteurs pour voir leurs publications ici.' : 'Aucune publication — soyez le premier à publier !'}
+              </div>
             ) : posts.map((p) => (
               <HubPostCard key={p.id} post={p} T={T} onOpen={openPost} onLike={handleLike} onSave={handleSave}
-                onShare={(post) => savePostToLibrary(post, addNotification)} />
+                onShare={(post) => sharePost(post, addNotification)}
+                onFollowAuthor={(post) => { toggleFollowUser(post.authorId); refresh() }}
+                followingAuthor={isFollowingUser(p.authorId)} />
             ))}
           </div>
         )}
@@ -181,6 +226,10 @@ export default function FormaHubPage() {
             <div style={{ display: 'flex', gap: 8, margin: '14px 0', flexWrap: 'wrap' }}>
               <GlassButton T={T} onClick={() => handleLike(activePost.id)}>♥ {activePost.likes}</GlassButton>
               <GlassButton T={T} onClick={() => handleSave(activePost.id)}>★ Enregistrer</GlassButton>
+              <GlassButton T={T} onClick={() => sharePost(activePost, addNotification)}>↗ Partager</GlassButton>
+              <GlassButton T={T} onClick={() => { toggleFollowUser(activePost.authorId); refresh() }}>
+                {isFollowingUser(activePost.authorId) ? '✓ Auteur suivi' : '+ Suivre auteur'}
+              </GlassButton>
               <GlassButton T={T} onClick={() => savePostToLibrary(activePost, addNotification)}>📚 Library</GlassButton>
               <GlassButton T={T} onClick={() => sendPostToNotebook(activePost, { setPendingFormulaNote, setActiveNotebook, navigate, notebooks: loadLocalNotebooks(), addNotification })}>📓 Carnet</GlassButton>
             </div>

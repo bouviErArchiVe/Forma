@@ -12,7 +12,7 @@ import {
   listConversations, listMessages, createConversation, sendMessage,
   editMessage, deleteMessage, toggleReaction, markConversationRead, searchConversations,
 } from '@/lib/formamessage/localStore'
-import { getCloudMessageStatus } from '@/lib/formamessage/cloud'
+import { getCloudMessageStatus, pushMessageToCloud } from '@/lib/formamessage/cloud'
 import {
   saveToFormaLibrary, addToMoodboard, sendTextToNotebook,
   openInFormaReview, openInFormaCombine,
@@ -85,7 +85,7 @@ export default function FormaMessagePage() {
 
   const activeConv = conversations.find((c) => c.id === activeId)
 
-  const handleSend = (payload) => {
+  const handleSend = async (payload) => {
     if (!activeId) return
     sendMessage({
       conversationId: activeId,
@@ -94,10 +94,18 @@ export default function FormaMessagePage() {
       ...payload,
     })
     refresh()
+    if (cloudStatus.available && user?.id) {
+      const res = await pushMessageToCloud(user.id, { ...payload, conversationId: activeId })
+      if (!res.ok) addNotification('Message local — sync cloud indisponible', 'info')
+    }
   }
 
   const handleAttachmentAction = async (action, msg) => {
     const att = msg.attachment
+    if (action === 'open' && att?.route) {
+      navigate(att.route)
+      return
+    }
     if (action === 'preview' && att?.dataUrl) {
       window.open(att.dataUrl, '_blank')
       return
@@ -131,6 +139,42 @@ export default function FormaMessagePage() {
     setActiveId(conv.id)
     refresh()
     addNotification(`Conversation avec ${name} (brouillon local)`, 'info')
+  }
+
+  const createGroupChat = () => {
+    const title = window.prompt('Nom du groupe :')
+    if (!title?.trim()) return
+    const conv = createConversation({
+      title: title.trim(),
+      type: 'group',
+      memberIds: [userId],
+      memberNames: [userName],
+    })
+    setShowNew(false)
+    setActiveId(conv.id)
+    refresh()
+    addNotification(`Groupe « ${title.trim} » créé`, 'success')
+  }
+
+  const shareFormaResource = () => {
+    if (!activeId) return
+    const notebooks = loadLocalNotebooks()
+    if (!notebooks?.length) {
+      addNotification('Créez un carnet pour partager une ressource Forma', 'info')
+      return
+    }
+    const pick = window.prompt(
+      `Carnet à partager (numéro) :\n${notebooks.map((n, i) => `${i + 1}. ${n.title}`).join('\n')}`,
+    )
+    const idx = parseInt(pick, 10) - 1
+    if (Number.isNaN(idx) || !notebooks[idx]) return
+    const nb = notebooks[idx]
+    handleSend({
+      type: 'share',
+      body: `Partage : ${nb.title}`,
+      attachment: { label: nb.title, name: nb.title, module: 'notebook', route: `/editor/${nb.id}`, refId: nb.id },
+    })
+    addNotification(`Ressource « ${nb.title} » partagée`, 'success')
   }
 
   const bannerText = {
@@ -168,6 +212,9 @@ export default function FormaMessagePage() {
             />
             <button type="button" onClick={() => setShowNew((v) => !v)} style={{ marginTop: 8, width: '100%', padding: 8, borderRadius: 8, border: `1px solid ${T.accent}`, background: `${T.accent}12`, color: T.accent, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
               + Nouvelle conversation
+            </button>
+            <button type="button" onClick={createGroupChat} style={{ marginTop: 6, width: '100%', padding: 8, borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, fontWeight: 600, fontSize: 11, cursor: 'pointer' }}>
+              + Créer un groupe
             </button>
           </div>
 
@@ -234,6 +281,7 @@ export default function FormaMessagePage() {
             replyTo={replyTo}
             onCancelReply={() => setReplyTo(null)}
             onSend={handleSend}
+            onShareForma={shareFormaResource}
             onSendVoice={(p) => {
               if (p.error) addNotification(p.error, 'error')
               else handleSend(p)

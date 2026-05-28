@@ -28,6 +28,24 @@ export const FH_TRADES = [
   { id: 'graphiste', label: 'Graphiste', icon: '🎨', category: 'design', desc: 'Identité visuelle, planches et communication.' },
 ]
 
+/** Outils, logiciels, ressources par métier */
+export function getTradeMeta(tradeId) {
+  const base = {
+    tools: ['Carnet Forma', 'Tablette', 'Équerre'],
+    software: ['Forma', 'Suite Adobe', 'Suite Office'],
+    resources: ['FormaHub', 'FormaLibrary'],
+    links: [],
+  }
+  const map = {
+    architecte: { tools: ['Équerre', 'Trackpad', 'Maquette'], software: ['Forma', 'Rhino', 'SketchUp', 'Revit', 'AutoCAD'], resources: ['Concours étudiants', 'Portfolio'], links: [{ label: 'Ordre des architectes (CA)', url: 'https://www.oaq.com/' }] },
+    'designer-interieur': { software: ['Forma', 'SketchUp', 'Photoshop', 'Enscape'], resources: ['Tendances matériaux'] },
+    'modelisateur-3d': { software: ['Forma', 'Blender', 'Rhino', 'Revit', 'Twinmotion'], resources: ['Assets 3D libres'] },
+    charpentier: { tools: ['Niveau laser', 'Scie', 'Équerre'], software: ['Forma', 'Excel'], resources: ['Normes bois'] },
+    urbaniste: { software: ['Forma', 'QGIS', 'Illustrator'], resources: ['PLU', 'Documents d\'urbanisme'] },
+  }
+  return { ...base, ...(map[tradeId] || {}) }
+}
+
 export const POST_TYPES = {
   image: 'image',
   text: 'text',
@@ -41,6 +59,7 @@ export const POST_TYPES = {
 export const FH_FEEDS = [
   { id: 'recent', label: 'Récents' },
   { id: 'trending', label: 'Tendances' },
+  { id: 'following', label: 'Suivis' },
   { id: 'saved', label: 'Enregistrés' },
 ]
 

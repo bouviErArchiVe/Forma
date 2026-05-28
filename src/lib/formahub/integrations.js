@@ -32,3 +32,32 @@ export function sendPostToNotebook(post, { setPendingFormulaNote, setActiveNoteb
   addNotification?.(`Post envoyé vers « ${nb.title} »`, 'success')
   navigate(`/editor/${nb.id}`)
 }
+
+export function sharePost(post, addNotification) {
+  const text = [post.title, post.body || '', '', '— FormaHub'].filter(Boolean).join('\n')
+  if (navigator.share) {
+    return navigator.share({ title: post.title, text }).catch(() => {
+      navigator.clipboard?.writeText(text)
+      addNotification?.('Contenu copié', 'success')
+    })
+  }
+  navigator.clipboard?.writeText(text)
+  addNotification?.('Contenu copié dans le presse-papiers', 'success')
+}
+
+export function requestHubPublish(draft, { setPendingHubPublish, navigate, addNotification }) {
+  setPendingHubPublish(buildHubDraftFromForma(draft))
+  addNotification?.('Brouillon FormaHub prêt — complétez la publication', 'info')
+  navigate('/formahub')
+}
+
+export function buildHubDraftFromForma(partial = {}) {
+  return {
+    title: partial.title || 'Depuis Forma',
+    body: partial.body || '',
+    tradeId: partial.tradeId || 'architecte',
+    type: partial.type || 'text',
+    imageUrl: partial.imageUrl || null,
+    tags: partial.tags || ['forma'],
+  }
+}

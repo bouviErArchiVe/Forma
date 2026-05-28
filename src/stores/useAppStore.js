@@ -56,6 +56,9 @@ const useAppStore = create(
       pendingFormulaNote: null,
       setPendingFormulaNote: (pendingFormulaNote) => set({ pendingFormulaNote }),
 
+      pendingHubPublish: null,
+      setPendingHubPublish: (pendingHubPublish) => set({ pendingHubPublish }),
+
       pendingSpreadsheetInsert: null,
       setPendingSpreadsheetInsert: (pendingSpreadsheetInsert) => set({ pendingSpreadsheetInsert }),
 

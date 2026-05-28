@@ -3,7 +3,7 @@ import { FM_STICKERS, MSG_TYPES } from '@/lib/formamessage/constants'
 import GlassButton from '@/components/ui/GlassButton'
 
 export default function MessageComposer({
-  T, disabled, replyTo, onCancelReply, onSend, onSendVoice,
+  T, disabled, replyTo, onCancelReply, onSend, onSendVoice, onShareForma,
 }) {
   const [text, setText] = useState('')
   const [showStickers, setShowStickers] = useState(false)
@@ -103,6 +103,7 @@ export default function MessageComposer({
       )}
       <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
         <div style={{ display: 'flex', gap: 4 }}>
+          <button type="button" title="Partager Forma" onClick={() => onShareForma?.()} disabled={disabled || !onShareForma} style={iconBtn(T)}>📓</button>
           <button type="button" title="Photo" onClick={() => photoRef.current?.click()} disabled={disabled} style={iconBtn(T)}>🖼</button>
           <button type="button" title="Fichier" onClick={() => fileRef.current?.click()} disabled={disabled} style={iconBtn(T)}>📎</button>
           <button type="button" title="Sticker" onClick={() => setShowStickers((v) => !v)} disabled={disabled} style={iconBtn(T)}>😊</button>
