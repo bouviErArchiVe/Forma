@@ -18,8 +18,21 @@ import GlassButton from '@/components/ui/GlassButton'
 const MENU_CATEGORIES = [
   { id: 'favorites', label: 'Favoris', icon: '★' },
   { id: 'recent', label: 'Récents', icon: '🕐' },
+  { id: 'custom', label: 'Formules personnalisées', icon: '✎' },
   ...FORMULA_CATEGORIES.filter((c) => c.id !== 'all'),
 ]
+const CUSTOM_FORMULAS_KEY = 'forma_custom_formulas_v1'
+
+function loadCustomFormulas() {
+  try {
+    const list = JSON.parse(localStorage.getItem(CUSTOM_FORMULAS_KEY) || '[]')
+    return Array.isArray(list) ? list : []
+  } catch { return [] }
+}
+
+function saveCustomFormulas(list) {
+  try { localStorage.setItem(CUSTOM_FORMULAS_KEY, JSON.stringify(list)) } catch {}
+}
 
 function buildNoteText(formula, result) {
   const lines = [
@@ -46,10 +59,16 @@ export default function FormulasPage() {
   const [categoryId, setCategoryId] = useState('structures')
   const [search, setSearch] = useState('')
   const [activeFormulaId, setActiveFormulaId] = useState(null)
+  const [activeCustomId, setActiveCustomId] = useState(null)
+  const [customFormulas, setCustomFormulas] = useState(loadCustomFormulas)
+  const [customDraft, setCustomDraft] = useState(null)
   const [notebooks, setNotebooks] = useState([])
   const [sendModal, setSendModal] = useState(null)
 
   const activeFormula = useMemo(() => getFormulaById(activeFormulaId), [activeFormulaId])
+  const activeCustom = useMemo(() => customFormulas.find((f) => f.id === activeCustomId) || null, [customFormulas, activeCustomId])
+
+  useEffect(() => { saveCustomFormulas(customFormulas) }, [customFormulas])
 
   useEffect(() => {
     let cancelled = false
@@ -74,18 +93,55 @@ export default function FormulasPage() {
   }, [userId])
 
   const listedFormulas = useMemo(() => {
+    if (categoryId === 'custom') {
+      const q = search.trim().toLowerCase()
+      return customFormulas.filter((f) => !q || [f.title, f.description, f.formulaText, f.category].some((v) => String(v || '').toLowerCase().includes(q)))
+    }
     let list = filterFormulas({ categoryId: categoryId === 'recent' ? 'all' : categoryId, search, favorites })
     if (categoryId === 'recent') {
       const order = new Map(recent.map((id, i) => [id, i]))
       list = list.filter((f) => order.has(f.id)).sort((a, b) => order.get(a.id) - order.get(b.id))
     }
     return list
-  }, [categoryId, search, favorites, recent])
+  }, [categoryId, search, favorites, recent, customFormulas])
 
   const openFormula = useCallback((id) => {
+    if (String(id).startsWith('custom-')) {
+      setActiveCustomId(id)
+      setActiveFormulaId(null)
+      return
+    }
     setActiveFormulaId(id)
+    setActiveCustomId(null)
     touchRecent(id)
   }, [touchRecent])
+
+  const saveCustomFormula = useCallback((draft) => {
+    const title = draft.title.trim()
+    const formulaText = draft.formulaText.trim()
+    if (!title || !formulaText) return
+    const item = {
+      id: draft.id || `custom-${Date.now()}`,
+      categoryId: 'custom',
+      icon: '✎',
+      title,
+      formulaText,
+      description: draft.description.trim(),
+      category: draft.category.trim() || 'Personnel',
+      tags: ['custom', draft.category.trim()].filter(Boolean),
+    }
+    setCustomFormulas((list) => [item, ...list.filter((f) => f.id !== item.id)])
+    setCustomDraft(null)
+    setCategoryId('custom')
+    setActiveCustomId(item.id)
+    addNotification('Formule personnalisée sauvegardée', 'success')
+  }, [addNotification])
+
+  const deleteCustomFormula = useCallback((id) => {
+    setCustomFormulas((list) => list.filter((f) => f.id !== id))
+    setActiveCustomId(null)
+    addNotification('Formule personnalisée supprimée', 'success')
+  }, [addNotification])
 
   const handleCopy = useCallback(async (text) => {
     try {
@@ -118,7 +174,7 @@ export default function FormulasPage() {
         <>
         <select
           value={categoryId}
-          onChange={(e) => { setCategoryId(e.target.value); setActiveFormulaId(null) }}
+          onChange={(e) => { setCategoryId(e.target.value); setActiveFormulaId(null); setActiveCustomId(null) }}
           style={{
             padding: '8px 10px', borderRadius: 8, border: `1px solid ${T.border}`,
             background: T.bg, color: T.ink, fontSize: 12, maxWidth: 200,
@@ -141,6 +197,9 @@ export default function FormulasPage() {
         <button type="button" onClick={() => setCollapsed((v) => !v)} style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, padding: '8px 10px', cursor: 'pointer', fontSize: 12, color: T.muted }}>
           {collapsed ? '☰' : '◧'}
         </button>
+        <button type="button" onClick={() => setCustomDraft({ title: '', formulaText: '', description: '', category: '' })} style={{ background: T.accent, border: 'none', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 12, color: '#fff', fontWeight: 700 }}>
+          + Formule
+        </button>
         </>
       )}
     >
@@ -148,12 +207,14 @@ export default function FormulasPage() {
         <FormulaCategoryMenu
           T={T}
           categories={MENU_CATEGORIES}
-          activeId={activeFormulaId ? null : categoryId}
+          activeId={activeFormulaId || activeCustomId ? null : categoryId}
           collapsed={collapsed}
-          onSelect={(id) => { setCategoryId(id); setActiveFormulaId(null) }}
+          onSelect={(id) => { setCategoryId(id); setActiveFormulaId(null); setActiveCustomId(null) }}
         />
 
-        {activeFormula ? (
+        {activeCustom ? (
+          <CustomFormulaDetail T={T} formula={activeCustom} onBack={() => setActiveCustomId(null)} onEdit={() => setCustomDraft(activeCustom)} onDelete={() => deleteCustomFormula(activeCustom.id)} onCopy={handleCopy} />
+        ) : activeFormula ? (
           <FormulaCalculator
             T={T}
             formula={activeFormula}
@@ -189,9 +250,9 @@ export default function FormulasPage() {
                     key={f.id}
                     T={T}
                     formula={f}
-                    favorite={favorites.includes(f.id)}
+                    favorite={!String(f.id).startsWith('custom-') && favorites.includes(f.id)}
                     onOpen={openFormula}
-                    onToggleFavorite={toggleFavorite}
+                    onToggleFavorite={String(f.id).startsWith('custom-') ? () => {} : toggleFavorite}
                   />
                 ))}
               </div>
@@ -231,6 +292,51 @@ export default function FormulasPage() {
           </div>
         </ModalOverlay>
       )}
+      {customDraft && (
+        <CustomFormulaModal T={T} draft={customDraft} setDraft={setCustomDraft} onSave={saveCustomFormula} onClose={() => setCustomDraft(null)} />
+      )}
     </FormaAppShell>
   )
+}
+
+function CustomFormulaDetail({ T, formula, onBack, onEdit, onDelete, onCopy }) {
+  return (
+    <main style={{ flex: 1, overflow: 'auto', padding: '22px 24px' }}>
+      <button type="button" onClick={onBack} style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, padding: '8px 12px', cursor: 'pointer', fontSize: 12, color: T.ink }}>← Retour</button>
+      <div style={{ marginTop: 18, padding: 18, borderRadius: 14, border: `1px solid ${T.border}`, background: T.surface }}>
+        <div style={{ fontSize: 11, color: T.accent, fontWeight: 800, marginBottom: 8 }}>{formula.category || 'Personnel'}</div>
+        <h1 style={{ margin: 0, fontSize: 22, color: T.ink }}>{formula.title}</h1>
+        {formula.description && <p style={{ color: T.muted, fontSize: 13, lineHeight: 1.5 }}>{formula.description}</p>}
+        <pre style={{ whiteSpace: 'pre-wrap', padding: 14, borderRadius: 10, background: T.bg, color: T.accent, border: `1px solid ${T.border}`, fontFamily: 'monospace' }}>{formula.formulaText}</pre>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button type="button" onClick={() => onCopy(`${formula.title}\n${formula.formulaText}`)} style={smallBtn(T, true)}>Copier</button>
+          <button type="button" onClick={onEdit} style={smallBtn(T)}>Modifier</button>
+          <button type="button" onClick={onDelete} style={{ ...smallBtn(T), color: '#e94560', borderColor: '#e9456044' }}>Supprimer</button>
+        </div>
+      </div>
+    </main>
+  )
+}
+
+function CustomFormulaModal({ T, draft, setDraft, onSave, onClose }) {
+  const field = { width: '100%', boxSizing: 'border-box', padding: '10px 12px', borderRadius: 9, border: `1px solid ${T.border}`, background: T.bg, color: T.ink, fontSize: 13 }
+  return (
+    <ModalOverlay onClose={onClose}>
+      <div style={{ width: 'min(520px, 94vw)', padding: 22, borderRadius: 16, background: T.surface, border: `1px solid ${T.border}` }}>
+        <h2 style={{ margin: '0 0 14px', fontSize: 17, color: T.ink }}>Formule personnalisée</h2>
+        <input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="Nom formule" style={{ ...field, marginBottom: 10 }} />
+        <input value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })} placeholder="Catégorie" style={{ ...field, marginBottom: 10 }} />
+        <textarea value={draft.formulaText} onChange={(e) => setDraft({ ...draft, formulaText: e.target.value })} placeholder="Expression / formule" rows={4} style={{ ...field, marginBottom: 10, resize: 'vertical' }} />
+        <textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} placeholder="Description" rows={3} style={{ ...field, marginBottom: 14, resize: 'vertical' }} />
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button type="button" onClick={onClose} style={smallBtn(T)}>Annuler</button>
+          <button type="button" onClick={() => onSave(draft)} style={smallBtn(T, true)}>Sauvegarder</button>
+        </div>
+      </div>
+    </ModalOverlay>
+  )
+}
+
+function smallBtn(T, primary = false) {
+  return { padding: '9px 12px', borderRadius: 9, border: primary ? 'none' : `1px solid ${T.border}`, background: primary ? T.accent : T.bg, color: primary ? '#fff' : T.ink, fontSize: 12, fontWeight: 700, cursor: 'pointer' }
 }

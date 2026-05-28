@@ -55,6 +55,16 @@ function SidebarSectionLabel({ children }) {
   )
 }
 
+function SidebarSectionToggle({ children, open, onClick }) {
+  const C = useFormaShellColors()
+  return (
+    <button type="button" onClick={onClick} style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px 4px', color: C.textSecondary, fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'left' }}>
+      <span style={{ width: 12, color: C.accent }}>{open ? '▾' : '▸'}</span>
+      <span>{children}</span>
+    </button>
+  )
+}
+
 function SidebarNavItem({ label, Icon, emoji, active, onClick }) {
   const C = useFormaShellColors()
   const [hover, setHover] = useState(false)
@@ -101,6 +111,7 @@ export default function FormaAppShell({
   const { user } = useAuth()
   const collab = useCollaboration()
   const C = useMemo(() => getFormaShellColors(T), [T])
+  const [sectionsOpen, setSectionsOpen] = useState({ library: true, modules: true, tools: false, account: false })
 
   const isHome = location.pathname === '/'
   const avatarLetter = (collab.user?.email || user?.email || 'F')[0]?.toUpperCase() || 'F'
@@ -125,6 +136,7 @@ export default function FormaAppShell({
     if (!route) return false
     return location.pathname === route || location.pathname.startsWith(`${route}/`)
   }
+  const toggleSection = (id) => setSectionsOpen((s) => ({ ...s, [id]: !s[id] }))
 
   return (
     <FormaShellContext.Provider value={C}>
@@ -158,8 +170,8 @@ export default function FormaAppShell({
             </div>
             <div style={{ height: 1, background: C.separator, margin: '0 12px' }} />
             <nav style={{ flex: 1, overflowY: 'auto', padding: '8px 10px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <SidebarSectionLabel>Bibliothèque</SidebarSectionLabel>
-              {LIBRARY_SIDEBAR.map((item) => {
+              <SidebarSectionToggle open={sectionsOpen.library} onClick={() => toggleSection('library')}>Bibliothèque</SidebarSectionToggle>
+              {sectionsOpen.library && LIBRARY_SIDEBAR.map((item) => {
                 const Icon = SIDEBAR_ICONS[item.icon]
                 return (
                   <SidebarNavItem
@@ -171,8 +183,8 @@ export default function FormaAppShell({
                   />
                 )
               })}
-              <SidebarSectionLabel>Modules Forma</SidebarSectionLabel>
-              {MODULE_LINKS.map((m) => (
+              <SidebarSectionToggle open={sectionsOpen.modules} onClick={() => toggleSection('modules')}>Modules Forma</SidebarSectionToggle>
+              {sectionsOpen.modules && MODULE_LINKS.map((m) => (
                 <SidebarNavItem
                   key={m.route}
                   label={m.label}
@@ -181,7 +193,8 @@ export default function FormaAppShell({
                   onClick={() => navigate(m.route)}
                 />
               ))}
-              <SidebarSectionLabel>Outils</SidebarSectionLabel>
+              <SidebarSectionToggle open={sectionsOpen.tools} onClick={() => toggleSection('tools')}>Outils</SidebarSectionToggle>
+              {sectionsOpen.tools && <>
               <SidebarNavItem
                 label="Calculatrice"
                 Icon={Calculator}
@@ -224,11 +237,12 @@ export default function FormaAppShell({
                 active={routeActive(MODULES.fPause.route)}
                 onClick={() => navigate(MODULES.fPause.route)}
               />
-              <SidebarSectionLabel>Compte</SidebarSectionLabel>
-              {ACCOUNT_LINKS.map((m) => (
+              </>}
+              <SidebarSectionToggle open={sectionsOpen.account} onClick={() => toggleSection('account')}>Compte</SidebarSectionToggle>
+              {sectionsOpen.account && ACCOUNT_LINKS.map((m) => (
                 <SidebarNavItem key={m.route} label={m.label} Icon={SIDEBAR_ICONS[m.icon]} active={routeActive(m.route)} onClick={() => navigate(m.route)} />
               ))}
-              <SidebarNavItem label="Profil" Icon={User} active={false} onClick={openProfile} />
+              {sectionsOpen.account && <SidebarNavItem label="Profil" Icon={User} active={false} onClick={openProfile} />}
             </nav>
             <div
               role="button"

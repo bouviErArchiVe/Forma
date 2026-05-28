@@ -98,6 +98,18 @@ const DEFAULT_SUBJECTS=[
   {id:"bim",     l:"BIM / Maquette",  c:"#4527a0",e:"🏗",custom:false},
 ]
 
+const SUBJECTS_KEY = "forma_subjects_v1"
+function loadSubjects() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SUBJECTS_KEY) || "[]")
+    if (Array.isArray(saved) && saved.length) {
+      const baseIds = new Set(DEFAULT_SUBJECTS.map((s) => s.id))
+      return [...DEFAULT_SUBJECTS, ...saved.filter((s) => s?.id && !baseIds.has(s.id))]
+    }
+  } catch {}
+  return DEFAULT_SUBJECTS
+}
+
 const TEMPLATES=[
   {id:"blank",    l:"Vierge",      i:"□"},
   {id:"lined",    l:"Ligné",       i:"≡"},
@@ -757,7 +769,7 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
 
   const [notebooks, setNotebooks] = useState([])
   const [folders, setFolders] = useState(() => loadLocalFoldersForScope(null))
-  const [subjects, setSubjects] = useState(DEFAULT_SUBJECTS)
+  const [subjects, setSubjects] = useState(loadSubjects)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [subjFilt, setSubjFilt] = useState("all")
@@ -819,6 +831,10 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
   const [subjName, setSubjName] = useState("")
   const [subjEmoji, setSubjEmoji] = useState("⭐")
   const [subjColor, setSubjColor] = useState("#c8622a")
+
+  useEffect(() => {
+    try { localStorage.setItem(SUBJECTS_KEY, JSON.stringify(subjects.filter((s) => s.custom))) } catch {}
+  }, [subjects])
 
   useEffect(() => {
     const init = async () => {

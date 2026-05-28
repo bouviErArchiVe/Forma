@@ -133,7 +133,7 @@ const COLORS = {
   destructive: C.danger, warning: C.warning, separator: C.border, success: C.success,
 }
 const TOP_BAR_H = 52
-const BOTTOM_BAR_H = 44
+const BOTTOM_BAR_H = 0
 const TOP_TOOL_GROUPS = [
   [{ id: 'arrow', Icon: MousePointer2, label: 'Sélection', key: 'V' }, { id: 'lasso', Icon: Lasso, label: 'Lasso', key: 'L', popup: true }],
   [{ id: 'pen', Icon: Pen, label: 'Stylo', key: 'P', popup: true }, { id: 'highlight', Icon: Highlighter, label: 'Surligneur', key: 'H', popup: true }, { id: 'eraser', Icon: Eraser, label: 'Gomme', key: 'E', popup: true }, { id: 'text', Icon: Type, label: 'Texte', key: 'T', popup: true }],
@@ -942,7 +942,6 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
   }
 
   const dn=e=>{
-    if(pencilOnly&&e.pointerType==="touch")return
     if(pencilOnly&&e.pointerType==="pen"&&tool==="hand")return
     if(tool==="arrow"||tool==="select")return
     const p=gP(e)
@@ -1013,7 +1012,6 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
   }
 
   const mv=e=>{
-    if(pencilOnly&&e.pointerType==="touch")return
     if(!drawing.current)return
     e.preventDefault()
     const p=gP(e),ctx=cRef.current.getContext("2d")
@@ -1895,7 +1893,7 @@ function GoodNotesTopBar({
   )
 }
 
-function EditorPagesPanel({open,onClose,page,pagesCount,pages,nb,T,goToPage,addPage}){
+function EditorPagesPanel({open,onClose,page,pagesCount,pages,nb,T,goToPage,addPage,onPageMenu}){
   if(!open)return null
   const gnT={...T,accent:C.accent,border:C.border,bg:C.panel,muted:C.muted}
   return(
@@ -1909,7 +1907,7 @@ function EditorPagesPanel({open,onClose,page,pagesCount,pages,nb,T,goToPage,addP
           const n=i+1
           const pageData=pages.find(p=>p.page_number===n)
           return(
-            <PageThumbnail key={n} pageData={pageData} pageNum={n} current={page===n} T={gnT} notebookTemplate={nb.template} compact onClick={()=>{goToPage(n);onClose()}}/>
+            <PageThumbnail key={n} pageData={pageData} pageNum={n} current={page===n} T={gnT} notebookTemplate={nb.template} compact onClick={()=>{goToPage(n);onClose()}} onMenu={onPageMenu}/>
           )
         })}
         <button type="button" onClick={()=>addPage()} style={{aspectRatio:"3/4",borderRadius:8,border:`1.5px dashed ${C.border2}`,background:"transparent",color:C.accent,cursor:"pointer",fontSize:28,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
@@ -2467,7 +2465,7 @@ export default function EditorPage({ onBack }){
       const stored=localStorage.getItem("forma_pencil_only")
       if(stored!==null)return stored!=="0"
     }catch{}
-    return typeof window!=="undefined"&&("ontouchstart"in window||navigator.maxTouchPoints>0)
+    return false
   })
   const penTapRef=useRef({t:0,x:0,y:0})
   const[importedImages,setImportedImages]=useState([])
@@ -2749,7 +2747,7 @@ export default function EditorPage({ onBack }){
     viewH:viewSize.h,
     enabled:!readOnly,
     allowPan:!readOnly,
-    touchPan:pencilOnly&&isTablet,
+    touchPan:false,
     documentPage,
   })
   const pageFitKey=`${page}-${pageFormat}-${pageRotation}-${infiniteMode}-${displayW}x${displayH}`
@@ -4076,7 +4074,7 @@ export default function EditorPage({ onBack }){
         />
       )}
 
-      <div style={focusMode?{display:"flex",flex:1,overflow:"hidden",minHeight:0}:{height:"100%",overflow:"hidden",background:COLORS.bg,display:"flex",flexDirection:"column",flex:1,minHeight:0}}>
+      <div style={focusMode?{display:"flex",flex:1,overflow:"hidden",minHeight:0}:{height:"100%",overflow:"hidden",background:T.bg||COLORS.bg,display:"flex",flexDirection:"column",flex:1,minHeight:0}}>
         <style>{`@keyframes gnSpin{to{transform:rotate(360deg)}}@keyframes gnPopupIn{from{opacity:0;transform:translateX(-50%) translateY(-4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}@keyframes gnShapeHudIn{from{opacity:0;transform:translateX(-50%) translateY(-4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}`}</style>
         {!focusMode&&readOnly&&(
           <div style={{height:24,flexShrink:0,background:COLORS.destructive,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:600,gap:8,zIndex:50}}>
@@ -4172,10 +4170,10 @@ export default function EditorPage({ onBack }){
           {showArrowHUD&&<GoodNotesArrowHud show arrowStyle={arrowStyle} setArrowStyle={setArrowStyle} onClose={()=>setShowArrowHUD(false)}/>}
           </div>
         )}
-        <div style={{display:"flex",flex:1,minHeight:0,minWidth:0,...(!focusMode?{height:readOnly?`calc(100% - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px - 24px)`:`calc(100% - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px)`}:{})}}>
+        <div style={{display:"flex",flex:1,minHeight:0,minWidth:0,...(!focusMode?{height:readOnly?`calc(100% - ${TOP_BAR_H}px - 24px)`:`calc(100% - ${TOP_BAR_H}px)`}:{})}}>
           <div style={{flex:1,position:"relative",minWidth:0,display:"flex",flexDirection:"column",minHeight:0}}>
               {!focusMode&&showPagePanelOpen&&(
-                <EditorPagesPanel open={showPagePanelOpen} onClose={()=>setActivePanel(null)} page={page} pagesCount={pagesCount} pages={pages} nb={nb} T={T} goToPage={goToPage} addPage={addPage}/>
+                <EditorPagesPanel open={showPagePanelOpen} onClose={()=>setActivePanel(null)} page={page} pagesCount={pagesCount} pages={pages} nb={nb} T={T} goToPage={goToPage} addPage={addPage} onPageMenu={(e,pageNum)=>setPageMenu({x:e.clientX,y:e.clientY,pageNum})}/>
               )}
               {!focusMode&&showConvPanel&&!isTablet&&(
                 <EditorConverterPanel open={showConvPanel} onClose={()=>setActivePanel(null)} T={T} convValue={convValue} setConvValue={setConvValue} convCategory={convCategory} setConvCategory={setConvCategory} convFromUnit={convFromUnit} setConvFromUnit={setConvFromUnit} convToUnit={convToUnit} setConvToUnit={setConvToUnit} scale={scale} setScale={setScale}/>
@@ -4193,7 +4191,7 @@ export default function EditorPage({ onBack }){
                 </div>
               )}
               {!focusMode&&<GoodNotesLibraryDrawer open={showLibPanel} onClose={()=>setActivePanel(null)} unitSys={unitSys} libMode={libMode} setLibMode={setLibMode} libSearch={libSearch} setLibSearch={setLibSearch} libCat={libCat} setLibCat={setLibCat} libItems={libItems} libPending={libPending} setLibPending={setLibPending} showNewProfile={showNewProfile} setShowNewProfile={setShowNewProfile} addCustomProfile={addCustomProfile} addNotification={addNotification} getLibForMode={getLibForMode} customProfiles={customProfiles} removeCustomProfile={removeCustomProfile} setPlaced={setPlaced} toPageCoords={toPageCoords} pushAction={pushAction} scheduleSave={scheduleSave} renderEl={renderEl} renderSym={renderSym} T={T}/>}
-              <div style={{flex:1,overflow:"hidden",background:focusMode?T.panel:"#404040",position:"relative",cursor:areaCursor,touchAction:"none",minHeight:0,transition:"background .35s ease"}}
+              <div style={{flex:1,overflow:"hidden",background:focusMode?T.panel:(T.bg||"#404040"),position:"relative",cursor:areaCursor,touchAction:"none",minHeight:0,transition:"background .35s ease"}}
           id="canvas-area"
           data-pan-tool={isPanMode?"1":"0"}
           {...canvasHandlers}
@@ -4436,7 +4434,6 @@ export default function EditorPage({ onBack }){
           </div>
         </div>
           </div>
-        {!focusMode&&<GoodNotesBottomBar page={page} pagesCount={pagesCount} goToPage={goToPage} addPage={addPage} pages={pages} nb={nb} zoom={zoom} zoomBy={zoomBy} viewSize={viewSize} saveStatus={saveStatus}/>}
         </div>
       </div>
 

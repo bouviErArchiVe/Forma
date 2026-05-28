@@ -28,6 +28,15 @@ function Section({ title, items, T, schoolMode }) {
   )
 }
 
+function EmptySection({ title, text, T }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ fontSize: 11, fontWeight: 800, color: T.accent, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.04em' }}>{title}</div>
+      <div style={{ fontSize: 12, color: T.muted, padding: '8px 10px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg }}>{text}</div>
+    </div>
+  )
+}
+
 export default function FormaDicoPanel({ T: TProp, compact = false, initialWord = '', onClose }) {
   const { T: themeT } = useTheme()
   const T = TProp || themeT
@@ -142,6 +151,7 @@ export default function FormaDicoPanel({ T: TProp, compact = false, initialWord 
 
           <Section title="Définitions" items={entry.definitions} T={T} schoolMode={schoolMode} />
           <Section title="Synonymes" items={entry.synonyms} T={T} schoolMode={schoolMode} />
+          {!entry.synonyms?.length && <EmptySection title="Synonymes" text="Aucun synonyme trouvé pour ce mot dans la source actuelle." T={T} />}
           <Section title="Antonymes" items={entry.antonyms} T={T} schoolMode={schoolMode} />
           <Section title="Expressions & termes" items={entry.expressions} T={T} schoolMode={schoolMode} />
           <Section title="Exemples" items={entry.examples} T={T} schoolMode={schoolMode} />
