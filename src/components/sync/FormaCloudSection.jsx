@@ -121,7 +121,7 @@ export default function FormaCloudSection({ T }) {
     <div style={{ ...card(T), position: 'relative', zIndex: 1 }}>
       <h3 style={sectionTitle}>FormaCloud — stockage connecté</h3>
       <p style={hint}>
-        Connectez Google Drive, iCloud (bientôt) ou exportez manuellement.
+        Connectez Google Drive ou exportez manuellement.
         La sauvegarde locale reste prioritaire ; le cloud est optionnel.
       </p>
 
@@ -154,12 +154,11 @@ export default function FormaCloudSection({ T }) {
       {!connected && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: T.ink }}>Connecter un stockage cloud</div>
-          {listFormaCloudProviders().map((p) => (
+          {listFormaCloudProviders().filter((p) => !p.comingSoon).map((p) => (
             <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 8, border: `1px solid ${T.border}`, background: T.bg }}>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600 }}>{p.icon} {p.label}</div>
                 <div style={{ fontSize: 11, color: T.muted, marginTop: 2 }}>{p.description}</div>
-                {p.comingSoon && <div style={{ fontSize: 10, color: '#f5a623', marginTop: 4 }}>Bientôt</div>}
                 {p.id === 'google_drive' && !isGoogleDriveConfigured() && (
                   <div style={{ fontSize: 10, color: '#f5a623', marginTop: 4 }}>VITE_GOOGLE_CLIENT_ID requis</div>
                 )}
@@ -178,7 +177,7 @@ export default function FormaCloudSection({ T }) {
                   zIndex: 1,
                 }}
               >
-                {busy ? '…' : p.comingSoon ? 'Bientôt' : 'Connecter'}
+                {busy ? '…' : 'Connecter'}
               </button>
             </div>
           ))}

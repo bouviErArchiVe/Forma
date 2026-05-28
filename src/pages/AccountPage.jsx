@@ -12,6 +12,7 @@ import SyncSettingsSection from '@/components/sync/SyncSettingsSection'
 import VisualProfilesSection from '@/components/settings/VisualProfilesSection'
 import { updateLocalProfile } from '@/lib/localUser'
 import { mapActionError } from '@/lib/userMessages'
+import { Bell, FolderOpen, Handshake, Save, Settings, Share2, User } from 'lucide-react'
 import {
   updateProfile,
   uploadAvatar,
@@ -43,13 +44,13 @@ import {
 } from '@/lib/collaboration'
 
 const NAV = [
-  { id: 'profile', label: 'Mon profil', icon: '👤' },
-  { id: 'settings', label: 'Paramètres', icon: '⚙' },
-  { id: 'friends', label: 'Amis', icon: '🤝' },
-  { id: 'sync', label: 'Sauvegarde', icon: '💾' },
-  { id: 'sharing', label: 'Partage', icon: '🔗' },
-  { id: 'folders', label: 'Dossiers partagés', icon: '📂' },
-  { id: 'notifications', label: 'Notifications', icon: '🔔' },
+  { id: 'profile', label: 'Mon profil', Icon: User },
+  { id: 'settings', label: 'Paramètres', Icon: Settings },
+  { id: 'friends', label: 'Amis', Icon: Handshake },
+  { id: 'sync', label: 'Sauvegarde', Icon: Save },
+  { id: 'sharing', label: 'Partage', Icon: Share2 },
+  { id: 'folders', label: 'Dossiers partagés', Icon: FolderOpen },
+  { id: 'notifications', label: 'Notifications', Icon: Bell },
 ]
 
 const PERM_LABELS = { read: 'Lecture', comment: 'Commentaire', edit: 'Édition', owner: 'Propriétaire' }
@@ -827,7 +828,7 @@ export default function AccountPage() {
                 textAlign: 'left',
               }}
             >
-              <span>{item.icon}</span>
+              <item.Icon size={18} strokeWidth={tab === item.id ? 2.2 : 1.8} />
               {item.label}
               {item.id === 'notifications' && collab.unreadCount > 0 && (
                 <span style={{ marginLeft: 'auto', background: T.accent, color: '#fff', fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 999 }}>{collab.unreadCount}</span>

@@ -58,16 +58,6 @@ export default function SyncSettingsSection({ T }) {
 
   const notify = (msg, type = 'info') => addNotification?.(msg, type)
 
-  const connectICloud = async () => {
-    setBusy('icloud')
-    try {
-      const res = await tryConnectProvider('icloud')
-      notify(res.message || 'iCloud — fonction bientôt disponible. Export manuel FormaCloud disponible.', res.ok ? 'success' : 'info')
-    } finally {
-      setBusy(null)
-    }
-  }
-
   const connectSupabase = async () => {
     if (!isSupabaseConfigured) {
       notify('Supabase non configuré — ajoutez VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY.', 'error')
@@ -147,22 +137,16 @@ export default function SyncSettingsSection({ T }) {
           <div style={card(T)}>
             <h3 style={sectionTitle}>FormaSync — cloud Supabase</h3>
             <p style={hint}>Sync base de données (optionnel, distinct de FormaCloud Drive).</p>
-            {Object.values(CLOUD_PROVIDERS).filter((p) => p.id !== 'local').map((p) => (
+            {Object.values(CLOUD_PROVIDERS).filter((p) => p.id !== 'local' && !p.comingSoon).map((p) => (
               <div key={p.id} style={{ marginBottom: 12, padding: '10px 12px', borderRadius: 8, border: `1px solid ${cloudProvider === p.id ? T.accent : T.border}`, background: cloudProvider === p.id ? `${T.accent}10` : T.bg }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: T.ink }}>{p.label}</div>
                     <div style={{ fontSize: 11, color: T.muted, marginTop: 2 }}>{p.description}</div>
-                    {p.comingSoon && <div style={{ fontSize: 10, color: '#f5a623', marginTop: 4 }}>Bientôt disponible</div>}
                   </div>
                   {p.id === 'supabase' && (
                     <ActionBtn T={T} active={cloudProvider === 'supabase' && cloudEnabled} busy={busy === 'supabase'} onClick={connectSupabase}>
                       {isSupabaseConfigured ? 'Connecter' : 'Configurer .env'}
-                    </ActionBtn>
-                  )}
-                  {p.id === 'icloud' && (
-                    <ActionBtn T={T} active={cloudProvider === 'icloud'} busy={busy === 'icloud'} onClick={connectICloud}>
-                      Connecter iCloud
                     </ActionBtn>
                   )}
                 </div>

@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   BookOpen, Star, Search, FolderOpen, LayoutDashboard, Calculator, Ruler,
-  Languages, Sparkles, Palette, Gamepad2,
+  Languages, Sparkles, Palette, Gamepad2, Pencil, Image, Table2, FileText,
+  CalendarDays, Paperclip, MessageCircle, Presentation, Library, MessagesSquare,
+  Globe2, Handshake, Share2, User,
 } from 'lucide-react'
 import { BRAND, MODULES } from '@/config/branding'
 import { useTheme } from '@/hooks/useAppearance'
@@ -22,6 +24,23 @@ const SIDEBAR_ICONS = {
   Star,
   FolderOpen,
   LayoutDashboard,
+  Pencil,
+  Image,
+  Ruler,
+  Table2,
+  FileText,
+  CalendarDays,
+  Paperclip,
+  MessageCircle,
+  Presentation,
+  Library,
+  Sparkles,
+  MessagesSquare,
+  Globe2,
+  Gamepad2,
+  Handshake,
+  Share2,
+  User,
 }
 
 function SidebarSectionLabel({ children }) {
@@ -147,7 +166,6 @@ export default function FormaAppShell({
                     key={item.id}
                     label={item.label}
                     Icon={Icon}
-                    emoji={item.emoji}
                     active={isHome && libraryTab === item.tab}
                     onClick={() => goLibraryTab(item.tab)}
                   />
@@ -158,7 +176,7 @@ export default function FormaAppShell({
                 <SidebarNavItem
                   key={m.route}
                   label={m.label}
-                  emoji={m.emoji}
+                  Icon={SIDEBAR_ICONS[m.icon]}
                   active={routeActive(m.route)}
                   onClick={() => navigate(m.route)}
                 />
@@ -208,9 +226,9 @@ export default function FormaAppShell({
               />
               <SidebarSectionLabel>Compte</SidebarSectionLabel>
               {ACCOUNT_LINKS.map((m) => (
-                <SidebarNavItem key={m.route} label={m.label} emoji={m.emoji} active={routeActive(m.route)} onClick={() => navigate(m.route)} />
+                <SidebarNavItem key={m.route} label={m.label} Icon={SIDEBAR_ICONS[m.icon]} active={routeActive(m.route)} onClick={() => navigate(m.route)} />
               ))}
-              <SidebarNavItem label="Profil" emoji="👤" active={false} onClick={openProfile} />
+              <SidebarNavItem label="Profil" Icon={User} active={false} onClick={openProfile} />
             </nav>
             <div
               role="button"
@@ -240,8 +258,8 @@ export default function FormaAppShell({
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
           {(title || headerExtra) && (
             <header style={{
-              height: 52, flexShrink: 0, background: '#1C1C1E',
-              borderBottom: '1px solid #38383A',
+              height: 52, flexShrink: 0, background: C.header,
+              borderBottom: `1px solid ${C.separator}`,
               display: 'flex', alignItems: 'center', padding: '0 20px', gap: 12,
             }}>
               <div style={{ minWidth: 0, flex: headerExtra ? '0 1 auto' : 1 }}>
@@ -259,7 +277,7 @@ export default function FormaAppShell({
               )}
             </header>
           )}
-          <main style={{ flex: 1, overflow: 'auto', minHeight: 0, background: C.bg }}>
+          <main style={{ flex: 1, overflow: 'auto', minHeight: 0, background: C.contentBg || C.bg }}>
             {children}
           </main>
         </div>

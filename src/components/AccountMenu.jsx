@@ -1,21 +1,22 @@
 import { useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Bell, BookOpen, FolderOpen, Globe2, Handshake, LogOut, MessageCircle, Settings, Share2, User } from 'lucide-react'
 import { glassStyle, rgbaFromHex } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
 
 const ITEMS = [
-  { id: 'profile', label: 'Mon profil', icon: '👤', path: '/account/profile' },
-  { id: 'settings', label: 'Paramètres du compte', icon: '⚙', path: '/account/settings' },
-  { id: 'friends', label: 'Amis', icon: '🤝', path: '/account/friends' },
-  { id: 'sharing', label: 'Partage', icon: '🔗', path: '/account/sharing' },
-  { id: 'folders', label: 'Dossiers partagés', icon: '📂', path: '/account/folders' },
-  { id: 'notifications', label: 'Notifications', icon: '🔔', path: '/account/notifications' },
+  { id: 'profile', label: 'Mon profil', Icon: User, path: '/account/profile' },
+  { id: 'settings', label: 'Paramètres du compte', Icon: Settings, path: '/account/settings' },
+  { id: 'friends', label: 'Amis', Icon: Handshake, path: '/account/friends' },
+  { id: 'sharing', label: 'Partage', Icon: Share2, path: '/account/sharing' },
+  { id: 'folders', label: 'Dossiers partagés', Icon: FolderOpen, path: '/account/folders' },
+  { id: 'notifications', label: 'Notifications', Icon: Bell, path: '/account/notifications' },
 ]
 
 const MODULE_LINKS = [
-  { id: 'formamessage', label: 'FormaMessage', icon: '💬', path: '/formamessage' },
-  { id: 'formahub', label: 'FormaHub', icon: '🌐', path: '/formahub' },
-  { id: 'formadico', label: 'FormaDico', icon: '📖', path: '/formadico' },
+  { id: 'formamessage', label: 'FormaMessage', Icon: MessageCircle, path: '/formamessage' },
+  { id: 'formahub', label: 'FormaHub', Icon: Globe2, path: '/formahub' },
+  { id: 'formadico', label: 'FormaDico', Icon: BookOpen, path: '/formadico' },
 ]
 
 export default function AccountMenu({
@@ -113,7 +114,7 @@ export default function AccountMenu({
             onMouseEnter={(e) => { e.currentTarget.style.background = `${T.accent}12` }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
           >
-            <span style={{ fontSize: 16, width: 22, textAlign: 'center' }}>{item.icon}</span>
+            <item.Icon size={18} strokeWidth={1.9} style={{ width: 22, flexShrink: 0 }} />
             {item.label}
             {item.id === 'notifications' && unreadCount > 0 && (
               <span style={{ marginLeft: 'auto', background: `${T.accent}22`, color: T.accent, fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 999 }}>{unreadCount}</span>
@@ -147,7 +148,7 @@ export default function AccountMenu({
             onMouseEnter={(e) => { e.currentTarget.style.background = `${T.accent}12` }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
           >
-            <span style={{ fontSize: 16, width: 22, textAlign: 'center' }}>{item.icon}</span>
+            <item.Icon size={18} strokeWidth={1.9} style={{ width: 22, flexShrink: 0 }} />
             {item.label}
           </button>
         ))}
@@ -169,6 +170,7 @@ export default function AccountMenu({
             cursor: 'pointer',
           }}
         >
+          <LogOut size={16} strokeWidth={1.9} style={{ marginRight: 8, verticalAlign: -3 }} />
           Déconnexion
         </button>
       </div>

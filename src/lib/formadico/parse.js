@@ -36,12 +36,13 @@ function extractSection(wikitext, titles) {
     const line = cleanWikiLine(raw)
     if (line && line.length > 1 && !line.startsWith('{')) out.push(line)
   }
-  return [...new Set(out)].slice(0, 24)
+  return [...new Set(out)].slice(0, 40)
 }
 
-function extractDefinitions(wikitext, lang = 'fr') {
-  if (!wikitext) return []
+function extractDefinitionsAndExamples(wikitext, lang = 'fr') {
+  if (!wikitext) return { definitions: [], inlineExamples: [] }
   const defs = []
+  const examples = []
   const langMarker = lang === 'fr' ? '{{S|fr' : '{{S|en'
   const lines = wikitext.split('\n')
   let currentPos = ''
@@ -50,12 +51,19 @@ function extractDefinitions(wikitext, lang = 'fr') {
       const pos = raw.match(/\|([^|}|]+)\}\}/)
       currentPos = pos ? cleanWikiLine(pos[1]) : 'mot'
     }
-    if (/^#+/.test(raw) && !raw.startsWith('====')) {
+    if (/^#(?![:*#])/.test(raw) && !raw.startsWith('====')) {
       const t = cleanWikiLine(raw.replace(/^#+\s*/, ''))
       if (t.length > 2) defs.push({ pos: currentPos || '—', text: t })
     }
+    if (/^#[:*]/.test(raw)) {
+      const t = cleanWikiLine(raw)
+      if (t.length > 2) examples.push(t)
+    }
   }
-  return defs.slice(0, 12)
+  return {
+    definitions: defs.slice(0, 24),
+    inlineExamples: [...new Set(examples)].slice(0, 16),
+  }
 }
 
 function extractGrammar(wikitext, lang = 'fr') {
@@ -79,23 +87,23 @@ function extractGrammar(wikitext, lang = 'fr') {
 
 export function parseWiktionaryEntry(wikitext, word, lang = 'fr') {
   const wikiHost = lang === 'en' ? 'en.wiktionary.org' : 'fr.wiktionary.org'
-  const definitions = extractDefinitions(wikitext, lang)
+  const { definitions, inlineExamples } = extractDefinitionsAndExamples(wikitext, lang)
   const synonyms = extractSection(wikitext, ['synonyme', 'synonym'])
   const antonyms = extractSection(wikitext, ['antonyme', 'antonym'])
   const expressions = extractSection(wikitext, ['expression', 'locution', 'idiom'])
   const conjugation = extractSection(wikitext, ['conjugaison', 'conjugation'])
-  const examples = extractSection(wikitext, ['exemple', 'example'])
+  const examples = [...inlineExamples, ...extractSection(wikitext, ['exemple', 'example'])].slice(0, 24)
   const technical = extractSection(wikitext, ['technique', 'architecture', 'métier', 'vocabulaire'])
   const grammar = extractGrammar(wikitext, lang)
 
   return {
     word,
     lang,
-    found: definitions.length > 0 || synonyms.length > 0,
+    found: definitions.length > 0 || synonyms.length > 0 || examples.length > 0,
     definitions,
     synonyms,
     antonyms,
-    expressions: [...expressions, ...technical].slice(0, 16),
+    expressions: [...expressions, ...technical].slice(0, 24),
     conjugation: conjugation.length ? conjugation : null,
     examples,
     grammar,

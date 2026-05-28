@@ -1,6 +1,6 @@
 import { canvasFontCss } from '@/lib/fontUtils'
 
-export const SHAPE_TYPES = new Set(['line', 'rect', 'circle', 'arrow', 'cloud', 'dimline', 'text'])
+export const SHAPE_TYPES = new Set(['line', 'rect', 'circle', 'triangle', 'diamond', 'arrow', 'cloud', 'dimline', 'text'])
 
 export function getShapeCenter(s) {
   if (!s?.pts?.length) return { x: 0, y: 0 }
@@ -202,6 +202,45 @@ export function drawShapeStroke(ctx, s, layerOp, unitSys, formatDimension) {
     return
   }
 
+  if (st === 'triangle' || st === 'diamond') {
+    const box = normalizeBoxPts(s.pts)
+    const x = box[0].x
+    const y = box[0].y
+    const w = box[1].x - box[0].x
+    const h = box[1].y - box[0].y
+    if (!w || !h) return
+    const pts = st === 'triangle'
+      ? [
+          { x: x + w / 2, y },
+          { x: x + w, y: y + h },
+          { x, y: y + h },
+        ]
+      : [
+          { x: x + w / 2, y },
+          { x: x + w, y: y + h / 2 },
+          { x: x + w / 2, y: y + h },
+          { x, y: y + h / 2 },
+        ]
+    withRotation(ctx, s, () => {
+      ctx.beginPath()
+      ctx.moveTo(pts[0].x, pts[0].y)
+      pts.slice(1).forEach((p) => ctx.lineTo(p.x, p.y))
+      ctx.closePath()
+      const fc = fillColor(s)
+      if (fc) {
+        ctx.fillStyle = fc
+        ctx.globalAlpha = (s.fillOpacity ?? 0.25) * layerOp
+        ctx.fill()
+      }
+      ctx.strokeStyle = s.color
+      ctx.lineWidth = s.size
+      ctx.globalAlpha = baseOp
+      ctx.stroke()
+    })
+    ctx.globalAlpha = 1
+    return
+  }
+
   if (st === 'arrow') {
     withRotation(ctx, s, () => {
       const [a, b] = [s.pts[0], s.pts[1]]
@@ -284,7 +323,7 @@ export function shapeStylePayload(shapeStyle, color) {
 
 export function isTransformableShape(s) {
   const st = s?.shapeType || s?.tool
-  return ['line', 'arrow', 'dimline', 'rect', 'circle', 'cloud', 'text'].includes(st)
+  return ['line', 'arrow', 'dimline', 'rect', 'circle', 'triangle', 'diamond', 'cloud', 'text'].includes(st)
 }
 
 export function resizeShapeBox(s, x1, y1, x2, y2) {

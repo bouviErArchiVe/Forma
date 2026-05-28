@@ -59,6 +59,7 @@ import FormaFolderExplorer from "@/components/formafolder/FormaFolderExplorer"
 import {
   BookOpen, Star, Search, Grid3X3, List, Plus, FileText, FolderOpen, ChevronLeft,
   LayoutDashboard, Calculator, Ruler, Languages, Sparkles, Palette, Gamepad2,
+  Image, Music2, TimerReset, UserRound, LogOut,
 } from "lucide-react"
 
 const FOLDER_EMOJIS = ["📁","📂","🏗","🏛","📐","⚙","🎨","📚","🌿","🔥","⭐","💡","🎯","🏆","🔬","🌍","🏠","🚀","💎","🗂"]
@@ -1389,7 +1390,7 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
             open
             onClose={() => setShowTranslate(false)}
             notebooks={notebooks}
-            onOpenScan={() => { setShowTranslate(false); navigate("/translate") }}
+            onOpenScan={() => setShowTranslate(false)}
           />
         </BottomSheet>
       )}
@@ -1399,7 +1400,7 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
           open
           onClose={() => setShowTranslate(false)}
           notebooks={notebooks}
-          onOpenScan={() => { setShowTranslate(false); navigate("/translate") }}
+          onOpenScan={() => setShowTranslate(false)}
         />
       )}
 
@@ -1433,7 +1434,7 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
       )}
 
       {/* FLOATING BUTTONS — Spotify + Focus */}
-      <div style={{position:"fixed",bottom:24,left:24,zIndex:180,display:"flex",gap:8}}>
+      <div style={{display:"none"}}>
         <button onClick={()=>setShowSpotify(v=>!v)} title="Bibliothèque Spotify"
           style={{width:44,height:44,borderRadius:"50%",background:showSpotify?"#1db954":T.surface,border:`1px solid ${showSpotify?"#1db954":T.border}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 3px 14px rgba(0,0,0,.15)",transition:"all .2s"}}>
           <svg width={18} height={18} viewBox="0 0 24 24" fill={showSpotify?"#fff":"#1db954"}><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
@@ -1700,20 +1701,11 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
             <HeaderIconBtn active={showCalc} onClick={() => setShowCalc(v => !v)} title="Calculatrice"><Calculator size={20} /></HeaderIconBtn>
             <HeaderIconBtn active={showConverter} onClick={() => setShowConverter(v => !v)} title="Convertisseur"><Ruler size={20} /></HeaderIconBtn>
             <HeaderIconBtn active={showTranslate} onClick={() => setShowTranslate(v => !v)} title="Traduction"><Languages size={20} /></HeaderIconBtn>
-            <button
-              type="button"
-              onClick={() => onOpenMoodboard?.()}
-              style={{
-                padding: '8px 14px', borderRadius: 9,
-                background: 'transparent',
-                border: `1px solid ${UI.PANEL_BORDER}`,
-                color: UI.MUTED, fontWeight: 600, fontSize: 12, cursor: 'pointer',
-              }}
-            >
-              🖼 Moodboard
-            </button>
+            <HeaderIconBtn active={false} onClick={() => onOpenMoodboard?.()} title="FMoodboard"><Image size={20} /></HeaderIconBtn>
             <HeaderIconBtn active={false} onClick={() => window.dispatchEvent(new CustomEvent('forma:open-search'))} title="Recherche"><Search size={22} /></HeaderIconBtn>
             <HeaderIconBtn active={false} onClick={() => navigate('/formaai')} title="FormaAI"><Sparkles size={20} /></HeaderIconBtn>
+            <HeaderIconBtn active={showSpotify} onClick={() => setShowSpotify(v => !v)} title="Spotify"><Music2 size={20} /></HeaderIconBtn>
+            <HeaderIconBtn active={showFocus} onClick={() => setShowFocus(v => !v)} title="Focus"><TimerReset size={20} /></HeaderIconBtn>
             {userId && (
               <NotificationBell
                 T={T}
@@ -1723,7 +1715,10 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
               />
             )}
             {userId ? (
-              <button type="button" onClick={logout} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${C.cardBorder}`, background: 'transparent', color: C.textSecondary, fontSize: 12, cursor: 'pointer' }}>Déconnexion</button>
+              <>
+                <HeaderIconBtn active={showProfilePanel} onClick={openProfilePanel} title="Compte"><UserRound size={20} /></HeaderIconBtn>
+                <HeaderIconBtn active={false} onClick={logout} title="Déconnexion"><LogOut size={20} /></HeaderIconBtn>
+              </>
             ) : (
               <button type="button" onClick={() => navigate('/auth')} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: C.accent, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Connexion</button>
             )}

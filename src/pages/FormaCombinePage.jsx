@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FormaAppShell from '@/components/FormaAppShell'
+import FormaModuleHeader from '@/components/FormaModuleHeader'
 import CombineSidebar from '@/components/formacombine/CombineSidebar'
 import CombinePreview from '@/components/formacombine/CombinePreview'
 import CombineImportModal from '@/components/formacombine/CombineImportModal'

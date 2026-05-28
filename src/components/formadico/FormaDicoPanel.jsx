@@ -8,7 +8,7 @@ import GlassButton from '@/components/ui/GlassButton'
 
 function Section({ title, items, T, schoolMode }) {
   if (!items?.length) return null
-  const list = schoolMode ? items.slice(0, 5) : items
+  const list = schoolMode ? items.slice(0, 8) : items
   return (
     <div style={{ marginBottom: 14 }}>
       <div style={{ fontSize: 11, fontWeight: 800, color: T.accent, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.04em' }}>{title}</div>
@@ -146,6 +146,12 @@ export default function FormaDicoPanel({ T: TProp, compact = false, initialWord 
           <Section title="Expressions & termes" items={entry.expressions} T={T} schoolMode={schoolMode} />
           <Section title="Exemples" items={entry.examples} T={T} schoolMode={schoolMode} />
           <Section title="Conjugaison" items={entry.conjugation} T={T} schoolMode={schoolMode} />
+
+          {entry.source === 'wiktionary' && (
+            <div style={{ fontSize: 10, color: T.muted, lineHeight: 1.45, marginTop: 8 }}>
+              Source ouverte Wiktionary : le contenu dépend de la richesse de la page du mot recherché.
+            </div>
+          )}
 
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
             <GlassButton T={T} onClick={openTranslate} style={{ fontSize: 11, padding: '6px 10px' }}>🌐 Traduire</GlassButton>

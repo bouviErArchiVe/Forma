@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Bell, FolderOpen, Handshake, Settings, Share2, User } from 'lucide-react'
 import { glassStyle, rgbaFromHex } from '@/theme/glass'
 import { TOKENS } from '@/theme/tokens'
 import { ELEVATION, TYPE } from '@/lib/design'
@@ -7,12 +8,12 @@ import { computeProfileStats, streakLabel } from '@/lib/profileStats'
 import GlassButton from '@/components/ui/GlassButton'
 
 const QUICK_LINKS = [
-  { id: 'profile', label: 'Mon profil', icon: '👤', path: '/account/profile' },
-  { id: 'friends', label: 'Amis', icon: '🤝', path: '/account/friends' },
-  { id: 'sharing', label: 'Partage', icon: '🔗', path: '/account/sharing' },
-  { id: 'folders', label: 'Dossiers partagés', icon: '📂', path: '/account/folders' },
-  { id: 'notifications', label: 'Notifications', icon: '🔔', path: '/account/notifications' },
-  { id: 'settings', label: 'Paramètres', icon: '⚙', path: '/account/settings' },
+  { id: 'profile', label: 'Mon profil', Icon: User, path: '/account/profile' },
+  { id: 'friends', label: 'Amis', Icon: Handshake, path: '/account/friends' },
+  { id: 'sharing', label: 'Partage', Icon: Share2, path: '/account/sharing' },
+  { id: 'folders', label: 'Dossiers partagés', Icon: FolderOpen, path: '/account/folders' },
+  { id: 'notifications', label: 'Notifications', Icon: Bell, path: '/account/notifications' },
+  { id: 'settings', label: 'Paramètres', Icon: Settings, path: '/account/settings' },
 ]
 
 function StatCard({ T, emoji, value, label }) {
@@ -216,7 +217,7 @@ export default function ProfilePanel({
               onMouseEnter={(e) => { e.currentTarget.style.background = `${T.accent}12` }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
             >
-              <span style={{ fontSize: 16, width: 22, textAlign: 'center' }}>{item.icon}</span>
+              <item.Icon size={18} strokeWidth={1.9} style={{ width: 22, flexShrink: 0 }} />
               {item.label}
               {item.id === 'notifications' && unreadCount > 0 && (
                 <span style={{ marginLeft: 'auto', background: T.accent, color: '#fff', fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 999 }}>

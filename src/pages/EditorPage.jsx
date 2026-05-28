@@ -22,7 +22,7 @@ import {
   MessageSquare, Ruler, Pipette, BookOpen, PanelLeft, ChevronRight, Plus, ZoomIn,
   ZoomOut, Maximize2, Move, Copy, Clipboard, Layers, Trash2, X, Monitor, Hand,
   Search, SlidersHorizontal, ChevronDown, Grid3x3, List, LayoutList,
-  RotateCw, Trash2 as TrashIcon, FileText,
+  RotateCw, Trash2 as TrashIcon, FileText, Shapes, Triangle, Diamond,
 } from "lucide-react"
 import { CANVAS_TEXT_FONTS } from "@/lib/fontUtils"
 import { useTabletLayout } from "@/hooks/useTabletLayout"
@@ -140,11 +140,15 @@ const TOP_TOOL_GROUPS = [
   [{ id: 'line', Icon: Minus, label: 'Ligne', key: '1', shape: true }, { id: 'rect', Icon: Square, label: 'Rectangle', key: '2', shape: true }, { id: 'circle', Icon: Circle, label: 'Cercle', key: '3', shape: true }, { id: 'shape-arrow', Icon: ArrowRight, label: 'Flèche', key: 'A', shape: true }],
   [{ id: 'dimline', Icon: Ruler, label: 'Cotation', key: 'D', shape: true }, { id: 'cloud', Icon: MessageSquare, label: 'Bulle', key: 'C', shape: true }],
 ]
-const SHAPE_TOOL_IDS=['line','rect','circle','shape-arrow','dimline','cloud']
+const SHAPE_TOOL_IDS=['line','rect','circle','triangle','diamond','shape-arrow','dimline','cloud']
+const SHAPE_DRAWING_TOOLS=['line','rect','circle','triangle','diamond','shape-arrow','cloud','dimline']
+const SHAPE_RENDER_TYPES=['line','rect','circle','triangle','diamond','arrow','cloud','dimline']
 const SHAPE_HUD_PRIMARY=[
   {id:'line',Icon:Minus,label:'Ligne'},
   {id:'rect',Icon:Square,label:'Rectangle'},
   {id:'circle',Icon:Circle,label:'Cercle'},
+  {id:'triangle',Icon:Triangle,label:'Triangle'},
+  {id:'diamond',Icon:Diamond,label:'Losange'},
   {id:'shape-arrow',Icon:ArrowRight,label:'Flèche'},
 ]
 const SHAPE_HUD_EXTRA=[
@@ -167,7 +171,7 @@ const GN_T = {
 }
 const TOOL_ICON_MAP = {
   hand: Hand, arrow: MousePointer2, pen: Pen, highlight: Highlighter, eraser: Eraser,
-  line: Minus, rect: Square, circle: Circle, 'shape-arrow': ArrowRight,
+  line: Minus, rect: Square, circle: Circle, triangle: Triangle, diamond: Diamond, 'shape-arrow': ArrowRight,
   dimline: Ruler, cloud: MessageSquare, lasso: Lasso, 'lasso-rect': Lasso,
   text: Type, eyedropper: Pipette,
 }
@@ -613,7 +617,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       }
       return
     }
-    if(st==="text"||SHAPE_TYPES.has(st)||["line","rect","circle","arrow","cloud","dimline"].includes(st)){
+    if(st==="text"||SHAPE_TYPES.has(st)||SHAPE_RENDER_TYPES.includes(st)){
       drawShapeStroke(ctx,s,layerOp,unitSys,formatDimension)
       return
     }
@@ -803,6 +807,11 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       const d=Math.abs(Math.hypot(nx,ny)-1) * Math.max(rx,ry)
       return d <= pad
     }
+    if(st==="triangle"||st==="diamond"){
+      const a=s.pts[0],b=s.pts[1]
+      const rx=Math.min(a.x,b.x),ry=Math.min(a.y,b.y),rw=Math.abs(b.x-a.x),rh=Math.abs(b.y-a.y)
+      return rectDistance(p,rx,ry,rw,rh) <= pad
+    }
     if(st==="line"||st==="dimline"||st==="arrow"){
       const a=s.pts[0],b=s.pts[1]||s.pts[s.pts.length-1]
       return distPointToSegment(p,a,b) <= pad
@@ -955,7 +964,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       onTextEditRequest?.({index:null,x:p.x,y:p.y,text:"",color,size,fontFamily:canvasTextFont})
       return
     }
-    if(["pen","highlight","eraser","line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)&&!canUseActiveLayer())return
+    if(["pen","highlight","eraser",...SHAPE_DRAWING_TOOLS].includes(tool)&&!canUseActiveLayer())return
     if(tool==="eraser"&&eraserMode==="zone"){
       e.preventDefault();drawing.current=true;cur.current=[p];return
     }
@@ -981,7 +990,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       }
     }
     e.preventDefault();drawing.current=true;cur.current=[p]
-    if(["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)){
+    if(SHAPE_DRAWING_TOOLS.includes(tool)){
       const sp=snapPoint(p,strokes.current,new Set())
       shape.current={start:{x:sp.x,y:sp.y}}
       return
@@ -1030,7 +1039,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       lassoRect.current={x1:Math.min(s.x,p.x),y1:Math.min(s.y,p.y),x2:Math.max(s.x,p.x),y2:Math.max(s.y,p.y)}
       redraw();return
     }
-    if(["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)&&shape.current){
+    if(SHAPE_DRAWING_TOOLS.includes(tool)&&shape.current){
       const snapped=snapPoint(p,strokes.current,new Set())
       snapGuides.current=snapped.guides
       const ep={x:snapped.x,y:snapped.y}
@@ -1166,7 +1175,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
     if(history.current.length>50)history.current.shift()
     redoStack.current=[]
     snapGuides.current=[]
-    if(["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)&&shape.current){
+    if(SHAPE_DRAWING_TOOLS.includes(tool)&&shape.current){
       const s=shape.current.start
       const end=shape.current.end||p
       const finalPts=tool==="cloud"?[{x:Math.min(s.x,end.x),y:Math.min(s.y,end.y)},{x:Math.max(s.x,end.x),y:Math.max(s.y,end.y)}]:[s,end]
@@ -1440,21 +1449,37 @@ function ShapeColorPanel({color,setColor,activeCPal,setActiveCPal,shapeStyle,set
   )
 }
 
-function GoodNotesShapeHud({tool,setTool,showColorPanel,setShowColorPanel}){
-  const allShapes=[...SHAPE_HUD_PRIMARY,...SHAPE_HUD_EXTRA]
+function GoodNotesShapeHud({tool,setTool,showColorPanel,setShowColorPanel,setLassoType,setShowArrowHUD}){
+  const allShapes=[
+    {id:'lasso',Icon:Lasso,label:'Lasso libre'},
+    {id:'lasso-rect',Icon:Square,label:'Lasso rectangle'},
+    ...SHAPE_HUD_PRIMARY,
+    ...SHAPE_HUD_EXTRA,
+  ]
   const shapeBtn=({id,Icon,label})=>{
     const active=tool===id
     return(
-      <button key={id} type="button" title={label} onClick={()=>setTool(id)} style={{width:36,height:36,borderRadius:8,border:"none",background:active?"#3A3A3C":"transparent",color:active?"#fff":"#EBEBF5",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-        <Icon size={20} strokeWidth={active?2.2:1.8}/>
+      <button key={id} type="button" title={label} onClick={()=>{
+        if(id==="lasso"||id==="lasso-rect"){
+          setLassoType?.(id==="lasso-rect"?"rect":"free")
+          setTool(id)
+          setShowArrowHUD?.(false)
+          return
+        }
+        setTool(id)
+        setShowArrowHUD?.(false)
+      }} style={{width:34,height:34,borderRadius:8,border:"none",background:active?"#3A3A3C":"transparent",color:active?"#fff":"#EBEBF5",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+        <Icon size={19} strokeWidth={active?2.2:1.8}/>
       </button>
     )
   }
   return(
-    <div style={{position:"absolute",top:56,left:"50%",transform:"translateX(-50%)",background:"#1C1C1E",borderRadius:20,padding:"8px 12px",boxShadow:"0 4px 20px rgba(0,0,0,0.6)",display:"flex",alignItems:"center",gap:4,zIndex:45,animation:"gnShapeHudIn .15s ease"}}>
-      {allShapes.map(shapeBtn)}
+    <div style={{position:"absolute",top:56,left:"50%",transform:"translateX(-50%)",background:"#1C1C1E",borderRadius:18,padding:"7px 10px",boxShadow:"0 4px 20px rgba(0,0,0,0.6)",display:"flex",alignItems:"center",gap:3,zIndex:45,animation:"gnShapeHudIn .15s ease",maxWidth:"calc(100vw - 24px)",overflowX:"auto"}}>
+      {allShapes.slice(0,2).map(shapeBtn)}
       <GnSep h={24}/>
-      <button type="button" onClick={()=>setShowColorPanel(v=>!v)} title="Couleurs forme" style={{width:32,height:32,borderRadius:"50%",border:"none",background:showColorPanel?C.accent:"#0A84FF",color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+      {allShapes.slice(2).map(shapeBtn)}
+      <GnSep h={24}/>
+      <button type="button" onClick={()=>setShowColorPanel(v=>!v)} title="Couleurs forme" style={{width:30,height:30,borderRadius:"50%",border:"none",background:showColorPanel?C.accent:"#0A84FF",color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
         <ChevronDown size={18}/>
       </button>
     </div>
@@ -1738,17 +1763,10 @@ function GoodNotesTopBar({
   handleImport,exportPNG,exporting,importInputRef,
   unitSys,setUnitSys,scale,setScale,SCALES_M,SCALES_I,
   showMeasureHUD,setShowMeasureHUD,showRuler,setShowRuler,showProtractor,setShowProtractor,showSquare,setShowSquare,
+  showShapesHUD,onToggleShapesHUD,
 }){
   const nbRef=useRef(null)
   const moreRef=useRef(null)
-  const[narrowBar,setNarrowBar]=useState(false)
-  const[showExtraShapes,setShowExtraShapes]=useState(false)
-  useEffect(()=>{
-    const check=()=>setNarrowBar(window.innerWidth<=1024)
-    check()
-    window.addEventListener("resize",check)
-    return()=>window.removeEventListener("resize",check)
-  },[])
   useEffect(()=>{
     if(!showMoreMenu&&!showNotebookDropdown)return
     const close=e=>{
@@ -1764,9 +1782,7 @@ function GoodNotesTopBar({
     </button>
   )
   const moreSep=()=><div style={{height:1,background:C.border,margin:"4px 0"}}/>
-  const primaryShapes=[{id:"line",Icon:Minus},{id:"rect",Icon:Square},{id:"circle",Icon:Circle},{id:"shape-arrow",Icon:ArrowRight}]
-  const extraShapes=[{id:"dimline",Icon:Ruler},{id:"cloud",Icon:MessageSquare}]
-  const groupStyle={display:"flex",alignItems:"center",gap:3,flexShrink:0}
+  const groupStyle={display:"flex",alignItems:"center",gap:2,flexShrink:0}
   return(
     <div style={{height:TOP_BAR_H,flexShrink:0,background:C.bar,borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 8px",gap:8,zIndex:30,position:"relative"}}>
       <div style={groupStyle}>
@@ -1799,7 +1815,7 @@ function GoodNotesTopBar({
         <button type="button" onClick={()=>togglePanel("library")} title="Bibliothèque" style={{width:36,height:36,borderRadius:8,border:"none",cursor:"pointer",background:showLib?"#2C2C2E":"transparent",color:showLib?"#0A84FF":"#EBEBF5",fontSize:17,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🏗</button>
       </div>
       <GnSep/>
-      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8,minWidth:0,overflowX:"auto"}}>
+      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,minWidth:0,overflowX:"auto"}}>
         <div style={groupStyle}>
           <GnToolBtn active={tool==="arrow"||tool==="select"} onClick={()=>onToolClick("arrow",false,false)} title="Sélection"><MousePointer2 size={18}/></GnToolBtn>
         </div>
@@ -1809,28 +1825,12 @@ function GoodNotesTopBar({
           <GnToolBtn active={tool==="highlight"} onClick={()=>onToolClick("highlight",true,false)} title="Surligneur"><Highlighter size={18}/></GnToolBtn>
           <GnToolBtn active={tool==="eraser"} onClick={()=>onToolClick("eraser",true,false)} title="Gomme"><Eraser size={18}/></GnToolBtn>
           <GnToolBtn active={tool==="text"} onClick={()=>onToolClick("text",false,false)} title="Texte"><Type size={18}/></GnToolBtn>
-          <GnToolBtn active={tool==="lasso"||tool==="lasso-rect"} onClick={()=>onToolClick("lasso",false,false)} title="Lasso"><Lasso size={18}/></GnToolBtn>
         </div>
         <GnSep h={20}/>
-        <div style={{...groupStyle,position:"relative"}}>
-          {primaryShapes.map(({id,Icon})=>(
-            <GnToolBtn key={id} active={tool===id} onClick={()=>onToolClick(id,false,true)} title={id}><Icon size={18}/></GnToolBtn>
-          ))}
-          {(!narrowBar?extraShapes:[]).map(({id,Icon})=>(
-            <GnToolBtn key={id} active={tool===id} onClick={()=>onToolClick(id,false,true)} title={id}><Icon size={18}/></GnToolBtn>
-          ))}
-          {narrowBar&&(
-            <>
-              <GnToolBtn active={showExtraShapes||extraShapes.some(s=>tool===s.id)} onClick={()=>setShowExtraShapes(v=>!v)} title="Plus de formes"><Plus size={18}/></GnToolBtn>
-              {showExtraShapes&&(
-                <div style={{position:"absolute",top:56,left:"50%",transform:"translateX(-50%)",background:"#1C1C1E",borderRadius:12,border:"1px solid #38383A",padding:8,display:"flex",gap:6,zIndex:200,boxShadow:"0 8px 24px rgba(0,0,0,0.6)"}}>
-                  {extraShapes.map(({id,Icon})=>(
-                    <GnToolBtn key={id} active={tool===id} onClick={()=>{onToolClick(id,false,true);setShowExtraShapes(false)}} title={id}><Icon size={18}/></GnToolBtn>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+        <div style={groupStyle}>
+          <GnToolBtn active={showShapesHUD||tool==="lasso"||tool==="lasso-rect"||SHAPE_TOOL_IDS.includes(tool)} onClick={onToggleShapesHUD} title="Lasso et formes">
+            <Shapes size={18}/>
+          </GnToolBtn>
         </div>
       </div>
       <div style={groupStyle}>
@@ -2057,7 +2057,7 @@ function PropertiesPanelContent({T,color,setColor,sizeMm,setSizeMm,tool,setTool,
   const[customHex,setCustomHex]=useState(color)
   const wheelRef=useRef()
   const isEraser=tool==="eraser"
-  const isShapeTool=["line","rect","circle","shape-arrow","cloud","dimline"].includes(tool)
+  const isShapeTool=SHAPE_DRAWING_TOOLS.includes(tool)
   const isTextTool=tool==="text"
   const prevToolRef=useRef(tool)
   useEffect(()=>{
@@ -4138,6 +4138,12 @@ export default function EditorPage({ onBack }){
             setShowProtractor={setShowProtractor}
             showSquare={showSquare}
             setShowSquare={setShowSquare}
+            showShapesHUD={showShapesHUD}
+            onToggleShapesHUD={()=>{
+              setToolPopup(p=>p==="shapes"?null:"shapes")
+              setShowColorPanel(false)
+              setShowArrowHUD(false)
+            }}
           />
           <GoodNotesToolPopup
             toolPopup={toolPopup}
@@ -4160,7 +4166,7 @@ export default function EditorPage({ onBack }){
             setCustomHex={setCustomHex}
             pickWheel={pickColorWheel}
           />
-          {showShapesHUD&&<GoodNotesShapeHud tool={tool} setTool={setTool} showColorPanel={showColorPanel} setShowColorPanel={setShowColorPanel}/>}
+          {showShapesHUD&&<GoodNotesShapeHud tool={tool} setTool={setTool} showColorPanel={showColorPanel} setShowColorPanel={setShowColorPanel} setLassoType={setLassoType} setShowArrowHUD={setShowArrowHUD}/>}
           {showColorPanel&&showShapesHUD&&<ShapeColorPanel color={color} setColor={setColor} activeCPal={activeCPal} setActiveCPal={setActiveCPal} shapeStyle={shapeStyle} setShapeStyle={setShapeStyle} onClose={()=>setShowColorPanel(false)}/>}
           {showDimlinePopup&&<GoodNotesDimlinePopup unitSys={unitSys} setUnitSys={setUnitSys} scale={scale} setScale={setScale} SCALES_M={SCALES_M} SCALES_I={SCALES_I} color={color} setColor={setColor} activeCPal={activeCPal} setActiveCPal={setActiveCPal}/>}
           {showArrowHUD&&<GoodNotesArrowHud show arrowStyle={arrowStyle} setArrowStyle={setArrowStyle} onClose={()=>setShowArrowHUD(false)}/>}
