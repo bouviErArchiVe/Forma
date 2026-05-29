@@ -1,5 +1,23 @@
 # Changelog Forma
 
+## 0.26.1 — usePageCanvasPointer, dirty rects eraser, forma v2 E2E, render bench
+
+### Canvas
+- Hook `usePageCanvasPointer` — extraction pointer down/move/up (~400 lignes)
+- `canvas-erase.ts`, `page-mutations.ts` — helpers extraits
+- Dirty rects gomme : `eraserInkClip` + redraw partiel
+
+### `.forma v2`
+- Export Paramètres : option « Inclure vignettes (.forma v2) »
+- E2E roundtrip export v2 + replace import
+
+### PWA / verrou
+- Bannière lock : hint expiration + toast reprise/échec
+
+### Bench / QA
+- E2E `canvas-render-bench.spec.ts` (pan, zoom, 12 traits)
+- Tests `canvas-erase`, `document-lock remaining`
+
 ## 0.26.0 — Multi-onglets dur, `.forma v2` import thumbs, canvas modules
 
 ### PWA / verrou multi-onglets

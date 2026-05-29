@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   documentLockStorageKey,
+  getDocumentLockRemainingMs,
   getDocumentLockTabId,
   isDocumentLockedByOther,
   pruneStaleDocumentLocks,
@@ -71,5 +72,12 @@ describe('document-lock', () => {
     )
     expect(tryReacquireDocumentLock(nbId, tabB)).toBe(true)
     expect(isDocumentLockedByOther(nbId, tabB)).toBe(false)
+  })
+
+  it('getDocumentLockRemainingMs returns positive while lock active', () => {
+    tryAcquireDocumentLock(nbId, tabA)
+    const rem = getDocumentLockRemainingMs(nbId)
+    expect(rem).toBeGreaterThan(0)
+    expect(rem).toBeLessThanOrEqual(45_000)
   })
 })

@@ -58,6 +58,22 @@ export function clipArea(c: InkClip): number {
   return Math.max(0, c.w) * Math.max(0, c.h)
 }
 
+/** Zone encre à invalider sous la gomme (phase 2+). */
+export function eraserInkClip(
+  pt: { x: number; y: number },
+  radius: number,
+  pageW = 794,
+  pageH = 1123,
+  pad = 12,
+): InkClip {
+  return expandClip(
+    rectToClip(pt.x - radius, pt.y - radius, radius * 2, radius * 2),
+    pad,
+    pageW,
+    pageH,
+  )
+}
+
 export interface OverlayDirtyInput {
   lasso: { x: number; y: number; w: number; h: number } | null
   prevLasso: { x: number; y: number; w: number; h: number } | null

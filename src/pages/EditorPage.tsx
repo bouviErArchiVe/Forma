@@ -54,7 +54,9 @@ import {
 } from '../services/pages'
 import { createId } from '../lib/id'
 import {
+  getDocumentLockRemainingMs,
   getDocumentLockTabId,
+  isDocumentLockStale,
   isDocumentLockedByOther,
   pruneStaleDocumentLocks,
   refreshDocumentLock,
@@ -116,6 +118,7 @@ export function EditorPage() {
   const snapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lockTabIdRef = useRef(getDocumentLockTabId())
   const [docLockBlocked, setDocLockBlocked] = useState(false)
+  const [lockHint, setLockHint] = useState<string | null>(null)
   const pageViewMode = useSettingsStore((s) => s.pageViewMode)
   const readMode = useEditorStore((s) => s.readMode)
   const autoSnapshot = useSettingsStore((s) => s.autoSnapshot)
@@ -263,6 +266,24 @@ export function EditorPage() {
     window.addEventListener('pagehide', onPageHide)
     return () => window.removeEventListener('pagehide', onPageHide)
   }, [id])
+
+  useEffect(() => {
+    if (!id || !docLockBlocked) {
+      setLockHint(null)
+      return
+    }
+    const tick = () => {
+      if (isDocumentLockStale(id)) {
+        setLockHint('Verrou expiré — vous pouvez reprendre l’édition')
+      } else {
+        const rem = getDocumentLockRemainingMs(id)
+        setLockHint(`Verrou actif · reprise possible dans ~${Math.ceil(rem / 1000)} s`)
+      }
+    }
+    tick()
+    const t = window.setInterval(tick, 1000)
+    return () => window.clearInterval(t)
+  }, [id, docLockBlocked])
 
   useEffect(() => {
     if (!id) return
@@ -659,6 +680,11 @@ export function EditorPage() {
           role="status"
         >
           <span>Ce carnet est ouvert dans un autre onglet — édition désactivée (lecture seule)</span>
+          {lockHint && (
+            <span data-testid="document-lock-hint" className="text-[11px] opacity-90">
+              {lockHint}
+            </span>
+          )}
           <button
             type="button"
             data-testid="document-lock-resume"
@@ -669,6 +695,12 @@ export function EditorPage() {
               if (tryReacquireDocumentLock(id, lockTabIdRef.current)) {
                 setDocLockBlocked(false)
                 useEditorStore.setState({ readMode: false })
+                useToastStore.getState().show('Édition reprise sur cet onglet')
+              } else {
+                useToastStore.getState().show(
+                  'Impossible de reprendre — l’autre onglet est toujours actif',
+                  4000,
+                )
               }
             }}
           >

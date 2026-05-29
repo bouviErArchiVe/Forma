@@ -1,6 +1,6 @@
 # Matrice de conformité — Spec ↔ Code
 
-**Version** : 0.26.0 · **Dernière revue QA** : 2026-05-29
+**Version** : 0.26.1 · **Dernière revue QA** : 2026-05-29
 
 | ID | Exigence | Statut | Notes |
 |----|----------|--------|-------|
@@ -8,17 +8,17 @@
 | PWA-2 | Service Worker offline | ✅ | `sw.js` v8 — shell precache, network-first HTML, cache-first `/assets/` |
 | PWA-3 | Icônes PNG multi-tailles | ✅ | `icon-192.png`, `icon-512.png` |
 | PWA-4 | Indicateur offline | ✅ | `OfflineBanner.tsx` + reconnexion |
-| PWA-6 | Multi-onglets | ✅ | Verrou dur + prune startup + pagehide + E2E reprise stale |
+| PWA-6 | Multi-onglets | ✅ | Hint expiration + toast reprise + E2E stale |
 | PWA-5 | Update flow | ✅ | `pwa.ts` + Paramètres — SKIP_WAITING, reload |
 | ARCH-1 | Pas de refactor massif | ✅ | Diffs ciblés par périmètre |
 | CANVAS-1 | Coordonnées world/screen | 🟡 | World OK ; zoom par carnet persisté |
 | CANVAS-2 | Layers séparés | 🟡 | 3 calques canvas ; pas 10 layers spec |
-| CANVAS-3 | Dirty rectangles | 🟡 | Phase 2 + PerfHud redraw metrics |
+| CANVAS-3 | Dirty rectangles | 🟡 | Phase 2+ gomme partielle + overlay + PerfHud |
 | CANVAS-4 | Pooling vue continue | 🟡 | `maxMountedCanvases` 3–5 ; placeholder hors pool |
 | STROKE-1 | Split 5k / 10s | ✅ | `lib/stroke-finalize.ts` |
 | STROKE-2 | tiltX/tiltY | ✅ | Champs sur `Point` |
 | STROKE-3 | Export PDF vectoriel | 🟡 | Traits, formes, flèches ; fond raster |
-| FORMA-1 | Structure ZIP arborescente | ✅ | v1 + v2 import thumbs + export optionnel |
+| FORMA-1 | Structure ZIP arborescente | ✅ | v2 export UI + import seed + E2E roundtrip |
 | FORMA-2 | Assets en blobs + intégrité | ✅ | Blobs + SHA-256 manifest (warning si mismatch) |
 | SAVE-1 | Autosave debounce 2s | ✅ | Tests `autosave.test.ts` |
 | SAVE-2 | Flush visibility | ✅ | `visibilitychange` + `pagehide` |
@@ -35,9 +35,9 @@
 | SYNC-1 | Queue / oplog futur | 🟡 | localStorage ; tests ; pas de backend |
 | EXPORT-1 | PNG 2× | ✅ | `exportPageToPng` async |
 | EXPORT-2 | SVG vecteur | 🟡 | RDP `path-simplify` ; images inline |
-| TEST-1 | Suite Vitest | ✅ | **119/119** (24 fichiers) |
+| TEST-1 | Suite Vitest | ✅ | **122/122** (25 fichiers) |
 | TEST-2 | Journal save | ✅ | `save-journal.test.ts` |
-| TEST-3 | E2E Playwright | ✅ | **16 tests** Chromium (+ multi-tab resume, canvas-bench) |
+| TEST-3 | E2E Playwright | ✅ | **18 tests** (+ forma v2, render bench) |
 | CI-1 | GitHub Actions | 🟡 | test + build + e2e + bench warning sur `formacursor` |
 
 ## Couverture tests (0.22.0)
@@ -60,9 +60,9 @@
 ## Résultats build / test (2026-05-29)
 
 ```
-npm run test     → 119 passed (24 files)
+npm run test     → 122 passed (25 files)
 npm run build    → OK
-npm run test:e2e → 16 passed (chromium)
+npm run test:e2e → 18 passed (chromium)
 npm run bench:ci → advisory warning (10k segments)
 ```
 

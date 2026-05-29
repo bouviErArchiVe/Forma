@@ -1,7 +1,4 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { createId } from '../lib/id'
-import { strokeIntersectsCircle } from '../lib/stroke-bounds'
-import { eraseStrokesInCircle } from '../lib/erase-circle'
 import { drawRulerOverlay } from '../lib/ruler-overlay'
 import { basePageDimensions, displayPageDimensions, unrotatePoint } from '../lib/page-dimensions'
 import { hydratePageForRender } from '../lib/assets'
@@ -17,18 +14,11 @@ import { pointerEventToPagePoint } from './pointer-utils'
 import { buildOverlayInteractionClip } from './overlay-interaction'
 import { useCanvasHistory } from './hooks/useCanvasHistory'
 import { useCanvasRenderScheduler } from './hooks/useCanvasRenderScheduler'
+import { usePageCanvasPointer } from './hooks/usePageCanvasPointer'
 import {
   applyColorToSelection,
-  applySelectionMove,
-  angleAtPivot,
-  collectSelection,
-  collectSelectionFromStrokeCircle,
   deleteSelectionItems,
   drawSelectionBoxes,
-  getSelectionRotationHandle,
-  hitTestAtPoint,
-  hitTestRotationHandle,
-  isMeaningfulSelectionRect,
   nudgeSelection,
   omitSelectionFromPage,
   pageWithOnlySelection,
@@ -36,7 +26,6 @@ import {
   selectAllOnPage,
   scaleSelection,
   selectionBounds,
-  toggleSelectionItem,
 } from '../lib/selection-engine'
 import type { Orientation } from '../types'
 import {
@@ -45,27 +34,18 @@ import {
   hasClipboard,
   pasteClipboard,
 } from '../lib/clipboard'
-import { detectCircleStroke } from '../lib/circle-lasso'
-import { detectShapeFromPoints, snapLineToAxis } from '../lib/shape-detect'
-import { appendStrokes } from '../lib/stroke-finalize'
-import {
-  createPoint,
-  getStrokeBounds,
-  pointNearStroke,
-} from '../lib/stroke-render'
+import { detectShapeFromPoints } from '../lib/shape-detect'
+import { createPoint, getStrokeBounds } from '../lib/stroke-render'
 import { StickerPicker } from '../components/editor/StickerPicker'
 import { useEditorStore } from '../stores/editorStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import type {
-  ImageElement,
   Notebook,
   Page,
   Point,
   SelectionItem,
-  StickerElement,
   Stroke,
   TapeElement,
-  TextElement,
 } from '../types'
 import { normalizePage } from '../types'
 
@@ -551,398 +531,58 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     )
   }
 
-  const isPalmTouch = (e: React.PointerEvent) =>
-    palmRejection &&
-    e.pointerType === 'touch' &&
-    ((e.width > 28 || e.height > 28) || (e.pressure === 0 && e.width > 0))
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (!interactive) return
-    if (isPalmTouch(e)) return
-    if (
-      fingerScroll &&
-      e.pointerType === 'touch' &&
-      e.pressure < 0.1 &&
-      store.activeTool !== 'lasso'
-    ) {
-      return
-    }
-
-    if (store.activeTool === 'elements' && pendingSticker) {
-      const pt = getPoint(e)
-      commit(addStickerToPage(local, pendingSticker, pt.x, pt.y))
-      setPendingSticker(null)
-      return
-    }
-
-    if (laserPointer) {
-      const canvas = drawRef.current
-      if (!canvas) return
-      canvas.setPointerCapture(e.pointerId)
-      const pt = getPoint(e)
-      isDrawing.current = true
-      setLaserTrail([{ x: pt.x, y: pt.y }])
-      return
-    }
-
-    if (store.readMode) {
-      const tape = hitTape(getPoint(e))
-      if (tape) {
-        commit({
-          ...local,
-          tapes: local.tapes.map((t) =>
-            t.id === tape.id ? { ...t, revealed: !t.revealed } : t,
-          ),
-        })
-      }
-      return
-    }
-    const canvas = drawRef.current
-    if (!canvas) return
-    canvas.setPointerCapture(e.pointerId)
-    const pt = getPoint(e)
-    isDrawing.current = true
-    historyRef.current.beginBatch(localRef.current)
-
-    if (store.activeTool === 'tape') {
-      setTapeStart(pt)
-      return
-    }
-
-    if (store.activeTool === 'text') {
-      const existing = hitTextAt(pt)
-      if (existing) setEditingTextId(existing.id)
-      else {
-        const el: TextElement = {
-          id: createId(),
-          x: pt.x,
-          y: pt.y,
-          width: 280,
-          height: 120,
-          content: '',
-          fontSize: 18,
-          color: store.penColor,
-          align: 'left',
-          pageId: local.id,
-        }
-        commit({ ...local, texts: [...local.texts, el] })
-        setEditingTextId(el.id)
-      }
-      return
-    }
-
-    if (store.activeTool === 'lasso') {
-      const handle = getSelectionRotationHandle(local, selection, dragOffset ?? undefined)
-      if (handle && hitTestRotationHandle(pt, handle)) {
-        isRotatingRef.current = true
-        rotationBaseRef.current = localRef.current
-        rotationStartAngleRef.current = angleAtPivot({ x: handle.pivotX, y: handle.pivotY }, pt)
-        historyRef.current.beginBatch(localRef.current)
-        return
-      }
-      const bounds = selection.length ? selectionBounds(local, selection) : null
-      if (
-        bounds &&
-        pt.x >= bounds.x &&
-        pt.x <= bounds.x + bounds.w &&
-        pt.y >= bounds.y &&
-        pt.y <= bounds.y + bounds.h
-      ) {
-        dragStart.current = pt
-        return
-      }
-      const hit = hitTestAtPoint(local, pt)
-      if (hit) {
-        setSelection(e.shiftKey ? toggleSelectionItem(selection, hit) : [hit])
-        dragStart.current = pt
-        return
-      }
-      if (selection.length && !e.shiftKey) setSelection([])
-      lassoStart.current = pt
-      lassoDraftRef.current = { x: pt.x, y: pt.y, w: 0, h: 0 }
-      scheduleOverlayInteraction()
-      return
-    }
-
-    if (store.activeTool === 'eraser') {
-      historyRef.current.push(local)
-      const next = eraseAt(local, pt)
-      setLocal(next)
-      localRef.current = next
-      return
-    }
-
-    if (store.activeTool === 'shapes') {
-      setShapePoints([pt])
-      return
-    }
-
-    if (store.activeTool === 'laser') {
-      setLaserTrail([{ x: pt.x, y: pt.y }])
-      return
-    }
-
-    const tool =
-      store.activeTool === 'highlighter'
-        ? 'highlighter'
-        : store.activeTool === 'pencil'
-          ? 'pencil'
-          : 'pen'
-    const stroke: Stroke = {
-      id: createId(),
-      tool,
-      color:
-        tool === 'highlighter'
-          ? store.highlighterColor
-          : tool === 'pencil'
-            ? store.pencilColor
-            : store.penColor,
-      width:
-        tool === 'highlighter'
-          ? store.highlighterWidth
-          : tool === 'pencil'
-            ? store.pencilWidth + pt.pressure
-            : store.penWidth + pt.pressure * 2,
-      opacity: tool === 'highlighter' ? 0.4 : tool === 'pencil' ? 0.9 : 1,
-      points: [pt],
-      pageId: local.id,
-    }
-    penStartTime.current = Date.now()
-    setCurrentStroke(stroke)
-  }
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!interactive) return
-    if (!isDrawing.current || (store.readMode && !laserPointer)) return
-    if (isPalmTouch(e)) return
-    const pt = getPoint(e)
-
-    if (store.activeTool === 'tape' && tapeStart) {
-      tapeEndDraftRef.current = pt
-      scheduleOverlayRedraw()
-      return
-    }
-
-    if (laserPointer) {
-      setLaserTrail((t) => [...t.slice(-24), { x: pt.x, y: pt.y }])
-      return
-    }
-
-    if (isRotatingRef.current && rotationBaseRef.current) {
-      const handle = getSelectionRotationHandle(rotationBaseRef.current, selection)
-      if (handle) {
-        const angle = angleAtPivot({ x: handle.pivotX, y: handle.pivotY }, pt)
-        const delta = angle - rotationStartAngleRef.current
-        const next = rotateSelection(rotationBaseRef.current, selection, delta)
-        setLocal(next)
-        localRef.current = next
-        scheduleInkRedraw(
-          selectionInkClip(next, selection, undefined, 40, PAGE_WIDTH, PAGE_HEIGHT),
-        )
-        scheduleOverlayInteraction()
-      }
-      return
-    }
-
-    if (store.activeTool === 'lasso' && lassoStart.current && !dragStart.current) {
-      const sx = lassoStart.current.x
-      const sy = lassoStart.current.y
-      lassoDraftRef.current = {
-        x: Math.min(sx, pt.x),
-        y: Math.min(sy, pt.y),
-        w: Math.abs(pt.x - sx),
-        h: Math.abs(pt.y - sy),
-      }
-      scheduleOverlayInteraction()
-      return
-    }
-
-    if (dragStart.current && selection.length) {
-      const dx = pt.x - dragStart.current.x
-      const dy = pt.y - dragStart.current.y
-      setDragOffset({ x: dx, y: dy })
-      return
-    }
-
-    if (store.activeTool === 'eraser') {
-      const next = eraseAt(local, pt)
-      setLocal(next)
-      localRef.current = next
-      return
-    }
-
-    if (store.activeTool === 'shapes') {
-      setShapePoints((prev) => {
-        const next = [...prev, pt]
-        if (
-          e.shiftKey &&
-          next.length >= 2 &&
-          (store.shapeType === 'line' || store.shapeType === 'arrow')
-        ) {
-          return snapLineToAxis(next)
-        }
-        return next
-      })
-      return
-    }
-
-    if (store.activeTool === 'laser') {
-      setLaserTrail((t) => [...t.slice(-20), { x: pt.x, y: pt.y }])
-      return
-    }
-
-    if (currentStroke) {
-      setCurrentStroke({
-        ...currentStroke,
-        points: [...currentStroke.points, pt],
-        width:
-          currentStroke.tool === 'pen'
-            ? store.penWidth + pt.pressure * 2
-            : currentStroke.width,
-      })
-    }
-  }
-
-  const handlePointerUp = () => {
-    if (!isDrawing.current) return
-    isDrawing.current = false
-
-    if (store.activeTool === 'eraser') {
-      commit(localRef.current)
-      finishGestureHistory(true)
-      return
-    }
-
-    if (store.activeTool === 'tape' && tapeStart) {
-      const end = tapeEndDraftRef.current ?? tapeEnd ?? tapeStart
-      tapeEndDraftRef.current = null
-      const x = Math.min(tapeStart.x, end.x)
-      const y = Math.min(tapeStart.y, end.y)
-      const w = Math.max(24, Math.abs(end.x - tapeStart.x))
-      const h = Math.max(20, Math.abs(end.y - tapeStart.y))
-      const tape: TapeElement = {
-        id: createId(),
-        x,
-        y,
-        width: w,
-        height: h,
-        color: store.tapeColor,
-        revealed: false,
-        pageId: local.id,
-      }
-      commit({ ...local, tapes: [...local.tapes, tape] })
-      setTapeStart(null)
-      setTapeEnd(null)
-      finishGestureHistory(true)
-      return
-    }
-
-    if (isRotatingRef.current) {
-      isRotatingRef.current = false
-      const base = rotationBaseRef.current
-      rotationBaseRef.current = null
-      if (base && localRef.current !== base) {
-        commit(localRef.current)
-        finishGestureHistory(true)
-      } else {
-        finishGestureHistory(false)
-      }
-      return
-    }
-
-    if (dragStart.current && selection.length) {
-      if (dragOffset) {
-        commit(applySelectionMove(local, selection, dragOffset))
-        finishGestureHistory(true)
-      } else {
-        finishGestureHistory(false)
-      }
-      setDragOffset(null)
-      dragStart.current = null
-      return
-    }
-
-    if (store.activeTool === 'lasso') {
-      const draft = lassoDraftRef.current
-      lassoDraftRef.current = null
-      lassoStart.current = null
-      setLasso(null)
-      if (draft && isMeaningfulSelectionRect(draft)) {
-        setSelection(collectSelection(local, draft))
-      }
-      finishGestureHistory(false)
-      return
-    }
-
-    if (store.activeTool === 'shapes' && shapePoints.length > 1) {
-      const pts =
-        store.shapeType === 'line' || store.shapeType === 'arrow'
-          ? snapLineToAxis(shapePoints)
-          : shapePoints
-      const shape = detectShapeFromPoints(
-        pts,
-        store.shapeType,
-        store.penColor,
-        store.penWidth,
-        local.id,
-      )
-      if (shape) commit({ ...local, shapes: [...local.shapes, shape] })
-      setShapePoints([])
-      finishGestureHistory(!!shape)
-      return
-    }
-
-    if (store.activeTool === 'laser' || laserPointer) {
-      setTimeout(() => setLaserTrail([]), 400)
-      finishGestureHistory(false)
-      return
-    }
-
-    if (currentStroke && currentStroke.points.length > 1) {
-      const circle = detectCircleStroke(currentStroke.points)
-      if (
-        circle &&
-        (store.activeTool === 'pen' || store.activeTool === 'pencil')
-      ) {
-        if (scribbleErase && circle.r < 120) {
-          commit(eraseStrokesInCircle(local, circle))
-          finishGestureHistory(true)
-        } else {
-          const sel = collectSelectionFromStrokeCircle(local, currentStroke.points)
-          if (sel?.length) setSelection(sel)
-          finishGestureHistory(false)
-        }
-        setCurrentStroke(null)
-        return
-      }
-
-      const held = Date.now() - penStartTime.current >= shapeHoldMs
-      const canShape =
-        held &&
-        (store.activeTool === 'pen' || store.activeTool === 'pencil') &&
-        currentStroke.points.length > 8
-      if (canShape) {
-        const shape = detectShapeFromPoints(
-          currentStroke.points,
-          store.shapeType,
-          currentStroke.color,
-          currentStroke.width,
-          local.id,
-        )
-        if (shape) {
-          commit({ ...local, shapes: [...local.shapes, shape] })
-        } else {
-          commit({ ...local, strokes: appendStrokes(local.strokes, currentStroke) })
-        }
-      } else {
-        commit({ ...local, strokes: appendStrokes(local.strokes, currentStroke) })
-      }
-      finishGestureHistory(true)
-    } else {
-      finishGestureHistory(false)
-    }
-    setCurrentStroke(null)
-  }
+  const { handlePointerDown, handlePointerMove, handlePointerUp } = usePageCanvasPointer({
+    refs: {
+      drawRef,
+      isDrawing,
+      lassoStart,
+      lassoDraftRef,
+      tapeEndDraftRef,
+      dragStart,
+      penStartTime,
+      isRotatingRef,
+      rotationBaseRef,
+      rotationStartAngleRef,
+      localRef,
+      historyRef,
+    },
+    interactive,
+    laserPointer,
+    palmRejection,
+    fingerScroll,
+    shapeHoldMs,
+    scribbleErase,
+    store,
+    pageWidth: PAGE_WIDTH,
+    pageHeight: PAGE_HEIGHT,
+    local,
+    currentStroke,
+    shapePoints,
+    selection,
+    dragOffset,
+    tapeStart,
+    tapeEnd,
+    pendingSticker,
+    getPoint,
+    hitTextAt,
+    hitTape,
+    commit,
+    finishGestureHistory,
+    scheduleOverlayInteraction,
+    scheduleInkRedraw,
+    scheduleOverlayRedraw,
+    setLocal,
+    setCurrentStroke,
+    setShapePoints,
+    setSelection,
+    setDragOffset,
+    setLasso,
+    setLaserTrail,
+    setEditingTextId,
+    setTapeStart,
+    setTapeEnd,
+    setPendingSticker,
+  })
 
   const deleteSelection = () => {
     if (!selection.length) return
@@ -1430,70 +1070,4 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   )
 })
 
-function eraseAt(page: Page, pt: Point): Page {
-  const store = useEditorStore.getState()
-  const mode = store.eraserMode
-  const r = store.eraserSize
-
-  let strokes = page.strokes
-  if (mode === 'all' || mode === 'pen' || mode === 'highlighter') {
-    strokes = strokes.filter((s) => {
-      if (mode === 'pen' && s.tool !== 'pen' && s.tool !== 'pencil') return true
-      if (mode === 'highlighter' && s.tool !== 'highlighter') return true
-      if (!strokeIntersectsCircle(s, pt.x, pt.y, r)) return true
-      return !pointNearStroke(s, pt.x, pt.y, r)
-    })
-  }
-
-  let shapes = page.shapes
-  if (mode === 'all' || mode === 'shapes') {
-    shapes = shapes.filter((s) => {
-      const near =
-        Math.hypot(s.x1 - pt.x, s.y1 - pt.y) < r || Math.hypot(s.x2 - pt.x, s.y2 - pt.y) < r
-      return !near
-    })
-  }
-
-  let tapes = page.tapes
-  if (mode === 'all' || mode === 'tape') {
-    tapes = tapes.filter((t) => {
-      const inTape =
-        pt.x >= t.x && pt.x <= t.x + t.width && pt.y >= t.y && pt.y <= t.y + t.height
-      return !inTape
-    })
-  }
-
-  return { ...page, strokes, shapes, tapes }
-}
-
-export function addStickerToPage(
-  page: Page,
-  stickerId: string,
-  x: number,
-  y: number,
-): Page {
-  const el: StickerElement = {
-    id: createId(),
-    stickerId,
-    x: x - 24,
-    y: y - 24,
-    size: 48,
-    pageId: page.id,
-  }
-  return { ...page, stickers: [...page.stickers, el] }
-}
-
-export function addImageToPage(page: Page, dataUrl: string, cx: number, cy: number): Page {
-  const w = 240
-  const h = 180
-  const img: ImageElement = {
-    id: createId(),
-    x: cx - w / 2,
-    y: cy - h / 2,
-    width: w,
-    height: h,
-    dataUrl,
-    pageId: page.id,
-  }
-  return { ...page, images: [...page.images, img] }
-}
+export { addImageToPage, addStickerToPage } from '../lib/page-mutations'

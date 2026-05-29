@@ -41,6 +41,7 @@ export function SettingsPage() {
   const [stats, setStats] = useState<LibraryStats | null>(null)
   const [dbHealth, setDbHealth] = useState<DbHealthReport | null>(null)
   const [browserStorage, setBrowserStorage] = useState<BrowserStorageEstimate | null>(null)
+  const [exportIncludeThumbnails, setExportIncludeThumbnails] = useState(false)
   const lastBackup = getLastBackupTime()
   const {
     theme,
@@ -393,9 +394,24 @@ export function SettingsPage() {
           horodatée puis efface les données locales ; fusionner ajoute les carnets (conflits d’id →
           nouveaux ids).
         </p>
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <input
+            type="checkbox"
+            data-testid="export-include-thumbnails"
+            checked={exportIncludeThumbnails}
+            onChange={(e) => setExportIncludeThumbnails(e.target.checked)}
+          />
+          Inclure vignettes pages (.forma v2)
+        </label>
         <button
           type="button"
-          onClick={() => void runManualBackupDownload()}
+          onClick={() =>
+            void runManualBackupDownload(
+              exportIncludeThumbnails ? { includeThumbnails: true } : undefined,
+            ).then((ok) => {
+              if (ok) setImportMsg('Export .forma téléchargé.')
+            })
+          }
           className="w-full py-2.5 bg-forma-accent text-white rounded-lg"
         >
           Exporter la bibliothèque (fichier)

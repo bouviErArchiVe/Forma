@@ -137,3 +137,19 @@ export function isDocumentLockStale(notebookId: string, maxAgeMs = STALE_MS): bo
     return true
   }
 }
+
+/** Millisecondes restantes avant expiration du verrou actif (0 si absent/expiré). */
+export function getDocumentLockRemainingMs(
+  notebookId: string,
+  maxAgeMs = STALE_MS,
+): number {
+  try {
+    const raw = localStorage.getItem(documentLockStorageKey(notebookId))
+    if (!raw) return 0
+    const parsed = JSON.parse(raw) as LockRecord
+    const remaining = maxAgeMs - (Date.now() - parsed.at)
+    return remaining > 0 ? remaining : 0
+  } catch {
+    return 0
+  }
+}

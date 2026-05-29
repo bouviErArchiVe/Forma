@@ -199,10 +199,16 @@ export async function getIndexedDbFolderCount(page: Page): Promise<number> {
 }
 
 /** Export library backup via Paramètres ; returns saved download path. */
-export async function exportLibraryBackup(page: Page): Promise<string> {
+export async function exportLibraryBackup(
+  page: Page,
+  options?: { includeThumbnails?: boolean },
+): Promise<string> {
   await page.goto('/settings')
+  if (options?.includeThumbnails) {
+    await page.getByTestId('export-include-thumbnails').check()
+  }
   const [download] = await Promise.all([
-    page.waitForEvent('download', { timeout: 30_000 }),
+    page.waitForEvent('download', { timeout: 60_000 }),
     page.getByRole('button', { name: 'Exporter la bibliothèque (fichier)' }).click(),
   ])
   const savePath = path.join(FIXTURES_DIR, `.e2e-export-${Date.now()}.forma.zip`)

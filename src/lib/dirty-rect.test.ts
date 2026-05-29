@@ -4,7 +4,7 @@ vi.mock('./selection-engine', () => ({
   selectionBounds: () => ({ x: 100, y: 100, w: 80, h: 24 }),
 }))
 
-import { computeOverlayDirtyClip, expandClip, lassoOverlayClip, selectionInkClip, unionClip, clipArea } from './dirty-rect'
+import { computeOverlayDirtyClip, eraserInkClip, expandClip, lassoOverlayClip, selectionInkClip, unionClip, clipArea } from './dirty-rect'
 import { emptyPageFields } from '../types'
 import type { Page } from '../types'
 
@@ -68,5 +68,11 @@ describe('dirty-rect', () => {
     })
     expect(clip).toBeDefined()
     expect(clipArea(clip!)).toBeGreaterThan(50 * 50)
+  })
+
+  it('eraserInkClip bounds eraser radius', () => {
+    const clip = eraserInkClip({ x: 100, y: 200 }, 24, 794, 1123)
+    expect(clip!.x).toBeLessThan(100)
+    expect(clip!.w).toBeGreaterThan(40)
   })
 })

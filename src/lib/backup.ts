@@ -86,8 +86,8 @@ async function collectLibraryData(notebookIds?: Set<string>): Promise<{
   }
 }
 
-export async function exportFullBackup(): Promise<Blob> {
-  return exportLibraryFormaPackage(await collectLibraryData())
+export async function exportFullBackup(options?: { includeThumbnails?: boolean }): Promise<Blob> {
+  return exportLibraryFormaPackage(await collectLibraryData(), options)
 }
 
 export async function exportSelectedNotebooks(notebookIds: string[]): Promise<Blob> {
@@ -99,8 +99,8 @@ export async function downloadSelectedNotebooks(notebookIds: string[]): Promise<
   triggerDownload(blob, `forma-selection-${notebookIds.length}.forma.zip`)
 }
 
-export async function downloadBackup(): Promise<void> {
-  const blob = await exportFullBackup()
+export async function downloadBackup(options?: { includeThumbnails?: boolean }): Promise<void> {
+  const blob = await exportFullBackup(options)
   const name = `forma-backup-${new Date().toISOString().slice(0, 10)}.forma.zip`
   triggerDownload(blob, name)
 }

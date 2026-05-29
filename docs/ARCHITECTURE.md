@@ -1,6 +1,6 @@
 # Architecture — Forma `formacursor`
 
-**Version** : 0.26.0 · **Branche** : `formacursor`
+**Version** : 0.26.1 · **Branche** : `formacursor`
 
 ## Vue d’ensemble
 
@@ -22,7 +22,7 @@ src/
 
 | Lignes | Fichier | Rôle | Dette |
 |--------|---------|------|-------|
-| ~1350 | `canvas/PageCanvas.tsx` | Gestes, 3 calques canvas, sélection | Découpage en cours |
+| ~1070 | `canvas/PageCanvas.tsx` | Gestes, 3 calques canvas, sélection | Découpage en cours |
 | ~1050 | `pages/EditorPage.tsx` | Shell éditeur, zoom CSS, pan | Extraire hooks/layout |
 | ~920 | `pages/LibraryPage.tsx` | Bibliothèque, import drop | Extraire listes/modals |
 | ~775 | `pages/SettingsPage.tsx` | Paramètres + import backup | OK court terme |
@@ -73,6 +73,7 @@ flowchart LR
 |------|---------|------|
 | `useCanvasHistory` | `canvas/hooks/useCanvasHistory.ts` | undo/redo batch |
 | `useCanvasRenderScheduler` | `canvas/hooks/useCanvasRenderScheduler.ts` | RAF encre/overlay |
+| `usePageCanvasPointer` | `canvas/hooks/usePageCanvasPointer.ts` | pointer down/move/up |
 | `pointerEventToPagePoint` | `canvas/pointer-utils.ts` | coords stylus/souris |
 | `buildOverlayInteractionClip` | `canvas/overlay-interaction.ts` | dirty overlay |
 
@@ -90,6 +91,7 @@ Ordre recommandé — **un module à la fois, tests avant/après** :
    - ~~`usePageCanvasHistory.ts`~~ → fait (`useCanvasHistory`)
    - ~~pointer coords~~ → fait (`pointer-utils.ts`)
    - ~~overlay clip~~ → fait (`overlay-interaction.ts`)
+   - ~~pointer handlers~~ → fait (`usePageCanvasPointer`)
    - `usePageCanvasPointer.ts` (pointer down/move/up handlers)
    - `selection-overlay.ts` (paint overlay + handles)
 2. **`EditorPage.tsx`** → `useEditorNavigation.ts`, `EditorChrome.tsx`

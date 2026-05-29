@@ -39,9 +39,11 @@ export async function runAutoBackupIfDue(): Promise<boolean> {
 }
 
 /** Sauvegarde manuelle avec choix de fichier (paramètres). */
-export async function runManualBackupDownload(): Promise<boolean> {
+export async function runManualBackupDownload(options?: {
+  includeThumbnails?: boolean
+}): Promise<boolean> {
   try {
-    await downloadBackup()
+    await downloadBackup(options)
     markBackupDone()
     return true
   } catch {

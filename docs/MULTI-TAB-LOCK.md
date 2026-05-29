@@ -24,6 +24,7 @@ Si le verrou est **absent ou expiré** (onglet fermé sans cleanup, crash), le s
 - `pruneStaleDocumentLocks()`
 - `tryReacquireDocumentLock(notebookId, tabId)`
 - désactive `readMode` si succès
+- **Hint UI** : compte à rebours `getDocumentLockRemainingMs()` + toast si échec (0.26.1+)
 
 Si un autre onglet détient encore un verrou actif, la reprise échoue silencieusement (pas de perte de données).
 

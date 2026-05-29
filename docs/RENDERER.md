@@ -37,3 +37,12 @@ Forma utilise aujourd’hui **Canvas 2D** via `PageCanvas.tsx` (3 calques : fond
 - Pas d’activation WebGL sur iPad sans tests stylus
 
 Voir aussi `docs/ARCHITECTURE.md` et `docs/WEBGL-STUDY.md`.
+
+## 0.26.1 — feature flag (prévu)
+
+```typescript
+// settingsStore futur — non activé
+webglRenderer: 'off' | 'auto' | 'on'
+```
+
+Bench E2E `canvas-render-bench.spec.ts` alimente les métriques pan/zoom/reload (advisory CI).

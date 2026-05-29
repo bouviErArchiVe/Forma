@@ -55,3 +55,9 @@ GET  /v1/notebooks/{id}/snapshot
 ```
 
 Voir aussi [SYNC_API.md](./SYNC_API.md).
+
+## 0.26.1 — replay & sérialisation
+
+- Ops locales doivent rester **JSON-safe** (pas de Blob inline)
+- Replay : ordre `seq` strict ; idempotence via `op.id`
+- Feature flag futur : `VITE_SYNC_ENABLED` (default off)
