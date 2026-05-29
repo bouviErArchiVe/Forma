@@ -127,6 +127,15 @@ export function tryReacquireDocumentLock(notebookId: string, tabId: string): boo
   return true
 }
 
+/** Reprend l’édition après prune si verrou stale ou absent. */
+export function attemptStaleDocumentLockTakeover(notebookId: string, tabId: string): boolean {
+  pruneStaleDocumentLocks()
+  const cur = readLock(notebookId)
+  if (cur && cur.tabId !== tabId) return false
+  writeLock(notebookId, tabId)
+  return true
+}
+
 export function isDocumentLockStale(notebookId: string, maxAgeMs = STALE_MS): boolean {
   try {
     const raw = localStorage.getItem(documentLockStorageKey(notebookId))

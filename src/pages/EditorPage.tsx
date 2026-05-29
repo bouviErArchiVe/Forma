@@ -54,6 +54,7 @@ import {
 } from '../services/pages'
 import { createId } from '../lib/id'
 import {
+  attemptStaleDocumentLockTakeover,
   getDocumentLockRemainingMs,
   getDocumentLockTabId,
   isDocumentLockStale,
@@ -63,7 +64,6 @@ import {
   releaseDocumentLock,
   subscribeDocumentLock,
   tryAcquireDocumentLock,
-  tryReacquireDocumentLock,
 } from '../lib/document-lock'
 import { getNotebookZoom, setNotebookZoom } from '../lib/notebook-zoom'
 import { popPageRecovery } from '../lib/save-recovery'
@@ -692,14 +692,15 @@ export function EditorPage() {
             onClick={() => {
               if (!id) return
               pruneStaleDocumentLocks()
-              if (tryReacquireDocumentLock(id, lockTabIdRef.current)) {
+              if (attemptStaleDocumentLockTakeover(id, lockTabIdRef.current)) {
                 setDocLockBlocked(false)
                 useEditorStore.setState({ readMode: false })
-                useToastStore.getState().show('Édition reprise sur cet onglet')
+                useToastStore.getState().show('Édition reprise sur cet onglet', 4000, 'success')
               } else {
                 useToastStore.getState().show(
                   'Impossible de reprendre — l’autre onglet est toujours actif',
                   4000,
+                  'error',
                 )
               }
             }}

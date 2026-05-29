@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   getCanvasRedrawMetrics,
+  partialAreaRatio,
   partialRedrawRatio,
   recordInkRedraw,
   recordOverlayRedraw,
@@ -18,5 +19,6 @@ describe('canvas-redraw-metrics', () => {
     expect(m.inkPartial).toBe(1)
     expect(m.overlayPartial).toBe(1)
     expect(partialRedrawRatio(m)).toBeGreaterThan(0.5)
+    expect(partialAreaRatio(m)).toBeGreaterThan(0)
   })
 })

@@ -1,11 +1,11 @@
 # Matrice de conformité — Spec ↔ Code
 
-**Version** : 0.26.1 · **Dernière revue QA** : 2026-05-29
+**Version** : 0.26.2 · **Dernière revue QA** : 2026-05-29
 
 | ID | Exigence | Statut | Notes |
 |----|----------|--------|-------|
 | PWA-1 | manifest standalone | ✅ | `public/manifest.json` — name, theme, maskable icons |
-| PWA-2 | Service Worker offline | ✅ | `sw.js` v8 — shell precache, network-first HTML, cache-first `/assets/` |
+| PWA-2 | Service Worker offline | ✅ | `sw.js` v9 — shell precache, network-first HTML, cache-first `/assets/` |
 | PWA-3 | Icônes PNG multi-tailles | ✅ | `icon-192.png`, `icon-512.png` |
 | PWA-4 | Indicateur offline | ✅ | `OfflineBanner.tsx` + reconnexion |
 | PWA-6 | Multi-onglets | ✅ | Hint expiration + toast reprise + E2E stale |
@@ -35,9 +35,9 @@
 | SYNC-1 | Queue / oplog futur | 🟡 | localStorage ; tests ; pas de backend |
 | EXPORT-1 | PNG 2× | ✅ | `exportPageToPng` async |
 | EXPORT-2 | SVG vecteur | 🟡 | RDP `path-simplify` ; images inline |
-| TEST-1 | Suite Vitest | ✅ | **122/122** (25 fichiers) |
+| TEST-1 | Suite Vitest | ✅ | **125+** (26 fichiers) |
 | TEST-2 | Journal save | ✅ | `save-journal.test.ts` |
-| TEST-3 | E2E Playwright | ✅ | **18 tests** (+ forma v2, render bench) |
+| TEST-3 | E2E Playwright | ✅ | **20 tests** (+ stroke seed bench) |
 | CI-1 | GitHub Actions | 🟡 | test + build + e2e + bench warning sur `formacursor` |
 
 ## Couverture tests (0.22.0)
@@ -60,9 +60,9 @@
 ## Résultats build / test (2026-05-29)
 
 ```
-npm run test     → 122 passed (25 files)
+npm run test     → 125 passed (26 files)
 npm run build    → OK
-npm run test:e2e → 18 passed (chromium)
+npm run test:e2e → 20 passed (chromium)
 npm run bench:ci → advisory warning (10k segments)
 ```
 

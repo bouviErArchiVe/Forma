@@ -12,6 +12,7 @@ import {
   prepareE2EPage,
   replaceImportBackup,
   resetIndexedDb,
+  waitForStrokePersisted,
 } from './helpers'
 
 test.beforeEach(async ({ page }) => {
@@ -21,9 +22,7 @@ test.beforeEach(async ({ page }) => {
 test('exports and merge-imports a .forma backup with strokes preserved', async ({ page }) => {
   await createNotebook(page, `Roundtrip ${Date.now()}`)
   await drawSimpleStroke(page)
-  await expect
-    .poll(async () => getIndexedDbStrokeCount(page), { timeout: 8000 })
-    .toBeGreaterThan(0)
+  await waitForStrokePersisted(page)
 
   const strokesBeforeExport = await getIndexedDbStrokeCount(page)
   const exportPath = await exportLibraryBackup(page)
@@ -40,7 +39,7 @@ test('exports and merge-imports a .forma backup with strokes preserved', async (
 test('merge import adds notebooks without clearing existing data', async ({ page }) => {
   await createNotebook(page, 'Local A')
   await drawSimpleStroke(page)
-  await expect.poll(async () => getIndexedDbStrokeCount(page), { timeout: 8000 }).toBeGreaterThan(0)
+  await waitForStrokePersisted(page)
 
   const exportPath = await exportLibraryBackup(page)
   await createNotebook(page, 'Local B')
@@ -57,7 +56,7 @@ test('merge import adds notebooks without clearing existing data', async ({ page
 test('replace import requires confirm and restores exported library', async ({ page }) => {
   await createNotebook(page, 'Source notebook')
   await drawSimpleStroke(page)
-  await expect.poll(async () => getIndexedDbStrokeCount(page), { timeout: 8000 }).toBeGreaterThan(0)
+  await waitForStrokePersisted(page)
 
   const strokesBefore = await getIndexedDbStrokeCount(page)
   const exportPath = await exportLibraryBackup(page)

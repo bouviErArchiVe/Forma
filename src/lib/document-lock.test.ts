@@ -8,6 +8,7 @@ import {
   releaseDocumentLock,
   tryAcquireDocumentLock,
   tryReacquireDocumentLock,
+  attemptStaleDocumentLockTakeover,
 } from './document-lock'
 
 describe('document-lock', () => {
@@ -79,5 +80,14 @@ describe('document-lock', () => {
     const rem = getDocumentLockRemainingMs(nbId)
     expect(rem).toBeGreaterThan(0)
     expect(rem).toBeLessThanOrEqual(45_000)
+  })
+
+  it('attemptStaleDocumentLockTakeover after prune', () => {
+    localStorage.setItem(
+      documentLockStorageKey(nbId),
+      JSON.stringify({ tabId: tabA, at: Date.now() - 60_000 }),
+    )
+    expect(attemptStaleDocumentLockTakeover(nbId, tabB)).toBe(true)
+    expect(isDocumentLockedByOther(nbId, tabB)).toBe(false)
   })
 })

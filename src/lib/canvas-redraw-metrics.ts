@@ -63,3 +63,9 @@ export function partialRedrawRatio(m: CanvasRedrawMetrics = metrics): number {
   if (total === 0) return 0
   return (m.inkPartial + m.overlayPartial) / total
 }
+
+/** Ratio surface invalidée / surface page (0–1+, peut dépasser 1 si overlaps). */
+export function partialAreaRatio(m: CanvasRedrawMetrics = metrics): number {
+  if (m.canvasPixelArea <= 0) return 0
+  return m.partialAreaPx / m.canvasPixelArea
+}

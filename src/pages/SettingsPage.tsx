@@ -483,10 +483,14 @@ export function SettingsPage() {
           type="button"
           className="w-full py-2 border rounded-lg dark:border-gray-600 text-sm"
           onClick={async () => {
-            const { garbageCollectOrphanAssets } = await import('../lib/assets')
-            const n = await garbageCollectOrphanAssets()
+            const { runStorageCleanup } = await import('../lib/assets-orphan')
+            const { removed, orphanIds } = await runStorageCleanup(false)
             setImportMsg(
-              n > 0 ? `${n} asset(s) orphelin(s) supprimé(s).` : 'Aucun asset orphelin.',
+              removed > 0
+                ? `${removed} asset(s) orphelin(s) supprimé(s) (${orphanIds.length} détecté(s)).`
+                : orphanIds.length > 0
+                  ? `${orphanIds.length} orphelin(s) détecté(s), aucun supprimé.`
+                  : 'Aucun asset orphelin.',
             )
           }}
         >

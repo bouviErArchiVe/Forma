@@ -1,6 +1,6 @@
 /** Forma PWA — shell precache, network-first app, cache-first static assets. */
-const CACHE_SHELL = 'forma-shell-v8'
-const CACHE_ASSETS = 'forma-assets-v8'
+const CACHE_SHELL = 'forma-shell-v9'
+const CACHE_ASSETS = 'forma-assets-v9'
 
 const SHELL_URLS = [
   '/',

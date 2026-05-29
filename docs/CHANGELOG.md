@@ -1,5 +1,31 @@
 # Changelog Forma
 
+## 0.26.2 — Multi-agent parallel: bench strokes, storage cleanup, UX toasts
+
+### Canvas (Agent 1+2)
+- `resize-utils.ts` — coords resize handles ; métrique `partialAreaRatio` PerfHud
+
+### Bench (Agent 3)
+- E2E `canvas-stroke-bench.spec.ts` — seed IDB 500/1000 strokes
+- Bench lasso dans `canvas-render-bench.spec.ts`
+
+### `.forma v2` (Agent 4)
+- `remapThumbnailKeys()` pour merge avec IDs remappés
+
+### PWA / locks (Agent 6)
+- `attemptStaleDocumentLockTakeover` ; SW cache v9 ; toasts success/error reprise
+
+### Storage (Agent 7)
+- `assets-orphan.ts` + `runStorageCleanup` ; test `db-health.test.ts`
+
+### UX (Agent 8)
+- Toasts variants info/success/error (dark mode)
+
+### QA / E2E
+- Helpers E2E : `waitForStrokePersisted`, `waitForEditorReady`, reset IDB sans conflit Dexie
+- Playwright : workers=1, timeout 60s, sélecteur lasso `title`
+- `replaceImportBackup` : download via `waitForEvent`
+
 ## 0.26.1 — usePageCanvasPointer, dirty rects eraser, forma v2 E2E, render bench
 
 ### Canvas

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   getCanvasRedrawMetrics,
+  partialAreaRatio,
   partialRedrawRatio,
   type CanvasRedrawMetrics,
 } from '../../lib/canvas-redraw-metrics'
@@ -44,6 +45,7 @@ export function PerfHud() {
   const redrawTotal =
     redraw.inkFull + redraw.inkPartial + redraw.overlayFull + redraw.overlayPartial
   const partialPct = Math.round(partialRedrawRatio(redraw) * 100)
+  const areaPct = Math.round(partialAreaRatio(redraw) * 100)
 
   return (
     <div
@@ -63,7 +65,7 @@ export function PerfHud() {
       {redrawTotal > 0 && (
         <span className="text-cyan-200/90">
           {' '}
-          · redraw {partialPct}% partial ({redraw.inkPartial + redraw.overlayPartial}/
+          · redraw {partialPct}% partial · area ~{areaPct}% ({redraw.inkPartial + redraw.overlayPartial}/
           {redrawTotal})
         </span>
       )}

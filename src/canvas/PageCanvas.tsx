@@ -11,6 +11,7 @@ import {
 import { selectionInkClip } from '../lib/dirty-rect'
 import { recordOverlayRedraw } from '../lib/canvas-redraw-metrics'
 import { pointerEventToPagePoint } from './pointer-utils'
+import { clientToPagePoint } from './resize-utils'
 import { buildOverlayInteractionClip } from './overlay-interaction'
 import { useCanvasHistory } from './hooks/useCanvasHistory'
 import { useCanvasRenderScheduler } from './hooks/useCanvasRenderScheduler'
@@ -931,9 +932,13 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
               if (!r || r.kind !== 'group' || !base) return
               const canvas = drawRef.current
               if (!canvas) return
-              const rect = canvas.getBoundingClientRect()
-              const px = ((e.clientX - rect.left) / rect.width) * PAGE_WIDTH
-              const py = ((e.clientY - rect.top) / rect.height) * PAGE_HEIGHT
+              const { x: px, y: py } = clientToPagePoint(
+                e.clientX,
+                e.clientY,
+                canvas,
+                PAGE_WIDTH,
+                PAGE_HEIGHT,
+              )
               const scale = Math.max(
                 0.15,
                 Math.max((px - r.anchorX) / r.origW, (py - r.anchorY) / r.origH),
@@ -984,9 +989,13 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
               if (!r || r.kind !== 'image' || r.id !== img.id) return
               const canvas = drawRef.current
               if (!canvas) return
-              const rect = canvas.getBoundingClientRect()
-              const px = ((e.clientX - rect.left) / rect.width) * PAGE_WIDTH
-              const py = ((e.clientY - rect.top) / rect.height) * PAGE_HEIGHT
+              const { x: px, y: py } = clientToPagePoint(
+                e.clientX,
+                e.clientY,
+                canvas,
+                PAGE_WIDTH,
+                PAGE_HEIGHT,
+              )
               const w = Math.max(40, px - r.anchorX)
               const h = Math.max(40, py - r.anchorY)
               setLocal((prev) => {
@@ -1041,9 +1050,13 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
               if (!r || r.kind !== 'sticker' || r.id !== st.id) return
               const canvas = drawRef.current
               if (!canvas) return
-              const rect = canvas.getBoundingClientRect()
-              const px = ((e.clientX - rect.left) / rect.width) * PAGE_WIDTH
-              const py = ((e.clientY - rect.top) / rect.height) * PAGE_HEIGHT
+              const { x: px, y: py } = clientToPagePoint(
+                e.clientX,
+                e.clientY,
+                canvas,
+                PAGE_WIDTH,
+                PAGE_HEIGHT,
+              )
               const size = Math.max(24, Math.max(px - r.anchorX, py - r.anchorY))
               setLocal((prev) => {
                 const next = {

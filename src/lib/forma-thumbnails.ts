@@ -18,6 +18,19 @@ export async function extractFormaThumbnailsFromZip(zip: JSZip): Promise<Map<str
 }
 
 /** Précharge le cache miniatures (sidebar + couverture bibliothèque) après import. */
+export function remapThumbnailKeys(
+  thumbnails: Map<string, Blob>,
+  pageIdRemap: Map<string, string>,
+): Map<string, Blob> {
+  if (pageIdRemap.size === 0) return thumbnails
+  const out = new Map<string, Blob>()
+  for (const [oldId, blob] of thumbnails) {
+    out.set(pageIdRemap.get(oldId) ?? oldId, blob)
+  }
+  return out
+}
+
+/** Précharge le cache miniatures (sidebar + couverture bibliothèque) après import. */
 export function seedImportedPageThumbnails(
   thumbnails: Map<string, Blob>,
   pages: Page[],

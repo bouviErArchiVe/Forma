@@ -27,12 +27,6 @@ export async function skipOnboarding(page: Page): Promise<void> {
 export async function resetIndexedDb(page: Page): Promise<void> {
   await page.goto('/')
   await page.evaluate(async () => {
-    await new Promise<void>((resolve) => {
-      const req = indexedDB.deleteDatabase('forma')
-      req.onsuccess = () => resolve()
-      req.onerror = () => resolve()
-      req.onblocked = () => resolve()
-    })
     for (let i = sessionStorage.length - 1; i >= 0; i--) {
       const key = sessionStorage.key(i)
       if (key?.startsWith('forma-doc-lock-')) sessionStorage.removeItem(key)
@@ -41,17 +35,74 @@ export async function resetIndexedDb(page: Page): Promise<void> {
       const key = localStorage.key(i)
       if (key?.startsWith('forma-doc-lock-')) localStorage.removeItem(key)
     }
+    await new Promise<void>((resolve) => {
+      const req = indexedDB.deleteDatabase('forma')
+      req.onsuccess = () => resolve()
+      req.onerror = () => resolve()
+      req.onblocked = () => setTimeout(resolve, 750)
+    })
   })
   await page.reload({ waitUntil: 'networkidle' })
-  await page.goto('/')
 }
 
 /** Standard E2E prep: onboarding skip + clean DB. */
 export async function prepareE2EPage(page: Page): Promise<void> {
   await skipOnboarding(page)
-  await page.goto('/')
   await resetIndexedDb(page)
-  await page.reload()
+}
+
+/** Wait until the editor canvas is interactive (not locked read-only). */
+export async function waitForEditorReady(page: Page): Promise<void> {
+  await page.getByTestId('page-draw-canvas').first().waitFor({ state: 'visible', timeout: 15_000 })
+  const start = Date.now()
+  while (Date.now() - start < 10_000) {
+    const penBtn = page.locator('button[title="Stylo"]')
+    if (await penBtn.isEnabled().catch(() => false)) return
+    const resume = page.getByTestId('document-lock-resume')
+    if (await resume.isVisible({ timeout: 200 }).catch(() => false)) {
+      await resume.click().catch(() => {})
+    }
+    const lectureBtn = page.getByRole('button', { name: 'Lecture', exact: true })
+    if (await lectureBtn.isVisible({ timeout: 200 }).catch(() => false)) {
+      await lectureBtn.click().catch(() => {})
+    }
+    await page.waitForTimeout(200)
+  }
+}
+
+/** Draw a simple diagonal stroke on the active page canvas. */
+export async function drawSimpleStroke(page: Page): Promise<void> {
+  await waitForEditorReady(page)
+  const canvas = page.getByTestId('page-draw-canvas').first()
+  const box = await canvas.boundingBox()
+  if (!box) throw new Error('Canvas bounding box unavailable')
+  const x0 = box.x + box.width * 0.3
+  const y0 = box.y + box.height * 0.3
+  const x1 = box.x + box.width * 0.7
+  const y1 = box.y + box.height * 0.7
+  await page.mouse.move(x0, y0)
+  await page.mouse.down()
+  await page.mouse.move(x1, y1, { steps: 12 })
+  await page.mouse.up()
+}
+
+/** Poll IndexedDB until strokes are flushed (autosave debounce ~2s). */
+export async function waitForStrokePersisted(
+  page: Page,
+  opts?: { minCount?: number; timeoutMs?: number },
+): Promise<number> {
+  const minCount = opts?.minCount ?? 1
+  const timeoutMs = opts?.timeoutMs ?? 15_000
+  const start = Date.now()
+  let last = 0
+  while (Date.now() - start < timeoutMs) {
+    last = await getIndexedDbStrokeCount(page)
+    if (last >= minCount) return last
+    await page.waitForTimeout(250)
+  }
+  throw new Error(
+    `Expected ≥${minCount} stroke(s) in IndexedDB within ${timeoutMs}ms (last count=${last})`,
+  )
 }
 
 /** Fallback if init script did not apply before first paint. */
@@ -79,22 +130,6 @@ export async function createNotebook(page: Page, name?: string): Promise<string>
   await page.getByRole('button', { name: 'Créer', exact: true }).click()
   await page.waitForURL(/\/document\/[0-9a-f-]+/)
   return page.url()
-}
-
-/** Draw a simple diagonal stroke on the active page canvas. */
-export async function drawSimpleStroke(page: Page): Promise<void> {
-  const canvas = page.getByTestId('page-draw-canvas').first()
-  await canvas.waitFor({ state: 'visible', timeout: 10_000 })
-  const box = await canvas.boundingBox()
-  if (!box) throw new Error('Canvas bounding box unavailable')
-  const x0 = box.x + box.width * 0.3
-  const y0 = box.y + box.height * 0.3
-  const x1 = box.x + box.width * 0.7
-  const y1 = box.y + box.height * 0.7
-  await page.mouse.move(x0, y0)
-  await page.mouse.down()
-  await page.mouse.move(x1, y1, { steps: 12 })
-  await page.mouse.up()
 }
 
 /** Page count in IndexedDB for a notebook (by URL id). */
@@ -198,6 +233,53 @@ export async function getIndexedDbFolderCount(page: Page): Promise<number> {
   })
 }
 
+/** Seed extra strokes on first page in IndexedDB (bench advisory). */
+export async function seedIndexedDbStrokes(page: Page, targetCount: number): Promise<number> {
+  return page.evaluate(async (n) => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const req = indexedDB.open('forma')
+      req.onerror = () => reject(req.error)
+      req.onsuccess = () => resolve(req.result)
+    })
+    try {
+      const tx = db.transaction('pages', 'readwrite')
+      const store = tx.objectStore('pages')
+      const pages = await new Promise<{ id: string; strokes?: unknown[] }[]>((res, rej) => {
+        const r = store.getAll()
+        r.onerror = () => rej(r.error)
+        r.onsuccess = () => res(r.result as { id: string; strokes?: unknown[] }[])
+      })
+      const p = pages[0]
+      if (!p) return 0
+      const strokes = [...(p.strokes ?? [])]
+      while (strokes.length < n) {
+        const i = strokes.length
+        strokes.push({
+          id: `bench-seed-${i}`,
+          tool: 'pen',
+          color: '#111827',
+          width: 2,
+          opacity: 1,
+          pageId: p.id,
+          points: [
+            { x: 20 + (i % 400), y: 20 + (i % 500), pressure: 0.5 },
+            { x: 30 + (i % 400), y: 30 + (i % 500), pressure: 0.5 },
+          ],
+        })
+      }
+      p.strokes = strokes
+      await new Promise<void>((res, rej) => {
+        const r = store.put(p)
+        r.onerror = () => rej(r.error)
+        r.onsuccess = () => res()
+      })
+      return strokes.length
+    } finally {
+      db.close()
+    }
+  }, targetCount)
+}
+
 /** Export library backup via Paramètres ; returns saved download path. */
 export async function exportLibraryBackup(
   page: Page,
@@ -227,14 +309,14 @@ export async function mergeImportBackup(page: Page, filePath: string): Promise<v
 /** Replace-import a `.forma` backup (with confirm + pre-replace backup download). */
 export async function replaceImportBackup(page: Page, filePath: string): Promise<void> {
   await page.goto('/settings')
-  const downloads: string[] = []
-  page.on('download', async (d) => {
-    const p = path.join(FIXTURES_DIR, `.e2e-pre-replace-${Date.now()}.forma.zip`)
-    await d.saveAs(p)
-    downloads.push(p)
-  })
+  const downloadPromise = page.waitForEvent('download', { timeout: 60_000 }).catch(() => null)
   await page.getByTestId('import-replace-input').setInputFiles(filePath)
   await acceptConfirm(page, 'Sauvegarder et remplacer')
+  const download = await downloadPromise
+  if (download) {
+    const savePath = path.join(FIXTURES_DIR, `.e2e-pre-replace-${Date.now()}.forma.zip`)
+    await download.saveAs(savePath)
+  }
   await page.getByText(/Remplacé\s*:/).waitFor({ timeout: 30_000 })
 }
 

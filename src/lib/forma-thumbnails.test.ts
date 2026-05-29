@@ -1,7 +1,7 @@
 import JSZip from 'jszip'
 import { describe, expect, it, vi } from 'vitest'
 import { FORMA_V2_THUMBNAIL_PREFIX } from './forma-types'
-import { extractFormaThumbnailsFromZip, seedImportedPageThumbnails } from './forma-thumbnails'
+import { extractFormaThumbnailsFromZip, remapThumbnailKeys, seedImportedPageThumbnails } from './forma-thumbnails'
 import { makeTestLibraryPayload } from './forma-test-fixtures'
 import { sidebarThumbQueue } from './thumb-queue'
 
@@ -14,6 +14,16 @@ describe('forma-thumbnails', () => {
     const map = await extractFormaThumbnailsFromZip(zip)
     expect(map.size).toBe(1)
     expect(map.get(pageId)).toBeInstanceOf(Blob)
+  })
+
+  it('remapThumbnailKeys follows page id remap', () => {
+    const blob = new Blob([1], { type: 'image/png' })
+    const mapped = remapThumbnailKeys(
+      new Map([['page-old', blob]]),
+      new Map([['page-old', 'page-new']]),
+    )
+    expect(mapped.has('page-new')).toBe(true)
+    expect(mapped.has('page-old')).toBe(false)
   })
 
   it('seedImportedPageThumbnails preloads sidebar and library cache', () => {

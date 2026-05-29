@@ -49,8 +49,19 @@ test('canvas render bench advisory — pan zoom and stroke batch', async ({ page
   await canvas.waitFor({ state: 'visible', timeout: 15_000 })
   const reloadMs = Date.now() - reloadStart
 
+  await page.locator('button[title="Lasso"]').click()
+  const lassoStart = Date.now()
+  const box2 = await canvas.boundingBox()
+  if (box2) {
+    await page.mouse.move(box2.x + box2.width * 0.2, box2.y + box2.height * 0.2)
+    await page.mouse.down()
+    await page.mouse.move(box2.x + box2.width * 0.7, box2.y + box2.height * 0.6, { steps: 12 })
+    await page.mouse.up()
+  }
+  const lassoMs = Date.now() - lassoStart
+
   console.log(
-    `render-bench strokes12=${strokeMs}ms pan=${panMs}ms zoom=${zoomMs}ms reload=${reloadMs}ms`,
+    `render-bench strokes12=${strokeMs}ms pan=${panMs}ms zoom=${zoomMs}ms lasso=${lassoMs}ms reload=${reloadMs}ms`,
   )
   expect(strokeMs).toBeLessThan(120_000)
   expect(reloadMs).toBeLessThan(30_000)
