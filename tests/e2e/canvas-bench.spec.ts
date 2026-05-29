@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 test('canvas bench advisory — draw and reload timing', async ({ page }) => {
   await createNotebook(page, `Bench ${Date.now()}`)
   const drawStart = Date.now()
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 24; i++) {
     await drawSimpleStroke(page)
   }
   const drawMs = Date.now() - drawStart
@@ -18,7 +18,7 @@ test('canvas bench advisory — draw and reload timing', async ({ page }) => {
   await page.getByTestId('page-draw-canvas').first().waitFor({ state: 'visible', timeout: 15_000 })
   const reloadMs = Date.now() - reloadStart
 
-  console.log(`canvas-bench draw8=${drawMs}ms reload=${reloadMs}ms`)
-  expect(drawMs).toBeLessThan(60_000)
+  console.log(`canvas-bench draw24=${drawMs}ms reload=${reloadMs}ms`)
+  expect(drawMs).toBeLessThan(90_000)
   expect(reloadMs).toBeLessThan(30_000)
 })

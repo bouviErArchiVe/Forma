@@ -1,6 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { createId } from '../lib/id'
-import { snapToGrid } from '../lib/grid-snap'
 import { strokeIntersectsCircle } from '../lib/stroke-bounds'
 import { eraseStrokesInCircle } from '../lib/erase-circle'
 import { drawRulerOverlay } from '../lib/ruler-overlay'
@@ -12,8 +11,10 @@ import {
   renderPageBackground,
   renderPageContent,
 } from '../lib/page-render'
-import { selectionInkClip, computeOverlayDirtyClip } from '../lib/dirty-rect'
+import { selectionInkClip } from '../lib/dirty-rect'
 import { recordOverlayRedraw } from '../lib/canvas-redraw-metrics'
+import { pointerEventToPagePoint } from './pointer-utils'
+import { buildOverlayInteractionClip } from './overlay-interaction'
 import { useCanvasHistory } from './hooks/useCanvasHistory'
 import { useCanvasRenderScheduler } from './hooks/useCanvasRenderScheduler'
 import {
@@ -290,11 +291,6 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       selection.length ?
         selectionBounds(hydratedPageRef.current, selection, dragOffset ?? undefined)
       : null
-    const rotHandle = getSelectionRotationHandle(
-      hydratedPageRef.current,
-      selection,
-      dragOffset ?? undefined,
-    )
     const tapePreviewEnd = tapeEndDraftRef.current ?? tapeEnd
     const tapePreview =
       tapeStart && tapePreviewEnd && store.activeTool === 'tape' ?
@@ -316,12 +312,13 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       : null
     const dirty =
       partialClip ??
-      computeOverlayDirtyClip(
+      buildOverlayInteractionClip(
         {
           lasso: lassoRect,
           prevLasso: prevLassoRectRef.current,
-          selectionBounds: selBounds,
-          rotationHandle: rotHandle ? { x: rotHandle.x, y: rotHandle.y } : null,
+          selection,
+          page: hydratedPageRef.current,
+          dragOffset,
           tapePreview,
           dragGhostBounds: dragGhost,
         },
@@ -514,23 +511,13 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   }, [currentStroke, scheduleInkRedraw])
 
   const scheduleOverlayInteraction = useCallback(() => {
-    const lassoRect = lassoDraftRef.current ?? lasso
-    const clip = computeOverlayDirtyClip(
+    const clip = buildOverlayInteractionClip(
       {
-        lasso: lassoRect,
+        lasso: lassoDraftRef.current ?? lasso,
         prevLasso: prevLassoRectRef.current,
-        selectionBounds:
-          selection.length ?
-            selectionBounds(hydratedPageRef.current, selection, dragOffset ?? undefined)
-          : null,
-        rotationHandle: (() => {
-          const h = getSelectionRotationHandle(
-            hydratedPageRef.current,
-            selection,
-            dragOffset ?? undefined,
-          )
-          return h ? { x: h.x, y: h.y } : null
-        })(),
+        selection,
+        page: hydratedPageRef.current,
+        dragOffset,
         tapePreview: null,
         dragGhostBounds: null,
       },
@@ -541,30 +528,13 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     scheduleOverlayRedraw(clip)
   }, [lasso, selection, dragOffset, scheduleOverlayRedraw, PAGE_WIDTH, PAGE_HEIGHT])
 
-  const getPoint = (e: React.PointerEvent): Point => {
-    const canvas = drawRef.current!
-    const rect = canvas.getBoundingClientRect()
-    const raw = unrotatePoint(
-      ((e.clientX - rect.left) / rect.width) * PAGE_WIDTH,
-      ((e.clientY - rect.top) / rect.height) * PAGE_HEIGHT,
-      local.rotation ?? 0,
-      PAGE_WIDTH,
-      PAGE_HEIGHT,
-    )
-    const pt = gridSnap
-      ? (() => {
-          const s = snapToGrid(raw.x, raw.y)
-          return createPoint(s.x, s.y, e.pressure > 0 ? e.pressure : 0.5)
-        })()
-      : createPoint(
-          raw.x,
-          raw.y,
-          e.pressure > 0 ? e.pressure : 0.5,
-          e.tiltX ?? 0,
-          e.tiltY ?? 0,
-        )
-    return pt
-  }
+  const getPoint = (e: React.PointerEvent): Point =>
+    pointerEventToPagePoint(e, drawRef.current!, {
+      pageWidth: PAGE_WIDTH,
+      pageHeight: PAGE_HEIGHT,
+      rotation: (local.rotation ?? 0) as 0 | 90 | 180 | 270,
+      gridSnap,
+    })
 
   const hitTextAt = (pt: Point) =>
     local.texts.find(

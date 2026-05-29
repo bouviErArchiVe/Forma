@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
 import {
+  getCanvasRedrawMetrics,
+  partialRedrawRatio,
+  type CanvasRedrawMetrics,
+} from '../../lib/canvas-redraw-metrics'
+import {
   getPdfPageCacheSize,
   getPdfPrefetchInFlight,
   PDF_PAGE_CACHE_MAX,
@@ -14,7 +19,7 @@ import {
 
 export function PerfHud() {
   const [snap, setSnap] = useState<PerfSnapshot>({ fps: 0, lastPageSwitchMs: null, frameDrops: 0 })
-
+  const [redraw, setRedraw] = useState<CanvasRedrawMetrics>(() => getCanvasRedrawMetrics())
   const [pdfCache, setPdfCache] = useState(0)
   const [pdfPrefetch, setPdfPrefetch] = useState(0)
 
@@ -24,7 +29,8 @@ export function PerfHud() {
     const cacheTick = window.setInterval(() => {
       setPdfCache(getPdfPageCacheSize())
       setPdfPrefetch(getPdfPrefetchInFlight())
-    }, 2000)
+      setRedraw(getCanvasRedrawMetrics())
+    }, 500)
     return () => {
       unsub()
       stop()
@@ -35,6 +41,9 @@ export function PerfHud() {
   const slowPage =
     snap.lastPageSwitchMs != null && snap.lastPageSwitchMs > PERF_TARGET_PAGE_MS
   const lowFps = snap.fps > 0 && snap.fps < PERF_WARN_FPS
+  const redrawTotal =
+    redraw.inkFull + redraw.inkPartial + redraw.overlayFull + redraw.overlayPartial
+  const partialPct = Math.round(partialRedrawRatio(redraw) * 100)
 
   return (
     <div
@@ -50,6 +59,13 @@ export function PerfHud() {
       )}
       {snap.frameDrops > 0 && (
         <span className="text-amber-300/80"> · drops {snap.frameDrops}</span>
+      )}
+      {redrawTotal > 0 && (
+        <span className="text-cyan-200/90">
+          {' '}
+          · redraw {partialPct}% partial ({redraw.inkPartial + redraw.overlayPartial}/
+          {redrawTotal})
+        </span>
       )}
       {(pdfCache > 0 || pdfPrefetch > 0) && (
         <span className="text-white/60">
