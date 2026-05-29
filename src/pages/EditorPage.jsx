@@ -22,7 +22,7 @@ import {
   MessageSquare, Ruler, Pipette, BookOpen, PanelLeft, ChevronRight, Plus, ZoomIn,
   ZoomOut, Maximize2, Move, Copy, Clipboard, Layers, Trash2, X, Monitor, Hand,
   Search, SlidersHorizontal, ChevronDown, Grid3x3, List, LayoutList,
-  RotateCw, Trash2 as TrashIcon, FileText,
+  RotateCw, Trash2 as TrashIcon, FileText, Upload,
 } from "lucide-react"
 import { CANVAS_TEXT_FONTS } from "@/lib/fontUtils"
 import { useTabletLayout } from "@/hooks/useTabletLayout"
@@ -67,7 +67,7 @@ import {
 import CustomProfileForm from "@/components/CustomProfileForm"
 import { screenToPage, pageToScreen } from "@/lib/viewport"
 import { useCanvasViewport } from "@/hooks/useCanvasViewport"
-import { resolvePageDimensions, formatLabel } from "@/lib/pageFormats"
+import { resolvePageDimensions, formatLabel, PAGE_FORMATS } from "@/lib/pageFormats"
 import PageFormatPicker from "@/components/PageFormatPicker"
 import RulerSvg from "@/components/RulerSvg"
 import { computeRotatedBounds } from "@/lib/pageRotation"
@@ -81,6 +81,25 @@ import {
   GRID_COLORS,
   pageDisplayName,
 } from "@/lib/pageSettings"
+
+function detectFormatFromPixels(wPx,hPx){
+  if(!wPx||!hPx)return{format:'a4',rotation:0,customMm:{w:210,h:297}}
+  const isLandscape=wPx>hPx
+  const ratio=isLandscape?hPx/wPx:wPx/hPx
+  let bestFmt=null,bestDist=0.05
+  for(const f of PAGE_FORMATS){
+    if(f.id==='custom'||f.id==='infinite')continue
+    const fr=f.wMm/f.hMm
+    const normFr=fr<1?fr:1/fr
+    const d=Math.abs(normFr-ratio)
+    if(d<bestDist){bestDist=d;bestFmt=f}
+  }
+  if(!bestFmt){
+    const mmPerPx=25.4/96
+    return{format:'custom',rotation:0,customMm:{w:Math.round(wPx*mmPerPx),h:Math.round(hPx*mmPerPx)}}
+  }
+  return{format:bestFmt.id,rotation:isLandscape?90:0,customMm:{w:bestFmt.wMm,h:bestFmt.hMm}}
+}
 
 /* ══ PALETTES ═══════════════════════════════════════════ */
 const CPAL={
@@ -1895,14 +1914,19 @@ function GoodNotesTopBar({
   )
 }
 
-function EditorPagesPanel({open,onClose,page,pagesCount,pages,nb,T,goToPage,addPage}){
+function EditorPagesPanel({open,onClose,page,pagesCount,pages,nb,T,goToPage,addPage,onImport}){
   if(!open)return null
   const gnT={...T,accent:C.accent,border:C.border,bg:C.panel,muted:C.muted}
   return(
     <div style={{...LEFT_PANEL_STYLE,width:280,background:C.bar,borderRight:`1px solid ${C.border}`,zIndex:100}}>
       <div style={{padding:"14px 16px 10px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
         <span style={{fontSize:17,fontWeight:600,color:C.text}}>Pages</span>
-        <button type="button" onClick={onClose} style={{background:"none",border:"none",color:C.muted,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <button type="button" onClick={onImport} style={{background:C.accent,border:"none",cursor:"pointer",color:"#fff",fontSize:11,padding:"4px 10px",borderRadius:8,display:"flex",alignItems:"center",gap:4}}>
+            <Upload size={12}/>Importer
+          </button>
+          <button type="button" onClick={onClose} style={{background:"none",border:"none",color:C.muted,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+        </div>
       </div>
       <div style={{flex:1,overflowY:"auto",padding:12,display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,alignContent:"start"}}>
         {Array.from({length:pagesCount||1},(_,i)=>{
@@ -2552,6 +2576,7 @@ export default function EditorPage({ onBack }){
   const importedRef=useRef(importedImages)
   const skipPageLoadRef=useRef(false)
   const addingPageRef=useRef(false)
+  const importPageInputRef=useRef(null)
   const formulaNoteInsertedRef=useRef(false)
   const spreadsheetInsertedRef=useRef(false)
   const docInsertedRef=useRef(false)
@@ -3048,6 +3073,81 @@ export default function EditorPage({ onBack }){
   }
 
   const addPage=async(bgImage=null)=>insertPageAt("end",bgImage)
+
+  const importNotebookPages=async(files)=>{
+    if(!files?.length||addingPageRef.current)return
+    addingPageRef.current=true
+    try{
+      const{data:{session}}=await supabase.auth.getSession()
+      const useLocal=!session?.user||isLocalNotebookId(nb.id)
+      // collect all dataUrls + pixel dims from all files sequentially
+      const pagesData=[]
+      for(const file of files){
+        const isPdf=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf')
+        if(isPdf){
+          const pdfjs=await import('pdfjs-dist')
+          pdfjs.GlobalWorkerOptions.workerSrc=new URL('pdfjs-dist/build/pdf.worker.min.mjs',import.meta.url).toString()
+          const data=await file.arrayBuffer()
+          const doc=await pdfjs.getDocument({data}).promise
+          for(let i=1;i<=doc.numPages;i++){
+            const pg=await doc.getPage(i)
+            const vp=pg.getViewport({scale:2})
+            const canvas=document.createElement('canvas')
+            canvas.width=vp.width;canvas.height=vp.height
+            const ctx=canvas.getContext('2d')
+            await pg.render({canvasContext:ctx,viewport:vp}).promise
+            pagesData.push({dataUrl:canvas.toDataURL('image/png'),wPx:vp.width,hPx:vp.height})
+          }
+        }else{
+          const dataUrl=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})
+          const{w,h}=await new Promise((res)=>{const img=new Image();img.onload=()=>res({w:img.naturalWidth,h:img.naturalHeight});img.onerror=()=>res({w:0,h:0});img.src=dataUrl})
+          pagesData.push({dataUrl,wPx:w,hPx:h})
+        }
+      }
+      if(!pagesData.length)return
+      const emptyCanvas=serializeCanvasData([],DEFAULT_LAYERS,defaultActiveLayerId())
+      if(useLocal){
+        const existingPages=loadLocalPages(nb.id)
+        let nextNum=(existingPages.reduce((m,p)=>Math.max(m,p.page_number||0),0))+1
+        const newPages=[]
+        for(const{dataUrl,wPx,hPx}of pagesData){
+          const fmt=detectFormatFromPixels(wPx,hPx)
+          const meta=serializePageElements({format:fmt.format,rotation:fmt.rotation,customMm:fmt.customMm,items:[],gridStyle:pageGridStyle||defaultGridStyle(nb.template),bgImage:dataUrl,bgImageOpacity:0.92})
+          newPages.push({id:`local-${nb.id}-p${nextNum}-${Date.now()}`,page_number:nextNum,notebook_id:nb.id,elements:JSON.stringify(meta),canvas_data:emptyCanvas,updated_at:new Date().toISOString()})
+          nextNum++
+        }
+        const all=[...existingPages,...newPages].sort((a,b)=>a.page_number-b.page_number)
+        saveLocalPages(nb.id,all)
+        const newCount=all.length
+        updateNotebook(nb.id,{pages_count:newCount})
+        setActiveNotebook({...nb,pages_count:newCount})
+        upsertLocalNotebook({...nb,pages_count:newCount})
+        setPages(all)
+        addNotification(`${pagesData.length} page${pagesData.length>1?'s':''} importée${pagesData.length>1?'s':''}`,`success`)
+      }else{
+        const{data:existingPgs}=await supabase.from('pages').select('page_number').eq('notebook_id',nb.id).order('page_number')
+        let nextNum=((existingPgs||[]).reduce((m,p)=>Math.max(m,p.page_number||0),0))+1
+        for(const{dataUrl,wPx,hPx}of pagesData){
+          const fmt=detectFormatFromPixels(wPx,hPx)
+          const meta=serializePageElements({format:fmt.format,rotation:fmt.rotation,customMm:fmt.customMm,items:[],gridStyle:pageGridStyle||defaultGridStyle(nb.template),bgImage:dataUrl,bgImageOpacity:0.92})
+          await supabase.from('pages').insert([{notebook_id:nb.id,page_number:nextNum,user_id:session.user.id,elements:JSON.stringify(meta),canvas_data:emptyCanvas}])
+          nextNum++
+        }
+        const newCount=nextNum-1
+        await supabase.from('notebooks').update({pages_count:newCount}).eq('id',nb.id)
+        updateNotebook(nb.id,{pages_count:newCount})
+        setActiveNotebook({...nb,pages_count:newCount})
+        const{data:allPgs}=await supabase.from('pages').select('*').eq('notebook_id',nb.id).order('page_number')
+        setPages(allPgs||[])
+        addNotification(`${pagesData.length} page${pagesData.length>1?'s':''} importée${pagesData.length>1?'s':''}`,`success`)
+      }
+    }catch(e){
+      console.error(e)
+      addNotification("Erreur lors de l'import de pages","error")
+    }finally{
+      addingPageRef.current=false
+    }
+  }
 
   const deletePage=async(pageNum)=>{
     if((nb.pages_count||pages.length||1)<=1)return
@@ -4168,8 +4268,9 @@ export default function EditorPage({ onBack }){
         )}
         <div style={{display:"flex",flex:1,minHeight:0,minWidth:0,...(!focusMode?{height:readOnly?`calc(100% - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px - 24px)`:`calc(100% - ${TOP_BAR_H}px - ${BOTTOM_BAR_H}px)`}:{})}}>
           <div style={{flex:1,position:"relative",minWidth:0,display:"flex",flexDirection:"column",minHeight:0}}>
+              <input ref={importPageInputRef} type="file" multiple hidden accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,image/*,application/pdf" onChange={e=>{if(e.target.files?.length)importNotebookPages(Array.from(e.target.files));e.target.value=''}}/>
               {!focusMode&&showPagePanelOpen&&(
-                <EditorPagesPanel open={showPagePanelOpen} onClose={()=>setActivePanel(null)} page={page} pagesCount={pagesCount} pages={pages} nb={nb} T={T} goToPage={goToPage} addPage={addPage}/>
+                <EditorPagesPanel open={showPagePanelOpen} onClose={()=>setActivePanel(null)} page={page} pagesCount={pagesCount} pages={pages} nb={nb} T={T} goToPage={goToPage} addPage={addPage} onImport={()=>importPageInputRef.current?.click()}/>
               )}
               {!focusMode&&showConvPanel&&!isTablet&&(
                 <EditorConverterPanel open={showConvPanel} onClose={()=>setActivePanel(null)} T={T} convValue={convValue} setConvValue={setConvValue} convCategory={convCategory} setConvCategory={setConvCategory} convFromUnit={convFromUnit} setConvFromUnit={setConvFromUnit} convToUnit={convToUnit} setConvToUnit={setConvToUnit} scale={scale} setScale={setScale}/>
