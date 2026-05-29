@@ -4,6 +4,7 @@
  *  `.forma v2` (prévu) : `thumbnails/{pageId}.png` optionnels + `formatVersion: 2`. */
 
 export const FORMA_FORMAT_VERSION = 1
+export const FORMA_FORMAT_VERSION_V2 = 2
 
 /** Esquisse v2 — non implémenté ; import v1 reste prioritaire. */
 export const FORMA_V2_THUMBNAIL_PREFIX = 'thumbnails/'

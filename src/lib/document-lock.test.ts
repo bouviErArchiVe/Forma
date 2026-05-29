@@ -3,8 +3,10 @@ import {
   documentLockStorageKey,
   getDocumentLockTabId,
   isDocumentLockedByOther,
+  pruneStaleDocumentLocks,
   releaseDocumentLock,
   tryAcquireDocumentLock,
+  tryReacquireDocumentLock,
 } from './document-lock'
 
 describe('document-lock', () => {
@@ -51,5 +53,23 @@ describe('document-lock', () => {
     )
     expect(fn).toHaveBeenCalled()
     window.removeEventListener('storage', handler)
+  })
+
+  it('pruneStaleDocumentLocks removes expired locks', () => {
+    localStorage.setItem(
+      documentLockStorageKey(nbId),
+      JSON.stringify({ tabId: tabA, at: Date.now() - 60_000 }),
+    )
+    expect(pruneStaleDocumentLocks(45_000)).toBe(1)
+    expect(localStorage.getItem(documentLockStorageKey(nbId))).toBeNull()
+  })
+
+  it('tryReacquireDocumentLock succeeds when lock expired', () => {
+    localStorage.setItem(
+      documentLockStorageKey(nbId),
+      JSON.stringify({ tabId: tabA, at: Date.now() - 60_000 }),
+    )
+    expect(tryReacquireDocumentLock(nbId, tabB)).toBe(true)
+    expect(isDocumentLockedByOther(nbId, tabB)).toBe(false)
   })
 })

@@ -8,6 +8,8 @@ import { putAsset, readBlobBytes } from './assets'
 import { APP_VERSION } from './version'
 import {
   FORMA_FORMAT_VERSION,
+  FORMA_FORMAT_VERSION_V2,
+  FORMA_V2_THUMBNAIL_PREFIX,
   type FormaManifest,
   type FormaMetadata,
 } from './forma-types'
@@ -258,7 +260,15 @@ export async function importAssetsFromZip(
   }
 }
 
-async function writeLibraryPackage(data: FormaLibraryPayload): Promise<Blob> {
+export interface FormaExportOptions {
+  /** Inclut `thumbnails/{pageId}.png` et manifest v2. */
+  includeThumbnails?: boolean
+}
+
+async function writeLibraryPackage(
+  data: FormaLibraryPayload,
+  options?: FormaExportOptions,
+): Promise<Blob> {
   const zip = new JSZip()
   const written = new Set<string>()
   const nbIds = new Set(data.notebooks.map((n) => n.id))
@@ -359,9 +369,24 @@ async function writeLibraryPackage(data: FormaLibraryPayload): Promise<Blob> {
   }
   zip.file('backup.json', JSON.stringify(legacy))
 
+  let formatVersion: number = FORMA_FORMAT_VERSION
+  if (options?.includeThumbnails && data.pages.length > 0) {
+    formatVersion = FORMA_FORMAT_VERSION_V2
+    const { renderFullPage } = await import('./page-render')
+    for (const page of data.pages) {
+      try {
+        const canvas = await renderFullPage(page, undefined, undefined, { exportScale: 0.35 })
+        const png = canvas.toDataURL('image/png')
+        zip.file(`${FORMA_V2_THUMBNAIL_PREFIX}${page.id}.png`, await dataUrlToArrayBuffer(png))
+      } catch {
+        /* vignette optionnelle */
+      }
+    }
+  }
+
   const digest = await computeFormaPayloadDigest(zip)
   const manifest: FormaManifest = {
-    formatVersion: FORMA_FORMAT_VERSION,
+    formatVersion,
     appVersion: APP_VERSION,
     exportedAt,
     packageType: 'library',
@@ -372,8 +397,11 @@ async function writeLibraryPackage(data: FormaLibraryPayload): Promise<Blob> {
   return zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } })
 }
 
-export async function exportLibraryFormaPackage(data: FormaLibraryPayload): Promise<Blob> {
-  return writeLibraryPackage(data)
+export async function exportLibraryFormaPackage(
+  data: FormaLibraryPayload,
+  options?: FormaExportOptions,
+): Promise<Blob> {
+  return writeLibraryPackage(data, options)
 }
 
 export interface ImportFormaResult {
@@ -412,7 +440,11 @@ export async function importFormaPackage(
   const zipValidation = await validateFormaZip(zip)
 
   const manifest = await readJsonFile<FormaManifest>(zip, 'manifest.json')
-  if (manifest?.formatVersion === FORMA_FORMAT_VERSION && manifest.packageType === 'library') {
+  if (
+    (manifest?.formatVersion === FORMA_FORMAT_VERSION ||
+      manifest?.formatVersion === FORMA_FORMAT_VERSION_V2) &&
+    manifest.packageType === 'library'
+  ) {
     const folders = (await readJsonFile<Folder[]>(zip, 'indexes/folders.json')) ?? []
     const notebooksRaw = (await readJsonFile<Notebook[]>(zip, 'indexes/notebooks.json')) ?? []
     const audioRaw = (await readJsonFile<AudioRecording[]>(zip, 'indexes/audio.json')) ?? []

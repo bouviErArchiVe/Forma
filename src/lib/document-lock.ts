@@ -91,3 +91,47 @@ export function subscribeDocumentLock(
   sync()
   return () => window.removeEventListener('storage', onStorage)
 }
+
+/** Supprime les verrous expirés (onglet fermé sans cleanup). */
+export function pruneStaleDocumentLocks(maxAgeMs = STALE_MS): number {
+  let removed = 0
+  const keys: string[] = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key?.startsWith(DOCUMENT_LOCK_PREFIX)) keys.push(key)
+  }
+  for (const key of keys) {
+    try {
+      const raw = localStorage.getItem(key)
+      if (!raw) continue
+      const parsed = JSON.parse(raw) as LockRecord
+      if (Date.now() - parsed.at > maxAgeMs) {
+        localStorage.removeItem(key)
+        removed++
+      }
+    } catch {
+      localStorage.removeItem(key)
+      removed++
+    }
+  }
+  return removed
+}
+
+/** Reprend l’édition si le verrou est absent ou expiré. */
+export function tryReacquireDocumentLock(notebookId: string, tabId: string): boolean {
+  const cur = readLock(notebookId)
+  if (cur && cur.tabId !== tabId) return false
+  writeLock(notebookId, tabId)
+  return true
+}
+
+export function isDocumentLockStale(notebookId: string, maxAgeMs = STALE_MS): boolean {
+  try {
+    const raw = localStorage.getItem(documentLockStorageKey(notebookId))
+    if (!raw) return true
+    const parsed = JSON.parse(raw) as LockRecord
+    return Date.now() - parsed.at > maxAgeMs
+  } catch {
+    return true
+  }
+}

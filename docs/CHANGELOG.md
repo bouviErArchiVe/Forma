@@ -1,5 +1,22 @@
 # Changelog Forma
 
+## 0.25.2 — PageCanvas refactor, dirty rects phase 2, architecture future
+
+### Moteur canvas
+- Hooks extraits : `useCanvasHistory`, `useCanvasRenderScheduler`
+- Dirty rects phase 2 : overlay lasso/sélection partiel + métriques `canvas-redraw-metrics`
+- Bench Playwright advisory (`canvas-bench.spec.ts`)
+
+### Données / export
+- `.forma v2` thumbnails optionnels (`includeThumbnails`) — doc `FORMA-V2.md`
+- E2E export PDF multi-pages
+
+### PWA / verrou
+- Pruning verrous expirés + bouton « Reprendre l'édition »
+
+### Docs
+- `SYNC-DESIGN.md`, `WEBGL-STUDY.md`, `AI-PRIVACY.md`, `ARCHITECTURE.md` enrichi
+
 ## 0.25.1 — Preview deploy docs, rotation handles, dirty rects phase 1
 
 ### Infra

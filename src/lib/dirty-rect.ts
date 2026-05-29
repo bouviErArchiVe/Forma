@@ -53,3 +53,71 @@ export function lassoOverlayClip(
   }
   return clip
 }
+
+export function clipArea(c: InkClip): number {
+  return Math.max(0, c.w) * Math.max(0, c.h)
+}
+
+export interface OverlayDirtyInput {
+  lasso: { x: number; y: number; w: number; h: number } | null
+  prevLasso: { x: number; y: number; w: number; h: number } | null
+  selectionBounds: { x: number; y: number; w: number; h: number } | null
+  rotationHandle: { x: number; y: number } | null
+  tapePreview: { x: number; y: number; w: number; h: number } | null
+  dragGhostBounds: { x: number; y: number; w: number; h: number } | null
+}
+
+/** Zone overlay à effacer avant redraw (phase 2 — lasso, sélection, poignée, tape). */
+export function computeOverlayDirtyClip(
+  input: OverlayDirtyInput,
+  pad = 12,
+  pageW = 794,
+  pageH = 1123,
+): InkClip | undefined {
+  let clip: InkClip | undefined
+  const add = (c?: InkClip) => {
+    if (c) clip = clip ? unionClip(clip, c) : c
+  }
+  add(lassoOverlayClip(input.lasso, input.prevLasso, pad, pageW, pageH))
+  if (input.selectionBounds) {
+    add(
+      expandClip(
+        rectToClip(input.selectionBounds.x, input.selectionBounds.y, input.selectionBounds.w, input.selectionBounds.h),
+        pad + 8,
+        pageW,
+        pageH,
+      ),
+    )
+  }
+  if (input.rotationHandle) {
+    add(
+      expandClip(
+        rectToClip(input.rotationHandle.x - 14, input.rotationHandle.y - 14, 28, 56),
+        pad,
+        pageW,
+        pageH,
+      ),
+    )
+  }
+  if (input.tapePreview) {
+    add(
+      expandClip(
+        rectToClip(input.tapePreview.x, input.tapePreview.y, input.tapePreview.w, input.tapePreview.h),
+        pad,
+        pageW,
+        pageH,
+      ),
+    )
+  }
+  if (input.dragGhostBounds) {
+    add(
+      expandClip(
+        rectToClip(input.dragGhostBounds.x, input.dragGhostBounds.y, input.dragGhostBounds.w, input.dragGhostBounds.h),
+        pad,
+        pageW,
+        pageH,
+      ),
+    )
+  }
+  return clip
+}

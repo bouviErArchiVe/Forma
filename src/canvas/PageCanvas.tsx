@@ -1,6 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { createId } from '../lib/id'
-import { PageHistory } from '../lib/page-history'
 import { snapToGrid } from '../lib/grid-snap'
 import { strokeIntersectsCircle } from '../lib/stroke-bounds'
 import { eraseStrokesInCircle } from '../lib/erase-circle'
@@ -13,7 +12,10 @@ import {
   renderPageBackground,
   renderPageContent,
 } from '../lib/page-render'
-import { selectionInkClip } from '../lib/dirty-rect'
+import { selectionInkClip, computeOverlayDirtyClip } from '../lib/dirty-rect'
+import { recordOverlayRedraw } from '../lib/canvas-redraw-metrics'
+import { useCanvasHistory } from './hooks/useCanvasHistory'
+import { useCanvasRenderScheduler } from './hooks/useCanvasRenderScheduler'
 import {
   applyColorToSelection,
   applySelectionMove,
@@ -127,7 +129,9 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   const bgRef = useRef<HTMLCanvasElement>(null)
   const drawRef = useRef<HTMLCanvasElement>(null)
   const overlayRef = useRef<HTMLCanvasElement>(null)
-  const historyRef = useRef(new PageHistory())
+
+  const { historyRef, notifyHistory, finishGestureHistory, resetHistory } =
+    useCanvasHistory(onUndoRedoChange)
 
   const [local, setLocal] = useState(() => normalizePage(page))
   const localRef = useRef(local)
@@ -164,6 +168,14 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   const isRotatingRef = useRef(false)
   const rotationBaseRef = useRef<Page | null>(null)
   const rotationStartAngleRef = useRef(0)
+  const prevLassoRectRef = useRef<{ x: number; y: number; w: number; h: number } | null>(null)
+
+  const {
+    paintInkLayerRef,
+    paintOverlayRef,
+    scheduleInkRedraw,
+    scheduleOverlayRedraw,
+  } = useCanvasRenderScheduler(PAGE_WIDTH, PAGE_HEIGHT)
 
   const store = useEditorStore()
   const { palmRejection, fingerScroll, shapeHoldMs, gridSnap, scribbleErase, showRuler } =
@@ -172,10 +184,10 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   useEffect(() => {
     const p = normalizePage(page)
     setLocal(p)
-    historyRef.current.reset()
+    resetHistory()
     setSelection([])
     setEditingTextId(null)
-  }, [page.id, pageSyncKey])
+  }, [page.id, pageSyncKey, resetHistory])
 
   useEffect(() => {
     if (store.activeTool === 'elements') setShowStickerPicker(true)
@@ -186,18 +198,6 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     setDragOffset(null)
     dragStart.current = null
   }, [store.activeTool])
-
-  const notifyHistory = useCallback(() => {
-    const h = historyRef.current
-    onUndoRedoChange?.(h.canUndo(), h.canRedo())
-  }, [onUndoRedoChange])
-
-  const finishGestureHistory = useCallback((committed: boolean) => {
-    if (!historyRef.current.isBatching()) return
-    if (committed) historyRef.current.endBatch()
-    else historyRef.current.cancelBatch()
-    notifyHistory()
-  }, [notifyHistory])
 
   const commit = useCallback(
     (next: Page, recordHistory = true) => {
@@ -238,13 +238,12 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       const normalized = normalizePage(p)
       setLocal(normalized)
       localRef.current = normalized
-      historyRef.current.reset()
+      resetHistory()
       setSelection([])
       setEditingTextId(null)
       onPageChange(normalized)
-      notifyHistory()
     },
-    [onPageChange, notifyHistory],
+    [onPageChange, resetHistory],
   )
 
   useImperativeHandle(
@@ -261,10 +260,6 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   const bgDirtyRef = useRef(true)
   const hydratedPageRef = useRef<Page>(local)
   const resolvedPdfSourceRef = useRef<string | undefined>(pdfSourceDataUrl)
-  const inkRafRef = useRef<number | null>(null)
-  const overlayRafRef = useRef<number | null>(null)
-  const paintInkLayerRef = useRef<(clip?: InkClip) => void>(() => {})
-  const paintOverlayRef = useRef<() => void>(() => {})
 
   const invalidateBackground = useCallback(() => {
     bgDirtyRef.current = true
@@ -283,21 +278,70 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     invalidateBackground,
   ])
 
-  const paintOverlay = useCallback(() => {
+  const paintOverlay = useCallback(
+    (partialClip?: InkClip) => {
     const overlay = overlayRef.current
     if (!overlay) return
     const w = PAGE_WIDTH
     const h = PAGE_HEIGHT
     const oCtx = overlay.getContext('2d')!
-    oCtx.clearRect(0, 0, w, h)
     const lassoRect = lassoDraftRef.current ?? lasso
+    const selBounds =
+      selection.length ?
+        selectionBounds(hydratedPageRef.current, selection, dragOffset ?? undefined)
+      : null
+    const rotHandle = getSelectionRotationHandle(
+      hydratedPageRef.current,
+      selection,
+      dragOffset ?? undefined,
+    )
+    const tapePreviewEnd = tapeEndDraftRef.current ?? tapeEnd
+    const tapePreview =
+      tapeStart && tapePreviewEnd && store.activeTool === 'tape' ?
+        {
+          x: Math.min(tapeStart.x, tapePreviewEnd.x),
+          y: Math.min(tapeStart.y, tapePreviewEnd.y),
+          w: Math.abs(tapePreviewEnd.x - tapeStart.x),
+          h: Math.abs(tapePreviewEnd.y - tapeStart.y),
+        }
+      : null
+    const dragGhost =
+      dragOffset && selBounds ?
+        {
+          x: selBounds.x + dragOffset.x,
+          y: selBounds.y + dragOffset.y,
+          w: selBounds.w,
+          h: selBounds.h,
+        }
+      : null
+    const dirty =
+      partialClip ??
+      computeOverlayDirtyClip(
+        {
+          lasso: lassoRect,
+          prevLasso: prevLassoRectRef.current,
+          selectionBounds: selBounds,
+          rotationHandle: rotHandle ? { x: rotHandle.x, y: rotHandle.y } : null,
+          tapePreview,
+          dragGhostBounds: dragGhost,
+        },
+        12,
+        PAGE_WIDTH,
+        PAGE_HEIGHT,
+      )
+    if (dirty && dirty.w * dirty.h < w * h * 0.92) {
+      recordOverlayRedraw('partial', dirty, PAGE_WIDTH, PAGE_HEIGHT)
+      oCtx.clearRect(dirty.x, dirty.y, dirty.w, dirty.h)
+    } else {
+      recordOverlayRedraw('full', undefined, PAGE_WIDTH, PAGE_HEIGHT)
+      oCtx.clearRect(0, 0, w, h)
+    }
     if (lassoRect) {
       oCtx.strokeStyle = '#2563eb'
       oCtx.setLineDash([6, 4])
       oCtx.strokeRect(lassoRect.x, lassoRect.y, lassoRect.w, lassoRect.h)
       oCtx.setLineDash([])
     }
-    const tapePreviewEnd = tapeEndDraftRef.current ?? tapeEnd
     if (tapeStart && tapePreviewEnd && store.activeTool === 'tape') {
       oCtx.fillStyle = store.tapeColor
       oCtx.globalAlpha = 0.45
@@ -345,7 +389,9 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       )
     }
     if (showRuler) drawRulerOverlay(oCtx, w, h)
-  }, [
+    prevLassoRectRef.current = lassoRect ? { ...lassoRect } : null
+  },
+  [
     lasso,
     selection,
     tapeStart,
@@ -407,23 +453,6 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
 
   paintInkLayerRef.current = paintInkLayer
 
-  const scheduleOverlayRedraw = useCallback(() => {
-    if (overlayRafRef.current != null) return
-    overlayRafRef.current = requestAnimationFrame(() => {
-      overlayRafRef.current = null
-      paintOverlayRef.current()
-    })
-  }, [])
-
-  const scheduleInkRedraw = useCallback((clip?: InkClip) => {
-    if (inkRafRef.current != null) cancelAnimationFrame(inkRafRef.current)
-    inkRafRef.current = requestAnimationFrame(() => {
-      inkRafRef.current = null
-      paintInkLayerRef.current(clip)
-      paintOverlayRef.current()
-    })
-  }, [])
-
   useEffect(() => {
     if (!dragOffset) return
     const clip = selectionInkClip(
@@ -484,12 +513,33 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     })
   }, [currentStroke, scheduleInkRedraw])
 
-  useEffect(() => {
-    return () => {
-      if (inkRafRef.current != null) cancelAnimationFrame(inkRafRef.current)
-      if (overlayRafRef.current != null) cancelAnimationFrame(overlayRafRef.current)
-    }
-  }, [])
+  const scheduleOverlayInteraction = useCallback(() => {
+    const lassoRect = lassoDraftRef.current ?? lasso
+    const clip = computeOverlayDirtyClip(
+      {
+        lasso: lassoRect,
+        prevLasso: prevLassoRectRef.current,
+        selectionBounds:
+          selection.length ?
+            selectionBounds(hydratedPageRef.current, selection, dragOffset ?? undefined)
+          : null,
+        rotationHandle: (() => {
+          const h = getSelectionRotationHandle(
+            hydratedPageRef.current,
+            selection,
+            dragOffset ?? undefined,
+          )
+          return h ? { x: h.x, y: h.y } : null
+        })(),
+        tapePreview: null,
+        dragGhostBounds: null,
+      },
+      12,
+      PAGE_WIDTH,
+      PAGE_HEIGHT,
+    )
+    scheduleOverlayRedraw(clip)
+  }, [lasso, selection, dragOffset, scheduleOverlayRedraw, PAGE_WIDTH, PAGE_HEIGHT])
 
   const getPoint = (e: React.PointerEvent): Point => {
     const canvas = drawRef.current!
@@ -640,7 +690,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       if (selection.length && !e.shiftKey) setSelection([])
       lassoStart.current = pt
       lassoDraftRef.current = { x: pt.x, y: pt.y, w: 0, h: 0 }
-      scheduleOverlayRedraw()
+      scheduleOverlayInteraction()
       return
     }
 
@@ -719,7 +769,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
         scheduleInkRedraw(
           selectionInkClip(next, selection, undefined, 40, PAGE_WIDTH, PAGE_HEIGHT),
         )
-        scheduleOverlayRedraw()
+        scheduleOverlayInteraction()
       }
       return
     }
@@ -733,7 +783,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
         w: Math.abs(pt.x - sx),
         h: Math.abs(pt.y - sy),
       }
-      scheduleOverlayRedraw()
+      scheduleOverlayInteraction()
       return
     }
 

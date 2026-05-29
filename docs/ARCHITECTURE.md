@@ -1,6 +1,6 @@
 # Architecture — Forma `formacursor`
 
-**Version** : 0.25.1 · **Branche** : `formacursor`
+**Version** : 0.25.2 · **Branche** : `formacursor`
 
 ## Vue d’ensemble
 
@@ -63,7 +63,16 @@ flowchart LR
 
 1. **Background** — template / PDF page (invalidation `bgDirtyRef`)
 2. **Ink** — traits, formes, images (`renderPageContent`, clips partiels)
-3. **Overlay** — lasso, sélection, poignée rotation (RAF coalescé)
+3. **Overlay** — lasso, sélection, poignée rotation (RAF coalescé, **clear partiel phase 2**)
+
+**Hooks extraits (0.25.2)** :
+
+| Hook | Fichier | Rôle |
+|------|---------|------|
+| `useCanvasHistory` | `canvas/hooks/useCanvasHistory.ts` | undo/redo batch |
+| `useCanvasRenderScheduler` | `canvas/hooks/useCanvasRenderScheduler.ts` | RAF encre/overlay |
+
+**Métriques debug** : `src/lib/canvas-redraw-metrics.ts` (`getCanvasRedrawMetrics()`)
 
 **Zoom / pan** : CSS `scale` + `translate` sur conteneur (`EditorPage`) — **pas de redraw canvas** au zoom.
 

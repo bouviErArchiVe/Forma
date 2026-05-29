@@ -1,9 +1,9 @@
-# Limites connues — Forma 0.25.1
+# Limites connues — Forma 0.25.2
 
 ## Canvas & rendu
 
 - **Layers** : 3 calques canvas au lieu des 10 cibles (addendum).
-- **Dirty rectangles** : phase 1 — clips encre sur trait live, drag sélection, rotation poignée ; lasso = overlay RAF uniquement (fond PDF non re-hydraté pendant lasso).
+- **Dirty rectangles** : phase 2 — overlay lasso/sélection clear partiel ; fond PDF inchangé pendant lasso ; métriques dev via `getCanvasRedrawMetrics()`.
 - **Zoom / pan** : transform CSS — coût canvas nul ; pas de re-raster PDF au zoom.
 - **Page pooling** : limite les montages `PageCanvas`, pas de réutilisation DOM d’un même canvas entre pages.
 - **Rotation sélection** : clavier `[` `]` + poignée souris (texte/image/sticker) ; traits/formes pivotent par points.
@@ -36,7 +36,7 @@
 - **SW** : enregistré en prod uniquement (`import.meta.env.PROD`).
 - **Production ArchNote** : https://forma-iota-six.vercel.app (`main`) — **ne pas confondre** avec preview `formacursor`.
 - **Preview PWA** : projet Vercel séparé, branche `formacursor` — voir [DEPLOY.md](./DEPLOY.md).
-- **E2E Playwright** : 13 tests Chromium (smoke, éditeur, backup, PDF import/export, multi-onglets).
+- **E2E Playwright** : 15 tests Chromium (+ canvas-bench advisory, PDF multi-pages).
 
 ## Hors scope
 

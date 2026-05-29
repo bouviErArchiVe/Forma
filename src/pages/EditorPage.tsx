@@ -56,10 +56,12 @@ import { createId } from '../lib/id'
 import {
   getDocumentLockTabId,
   isDocumentLockedByOther,
+  pruneStaleDocumentLocks,
   refreshDocumentLock,
   releaseDocumentLock,
   subscribeDocumentLock,
   tryAcquireDocumentLock,
+  tryReacquireDocumentLock,
 } from '../lib/document-lock'
 import { getNotebookZoom, setNotebookZoom } from '../lib/notebook-zoom'
 import { popPageRecovery } from '../lib/save-recovery'
@@ -240,6 +242,7 @@ export function EditorPage() {
       setDocLockBlocked(blocked)
       if (blocked) useEditorStore.setState({ readMode: true })
     }
+    pruneStaleDocumentLocks()
     applyLockState(!tryAcquireDocumentLock(id, tabId))
     const unsubStorage = subscribeDocumentLock(id, tabId, applyLockState)
     const interval = window.setInterval(() => {
@@ -644,10 +647,25 @@ export function EditorPage() {
       {docLockBlocked && !presentation && (
         <div
           data-testid="document-lock-banner"
-          className="shrink-0 text-center text-xs py-1.5 bg-amber-100 text-amber-950 dark:bg-amber-950 dark:text-amber-100 border-b border-amber-300/60"
+          className="shrink-0 text-center text-xs py-1.5 bg-amber-100 text-amber-950 dark:bg-amber-950 dark:text-amber-100 border-b border-amber-300/60 flex items-center justify-center gap-3 flex-wrap"
           role="status"
         >
-          Ce carnet est ouvert dans un autre onglet — édition désactivée (lecture seule)
+          <span>Ce carnet est ouvert dans un autre onglet — édition désactivée (lecture seule)</span>
+          <button
+            type="button"
+            data-testid="document-lock-resume"
+            className="underline font-medium hover:opacity-80"
+            onClick={() => {
+              if (!id) return
+              pruneStaleDocumentLocks()
+              if (tryReacquireDocumentLock(id, lockTabIdRef.current)) {
+                setDocLockBlocked(false)
+                useEditorStore.setState({ readMode: false })
+              }
+            }}
+          >
+            Reprendre l&apos;édition
+          </button>
         </div>
       )}
       {!presentation && !focusMode && (

@@ -4,7 +4,7 @@ vi.mock('./selection-engine', () => ({
   selectionBounds: () => ({ x: 100, y: 100, w: 80, h: 24 }),
 }))
 
-import { expandClip, lassoOverlayClip, selectionInkClip, unionClip } from './dirty-rect'
+import { computeOverlayDirtyClip, expandClip, lassoOverlayClip, selectionInkClip, unionClip, clipArea } from './dirty-rect'
 import { emptyPageFields } from '../types'
 import type { Page } from '../types'
 
@@ -55,5 +55,18 @@ describe('dirty-rect', () => {
   it('lassoOverlayClip unions current and previous lasso', () => {
     const clip = lassoOverlayClip({ x: 10, y: 10, w: 20, h: 20 }, { x: 30, y: 30, w: 20, h: 20 }, 4)
     expect(clip!.w).toBeGreaterThan(20)
+  })
+
+  it('computeOverlayDirtyClip unions lasso and selection', () => {
+    const clip = computeOverlayDirtyClip({
+      lasso: { x: 0, y: 0, w: 50, h: 50 },
+      prevLasso: { x: 60, y: 0, w: 40, h: 40 },
+      selectionBounds: { x: 200, y: 200, w: 80, h: 40 },
+      rotationHandle: null,
+      tapePreview: null,
+      dragGhostBounds: null,
+    })
+    expect(clip).toBeDefined()
+    expect(clipArea(clip!)).toBeGreaterThan(50 * 50)
   })
 })
