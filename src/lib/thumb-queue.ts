@@ -29,6 +29,14 @@ export class ThumbQueue {
     return this.cache.get(id)
   }
 
+  /** Précharge une vignette importée (ex. `.forma v2`) sans régénération canvas. */
+  seedCache(id: string, objectUrl: string): void {
+    this.stale.delete(id)
+    const prev = this.cache.get(id)
+    if (prev && prev !== objectUrl) URL.revokeObjectURL(prev)
+    this.cache.set(id, objectUrl)
+  }
+
   invalidate(id: string): void {
     this.cache.delete(id)
     this.stale.add(id)

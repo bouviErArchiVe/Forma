@@ -2,6 +2,7 @@ import { db, createEmptyPage } from '../db'
 import { createId } from './id'
 import JSZip from 'jszip'
 import { exportLibraryFormaPackage, importAssetsFromZip, importFormaPackage } from './forma-package'
+import { seedImportedPageThumbnails } from './forma-thumbnails'
 import type { FormaLibraryPayload } from './forma-package'
 import type { ImportFormaResult } from './forma-package'
 import type {
@@ -157,7 +158,7 @@ export async function importBackupFile(
   const buffer = await file.arrayBuffer()
   const isZip = file.name.endsWith('.zip') || file.type.includes('zip')
   const zip = isZip ? await JSZip.loadAsync(buffer) : null
-  const { data, result } = await importFormaPackage(
+  const { data, result, thumbnails } = await importFormaPackage(
     new File([buffer], file.name, { type: file.type }),
     zip ? { zip } : undefined,
   )
@@ -175,6 +176,10 @@ export async function importBackupFile(
       `remapped_nb=${merged.remapped}`,
     )
     await backfillMissingPdfText()
+    if (thumbnails?.size) {
+      seedImportedPageThumbnails(thumbnails, await db.pages.toArray())
+      importLog.push(`thumbnails_seeded=${thumbnails.size}`)
+    }
     appendSaveJournalEvent({
       type: 'import_backup',
       at: Date.now(),
@@ -222,10 +227,14 @@ export async function importBackupFile(
       await db.pageSnapshots.bulkAdd(data.pageSnapshots)
     },
   )
-  if (zip && result.format === 'forma-v1') {
+  if (zip && (result.format === 'forma-v1' || result.format === 'forma-v2')) {
     await importAssetsFromZip(zip, new Set(data.notebooks.map((n) => n.id)), data)
   }
   await backfillMissingPdfText()
+  if (thumbnails?.size) {
+    seedImportedPageThumbnails(thumbnails, await db.pages.toArray())
+    importLog.push(`thumbnails_seeded=${thumbnails.size}`)
+  }
   appendSaveJournalEvent({
     type: 'import_backup',
     at: Date.now(),
@@ -261,7 +270,7 @@ async function mergeImportLibrary(
 
   let assetRemap = new Map<string, string>()
   let remappedAssets = 0
-  if (zip && format === 'forma-v1') {
+  if (zip && (format === 'forma-v1' || format === 'forma-v2')) {
     const mergedAssets = await importMergeAssetsFromZip(
       zip,
       data,
@@ -597,18 +606,22 @@ export async function importNotebookZip(file: File, folderId: string | null): Pr
   const buffer = await file.arrayBuffer()
   const isZip = file.name.endsWith('.zip') || file.type.includes('zip')
   const zip = isZip ? await JSZip.loadAsync(buffer) : null
-  const { data, result } = await importFormaPackage(
+  const { data, result, thumbnails } = await importFormaPackage(
     new File([buffer], file.name, { type: file.type }),
     zip ? { zip } : undefined,
   )
   const nb0 = data.notebooks[0]
   if (!nb0) throw new Error('Carnet introuvable dans l’archive')
 
-  if (zip && result.format === 'forma-v1') {
+  if (zip && (result.format === 'forma-v1' || result.format === 'forma-v2')) {
     await importAssetsFromZip(zip, new Set([nb0.id]), data)
   }
 
-  return importNotebookCloneFromData(data, nb0, folderId)
+  const nbId = await importNotebookCloneFromData(data, nb0, folderId)
+  if (thumbnails?.size) {
+    seedImportedPageThumbnails(thumbnails, await db.pages.where('notebookId').equals(nbId).toArray())
+  }
+  return nbId
 }
 
 function triggerDownload(blob: Blob, filename: string): void {

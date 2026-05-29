@@ -1,6 +1,6 @@
 # Format `.forma` v2 — thumbnails optionnels
 
-**Version app** : 0.25.2 · **Compatibilité v1** : import v1 inchangé
+**Version app** : 0.26.0 · **Compatibilité v1** : import v1 inchangé
 
 ## Changements v2
 
@@ -23,9 +23,10 @@ await exportLibraryFormaPackage(payload, { includeThumbnails: true })
 
 ## Import
 
-- `formatVersion === 2` lu comme v1 + fichiers thumb disponibles
-- UI peut charger `thumbnails/{id}.png` du ZIP avant régénération
-- Fallback : `thumb-queue` local (comportement v1)
+- `formatVersion === 2` → `ImportFormaResult.format === 'forma-v2'`
+- `extractFormaThumbnailsFromZip` + `seedImportedPageThumbnails` après écriture Dexie
+- Précharge `sidebarThumbQueue` + couverture `libraryThumbQueue` (1re page par carnet)
+- Fallback : `thumb-queue` régénère si thumb absent ou IDs remappés (merge)
 
 ## Limites
 

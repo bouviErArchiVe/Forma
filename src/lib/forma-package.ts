@@ -6,6 +6,7 @@ import JSZip from 'jszip'
 import { db } from '../db'
 import { putAsset, readBlobBytes } from './assets'
 import { APP_VERSION } from './version'
+import { extractFormaThumbnailsFromZip } from './forma-thumbnails'
 import {
   FORMA_FORMAT_VERSION,
   FORMA_FORMAT_VERSION_V2,
@@ -408,8 +409,10 @@ export interface ImportFormaResult {
   notebooks: number
   pages: number
   skippedPages: number
-  format: 'forma-v1' | 'backup-json' | 'legacy-notebook'
+  format: 'forma-v1' | 'forma-v2' | 'backup-json' | 'legacy-notebook'
   validationIssues: FormaValidationIssue[]
+  /** Nombre de vignettes PNG lues depuis le ZIP v2. */
+  importedThumbnails?: number
 }
 
 async function readJsonFile<T>(zip: JSZip, path: string): Promise<T | null> {
@@ -434,6 +437,7 @@ export async function importFormaPackage(
 ): Promise<{
   data: FormaLibraryPayload
   result: ImportFormaResult
+  thumbnails?: Map<string, Blob>
 }> {
   const zip =
     options?.zip ?? (await JSZip.loadAsync(await file.arrayBuffer()))
@@ -522,6 +526,13 @@ export async function importFormaPackage(
       }
     }
 
+    const thumbnails =
+      manifest.formatVersion === FORMA_FORMAT_VERSION_V2 ?
+        await extractFormaThumbnailsFromZip(zip)
+      : undefined
+    const formatLabel =
+      manifest.formatVersion === FORMA_FORMAT_VERSION_V2 ? 'forma-v2' : 'forma-v1'
+
     return {
       data: {
         folders,
@@ -536,9 +547,11 @@ export async function importFormaPackage(
         notebooks: notebooks.length,
         pages: pages.length,
         skippedPages,
-        format: 'forma-v1',
+        format: formatLabel,
         validationIssues: zipValidation.issues,
+        importedThumbnails: thumbnails?.size ?? 0,
       },
+      thumbnails,
     }
   }
 
