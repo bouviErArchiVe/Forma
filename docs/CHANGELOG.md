@@ -1,5 +1,15 @@
 # Changelog Forma
 
+## 0.27.0 — Pack 1 visuel : FTheme, glass UI, shell bibliothèque
+
+### Visuel (legacy ArchNote → Forma)
+- 20 thèmes FTheme (`src/theme/themes.ts`) + application runtime CSS vars
+- Glass UI : panels, cartes, modals, toasts, boutons (`index.css` + `GlassPanel` / `GlassButton`)
+- `AppBackground` — dégradé ambiance depuis thème actif
+- `LibraryShell` — sidebar bibliothèque style ArchNote
+- Sélecteur thème visuel dans Paramètres
+- Cartes carnets glass + header translucide
+
 ## 0.26.2 — Multi-agent parallel: bench strokes, storage cleanup, UX toasts
 
 ### Canvas (Agent 1+2)

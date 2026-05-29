@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { AppBackground } from './components/layout/AppBackground'
 import { CommandPalette } from './components/CommandPalette'
 import { ConfirmDialog } from './components/ConfirmDialog'
 import { MultiTabBanner, OfflineBanner } from './components/OfflineBanner'
@@ -37,7 +38,8 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className="h-full min-h-screen flex flex-col bg-forma-bg dark:bg-gray-950 dark:text-gray-100">
+      <AppBackground />
+      <div className="relative h-full min-h-screen flex flex-col">
         <OfflineBanner />
         <MultiTabBanner />
         <Suspense fallback={<PageFallback />}>

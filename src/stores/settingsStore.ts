@@ -9,6 +9,8 @@ import type {
   ThemeMode,
 } from '../types'
 import { COVER_COLORS, PAPER_TONE_COLORS } from '../types'
+import { applyVisualTheme } from '../theme/apply-visual-theme'
+import { DEFAULT_VISUAL_THEME_ID } from '../theme/themes'
 
 function readLegacySyncInterval(): SyncInterval {
   try {
@@ -38,6 +40,7 @@ interface SettingsState extends AppSettings {
   setPaperTone: (v: PaperTone) => void
   setDefaultPaperTemplate: (v: PaperTemplate) => void
   setDefaultCoverColor: (v: string) => void
+  setVisualThemeId: (id: string) => void
   applyTheme: () => void
   applyPaperTone: () => void
 }
@@ -62,6 +65,7 @@ export const useSettingsStore = create<SettingsState>()(
       paperTone: 'cream',
       defaultPaperTemplate: 'lined',
       defaultCoverColor: COVER_COLORS[4],
+      visualThemeId: DEFAULT_VISUAL_THEME_ID,
       setTheme: (theme) => {
         set({ theme })
         get().applyTheme()
@@ -89,6 +93,10 @@ export const useSettingsStore = create<SettingsState>()(
       },
       setDefaultPaperTemplate: (defaultPaperTemplate) => set({ defaultPaperTemplate }),
       setDefaultCoverColor: (defaultCoverColor) => set({ defaultCoverColor }),
+      setVisualThemeId: (visualThemeId) => {
+        set({ visualThemeId })
+        get().applyTheme()
+      },
       applyPaperTone: () => {
         document.documentElement.style.setProperty(
           '--color-forma-paper',
@@ -96,19 +104,20 @@ export const useSettingsStore = create<SettingsState>()(
         )
       },
       applyTheme: () => {
-        const { theme } = get()
+        const { theme, visualThemeId } = get()
         const root = document.documentElement
         const dark =
           theme === 'dark' ||
           (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         root.classList.toggle('dark', dark)
+        applyVisualTheme(visualThemeId, dark)
         get().applyPaperTone()
       },
     }),
     {
       name: 'forma-settings',
       onRehydrateStorage: () => (state) => {
-        state?.applyPaperTone()
+        state?.applyTheme()
       },
     },
   ),

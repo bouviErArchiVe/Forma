@@ -56,8 +56,8 @@ export function DocumentCard({
       <div
         role="button"
         tabIndex={0}
-        className={`flex items-center gap-3 p-3 rounded-lg border bg-forma-surface cursor-pointer hover:shadow-sm transition ${
-          selected ? 'border-forma-accent ring-2 ring-forma-accent/30' : 'border-forma-border'
+        className={`flex items-center gap-3 p-3 rounded-xl forma-glass-card cursor-pointer group ${
+          selected ? 'ring-2 ring-forma-accent/40 border-forma-accent' : ''
         }`}
         onClick={selectionMode ? onToggleSelect : onClick}
         onKeyDown={handleKey}
@@ -120,10 +120,8 @@ export function DocumentCard({
     <div
       role="button"
       tabIndex={0}
-      className={`relative rounded-xl border bg-forma-surface overflow-hidden cursor-pointer hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-forma-accent/40 ${
-        selected || focused
-          ? 'border-forma-accent ring-2 ring-forma-accent/30'
-          : 'border-forma-border'
+      className={`group relative rounded-xl forma-glass-card overflow-hidden cursor-pointer focus:outline-none focus:ring-2 focus:ring-forma-accent/40 ${
+        selected || focused ? 'ring-2 ring-forma-accent/40' : ''
       }`}
       onClick={selectionMode ? onToggleSelect : onClick}
       onKeyDown={handleKey}

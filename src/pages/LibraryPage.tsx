@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { DropZone } from '../components/library/DropZone'
 import { DocumentCard } from '../components/library/DocumentCard'
 import { RecentStrip } from '../components/library/RecentStrip'
+import { BrandLogo } from '../components/BrandLogo'
+import { LibraryShell, type LibrarySidebarTab } from '../components/layout/LibraryShell'
 import { ShortcutsHelp } from '../components/editor/ShortcutsHelp'
 import { MoveFolderModal } from '../components/library/MoveFolderModal'
 import { NewNotebookModal } from '../components/library/NewNotebookModal'
@@ -392,11 +394,17 @@ export function LibraryPage() {
         }
       }}
     >
+    <LibraryShell
+      activeTab={filterTab}
+      onTabChange={(tab: LibrarySidebarTab) => setFilterTab(tab)}
+    >
     <div className="min-h-full flex flex-col">
-      <header className="sticky top-0 z-10 bg-forma-surface border-b border-forma-border px-4 py-3 shadow-sm">
+      <header className="sticky top-0 z-10 forma-glass-header px-4 py-3 shadow-sm">
         <div className="flex items-center gap-2 flex-wrap max-w-6xl mx-auto">
-          <h1 className="text-xl font-bold text-forma-accent mr-1">Forma</h1>
-          <span className="text-xs text-forma-muted hidden sm:inline">Notes reimagined</span>
+          <div className="lg:hidden shrink-0">
+            <BrandLogo />
+          </div>
+          <span className="hidden lg:inline text-sm font-semibold text-forma-muted">Carnets</span>
           {(() => {
             const last = getLastBackupTime()
             const stale = last && Date.now() - last > 7 * 86400000
@@ -958,6 +966,7 @@ export function LibraryPage() {
         />
       )}
     </div>
+    </LibraryShell>
       {showShortcuts && <ShortcutsHelp onClose={() => setShowShortcuts(false)} />}
     </DropZone>
   )

@@ -24,6 +24,7 @@ import {
   saveBackupToCloudSlot,
 } from '../services/sync'
 import { useSettingsStore } from '../stores/settingsStore'
+import { FORMA_THEMES } from '../theme/themes'
 import { TEMPLATE_LABELS } from '../lib/templates'
 import { COVER_COLORS, type PaperTemplate, type PaperTone, type ThemeMode } from '../types'
 import { usePwaUpdate } from '../hooks/usePwaUpdate'
@@ -76,6 +77,8 @@ export function SettingsPage() {
     setDefaultPaperTemplate,
     defaultCoverColor,
     setDefaultCoverColor,
+    visualThemeId,
+    setVisualThemeId,
     setOnboardingDone,
     applyTheme,
   } = useSettingsStore()
@@ -158,20 +161,48 @@ export function SettingsPage() {
       <section className="mb-8 space-y-4">
         <h2 className="text-sm font-semibold text-forma-muted uppercase">Apparence</h2>
         <label className="block text-sm">
-          Thème
+          Mode clair / sombre
           <select
             value={theme}
             onChange={(e) => {
               setTheme(e.target.value as ThemeMode)
               applyTheme()
             }}
-            className="mt-1 w-full border rounded-lg px-3 py-2 dark:bg-gray-800 dark:border-gray-600"
+            className="mt-1 w-full border rounded-lg px-3 py-2 dark:bg-gray-800 dark:border-gray-600 forma-glass-surface"
           >
             <option value="system">Système</option>
             <option value="light">Clair</option>
             <option value="dark">Sombre</option>
           </select>
         </label>
+        <div>
+          <p className="text-sm mb-2">Thème visuel FTheme</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {FORMA_THEMES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setVisualThemeId(t.id)}
+                className={`text-left p-2 rounded-xl border transition-all forma-animate-in ${
+                  visualThemeId === t.id
+                    ? 'ring-2 ring-forma-accent border-forma-accent forma-glass-panel'
+                    : 'forma-glass-surface hover:scale-[1.02]'
+                }`}
+                title={t.name}
+              >
+                <div
+                  className="h-8 rounded-lg mb-1.5 border border-black/5"
+                  style={{
+                    background: `linear-gradient(135deg, ${t.bg}, ${t.accent} 120%)`,
+                  }}
+                />
+                <span className="text-xs font-medium">
+                  {t.emoji} {t.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
         <label className="block text-sm">
           Teinte du papier (pages)
           <select

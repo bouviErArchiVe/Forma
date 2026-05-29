@@ -24,27 +24,27 @@ export function ConfirmDialog() {
 
   return (
     <div
-      className="fixed inset-0 z-[120] flex items-center justify-center bg-black/45 p-4"
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 forma-animate-in"
       onClick={() => answer(false)}
     >
       <div
-        className="bg-forma-surface dark:bg-gray-900 rounded-xl shadow-xl max-w-sm w-full p-5 border border-forma-border"
+        className="forma-glass-modal max-w-sm w-full p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="font-semibold mb-2">{title}</h3>
+        <h3 className="font-semibold mb-2 text-forma-text">{title}</h3>
         <p className="text-sm text-forma-muted mb-5 whitespace-pre-wrap">{message}</p>
         <div className="flex gap-2">
           <button
             type="button"
-            className="flex-1 py-2 border rounded-lg text-sm dark:border-gray-600"
+            className="flex-1 py-2 forma-glass-btn rounded-xl text-sm"
             onClick={() => answer(false)}
           >
             Annuler
           </button>
           <button
             type="button"
-            className={`flex-1 py-2 rounded-lg text-sm text-white ${
-              danger ? 'bg-red-600 hover:bg-red-700' : 'bg-forma-accent hover:bg-forma-accent-hover'
+            className={`flex-1 py-2 rounded-xl text-sm text-white ${
+              danger ? 'forma-glass-btn-danger' : 'forma-glass-btn-accent'
             }`}
             onClick={() => answer(true)}
           >

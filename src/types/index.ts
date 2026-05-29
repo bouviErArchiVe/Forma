@@ -310,6 +310,8 @@ export interface AppSettings {
   paperTone: PaperTone
   defaultPaperTemplate: PaperTemplate
   defaultCoverColor: string
+  /** Thème visuel FTheme (20 palettes ArchNote). */
+  visualThemeId: string
 }
 
 function normalizePoint(p: Point): Point {
