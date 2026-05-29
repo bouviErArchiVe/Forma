@@ -99,10 +99,14 @@ const DEFAULT_SUBJECTS=[
 ]
 
 const SUBJECTS_KEY = "forma_subjects_v1"
+const DEFAULT_SUBJECT_IDS = new Set(DEFAULT_SUBJECTS.map((s) => s.id))
 function loadSubjects() {
   try {
     const saved = JSON.parse(localStorage.getItem(SUBJECTS_KEY) || "null")
-    if (Array.isArray(saved) && saved.length) return saved
+    if (Array.isArray(saved) && saved.length) {
+      const custom = saved.filter((s) => s?.id && (s.custom || !DEFAULT_SUBJECT_IDS.has(s.id)))
+      return [...DEFAULT_SUBJECTS, ...custom]
+    }
   } catch {}
   return DEFAULT_SUBJECTS
 }
@@ -830,7 +834,9 @@ export default function LibraryPage({ onOpenEditor, onOpenMoodboard }) {
   const [subjColor, setSubjColor] = useState("#c8622a")
 
   useEffect(() => {
-    try { localStorage.setItem(SUBJECTS_KEY, JSON.stringify(subjects)) } catch {}
+    try {
+      localStorage.setItem(SUBJECTS_KEY, JSON.stringify(subjects.filter((s) => s.custom || !DEFAULT_SUBJECT_IDS.has(s.id))))
+    } catch {}
   }, [subjects])
 
   useEffect(() => {

@@ -11,12 +11,12 @@ export const isSupabaseConfigured = Boolean(
   && SUPABASE_ANON_KEY !== 'YOUR_ANON_KEY',
 )
 
-const FALLBACK_URL = 'https://placeholder.supabase.co'
-const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder'
+const LOCAL_ONLY_SUPABASE_URL = 'http://127.0.0.1:54321'
+const LOCAL_ONLY_SUPABASE_KEY = 'forma-local-only'
 
 export const supabase = createClient(
-  isSupabaseConfigured ? SUPABASE_URL : FALLBACK_URL,
-  isSupabaseConfigured ? SUPABASE_ANON_KEY : FALLBACK_KEY,
+  isSupabaseConfigured ? SUPABASE_URL : LOCAL_ONLY_SUPABASE_URL,
+  isSupabaseConfigured ? SUPABASE_ANON_KEY : LOCAL_ONLY_SUPABASE_KEY,
   {
     auth: {
       autoRefreshToken: true,

@@ -17,10 +17,10 @@ import TextFontPicker from "@/components/TextFontPicker"
 import { EDITOR_TOOLS_LIST } from "@/components/FloatingToolsToolbar"
 import BottomSheet from "@/components/ui/BottomSheet"
 import {
-  ChevronLeft, Pen, Highlighter, Eraser, Type, Lasso, MousePointer2, Undo2, Redo2,
+  Pen, Highlighter, Eraser, Type, Lasso, MousePointer2, Undo2, Redo2,
   Presentation, Lock, Share2, MoreHorizontal, Minus, Square, Circle, ArrowRight,
-  MessageSquare, Ruler, Pipette, BookOpen, PanelLeft, ChevronRight, Plus, ZoomIn,
-  ZoomOut, Maximize2, Move, Copy, Clipboard, Layers, Trash2, X, Monitor, Hand,
+  MessageSquare, Ruler, Pipette, BookOpen, PanelLeft,
+  Maximize2, Move, Copy, Clipboard, Layers, Trash2, X, Monitor, Hand,
   Search, SlidersHorizontal, ChevronDown, Grid3x3, List, LayoutList,
   RotateCw, Trash2 as TrashIcon, FileText, Shapes, Triangle, Diamond,
 } from "lucide-react"
@@ -2024,44 +2024,6 @@ function GoodNotesSearchPanel({open,onClose}){
   )
 }
 
-function GoodNotesBottomBar({page,pagesCount,goToPage,addPage,pages,nb,zoom,zoomBy,viewSize,saveStatus}){
-  const thumbRef=useRef(null)
-  useEffect(()=>{
-    if(!thumbRef.current)return
-    const el=thumbRef.current.querySelector(`[data-page="${page}"]`)
-    el?.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"})
-  },[page])
-  const saving=saveStatus==="saving"||saveStatus==="syncing_cloud"||saveStatus==="dirty"
-  const saved=saveStatus==="saved"||saveStatus==="saved_local"||saveStatus==="synced"
-  return(
-    <div style={{height:BOTTOM_BAR_H,flexShrink:0,background:C.bar,borderTop:`1px solid ${C.border}`,display:"flex",alignItems:"center",padding:"0 12px",gap:8,zIndex:20}}>
-      <button type="button" onClick={()=>goToPage(Math.max(1,page-1))} disabled={page===1} style={{background:"none",border:"none",color:page===1?C.border:C.accent,cursor:page===1?"default":"pointer",padding:2,display:"flex"}}><ChevronLeft size={18}/></button>
-      <span style={{fontSize:13,color:C.text,whiteSpace:"nowrap"}}>{page} sur {pagesCount||1}</span>
-      <button type="button" onClick={()=>goToPage(Math.min(pagesCount,page+1))} disabled={page>=pagesCount} style={{background:"none",border:"none",color:page>=pagesCount?C.border:C.accent,cursor:page>=pagesCount?"default":"pointer",padding:2,display:"flex"}}><ChevronRight size={18}/></button>
-      <button type="button" onClick={()=>addPage()} title="Nouvelle page" style={{background:"none",border:"none",color:C.accent,cursor:"pointer",padding:2,display:"flex"}}><Plus size={18}/></button>
-      <div style={{width:1,height:20,background:C.border,flexShrink:0}}/>
-      <div ref={thumbRef} style={{flex:1,display:"flex",gap:6,overflowX:"auto",padding:"2px 0",minWidth:0,alignItems:"center"}}>
-        {Array.from({length:pagesCount||1},(_,i)=>{
-          const n=i+1
-          const pageData=pages.find(p=>p.page_number===n)
-          return(
-            <div key={n} data-page={n} onClick={()=>goToPage(n)} style={{flexShrink:0,width:28,height:38,borderRadius:4,border:`${page===n?2:1}px solid ${page===n?C.accent:C.border}`,overflow:"hidden",background:C.panel,cursor:"pointer"}}>
-              <PageThumbnail pageData={pageData} pageNum={n} current={page===n} T={{accent:C.accent,border:C.border,bg:C.panel,muted:C.muted}} notebookTemplate={nb.template} mini onClick={()=>goToPage(n)}/>
-            </div>
-          )
-        })}
-      </div>
-      <span style={{fontSize:13,color:C.muted,minWidth:40,textAlign:"center",flexShrink:0}}>{Math.round(zoom*100)}%</span>
-      <button type="button" onClick={()=>zoomBy(1/1.1,{x:viewSize.w/2,y:viewSize.h/2})} style={{background:"none",border:"none",color:C.accent,cursor:"pointer",padding:2,display:"flex"}}><ZoomOut size={18}/></button>
-      <button type="button" onClick={()=>zoomBy(1.1,{x:viewSize.w/2,y:viewSize.h/2})} style={{background:"none",border:"none",color:C.accent,cursor:"pointer",padding:2,display:"flex"}}><ZoomIn size={18}/></button>
-      <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0,marginLeft:4}}>
-        <span style={{width:7,height:7,borderRadius:"50%",background:saving?C.warning:saved?C.success:C.muted,display:"inline-block"}}/>
-        <span style={{fontSize:11,color:C.muted,whiteSpace:"nowrap"}}>{saving?"Sauvegarde…":saved?"Sauvegardé":"Prêt"}</span>
-      </div>
-    </div>
-  )
-}
-
 function PropertiesPanelContent({T,color,setColor,sizeMm,setSizeMm,tool,setTool,eraserMm,setEraserMm,favorites,setFavorites,unitSys,shapeStyle,setShapeStyle,canvasTextFont,setCanvasTextFont,onExpand,useBrushGrid}){
   const[cPal,setCPal]=useState("📐 Plans")
   const[hPal,setHPal]=useState("Standards")
@@ -2380,7 +2342,8 @@ export default function EditorPage({ onBack }){
   const collab = useCollaboration()
   useEffect(()=>{ensureCanvasTextFontsLoaded()},[])
   useEffect(()=>{preloadCanvasFont(canvasTextFont)},[canvasTextFont])
-  const nb=activeNotebook||{id:"1",title:"Carnet",subject:"arch",template:"plan",pages_count:1}
+  const hasActiveNotebook=!!activeNotebook
+  const nb=activeNotebook||{id:"__missing_notebook__",title:"Carnet",subject:"arch",template:"plan",pages_count:1}
 
   useEffect(()=>{
     if(!routeNotebookId)return
@@ -2401,6 +2364,12 @@ export default function EditorPage({ onBack }){
     loadNb()
     return()=>{cancelled=true}
   },[routeNotebookId,activeNotebook,setActiveNotebook,navigate,onBack])
+  useEffect(()=>{
+    if(routeNotebookId||hasActiveNotebook)return
+    addNotification?.("Ouvre ou crée un carnet avant d'éditer une page","info")
+    if(onBack)onBack()
+    else navigate("/",{replace:true})
+  },[routeNotebookId,hasActiveNotebook,addNotification,onBack,navigate])
   const cRef=useRef()
 
   const[tool,setTool]=useState("pen")
@@ -2915,6 +2884,7 @@ export default function EditorPage({ onBack }){
       skipPageLoadRef.current=false
       return
     }
+    if(!hasActiveNotebook)return
     cancelScheduledSave()
     const load=async()=>{
       try{
@@ -2974,10 +2944,14 @@ export default function EditorPage({ onBack }){
       }
     }
     load()
-  },[nb.id,nb.template,page,applyPageMetaToState,cancelScheduledSave])
+  },[hasActiveNotebook,nb.id,nb.template,page,applyPageMetaToState,cancelScheduledSave])
 
   // Add / insert page
   const insertPageAt=async(position="end",bgImage=null)=>{
+    if(!hasActiveNotebook){
+      addNotification("Ouvre ou crée un carnet avant d'ajouter une page","info")
+      return
+    }
     if(addingPageRef.current)return
     addingPageRef.current=true
     try{
@@ -3062,6 +3036,10 @@ export default function EditorPage({ onBack }){
   const addPage=async(bgImage=null)=>insertPageAt("end",bgImage)
 
   const deletePage=async(pageNum)=>{
+    if(!hasActiveNotebook){
+      addNotification("Aucun carnet actif","info")
+      return
+    }
     if((nb.pages_count||pages.length||1)<=1)return
     if(!confirm(`Supprimer la page ${pageNum} ?`))return
     await saveNow()
@@ -3161,6 +3139,10 @@ export default function EditorPage({ onBack }){
 
   // Duplicate page (optionally from a specific page number)
   const duplicatePageByNum=async(sourcePageNum=page)=>{
+    if(!hasActiveNotebook){
+      addNotification("Aucun carnet actif","info")
+      return
+    }
     try{
       await saveNow()
       const src=pages.find(p=>p.page_number===sourcePageNum)
