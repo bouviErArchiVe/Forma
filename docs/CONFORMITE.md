@@ -1,6 +1,6 @@
 # Matrice de conformité — Spec ↔ Code
 
-**Version** : 0.25.2 · **Dernière revue QA** : 2026-05-29
+**Version** : 0.26.0 · **Dernière revue QA** : 2026-05-29
 
 | ID | Exigence | Statut | Notes |
 |----|----------|--------|-------|
@@ -8,17 +8,17 @@
 | PWA-2 | Service Worker offline | ✅ | `sw.js` v8 — shell precache, network-first HTML, cache-first `/assets/` |
 | PWA-3 | Icônes PNG multi-tailles | ✅ | `icon-192.png`, `icon-512.png` |
 | PWA-4 | Indicateur offline | ✅ | `OfflineBanner.tsx` + reconnexion |
-| PWA-6 | Multi-onglets | ✅ | Verrou dur + reprise édition si verrou expiré |
+| PWA-6 | Multi-onglets | ✅ | Verrou dur + prune startup + pagehide + E2E reprise stale |
 | PWA-5 | Update flow | ✅ | `pwa.ts` + Paramètres — SKIP_WAITING, reload |
 | ARCH-1 | Pas de refactor massif | ✅ | Diffs ciblés par périmètre |
 | CANVAS-1 | Coordonnées world/screen | 🟡 | World OK ; zoom par carnet persisté |
 | CANVAS-2 | Layers séparés | 🟡 | 3 calques canvas ; pas 10 layers spec |
-| CANVAS-3 | Dirty rectangles | 🟡 | Phase 2 overlay partiel + métriques debug |
+| CANVAS-3 | Dirty rectangles | 🟡 | Phase 2 + PerfHud redraw metrics |
 | CANVAS-4 | Pooling vue continue | 🟡 | `maxMountedCanvases` 3–5 ; placeholder hors pool |
 | STROKE-1 | Split 5k / 10s | ✅ | `lib/stroke-finalize.ts` |
 | STROKE-2 | tiltX/tiltY | ✅ | Champs sur `Point` |
 | STROKE-3 | Export PDF vectoriel | 🟡 | Traits, formes, flèches ; fond raster |
-| FORMA-1 | Structure ZIP arborescente | ✅ | v1 + v2 thumbs optionnels + validation |
+| FORMA-1 | Structure ZIP arborescente | ✅ | v1 + v2 import thumbs + export optionnel |
 | FORMA-2 | Assets en blobs + intégrité | ✅ | Blobs + SHA-256 manifest (warning si mismatch) |
 | SAVE-1 | Autosave debounce 2s | ✅ | Tests `autosave.test.ts` |
 | SAVE-2 | Flush visibility | ✅ | `visibilitychange` + `pagehide` |
@@ -35,9 +35,9 @@
 | SYNC-1 | Queue / oplog futur | 🟡 | localStorage ; tests ; pas de backend |
 | EXPORT-1 | PNG 2× | ✅ | `exportPageToPng` async |
 | EXPORT-2 | SVG vecteur | 🟡 | RDP `path-simplify` ; images inline |
-| TEST-1 | Suite Vitest | ✅ | **115/115** (22 fichiers) |
+| TEST-1 | Suite Vitest | ✅ | **119/119** (24 fichiers) |
 | TEST-2 | Journal save | ✅ | `save-journal.test.ts` |
-| TEST-3 | E2E Playwright | ✅ | **15 tests** Chromium (+ canvas-bench, PDF multi-pages) |
+| TEST-3 | E2E Playwright | ✅ | **16 tests** Chromium (+ multi-tab resume, canvas-bench) |
 | CI-1 | GitHub Actions | 🟡 | test + build + e2e + bench warning sur `formacursor` |
 
 ## Couverture tests (0.22.0)
@@ -60,10 +60,10 @@
 ## Résultats build / test (2026-05-29)
 
 ```
-npm run test     → 115+ passed
+npm run test     → 119 passed (24 files)
 npm run build    → OK
-npm run test:e2e → 15 passed (chromium)
-npm run bench:ci → advisory OK
+npm run test:e2e → 16 passed (chromium)
+npm run bench:ci → advisory warning (10k segments)
 ```
 
 Légende : ✅ conforme · 🟡 partiel · ❌ absent

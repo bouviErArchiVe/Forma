@@ -1,5 +1,24 @@
 # Changelog Forma
 
+## 0.26.0 — Multi-onglets dur, `.forma v2` import thumbs, canvas modules
+
+### PWA / verrou multi-onglets
+- Pruning verrous au démarrage (`main.tsx`) + release `pagehide`
+- Doc `MULTI-TAB-LOCK.md` ; E2E reprise après verrou expiré
+- Export `DOCUMENT_LOCK_STALE_MS` (45 s)
+
+### Canvas
+- Extraction `pointer-utils.ts`, `overlay-interaction.ts` depuis `PageCanvas`
+- PerfHud : métriques redraw partial/full (`canvas-redraw-metrics`)
+- Bench E2E canvas : 24 traits (advisory)
+
+### Export / import `.forma`
+- Import v2 : lecture `thumbnails/{pageId}.png` + seed cache sidebar/bibliothèque
+- Format `forma-v2` dans `ImportFormaResult.importedThumbnails`
+
+### Architecture future
+- `renderer-types.ts` + `docs/RENDERER.md`, `docs/PWA.md`
+
 ## 0.25.2 — PageCanvas refactor, dirty rects phase 2, architecture future
 
 ### Moteur canvas

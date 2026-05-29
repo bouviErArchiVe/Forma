@@ -1,6 +1,6 @@
 # Architecture — Forma `formacursor`
 
-**Version** : 0.25.2 · **Branche** : `formacursor`
+**Version** : 0.26.0 · **Branche** : `formacursor`
 
 ## Vue d’ensemble
 
@@ -22,7 +22,7 @@ src/
 
 | Lignes | Fichier | Rôle | Dette |
 |--------|---------|------|-------|
-| ~1400 | `canvas/PageCanvas.tsx` | Gestes, 3 calques canvas, sélection | **Priorité découpage** |
+| ~1350 | `canvas/PageCanvas.tsx` | Gestes, 3 calques canvas, sélection | Découpage en cours |
 | ~1050 | `pages/EditorPage.tsx` | Shell éditeur, zoom CSS, pan | Extraire hooks/layout |
 | ~920 | `pages/LibraryPage.tsx` | Bibliothèque, import drop | Extraire listes/modals |
 | ~775 | `pages/SettingsPage.tsx` | Paramètres + import backup | OK court terme |
@@ -40,6 +40,8 @@ src/
 | `lib/backup.ts` + `forma-package.ts` | ZIP `.forma`, merge/replace | Dexie, JSZip |
 | `lib/assets.ts` | Blobs, hydration pages | Dexie `assets` |
 | `canvas/PageCanvas.tsx` | Rendu + input | `page-render`, `selection-engine` |
+| `canvas/pointer-utils.ts` | Pointeur → coords page | `page-dimensions` |
+| `canvas/overlay-interaction.ts` | Clip overlay lasso/sélection | `dirty-rect` |
 | `lib/page-render.ts` | Draw strokes/shapes/texte | `stroke-render` |
 | `lib/pdf-export.ts` | Export raster PDF | `page-render`, pdf-lib |
 | `lib/pdf-vector-export.ts` | Traits vectoriels + fond raster | pdf-lib |
@@ -65,14 +67,18 @@ flowchart LR
 2. **Ink** — traits, formes, images (`renderPageContent`, clips partiels)
 3. **Overlay** — lasso, sélection, poignée rotation (RAF coalescé, **clear partiel phase 2**)
 
-**Hooks extraits (0.25.2)** :
+**Hooks extraits (0.25.2+)** :
 
-| Hook | Fichier | Rôle |
+| Hook / module | Fichier | Rôle |
 |------|---------|------|
 | `useCanvasHistory` | `canvas/hooks/useCanvasHistory.ts` | undo/redo batch |
 | `useCanvasRenderScheduler` | `canvas/hooks/useCanvasRenderScheduler.ts` | RAF encre/overlay |
+| `pointerEventToPagePoint` | `canvas/pointer-utils.ts` | coords stylus/souris |
+| `buildOverlayInteractionClip` | `canvas/overlay-interaction.ts` | dirty overlay |
 
-**Métriques debug** : `src/lib/canvas-redraw-metrics.ts` (`getCanvasRedrawMetrics()`)
+**Métriques debug** : `canvas-redraw-metrics.ts` + **PerfHud** (ratio partial redraw)
+
+**Renderer future** : `lib/renderer-types.ts` — voir `docs/RENDERER.md`
 
 **Zoom / pan** : CSS `scale` + `translate` sur conteneur (`EditorPage`) — **pas de redraw canvas** au zoom.
 
@@ -81,8 +87,10 @@ flowchart LR
 Ordre recommandé — **un module à la fois, tests avant/après** :
 
 1. **`PageCanvas.tsx`** → extraire :
-   - `usePageCanvasHistory.ts` (undo/redo, batch)
-   - `usePageCanvasPointer.ts` (pointer down/move/up)
+   - ~~`usePageCanvasHistory.ts`~~ → fait (`useCanvasHistory`)
+   - ~~pointer coords~~ → fait (`pointer-utils.ts`)
+   - ~~overlay clip~~ → fait (`overlay-interaction.ts`)
+   - `usePageCanvasPointer.ts` (pointer down/move/up handlers)
    - `selection-overlay.ts` (paint overlay + handles)
 2. **`EditorPage.tsx`** → `useEditorNavigation.ts`, `EditorChrome.tsx`
 3. **`backup.ts`** → séparer `forma-import.ts` / `forma-export.ts`
@@ -97,7 +105,9 @@ Ordre recommandé — **un module à la fois, tests avant/après** :
 |-------|---------|--------|
 | Migrations Dexie | `docs/MIGRATIONS.md` | v7 livré |
 | Déploiement preview | `docs/DEPLOY.md` | Vercel branch `formacursor` |
-| Sync API | `docs/SYNC_API.md` | Contrat seulement |
+| Sync API | `docs/SYNC-DESIGN.md` | Design only |
+| PWA offline | `docs/PWA.md` | SW + limites |
+| Multi-onglets | `docs/MULTI-TAB-LOCK.md` | Verrou localStorage |
 | WebGL | — | Étude non lancée |
 | IA | — | Panneaux UI existants, non branchés |
 
