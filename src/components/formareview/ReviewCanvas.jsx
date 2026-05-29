@@ -44,10 +44,10 @@ export default function ReviewCanvas({
 
   useEffect(() => {
     if (!page) return
-    const fit = computeFitZoom({
-      viewW: viewSize.w, viewH: viewSize.h,
-      pageW: page.width, pageH: page.height,
-    })
+    const { w, h } = viewSize
+    const fit = (!w || !h || !page.width || !page.height)
+      ? 0.85
+      : Math.max(0.04, Math.min(3, Math.min((w - 48) / page.width, (h - 48) / page.height)))
     setViewport({ zoom: fit, panX: 0, panY: 0 })
   }, [page?.id, viewSize.w, viewSize.h])
 
@@ -80,8 +80,10 @@ export default function ReviewCanvas({
     const canvas = canvasRef.current
     if (!canvas || !page) return
     const ctx = canvas.getContext('2d')
-    canvas.width = viewSize.w
-    canvas.height = viewSize.h
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = viewSize.w * dpr
+    canvas.height = viewSize.h * dpr
+    ctx.scale(dpr, dpr)
     ctx.clearRect(0, 0, viewSize.w, viewSize.h)
 
     const topLeft = pageToScreen({

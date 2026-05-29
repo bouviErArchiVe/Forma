@@ -2640,8 +2640,9 @@ export default function EditorPage({ onBack }){
   const pagesCount=useMemo(()=>Math.max(nb.pages_count||1,pages.length||1),[nb.pages_count,pages.length])
 
   const editorToolIds=useMemo(()=>flattenEditorTools(EDITOR_TOOLS_LIST),[])
+  const SWIPE_BLOCKED=new Set(["pen","highlight","eraser","line","rect","circle","shape-arrow","cloud","dimline","lasso","lasso-rect","text","eyedropper"])
   const swipeToolCycle=useSwipeToolCycle({
-    enabled:isTablet&&!readOnly&&!libPending&&tool!=="hand",
+    enabled:isTablet&&!readOnly&&!libPending&&tool!=="hand"&&!SWIPE_BLOCKED.has(tool),
     toolIds:editorToolIds,
     tool,
     setTool,
@@ -4307,6 +4308,10 @@ export default function EditorPage({ onBack }){
             if(handlePinchPointerMove(e))return
             swipeToolCycle.onPointerMove(e)
             canvasHandlers.onPointerMove?.(e)
+            if(tool==="eraser"&&!readOnly){
+              const r=document.getElementById("canvas-area")?.getBoundingClientRect()
+              if(r)setEraserCursor({x:e.clientX-r.left,y:e.clientY-r.top})
+            }else if(eraserCursor)setEraserCursor(null)
           }}
           onPointerUp={(e)=>{
             handlePinchPointerUp(e)
