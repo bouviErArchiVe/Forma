@@ -14,7 +14,9 @@ interface DocumentCardProps {
   onToggleSelect: () => void
   onRename?: (name: string) => void
   onCoverColor?: (color: string) => void
+  subjectLabel?: string
   locked?: boolean
+  onContextMenu?: (e: React.MouseEvent) => void
 }
 
 export function DocumentCard({
@@ -29,7 +31,9 @@ export function DocumentCard({
   onToggleSelect,
   onRename,
   onCoverColor,
+  subjectLabel,
   locked,
+  onContextMenu,
 }: DocumentCardProps) {
   const [renaming, setRenaming] = useState(false)
   const [name, setName] = useState(notebook.name)
@@ -61,6 +65,7 @@ export function DocumentCard({
         }`}
         onClick={selectionMode ? onToggleSelect : onClick}
         onKeyDown={handleKey}
+        onContextMenu={onContextMenu}
       >
         {selectionMode && (
           <input type="checkbox" checked={selected} readOnly className="w-4 h-4" />
@@ -105,6 +110,7 @@ export function DocumentCard({
           )}
           <p className="text-xs text-forma-muted">
             {notebook.type === 'pdf' ? 'PDF' : notebook.type === 'whiteboard' ? 'Whiteboard' : 'Carnet'}
+            {subjectLabel ? ` · ${subjectLabel}` : ''}
             {pageCount != null ? ` · ${pageCount} p.` : ''} · {relative}
           </p>
         </div>
@@ -125,6 +131,7 @@ export function DocumentCard({
       }`}
       onClick={selectionMode ? onToggleSelect : onClick}
       onKeyDown={handleKey}
+      onContextMenu={onContextMenu}
     >
       {selectionMode && (
         <div className="absolute top-2 left-2 z-10">
@@ -214,6 +221,7 @@ export function DocumentCard({
       <div className="px-3 py-2 text-left">
         <p className="text-xs text-forma-muted">
           {notebook.type === 'pdf' ? 'PDF' : notebook.type === 'whiteboard' ? 'Whiteboard' : 'Carnet'}
+          {subjectLabel ? ` · ${subjectLabel}` : ''}
           {pageCount != null ? ` · ${pageCount} p.` : ''} · {relative}
         </p>
       </div>

@@ -1,5 +1,16 @@
 # Changelog Forma
 
+## 0.28.0 — Pack 2 bibliothèque : matières, tableau, chronologie
+
+### Bibliothèque (legacy ArchNote → Forma)
+- 20 matières par défaut + matières personnalisées (`src/lib/subjects.ts`)
+- Onglets sidebar : Tableau de bord, Matières (+ Carnets, Favoris, Récents)
+- Vue chronologie par mois + tri par matière / taille
+- Dossiers avec emoji et couleur (`FolderCard`, création enrichie)
+- Menu contextuel iOS-like sur carnets et dossiers (`ContextMenu`)
+- Dashboard stats : totaux, par matière, activité récente
+- `Notebook.subjectId` + assignation depuis panneau Matières ou menu contextuel
+
 ## 0.27.0 — Pack 1 visuel : FTheme, glass UI, shell bibliothèque
 
 ### Visuel (legacy ArchNote → Forma)

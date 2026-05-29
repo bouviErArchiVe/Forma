@@ -10,8 +10,8 @@ test('opens library home page', async ({ page }) => {
   await dismissOnboardingIfVisible(page)
 
   await expect(page).toHaveTitle(/Forma/)
-  await expect(page.getByRole('heading', { name: 'Forma', level: 1 })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Bibliothèque', level: 2 })).toBeVisible()
+  await expect(page.getByText('Forma', { exact: true }).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Carnets' })).toBeVisible()
   await expect(page.getByRole('button', { name: '+ Carnet' })).toBeVisible()
 })
 
@@ -35,15 +35,15 @@ test('navigates library → settings → templates → library', async ({ page }
   await page.goto('/')
   await dismissOnboardingIfVisible(page)
 
-  await page.getByRole('button', { name: 'Paramètres' }).click()
+  await page.getByRole('button', { name: 'Paramètres', exact: true }).click()
   await expect(page).toHaveURL('/settings')
   await expect(page.getByRole('heading', { name: 'Paramètres', level: 1 })).toBeVisible()
 
   await page.getByRole('link', { name: /Bibliothèque/ }).click()
   await expect(page).toHaveURL('/')
-  await expect(page.getByRole('heading', { name: 'Forma', level: 1 })).toBeVisible()
+  await expect(page.getByText('Forma', { exact: true }).first()).toBeVisible()
 
-  await page.getByRole('button', { name: 'Modèles' }).click()
+  await page.getByRole('button', { name: 'Modèles', exact: true }).click()
   await expect(page).toHaveURL('/templates')
   await expect(page.getByRole('heading', { name: 'Galerie de modèles', level: 1 })).toBeVisible()
 

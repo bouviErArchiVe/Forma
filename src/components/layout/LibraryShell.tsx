@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { BrandLogo } from '../BrandLogo'
 import { GlassButton } from '../ui/GlassButton'
 
-export type LibrarySidebarTab = 'all' | 'favorites' | 'recent'
+export type LibrarySidebarTab =
+  | 'all'
+  | 'favorites'
+  | 'recent'
+  | 'dashboard'
+  | 'subjects'
 
 interface LibraryShellProps {
   activeTab: LibrarySidebarTab
@@ -13,6 +18,8 @@ interface LibraryShellProps {
 
 const NAV_ITEMS: { id: LibrarySidebarTab; label: string; emoji: string }[] = [
   { id: 'all', label: 'Carnets', emoji: '📓' },
+  { id: 'dashboard', label: 'Tableau', emoji: '📊' },
+  { id: 'subjects', label: 'Matières', emoji: '📚' },
   { id: 'favorites', label: 'Favoris', emoji: '★' },
   { id: 'recent', label: 'Récents', emoji: '🕐' },
 ]

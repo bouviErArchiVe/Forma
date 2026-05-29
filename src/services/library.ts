@@ -1,7 +1,9 @@
 import { db } from '../db'
 import { createEmptyPage } from '../db'
 import { createId } from '../lib/id'
+import { estimateNotebookBytes } from '../lib/library-views'
 import { pruneRecentPagesForNotebook } from '../lib/recent-pages'
+import { subjectLabel, type Subject } from '../lib/subjects'
 import type {
   Folder,
   Notebook,
@@ -40,11 +42,27 @@ export async function getFavorites(): Promise<Notebook[]> {
 export async function createFolder(
   name: string,
   parentId: string | null = null,
+  opts?: { emoji?: string; color?: string },
 ): Promise<Folder> {
   const now = Date.now()
-  const folder: Folder = { id: createId(), parentId, name, createdAt: now, updatedAt: now }
+  const folder: Folder = {
+    id: createId(),
+    parentId,
+    name,
+    emoji: opts?.emoji,
+    color: opts?.color,
+    createdAt: now,
+    updatedAt: now,
+  }
   await db.folders.add(folder)
   return folder
+}
+
+export async function updateFolder(
+  id: string,
+  patch: Partial<Pick<Folder, 'name' | 'emoji' | 'color'>>,
+): Promise<void> {
+  await db.folders.update(id, { ...patch, updatedAt: Date.now() })
 }
 
 export async function createNotebook(opts: {
@@ -372,7 +390,9 @@ export async function renameNotebook(id: string, name: string): Promise<void> {
 
 export async function updateNotebookMetadata(
   id: string,
-  patch: Partial<Pick<Notebook, 'coverColor' | 'paperTemplate' | 'orientation'>>,
+  patch: Partial<
+    Pick<Notebook, 'coverColor' | 'paperTemplate' | 'orientation' | 'subjectId'>
+  >,
 ): Promise<void> {
   await db.notebooks.update(id, { ...patch, updatedAt: Date.now() })
   const { enqueueSyncOp } = await import('./sync-queue')
@@ -502,16 +522,31 @@ export async function toggleFavorite(id: string): Promise<void> {
   if (nb) await db.notebooks.update(id, { favorite: !nb.favorite })
 }
 
+export interface SortNotebooksOptions {
+  subjects?: Subject[]
+  pageCounts?: Record<string, number>
+}
+
 export function sortNotebooks(
   notebooks: Notebook[],
   sortBy: SortBy,
   order: SortOrder,
+  opts: SortNotebooksOptions = {},
 ): Notebook[] {
+  const { subjects = [], pageCounts = {} } = opts
   return [...notebooks].sort((a, b) => {
     let cmp = 0
     if (sortBy === 'name') cmp = a.name.localeCompare(b.name, 'fr')
     else if (sortBy === 'created') cmp = a.createdAt - b.createdAt
-    else cmp = a.updatedAt - b.updatedAt
+    else if (sortBy === 'subject') {
+      const la = subjectLabel(subjects, a.subjectId)
+      const lb = subjectLabel(subjects, b.subjectId)
+      cmp = la.localeCompare(lb, 'fr') || a.name.localeCompare(b.name, 'fr')
+    } else if (sortBy === 'size') {
+      cmp =
+        estimateNotebookBytes(pageCounts[a.id] ?? 1) -
+        estimateNotebookBytes(pageCounts[b.id] ?? 1)
+    } else cmp = a.updatedAt - b.updatedAt
     return order === 'asc' ? cmp : -cmp
   })
 }

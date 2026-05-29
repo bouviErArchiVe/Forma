@@ -2,9 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DropZone } from '../components/library/DropZone'
 import { DocumentCard } from '../components/library/DocumentCard'
+import { FolderCard } from '../components/library/FolderCard'
+import { LibraryDashboard } from '../components/library/LibraryDashboard'
+import { LibrarySubjectsPanel } from '../components/library/LibrarySubjectsPanel'
+import { LibraryTimeline } from '../components/library/LibraryTimeline'
 import { RecentStrip } from '../components/library/RecentStrip'
 import { BrandLogo } from '../components/BrandLogo'
 import { LibraryShell, type LibrarySidebarTab } from '../components/layout/LibraryShell'
+import { ContextMenu, type ContextMenuItem } from '../components/ui/ContextMenu'
 import { ShortcutsHelp } from '../components/editor/ShortcutsHelp'
 import { MoveFolderModal } from '../components/library/MoveFolderModal'
 import { NewNotebookModal } from '../components/library/NewNotebookModal'
@@ -21,6 +26,15 @@ import { libraryThumbQueue, THUMB_PRIORITY } from '../lib/thumb-queue'
 import { importPdfFile } from '../lib/pdf-import'
 import { openQuickNote } from '../lib/quick-note'
 import { getRecentIds } from '../lib/recent'
+import { computeDashboardStats, filterNotebooksBySubject, groupNotebooksByMonth } from '../lib/library-views'
+import {
+  addCustomSubject,
+  loadSubjects,
+  subjectLabel,
+  FOLDER_COLORS,
+  FOLDER_EMOJIS,
+  type Subject,
+} from '../lib/subjects'
 import { searchInLibraryAsync } from '../lib/search-index'
 import { searchHitTypeLabel } from '../lib/search-labels'
 import type { SearchHit } from '../lib/search'
@@ -37,6 +51,7 @@ import {
   mergeNotebooks,
   getFavorites,
   getFolders,
+  getAllNotebooks,
   getPageCounts,
   getNotebooks,
   renameFolder,
@@ -58,14 +73,21 @@ import type { DocumentType } from '../types'
 import { normalizePage } from '../types'
 import type { Folder, Notebook, Page } from '../types'
 
-type FilterTab = 'all' | 'favorites' | 'recent'
+type FilterTab = LibrarySidebarTab
 
 const FILTER_TAB_KEY = 'forma-library-tab'
 
 function readFilterTab(): FilterTab {
   try {
     const v = localStorage.getItem(FILTER_TAB_KEY)
-    if (v === 'favorites' || v === 'recent' || v === 'all') return v
+    if (
+      v === 'favorites' ||
+      v === 'recent' ||
+      v === 'all' ||
+      v === 'dashboard' ||
+      v === 'subjects'
+    )
+      return v
   } catch {
     /* ignore */
   }
@@ -81,12 +103,23 @@ export function LibraryPage() {
   const [showNewNotebook, setShowNewNotebook] = useState(false)
   const [showNewFolder, setShowNewFolder] = useState(false)
   const [newFolderName, setNewFolderName] = useState('')
+  const [newFolderEmoji, setNewFolderEmoji] = useState('📁')
+  const [newFolderColor, setNewFolderColor] = useState(FOLDER_COLORS[0])
   const [showMove, setShowMove] = useState(false)
   const [filterTab, setFilterTab] = useState<FilterTab>(readFilterTab)
+  const [subjects, setSubjects] = useState<Subject[]>([])
+  const [allNotebooks, setAllNotebooks] = useState<Notebook[]>([])
+  const [subjectFilterId, setSubjectFilterId] = useState<string | null>(null)
+  const [contextMenu, setContextMenu] = useState<{
+    x: number
+    y: number
+    items: ContextMenuItem[]
+  } | null>(null)
 
   useEffect(() => {
     localStorage.setItem(FILTER_TAB_KEY, filterTab)
   }, [filterTab])
+
   const [globalHits, setGlobalHits] = useState<SearchHit[]>([])
   const [searching, setSearching] = useState(false)
   const [folderPath, setFolderPath] = useState<Folder[]>([])
@@ -101,6 +134,16 @@ export function LibraryPage() {
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set())
   const gridRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+
+  useEffect(() => {
+    void loadSubjects().then(setSubjects)
+  }, [])
+
+  const reloadSubjects = useCallback(async () => {
+    setSubjects(await loadSubjects())
+  }, [])
+
+  const dashboardStats = computeDashboardStats(allNotebooks, subjects, getRecentIds())
 
   const {
     currentFolderId,
@@ -189,10 +232,16 @@ export function LibraryPage() {
   }, [listRefresh, notebooks])
 
   const load = useCallback(async () => {
-    const f = await getFolders(currentFolderId)
+    const all = await getAllNotebooks()
+    setAllNotebooks(all)
+
+    const browseTab = filterTab === 'all' || filterTab === 'dashboard' || filterTab === 'subjects'
+    const f = browseTab && filterTab === 'all' ? await getFolders(currentFolderId) : []
     let n: Notebook[] = []
 
-    if (filterTab === 'favorites') {
+    if (filterTab === 'dashboard' || filterTab === 'subjects') {
+      n = []
+    } else if (filterTab === 'favorites') {
       n = await getFavorites()
     } else if (filterTab === 'recent') {
       const ids = getRecentIds()
@@ -200,20 +249,24 @@ export function LibraryPage() {
     } else if (searchQuery.trim()) {
       n = await searchNotebooks(searchQuery)
       n = n.filter((nb) => nb.folderId === currentFolderId)
-      const all = await searchNotebooks('')
+      const allNb = await searchNotebooks('')
       const map = new Map<string, Page[]>()
-      for (const nb of all) map.set(nb.id, [])
+      for (const nb of allNb) map.set(nb.id, [])
       const allPages = await db.pages.toArray()
       for (const raw of allPages) {
         const list = map.get(raw.notebookId)
         if (list) list.push(normalizePage(raw))
       }
       setSearching(true)
-      searchInLibraryAsync(all, map, searchQuery)
+      searchInLibraryAsync(allNb, map, searchQuery)
         .then(setGlobalHits)
         .finally(() => setSearching(false))
     } else {
       n = await getNotebooks(currentFolderId)
+    }
+
+    if (subjectFilterId && filterTab === 'all') {
+      n = filterNotebooksBySubject(n, subjectFilterId)
     }
 
     setFolders(f)
@@ -227,14 +280,26 @@ export function LibraryPage() {
     )
     setFolderCounts(counts)
     setPinnedIds(await getPinnedNotebookIds())
-    let sorted = sortNotebooks(n, sortBy, sortOrder)
+    const pageCountsForSort = n.length ? await getPageCounts(n.map((nb) => nb.id)) : {}
+    let sorted = sortNotebooks(n, sortBy, sortOrder, {
+      subjects,
+      pageCounts: pageCountsForSort,
+    })
     if (typeFilter !== 'all') sorted = sorted.filter((nb) => nb.type === typeFilter)
     setNotebooks(sorted)
-    if (sorted.length) setPageCounts(await getPageCounts(sorted.map((nb) => nb.id)))
-    else setPageCounts({})
+    setPageCounts(pageCountsForSort)
     if (!searchQuery.trim()) setGlobalHits([])
     setListRefresh((k) => k + 1)
-  }, [currentFolderId, searchQuery, sortBy, sortOrder, filterTab, typeFilter])
+  }, [
+    currentFolderId,
+    searchQuery,
+    sortBy,
+    sortOrder,
+    filterTab,
+    typeFilter,
+    subjectFilterId,
+    subjects,
+  ])
 
   useEffect(() => {
     const t = setTimeout(() => load(), 280)
@@ -363,6 +428,121 @@ export function LibraryPage() {
     if (first) navigate(`/document/${first}`)
   }
 
+  const openNotebookContextMenu = (e: React.MouseEvent, nb: Notebook) => {
+    e.preventDefault()
+    const subjItems: ContextMenuItem[] = subjects.slice(0, 8).map((s) => ({
+      id: `subj-${s.id}`,
+      label: s.label,
+      emoji: s.emoji,
+      onClick: () => {
+        void updateNotebookMetadata(nb.id, { subjectId: s.id }).then(load)
+      },
+    }))
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      items: [
+        {
+          id: 'open',
+          label: 'Ouvrir',
+          emoji: '📖',
+          onClick: () => navigate(`/document/${nb.id}`),
+        },
+        {
+          id: 'favorite',
+          label: nb.favorite ? 'Retirer des favoris' : 'Ajouter aux favoris',
+          emoji: nb.favorite ? '☆' : '★',
+          onClick: () => void toggleFavorite(nb.id).then(load),
+        },
+        ...subjItems,
+        {
+          id: 'clear-subject',
+          label: 'Sans matière',
+          emoji: '—',
+          disabled: !nb.subjectId,
+          onClick: () => void updateNotebookMetadata(nb.id, { subjectId: '' }).then(load),
+        },
+        {
+          id: 'duplicate',
+          label: 'Dupliquer',
+          emoji: '⧉',
+          onClick: () =>
+            void duplicateNotebook(nb.id).then((d) => {
+              if (d) navigate(`/document/${d.id}`)
+            }),
+        },
+        {
+          id: 'delete',
+          label: 'Supprimer',
+          emoji: '🗑',
+          danger: true,
+          onClick: () =>
+            void confirm(`Mettre « ${nb.name} » en corbeille ?`, {
+              danger: true,
+              confirmLabel: 'Supprimer',
+            }).then((ok) => {
+              if (ok) void softDeleteNotebook(nb.id).then(load)
+            }),
+        },
+      ],
+    })
+  }
+
+  const openFolderContextMenu = (e: React.MouseEvent, folder: Folder) => {
+    e.preventDefault()
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      items: [
+        {
+          id: 'open',
+          label: 'Ouvrir',
+          emoji: '📂',
+          onClick: () => setFolder(folder.id),
+        },
+        {
+          id: 'rename',
+          label: 'Renommer',
+          emoji: '✎',
+          onClick: () => {
+            setRenamingFolder(folder)
+            setRenameFolderName(folder.name)
+          },
+        },
+        {
+          id: 'duplicate',
+          label: 'Dupliquer',
+          emoji: '⧉',
+          onClick: () => void duplicateFolder(folder.id).then(load),
+        },
+        {
+          id: 'delete',
+          label: 'Supprimer',
+          emoji: '🗑',
+          danger: true,
+          onClick: () =>
+            void confirm(`Les carnets de « ${folder.name} » iront en corbeille.`, {
+              title: 'Supprimer le dossier',
+              danger: true,
+              confirmLabel: 'Supprimer',
+            }).then((ok) => {
+              if (ok) void deleteFolder(folder.id).then(load)
+            }),
+        },
+      ],
+    })
+  }
+
+  const headerTitle =
+    filterTab === 'dashboard'
+      ? 'Tableau de bord'
+      : filterTab === 'subjects'
+        ? 'Matières'
+        : 'Carnets'
+
+  const showBrowse =
+    filterTab === 'all' || filterTab === 'favorites' || filterTab === 'recent'
+
   return (
     <DropZone
       onDropPdf={handleImportPdf}
@@ -404,7 +584,7 @@ export function LibraryPage() {
           <div className="lg:hidden shrink-0">
             <BrandLogo />
           </div>
-          <span className="hidden lg:inline text-sm font-semibold text-forma-muted">Carnets</span>
+          <span className="hidden lg:inline text-sm font-semibold text-forma-muted">{headerTitle}</span>
           {(() => {
             const last = getLastBackupTime()
             const stale = last && Date.now() - last > 7 * 86400000
@@ -468,6 +648,10 @@ export function LibraryPage() {
             <option value="name-desc">Nom Z→A</option>
             <option value="created-desc">Créé ↓</option>
             <option value="created-asc">Créé ↑</option>
+            <option value="subject-asc">Matière A→Z</option>
+            <option value="subject-desc">Matière Z→A</option>
+            <option value="size-desc">Taille ↓</option>
+            <option value="size-asc">Taille ↑</option>
           </select>
 
           <select
@@ -483,21 +667,30 @@ export function LibraryPage() {
           </select>
 
           <div className="flex border rounded-lg overflow-hidden">
-            {(['grid', 'list'] as const).map((m) => (
+            {(['grid', 'list', 'timeline'] as const).map((m) => (
               <button
                 key={m}
                 type="button"
                 onClick={() => setViewMode(m)}
                 className={`px-3 py-1.5 text-sm ${viewMode === m ? 'bg-forma-accent text-white' : ''}`}
+                title={m === 'timeline' ? 'Chronologie' : m === 'grid' ? 'Grille' : 'Liste'}
               >
-                {m === 'grid' ? '▦' : '☰'}
+                {m === 'grid' ? '▦' : m === 'list' ? '☰' : '📅'}
               </button>
             ))}
           </div>
         </div>
 
         <div className="max-w-6xl mx-auto mt-2 flex flex-wrap gap-2 items-center">
-          {(['all', 'favorites', 'recent'] as FilterTab[]).map((t) => (
+          {(
+            [
+              'all',
+              'dashboard',
+              'subjects',
+              'favorites',
+              'recent',
+            ] as FilterTab[]
+          ).map((t) => (
             <button
               key={t}
               type="button"
@@ -506,7 +699,15 @@ export function LibraryPage() {
                 filterTab === t ? 'bg-forma-accent text-white' : 'bg-gray-100'
               }`}
             >
-              {t === 'all' ? 'Tous' : t === 'favorites' ? '★ Favoris' : 'Récents'}
+              {t === 'all'
+                ? 'Tous'
+                : t === 'dashboard'
+                  ? '📊 Tableau'
+                  : t === 'subjects'
+                    ? '📚 Matières'
+                    : t === 'favorites'
+                      ? '★ Favoris'
+                      : 'Récents'}
             </button>
           ))}
           <button type="button" onClick={() => navigate('/templates')} className="text-xs text-forma-muted hover:text-forma-accent">
@@ -670,7 +871,36 @@ export function LibraryPage() {
       </header>
 
       <main className="flex-1 p-4 max-w-6xl mx-auto w-full">
-        {filterTab === 'all' && !searchQuery.trim() && <RecentStrip refreshKey={listRefresh} />}
+        {filterTab === 'dashboard' && (
+          <LibraryDashboard
+            stats={dashboardStats}
+            onOpenNotebook={(id) => navigate(`/document/${id}`)}
+          />
+        )}
+
+        {filterTab === 'subjects' && (
+          <LibrarySubjectsPanel
+            subjects={subjects}
+            notebooks={allNotebooks}
+            activeSubjectId={subjectFilterId}
+            onFilterSubject={(id) => {
+              setSubjectFilterId(id)
+              if (id) setFilterTab('all')
+            }}
+            onAssignSubject={async (notebookId, subjectId) => {
+              await updateNotebookMetadata(notebookId, { subjectId })
+              load()
+            }}
+            onAddSubject={async (label, emoji, color) => {
+              await addCustomSubject(label, emoji, color)
+              await reloadSubjects()
+            }}
+          />
+        )}
+
+        {showBrowse && filterTab === 'all' && !searchQuery.trim() && (
+          <RecentStrip refreshKey={listRefresh} />
+        )}
         {searching && <p className="text-sm text-forma-muted mb-4">Recherche…</p>}
         {globalHits.length > 0 && (
           <section className="mb-6">
@@ -703,6 +933,8 @@ export function LibraryPage() {
           </section>
         )}
 
+        {showBrowse && (
+        <>
         <div className="flex justify-between mb-3">
           <h2 className="text-sm font-medium text-forma-muted">
             {folderPath.length ? folderPath[folderPath.length - 1].name : 'Bibliothèque'}
@@ -713,9 +945,11 @@ export function LibraryPage() {
                 `${notebooks.length} document${notebooks.length > 1 ? 's' : ''}`}
             </span>
           </h2>
-          <button type="button" onClick={() => setShowNewFolder(true)} className="text-xs text-forma-accent">
-            + Dossier
-          </button>
+          {filterTab === 'all' && (
+            <button type="button" onClick={() => setShowNewFolder(true)} className="text-xs text-forma-accent">
+              + Dossier
+            </button>
+          )}
         </div>
 
         {renamingFolder && (
@@ -746,20 +980,51 @@ export function LibraryPage() {
           </div>
         )}
 
-        {showNewFolder && (
-          <div className="mb-4 flex gap-2">
+        {showNewFolder && filterTab === 'all' && (
+          <div className="mb-4 forma-glass-card p-3 space-y-2 max-w-md">
             <input
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
               placeholder="Nom du dossier"
-              className="border rounded px-3 py-1.5 text-sm max-w-xs"
+              className="w-full border rounded px-3 py-1.5 text-sm"
             />
+            <div className="flex flex-wrap gap-1">
+              {FOLDER_EMOJIS.slice(0, 8).map((e) => (
+                <button
+                  key={e}
+                  type="button"
+                  onClick={() => setNewFolderEmoji(e)}
+                  className={`w-8 h-8 rounded text-lg ${
+                    newFolderEmoji === e ? 'ring-2 ring-forma-accent' : ''
+                  }`}
+                >
+                  {e}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {FOLDER_COLORS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setNewFolderColor(c)}
+                  className={`w-6 h-6 rounded-full border-2 ${
+                    newFolderColor === c ? 'border-forma-accent' : 'border-transparent'
+                  }`}
+                  style={{ backgroundColor: c }}
+                />
+              ))}
+            </div>
+            <div className="flex gap-2">
             <button
               type="button"
               className="text-sm px-3 bg-forma-accent text-white rounded-lg"
               onClick={async () => {
                 if (newFolderName.trim()) {
-                  await createFolder(newFolderName.trim(), currentFolderId)
+                  await createFolder(newFolderName.trim(), currentFolderId, {
+                    emoji: newFolderEmoji,
+                    color: newFolderColor,
+                  })
                   setNewFolderName('')
                   setShowNewFolder(false)
                   load()
@@ -768,31 +1033,30 @@ export function LibraryPage() {
             >
               Créer
             </button>
+            <button type="button" className="text-sm px-2" onClick={() => setShowNewFolder(false)}>
+              Annuler
+            </button>
+            </div>
           </div>
         )}
 
         {filterTab === 'all' && folders.length > 0 && (
           <div
             ref={gridRef}
-            className={`mb-6 ${viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-4 gap-3' : 'space-y-2'}`}
+            className={`mb-6 ${
+              viewMode === 'list' ? 'space-y-2' : 'grid grid-cols-2 sm:grid-cols-4 gap-3'
+            }`}
           >
             {folders.map((folder, fi) => (
               <div key={folder.id} className="relative group">
-                <button
-                  type="button"
-                  onClick={() => setFolder(folder.id)}
-                  className={`w-full p-4 rounded-xl border text-left hover:shadow ${
-                    focusIdx === fi
-                      ? 'ring-2 ring-forma-accent border-forma-accent bg-amber-50/80 dark:bg-amber-950/40'
-                      : 'bg-amber-50/80 dark:bg-amber-950/30 border-forma-border'
-                  }`}
-                >
-                  <span className="text-2xl">📁</span>
-                  <span className="block font-medium mt-1">{folder.name}</span>
-                  <span className="text-xs text-forma-muted">
-                    {folderCounts[folder.id] ?? 0} carnet{(folderCounts[folder.id] ?? 0) !== 1 ? 's' : ''}
-                  </span>
-                </button>
+                <FolderCard
+                  folder={folder}
+                  count={folderCounts[folder.id] ?? 0}
+                  viewMode={viewMode === 'list' ? 'list' : 'grid'}
+                  focused={focusIdx === fi}
+                  onOpen={() => setFolder(folder.id)}
+                  onContextMenu={(e) => openFolderContextMenu(e, folder)}
+                />
                 <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100">
                   <button
                     type="button"
@@ -805,42 +1069,6 @@ export function LibraryPage() {
                     }}
                   >
                     ✎
-                  </button>
-                  <button
-                    type="button"
-                    title="Dupliquer le dossier"
-                    className="text-xs bg-white/90 dark:bg-gray-800 px-1.5 py-0.5 rounded border border-forma-border"
-                    onClick={async (e) => {
-                      e.stopPropagation()
-                      await duplicateFolder(folder.id)
-                      load()
-                    }}
-                  >
-                    ⧉
-                  </button>
-                  <button
-                    type="button"
-                    title="Supprimer le dossier"
-                    className="text-xs bg-white/90 dark:bg-gray-800 px-1.5 py-0.5 rounded border border-forma-border text-red-600"
-                    onClick={async (e) => {
-                      e.stopPropagation()
-                      if (
-                        !(await confirm(
-                          `Les carnets de « ${folder.name} » iront en corbeille.`,
-                          {
-                            title: `Supprimer le dossier`,
-                            danger: true,
-                            confirmLabel: 'Supprimer',
-                          },
-                        ))
-                      )
-                        return
-                      await deleteFolder(folder.id)
-                      useToastStore.getState().show('Dossier supprimé')
-                      load()
-                    }}
-                  >
-                    🗑
                   </button>
                 </div>
               </div>
@@ -871,6 +1099,28 @@ export function LibraryPage() {
               </button>
             </div>
           </div>
+        ) : viewMode === 'timeline' ? (
+          <LibraryTimeline
+            groups={groupNotebooksByMonth(notebooks)}
+            subjects={subjects}
+            viewMode="grid"
+            pageCounts={pageCounts}
+            thumbs={thumbs}
+            selectionMode={selectionMode}
+            selectedIds={selectedIds}
+            pinnedIds={pinnedIds}
+            onOpen={(id) => navigate(`/document/${id}`)}
+            onToggleSelect={toggleSelection}
+            onRename={async (id, name) => {
+              await renameNotebook(id, name)
+              load()
+            }}
+            onCoverColor={async (id, color) => {
+              await updateNotebookMetadata(id, { coverColor: color })
+              load()
+            }}
+            onContextMenu={openNotebookContextMenu}
+          />
         ) : (
           <div className={viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4' : 'space-y-2'}>
             {notebooks.map((nb, ni) => {
@@ -894,6 +1144,7 @@ export function LibraryPage() {
                   pageCount={pageCounts[nb.id]}
                   thumbUrl={thumbs[nb.id]}
                   locked={pinnedIds.has(nb.id)}
+                  subjectLabel={subjectLabel(subjects, nb.subjectId) || undefined}
                   onClick={() => navigate(`/document/${nb.id}`)}
                   onToggleSelect={() => toggleSelection(nb.id)}
                   onRename={async (name) => {
@@ -904,6 +1155,7 @@ export function LibraryPage() {
                     await updateNotebookMetadata(nb.id, { coverColor: color })
                     load()
                   }}
+                  onContextMenu={(e) => openNotebookContextMenu(e, nb)}
                 />
                 {!selectionMode && (
                   <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition">
@@ -939,6 +1191,8 @@ export function LibraryPage() {
             )})}
           </div>
         )}
+        </>
+        )}
       </main>
 
       {showNewNotebook && (
@@ -968,6 +1222,14 @@ export function LibraryPage() {
     </div>
     </LibraryShell>
       {showShortcuts && <ShortcutsHelp onClose={() => setShowShortcuts(false)} />}
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          items={contextMenu.items}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
     </DropZone>
   )
 }

@@ -9,8 +9,8 @@ export type PaperTemplate =
   | 'planner'
   | 'music'
 
-export type ViewMode = 'grid' | 'list'
-export type SortBy = 'name' | 'modified' | 'created'
+export type ViewMode = 'grid' | 'list' | 'timeline'
+export type SortBy = 'name' | 'modified' | 'created' | 'subject' | 'size'
 export type SortOrder = 'asc' | 'desc'
 
 export type ToolType =
@@ -159,6 +159,8 @@ export interface Notebook {
   updatedAt: number
   favorite?: boolean
   deletedAt?: number
+  /** Matière (legacy ArchNote subjects) */
+  subjectId?: string
   /** PDF source original pour réindexation texte */
   pdfSourceDataUrl?: string
   pdfSourceAssetId?: string
@@ -168,6 +170,8 @@ export interface Folder {
   id: string
   parentId: string | null
   name: string
+  emoji?: string
+  color?: string
   createdAt: number
   updatedAt: number
 }
