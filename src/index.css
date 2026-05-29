@@ -1,0 +1,105 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Segoe UI', system-ui, sans-serif;
+  --color-forma-bg: #f5f3ef;
+  --color-forma-surface: #ffffff;
+  --color-forma-border: #e8e4dc;
+  --color-forma-text: #1a1a1a;
+  --color-forma-muted: #6b6560;
+  --color-forma-accent: #2563eb;
+  --color-forma-accent-hover: #1d4ed8;
+  --color-forma-paper: #fffef9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-forma-bg);
+  color: var(--color-forma-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+}
+
+html.dark body {
+  background: #0f1115;
+  color: #f3f4f6;
+}
+
+html.dark .bg-forma-surface {
+  background: #1a1d24;
+}
+
+html.dark .bg-forma-bg {
+  background: #0f1115;
+}
+
+html.dark .border-forma-border {
+  border-color: #2e3340;
+}
+
+html.dark .text-forma-muted {
+  color: #9ca3af;
+}
+
+html.dark .hover\:bg-gray-100:hover {
+  background-color: #2e3340;
+}
+
+html.dark .bg-gray-50 {
+  background-color: #1f2937;
+}
+
+html.dark .bg-gray-100 {
+  background-color: #374151;
+}
+
+html.dark .bg-amber-100 {
+  background-color: #78350f;
+}
+
+html.dark .bg-amber-400 {
+  background-color: #ca8a04;
+}
+
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+
+  body > *:not(#forma-print-root) {
+    display: none !important;
+  }
+
+  #forma-print-root {
+    display: block !important;
+  }
+
+  #forma-print-root .forma-print-page {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    page-break-after: always;
+    break-after: page;
+  }
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+}
