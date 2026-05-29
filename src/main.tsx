@@ -5,10 +5,12 @@ import App from './App.tsx'
 import { useSettingsStore } from './stores/settingsStore'
 
 import { setupMemoryPressureListener } from './lib/memory-pressure'
+import { pruneStaleDocumentLocks } from './lib/document-lock'
 import { runAutoBackupIfDue } from './services/sync'
 import { useToastStore } from './stores/toastStore'
 
 setupMemoryPressureListener()
+pruneStaleDocumentLocks()
 
 void import('./lib/assets').then(
   ({ migrateAllPdfNotebookSources, migrateInlinePagesBatch, garbageCollectOrphanAssets }) => {

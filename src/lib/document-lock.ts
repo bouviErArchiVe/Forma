@@ -4,7 +4,9 @@
  */
 
 export const DOCUMENT_LOCK_PREFIX = 'forma-doc-lock-'
-const STALE_MS = 45_000
+/** Durée sans heartbeat avant qu’un verrou soit considéré expiré (ms). */
+export const DOCUMENT_LOCK_STALE_MS = 45_000
+const STALE_MS = DOCUMENT_LOCK_STALE_MS
 
 interface LockRecord {
   tabId: string

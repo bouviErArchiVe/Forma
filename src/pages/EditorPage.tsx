@@ -258,6 +258,14 @@ export function EditorPage() {
 
   useEffect(() => {
     if (!id) return
+    const tabId = lockTabIdRef.current
+    const onPageHide = () => releaseDocumentLock(id, tabId)
+    window.addEventListener('pagehide', onPageHide)
+    return () => window.removeEventListener('pagehide', onPageHide)
+  }, [id])
+
+  useEffect(() => {
+    if (!id) return
     const t = window.setTimeout(() => setNotebookZoom(id, zoom), 400)
     return () => clearTimeout(t)
   }, [id, zoom])
