@@ -31,3 +31,6 @@ dist-ssr
 tests/fixtures/.e2e-*
 
 .vercel
+
+# Legacy ArchNote reference (local audit only — see docs/OLD-ARCHNOTE-AUDIT.md)
+/_legacy/
