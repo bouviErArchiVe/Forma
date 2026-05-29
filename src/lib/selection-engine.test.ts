@@ -19,7 +19,9 @@ import {
   applySelectionMove,
   collectSelection,
   countStrokesRenderCost,
+  getSelectionRotationHandle,
   hitTestAtPoint,
+  hitTestRotationHandle,
   isMeaningfulSelectionRect,
   mergeSelection,
   MIN_SELECTION_RECT_PX,
@@ -250,5 +252,53 @@ describe('selection-engine', () => {
     })
     expect(countStrokesRenderCost(pg)).toBe(3 + 2)
     expect(countStrokesRenderCost(page())).toBe(0)
+  })
+
+  it('getSelectionRotationHandle appears for text/image/sticker only', () => {
+    const pg = page({
+      texts: [
+        {
+          id: 't1',
+          x: 100,
+          y: 100,
+          width: 80,
+          height: 24,
+          content: 'hi',
+          fontSize: 16,
+          color: '#000',
+          align: 'left',
+          pageId: 'p1',
+        },
+      ],
+    })
+    const handle = getSelectionRotationHandle(pg, [{ kind: 'text', id: 't1' }])
+    expect(handle).not.toBeNull()
+    expect(handle!.pivotY).toBeGreaterThan(handle!.y)
+    expect(getSelectionRotationHandle(pg, [{ kind: 'stroke', id: 'missing' }])).toBeNull()
+  })
+
+  it('hitTestRotationHandle detects pointer near handle', () => {
+    const handle = { x: 200, y: 50, pivotX: 200, pivotY: 120 }
+    expect(hitTestRotationHandle({ x: 200, y: 50 }, handle)).toBe(true)
+    expect(hitTestRotationHandle({ x: 300, y: 50 }, handle)).toBe(false)
+  })
+
+  it('rotateSelection accumulates rotation on image', () => {
+    const pg = page({
+      images: [
+        {
+          id: 'i1',
+          x: 50,
+          y: 50,
+          width: 100,
+          height: 80,
+          assetId: 'a1',
+          pageId: 'p1',
+        },
+      ],
+    })
+    const sel: SelectionItem[] = [{ kind: 'image', id: 'i1' }]
+    const rotated = rotateSelection(pg, sel, Math.PI / 4)
+    expect(rotated.images[0].rotation).toBeCloseTo(Math.PI / 4, 5)
   })
 })

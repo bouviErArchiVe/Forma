@@ -55,7 +55,7 @@ export function ExportMenu({
     }
   }
 
-  const items: { label: string; deferred?: boolean; action: () => void | Promise<void> }[] = [
+  const items: { label: string; deferred?: boolean; testId?: string; action: () => void | Promise<void> }[] = [
     {
       label: 'PNG — page active',
       action: () =>
@@ -141,6 +141,7 @@ export function ExportMenu({
           notebook,
         )
       },
+      testId: 'export-pdf-notebook',
     },
     {
       label: 'PDF vectoriel — carnet entier',
@@ -183,6 +184,7 @@ export function ExportMenu({
     <div className="relative">
       <button
         type="button"
+        data-testid="export-menu-trigger"
         onClick={() => setOpen(!open)}
         className="text-sm px-2 py-1 border rounded-lg bg-forma-surface"
         title="Exporter, importer, imprimer"
@@ -197,6 +199,7 @@ export function ExportMenu({
               <button
                 key={item.label}
                 type="button"
+                data-testid={item.testId}
                 className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={() => {
                   if (item.deferred) {

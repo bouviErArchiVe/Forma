@@ -1,5 +1,25 @@
 # Changelog Forma
 
+## 0.25.1 — Preview deploy docs, rotation handles, dirty rects phase 1
+
+### Infra
+- `.env.example` + `docs/DEPLOY.md` (preview Vercel branche `formacursor`)
+- `vercel.json` SPA rewrites
+- CI job `bench` advisory (stroke 1k/5k/10k warning, non bloquant)
+
+### Canvas
+- Poignée rotation visuelle (texte / image / sticker) + undo/redo batch
+- Dirty rectangles phase 1 : clips encre drag/rotation ; lasso overlay RAF
+- `src/lib/dirty-rect.ts` + tests
+
+### QA
+- E2E export PDF carnet (`pdf-export.spec.ts`)
+- Tests rotation handle + dirty-rect Vitest
+
+### Docs
+- `docs/ARCHITECTURE.md` — modules, fichiers >500 lignes, plan découpage
+- `docs/LIMITES.md` — export PDF, perf, preview
+
 ## 0.25.0 — E2E production + verrou dur + rotation visuelle
 
 ### QA

@@ -13,14 +13,18 @@ import {
   renderPageBackground,
   renderPageContent,
 } from '../lib/page-render'
+import { selectionInkClip } from '../lib/dirty-rect'
 import {
   applyColorToSelection,
   applySelectionMove,
+  angleAtPivot,
   collectSelection,
   collectSelectionFromStrokeCircle,
   deleteSelectionItems,
   drawSelectionBoxes,
+  getSelectionRotationHandle,
   hitTestAtPoint,
+  hitTestRotationHandle,
   isMeaningfulSelectionRect,
   nudgeSelection,
   omitSelectionFromPage,
@@ -157,6 +161,9 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     origH: number
   } | null>(null)
   const groupScaleBaseRef = useRef<Page | null>(null)
+  const isRotatingRef = useRef(false)
+  const rotationBaseRef = useRef<Page | null>(null)
+  const rotationStartAngleRef = useRef(0)
 
   const store = useEditorStore()
   const { palmRejection, fingerScroll, shapeHoldMs, gridSnap, scribbleErase, showRuler } =
@@ -400,12 +407,6 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
 
   paintInkLayerRef.current = paintInkLayer
 
-  useEffect(() => {
-    if (!dragOffset) return
-    paintInkLayerRef.current()
-    paintOverlayRef.current()
-  }, [dragOffset])
-
   const scheduleOverlayRedraw = useCallback(() => {
     if (overlayRafRef.current != null) return
     overlayRafRef.current = requestAnimationFrame(() => {
@@ -422,6 +423,20 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       paintOverlayRef.current()
     })
   }, [])
+
+  useEffect(() => {
+    if (!dragOffset) return
+    const clip = selectionInkClip(
+      hydratedPageRef.current,
+      selection,
+      dragOffset,
+      28,
+      PAGE_WIDTH,
+      PAGE_HEIGHT,
+    )
+    scheduleInkRedraw(clip)
+    scheduleOverlayRedraw()
+  }, [dragOffset, selection, scheduleInkRedraw, scheduleOverlayRedraw, PAGE_WIDTH, PAGE_HEIGHT])
 
   const redraw = useCallback(async () => {
     const bg = bgRef.current
@@ -597,6 +612,14 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     }
 
     if (store.activeTool === 'lasso') {
+      const handle = getSelectionRotationHandle(local, selection, dragOffset ?? undefined)
+      if (handle && hitTestRotationHandle(pt, handle)) {
+        isRotatingRef.current = true
+        rotationBaseRef.current = localRef.current
+        rotationStartAngleRef.current = angleAtPivot({ x: handle.pivotX, y: handle.pivotY }, pt)
+        historyRef.current.beginBatch(localRef.current)
+        return
+      }
       const bounds = selection.length ? selectionBounds(local, selection) : null
       if (
         bounds &&
@@ -682,6 +705,22 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
 
     if (laserPointer) {
       setLaserTrail((t) => [...t.slice(-24), { x: pt.x, y: pt.y }])
+      return
+    }
+
+    if (isRotatingRef.current && rotationBaseRef.current) {
+      const handle = getSelectionRotationHandle(rotationBaseRef.current, selection)
+      if (handle) {
+        const angle = angleAtPivot({ x: handle.pivotX, y: handle.pivotY }, pt)
+        const delta = angle - rotationStartAngleRef.current
+        const next = rotateSelection(rotationBaseRef.current, selection, delta)
+        setLocal(next)
+        localRef.current = next
+        scheduleInkRedraw(
+          selectionInkClip(next, selection, undefined, 40, PAGE_WIDTH, PAGE_HEIGHT),
+        )
+        scheduleOverlayRedraw()
+      }
       return
     }
 
@@ -775,6 +814,19 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       setTapeStart(null)
       setTapeEnd(null)
       finishGestureHistory(true)
+      return
+    }
+
+    if (isRotatingRef.current) {
+      isRotatingRef.current = false
+      const base = rotationBaseRef.current
+      rotationBaseRef.current = null
+      if (base && localRef.current !== base) {
+        commit(localRef.current)
+        finishGestureHistory(true)
+      } else {
+        finishGestureHistory(false)
+      }
       return
     }
 

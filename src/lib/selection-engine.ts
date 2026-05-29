@@ -538,4 +538,70 @@ export function drawSelectionBoxes(
       if (t) drawBox(t.x, t.y, t.x + t.width, t.y + t.height)
     }
   }
+  const handle = getSelectionRotationHandle(page, selection, offset)
+  if (handle) drawRotationHandle(ctx, handle)
+}
+
+export const ROTATION_HANDLE_RADIUS = 10
+export const ROTATION_HANDLE_OFFSET = 32
+
+export interface RotationHandleInfo {
+  x: number
+  y: number
+  pivotX: number
+  pivotY: number
+}
+
+/** Poignée visible si la sélection contient texte, image ou sticker. */
+export function getSelectionRotationHandle(
+  page: Page,
+  selection: SelectionItem[],
+  offset?: { x: number; y: number },
+): RotationHandleInfo | null {
+  if (!selection.length) return null
+  const rotatable = selection.some((s) => s.kind === 'text' || s.kind === 'image' || s.kind === 'sticker')
+  if (!rotatable) return null
+  const bounds = selectionBounds(page, selection, offset)
+  if (!bounds) return null
+  const ox = offset?.x ?? 0
+  const oy = offset?.y ?? 0
+  const pivotX = bounds.x + bounds.w / 2 + ox
+  const pivotY = bounds.y + bounds.h / 2 + oy
+  return {
+    x: pivotX,
+    y: bounds.y - ROTATION_HANDLE_OFFSET + oy,
+    pivotX,
+    pivotY,
+  }
+}
+
+export function hitTestRotationHandle(
+  pt: { x: number; y: number },
+  handle: RotationHandleInfo,
+  radius = ROTATION_HANDLE_RADIUS + 6,
+): boolean {
+  const dx = pt.x - handle.x
+  const dy = pt.y - handle.y
+  return dx * dx + dy * dy <= radius * radius
+}
+
+export function angleAtPivot(pivot: { x: number; y: number }, pt: { x: number; y: number }): number {
+  return Math.atan2(pt.y - pivot.y, pt.x - pivot.x)
+}
+
+export function drawRotationHandle(ctx: CanvasRenderingContext2D, handle: RotationHandleInfo): void {
+  ctx.save()
+  ctx.strokeStyle = '#2563eb'
+  ctx.fillStyle = '#ffffff'
+  ctx.lineWidth = 2
+  ctx.setLineDash([])
+  ctx.beginPath()
+  ctx.moveTo(handle.pivotX, handle.pivotY)
+  ctx.lineTo(handle.x, handle.y)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.arc(handle.x, handle.y, ROTATION_HANDLE_RADIUS, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.stroke()
+  ctx.restore()
 }

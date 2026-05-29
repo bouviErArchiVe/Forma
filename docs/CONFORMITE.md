@@ -1,6 +1,6 @@
 # Matrice de conformité — Spec ↔ Code
 
-**Version** : 0.25.0 · **Dernière revue QA** : 2026-05-29
+**Version** : 0.25.1 · **Dernière revue QA** : 2026-05-29
 
 | ID | Exigence | Statut | Notes |
 |----|----------|--------|-------|
@@ -13,7 +13,7 @@
 | ARCH-1 | Pas de refactor massif | ✅ | Diffs ciblés par périmètre |
 | CANVAS-1 | Coordonnées world/screen | 🟡 | World OK ; zoom par carnet persisté |
 | CANVAS-2 | Layers séparés | 🟡 | 3 calques canvas ; pas 10 layers spec |
-| CANVAS-3 | Dirty rectangles | 🟡 | Encre partielle + fond caché ; RAF overlay |
+| CANVAS-3 | Dirty rectangles | 🟡 | Phase 1 : clips drag/rotation/trait ; lasso overlay |
 | CANVAS-4 | Pooling vue continue | 🟡 | `maxMountedCanvases` 3–5 ; placeholder hors pool |
 | STROKE-1 | Split 5k / 10s | ✅ | `lib/stroke-finalize.ts` |
 | STROKE-2 | tiltX/tiltY | ✅ | Champs sur `Point` |
@@ -28,17 +28,17 @@
 | PDF-3 | Liens mode lecture | ✅ | |
 | PERF-1 | Virtualisation vue continue | 🟡 | IO + pool canvas + démontage différé |
 | PERF-2 | Mesures FPS / SLA | 🟡 | HUD dev ; pas de gate CI |
-| SEL-1 | Moteur sélection | 🟡 | Lasso ; rotation clavier + visuelle texte/image/sticker |
+| SEL-1 | Moteur sélection | 🟡 | Lasso ; rotation clavier + poignée (texte/image/sticker) |
 | DATA-1 | Cycle de vie assets | ✅ | GC, clone, move ; Dexie v6–v7 migrations |
 | DATA-2 | `.forma` round-trip | ✅ | merge + replace (backup auto avant replace) |
 | DATA-3 | Import replace sécurisé | ✅ | Sauvegarde `.forma` auto horodatée |
 | SYNC-1 | Queue / oplog futur | 🟡 | localStorage ; tests ; pas de backend |
 | EXPORT-1 | PNG 2× | ✅ | `exportPageToPng` async |
 | EXPORT-2 | SVG vecteur | 🟡 | RDP `path-simplify` ; images inline |
-| TEST-1 | Suite Vitest | ✅ | **102/102** (19 fichiers) |
+| TEST-1 | Suite Vitest | ✅ | **109/109** (20 fichiers) |
 | TEST-2 | Journal save | ✅ | `save-journal.test.ts` |
-| TEST-3 | E2E Playwright | ✅ | **12 tests** Chromium (smoke, éditeur, backup replace/merge, PDF, dossier, multi-onglets) |
-| CI-1 | GitHub Actions | 🟡 | Workflow prêt ; **remote Git absent** |
+| TEST-3 | E2E Playwright | ✅ | **13 tests** Chromium (+ export PDF) |
+| CI-1 | GitHub Actions | 🟡 | test + build + e2e + bench warning sur `formacursor` |
 
 ## Couverture tests (0.22.0)
 
@@ -60,9 +60,9 @@
 ## Résultats build / test (2026-05-29)
 
 ```
-npm run test     → 102 passed (19 files)
+npm run test     → 109 passed (20 files)
 npm run build    → OK
-npm run test:e2e → 12 passed (chromium)
+npm run test:e2e → 13 passed (chromium)
 ```
 
 Légende : ✅ conforme · 🟡 partiel · ❌ absent
