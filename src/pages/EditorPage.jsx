@@ -549,7 +549,7 @@ function smoothStrokePoints(pts, amount = 0.32) {
 }
 
 /* ══ CANVAS — Smart shape detection (GoodNotes-style) ══ */
-function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest,canvasTextFont,canvasZIndex=5,arrowStyle,onEditBubble}){
+function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencilOnly,unitSys,onEraseAt,onSelectionChange,cursorDark,layers,activeLayerId,onAction,eraserMode,onLassoComplete,onEraseZone,pageW=794,pageH=1123,shapeStyle,onTextEditRequest,canvasTextFont,canvasZIndex=5,arrowStyle,onEditBubble,onPencilDoubleTap}){
   const drawing=useRef(false)
   const strokes=useRef([])   // committed strokes
   const history=useRef([])   // for multi-level undo (copy of strokes at each commit)
@@ -557,6 +557,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
   const cur=useRef([])
   const shape=useRef(null)
   const holdTimer=useRef(null) // for shape auto-correct on hold
+  const lastPenTap=useRef(0)
   const lassoPath=useRef(null)
   const selBox=useRef(null)
   const selectedStrokes=useRef(new Set())
@@ -929,6 +930,10 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
         const cx=(minX+maxX)/2,cy=(minY+maxY)/2
         return{type:"rect",pts:[{x:cx-side/2,y:cy-side/2},{x:cx+side/2,y:cy+side/2}]}
       }
+      // Triangle: count sharp angle changes
+      {const sc=Math.max(1,Math.floor(pts.length/40));let nc=0
+      for(let i=sc;i<pts.length-sc;i+=sc*2){const a=pts[i-sc],b=pts[i],c=pts[Math.min(i+sc,pts.length-1)];const v1x=a.x-b.x,v1y=a.y-b.y,v2x=c.x-b.x,v2y=c.y-b.y;const mag=Math.hypot(v1x,v1y)*Math.hypot(v2x,v2y);if(mag<4)continue;if(Math.acos(Math.max(-1,Math.min(1,(v1x*v2x+v1y*v2y)/mag)))>0.65)nc++}
+      if(nc>=2&&nc<=5)return{type:"triangle",pts:[{x:minX,y:minY},{x:maxX,y:maxY}]}}
       return{type:"rect",pts:[{x:minX,y:minY},{x:maxX,y:maxY}]}
     }
     const lineLen=Math.sqrt((end.x-start.x)**2+(end.y-start.y)**2)
@@ -942,6 +947,7 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
   }
 
   const dn=e=>{
+    if(e.pointerType==="pen"){const now=Date.now();if(now-lastPenTap.current<350){onPencilDoubleTap?.();lastPenTap.current=0;return}lastPenTap.current=now}
     if(pencilOnly&&e.pointerType==="pen"&&tool==="hand")return
     if(tool==="arrow"||tool==="select")return
     const p=gP(e)
@@ -994,21 +1000,6 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       shape.current={start:{x:sp.x,y:sp.y}}
       return
     }
-    // Hold timer for shape auto-correct
-    if(tool==="pen"){
-      holdTimer.current=setTimeout(()=>{
-        if(cur.current.length>3){
-          const start=cur.current[0]
-          const end=cur.current[cur.current.length-1]
-          pushStroke({pts:[start,end],color,size,tool,shapeType:"line"})
-          cur.current=[]
-          drawing.current=false
-          redraw()
-          if(onStroke)onStroke(strokes.current)
-          logAction("stroke_shape",{stroke:strokes.current[strokes.current.length-1],detail:"line"})
-        }
-      },800)
-    }
   }
 
   const mv=e=>{
@@ -1055,6 +1046,15 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       const last = cur.current[cur.current.length - 1]
       if (last && Math.hypot(p.x - last.x, p.y - last.y) < 1.5) return
       cur.current.push(p)
+      if(holdTimer.current){clearTimeout(holdTimer.current);holdTimer.current=null}
+      if(cur.current.length>3){holdTimer.current=setTimeout(()=>{
+        if(!drawing.current||cur.current.length<4)return
+        const s0=cur.current[0],sN=cur.current[cur.current.length-1]
+        history.current.push(JSON.stringify(strokes.current));if(history.current.length>50)history.current.shift()
+        pushStroke({pts:[s0,sN],color,size,tool:'highlight'})
+        cur.current=[];drawing.current=false;holdTimer.current=null;redraw()
+        if(onStroke)onStroke(strokes.current)
+      },500)}
       redraw()
       return
     }
@@ -1063,6 +1063,20 @@ function DrawCanvas({tool,color,size,eraserSize,cRef,onStroke,onPickColor,pencil
       if (last && Math.hypot(p.x - last.x, p.y - last.y) < 1.5) return
     }
     cur.current.push(p)
+    if(tool==="pen"&&cur.current.length>3){
+      if(holdTimer.current){clearTimeout(holdTimer.current);holdTimer.current=null}
+      holdTimer.current=setTimeout(()=>{
+        if(!drawing.current||cur.current.length<4)return
+        const result=detectShape(cur.current)
+        if(!result)return
+        history.current.push(JSON.stringify(strokes.current));if(history.current.length>50)history.current.shift()
+        const extra=result.type==='arrow'?{shapeType:'arrow',arrowStyle}:result.type==='line'?{shapeType:'line'}:{shapeType:result.type,...shapeStylePayload(shapeStyle,color)}
+        pushStroke({pts:result.pts,color,size,tool,...extra})
+        cur.current=[];drawing.current=false;holdTimer.current=null;redraw()
+        if(onStroke)onStroke(strokes.current)
+        logAction('stroke_shape',{stroke:strokes.current[strokes.current.length-1],detail:result.type})
+      },500)
+    }
 
     if(tool==="eraser"){
       if(eraserMode==="zone"){
@@ -4354,7 +4368,7 @@ export default function EditorPage({ onBack }){
               {showProtractor&&<CanvasProtractor pos={protractorPos} setPos={setProtractorPos} unitSys={unitSys} zoom={zoom}/>}
               {showSquare&&<CanvasSquare pos={squarePos} setPos={setSquarePos} unitSys={unitSys} zoom={zoom}/>}
 
-              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={5} arrowStyle={arrowStyle} onEditBubble={handleEditBubble}/>}
+              {!readOnly&&<DrawCanvas tool={tool} color={color} size={sizePx} eraserSize={eraserPx} cRef={cRef} pageW={PW} pageH={PH} shapeStyle={shapeStyle} canvasTextFont={canvasTextFont} onTextEditRequest={handleTextEditRequest} onStroke={onStroke} onAction={handleCanvasAction} onPickColor={c=>setColor(c)} pencilOnly={pencilOnly} unitSys={unitSys} onEraseAt={eraseObjectsAt} onSelectionChange={handleCanvasSelection} cursorDark={cursorDark} layers={layers} activeLayerId={activeLayerId} eraserMode={eraserSettings.mode} onLassoComplete={handleLassoComplete} onEraseZone={handleEraseZone} canvasZIndex={5} arrowStyle={arrowStyle} onEditBubble={handleEditBubble} onPencilDoubleTap={()=>setTool(t=>t==='eraser'?'pen':'eraser')}/>}
               {!eraserActive&&canvasSelection?.shapeBounds&&canvasSelection.count===1&&!textEdit&&(
                 <ShapeTransformHandles
                   T={T}
