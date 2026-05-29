@@ -1,5 +1,48 @@
 # Changelog Forma
 
+## 0.25.0 — E2E production + verrou dur + rotation visuelle
+
+### QA
+- E2E replace `.forma` avec confirm + backup auto
+- E2E multi-onglets : second onglet lecture seule verrouillée
+- Reset IDB/localStorage locks entre tests
+
+### Données / PWA
+- Verrou document **dur** (localStorage + readMode forcé)
+- Toolbar désactivée en « Lecture (verrouillée) »
+
+### Canvas
+- Rotation visuelle : `rotation` (rad) sur texte, images, stickers
+- Rendu canvas via `drawRotatedRect` dans `page-render.ts`
+
+### Docs
+- `docs/MIGRATIONS.md` — Dexie v1→v7 + v8 prévu
+
+## 0.24.2 — E2E production + Dexie v7 + verrou document
+
+### QA / CI
+- E2E : round-trip `.forma` merge, import PDF, création dossier, reset IndexedDB entre tests
+- Playwright : projet iPad ; CI Chromium only
+- `prepareE2EPage()` + helpers IDB
+
+### Données
+- Dexie **v7** : migration `pdfSourceDataUrl` → `pdfSourceAssetId`
+- Import backup : journal `importLog[]` diagnostic
+- Préparation `.forma v2` (`FORMA_V2_THUMBNAIL_PREFIX`)
+
+### PWA / multi-onglets
+- `document-lock.ts` : verrou sessionStorage par carnet + bannière éditeur
+
+### Canvas / perf
+- `stroke-bench.ts` : benchmark 1k / 5k / 10k strokes (Vitest)
+
+## 0.24.1 — CI + E2E éditeur
+
+### QA
+- GitHub Actions `.github/workflows/ci.yml` : Vitest, build, Playwright
+- E2E éditeur : dessin + persistance après refresh, ajout page
+- `data-testid="page-draw-canvas"` pour tests navigateur
+
 ## 0.24.0 — Sprint multi-agents (7 périmètres, Pack 1–5)
 
 Release coordonnée : Git/E2E, sécurité import, Dexie v6, canvas rotation, PDF bench, PWA multi-onglets, sync queue.

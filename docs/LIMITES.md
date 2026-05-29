@@ -1,4 +1,4 @@
-# Limites connues — Forma 0.24.0
+# Limites connues — Forma 0.24.1
 
 ## Canvas & rendu
 
@@ -24,7 +24,7 @@
 ## PWA
 
 - **SW** : enregistré en prod uniquement (`import.meta.env.PROD`).
-- **E2E Playwright** : smoke seulement (pas dessin/refresh/import en CI pour l’instant)
+- **E2E Playwright** : smoke + dessin/refresh ; pas import `.forma` / PDF en CI
 - **Icônes PNG** : générées via `npm run icons` si absentes en dev.
 
 ## Hors scope

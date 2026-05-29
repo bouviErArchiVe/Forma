@@ -971,6 +971,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       <canvas ref={bgRef} width={PAGE_WIDTH} height={PAGE_HEIGHT} className="absolute inset-0 w-full h-full rounded-sm" />
       <canvas
         ref={drawRef}
+        data-testid="page-draw-canvas"
         width={PAGE_WIDTH}
         height={PAGE_HEIGHT}
         className="absolute inset-0 w-full h-full touch-none"

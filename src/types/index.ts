@@ -74,6 +74,8 @@ export interface TextElement {
   fontSize: number
   color: string
   align: 'left' | 'center' | 'right'
+  /** Rotation en radians autour du centre du bloc. */
+  rotation?: number
   pageId: string
 }
 
@@ -97,6 +99,8 @@ export interface ImageElement {
   dataUrl?: string
   /** Référence IndexedDB `assets` */
   assetId?: string
+  /** Rotation en radians autour du centre. */
+  rotation?: number
   pageId: string
 }
 
@@ -117,6 +121,7 @@ export interface StickerElement {
   x: number
   y: number
   size: number
+  rotation?: number
   pageId: string
 }
 

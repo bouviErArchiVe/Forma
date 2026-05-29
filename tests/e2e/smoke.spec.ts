@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test'
-import { dismissOnboardingIfVisible, skipOnboarding } from './helpers'
+import { dismissOnboardingIfVisible, prepareE2EPage } from './helpers'
 
 test.beforeEach(async ({ page }) => {
-  await skipOnboarding(page)
+  await prepareE2EPage(page)
 })
 
 test('opens library home page', async ({ page }) => {

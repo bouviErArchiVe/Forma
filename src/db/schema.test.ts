@@ -148,7 +148,7 @@ describe('Dexie schema', () => {
 
     const freshDb = new FormaDatabase()
     await freshDb.open()
-    expect(freshDb.verno).toBe(6)
+    expect(freshDb.verno).toBe(FORMA_DB_VERSION)
 
     const row = await freshDb.pages.get(pageId)
     expect(row?.images[0]?.assetId).toBe(imageId)
@@ -157,6 +157,53 @@ describe('Dexie schema', () => {
     const asset = await freshDb.assets.get(imageId)
     expect(asset?.notebookId).toBe(notebookId)
     expect(asset?.mimeType).toContain('image')
+
+    freshDb.close()
+    await db.open()
+  })
+
+  it('v7 upgrade externalizes inline pdfSourceDataUrl on notebooks', async () => {
+    db.close()
+    await db.delete()
+
+    const v6 = new Dexie('forma')
+    v6.version(6).stores({
+      folders: 'id, parentId, name, updatedAt',
+      notebooks: 'id, folderId, name, updatedAt, favorite, deletedAt',
+      pages: 'id, notebookId, order, pdfAssetId',
+      audio: 'id, notebookId, createdAt',
+      studyCards: 'id, notebookId, nextReview',
+      shareLinks: 'id, notebookId, token',
+      pageSnapshots: 'id, pageId, createdAt',
+      assets: 'id, notebookId, createdAt',
+      settings: 'key',
+    })
+    await v6.open()
+
+    const nbId = 'nb-v7-pdf'
+    const dataUrl = makeLargePngDataUrl().replace('image/png', 'application/pdf')
+    await v6.table('notebooks').add({
+      id: nbId,
+      folderId: null,
+      name: 'PDF inline',
+      type: 'pdf',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      favorite: false,
+      pdfSourceDataUrl: dataUrl,
+    })
+    v6.close()
+
+    const freshDb = new FormaDatabase()
+    await freshDb.open()
+    expect(freshDb.verno).toBe(7)
+
+    const nb = await freshDb.notebooks.get(nbId)
+    expect(nb?.pdfSourceAssetId).toBe(`${nbId}-pdf-source`)
+    expect(nb?.pdfSourceDataUrl).toBeUndefined()
+
+    const asset = await freshDb.assets.get(`${nbId}-pdf-source`)
+    expect(asset?.notebookId).toBe(nbId)
 
     freshDb.close()
     await db.open()

@@ -39,6 +39,8 @@ export interface ImportBackupResult {
   remappedAssets?: number
   /** Nom du fichier .forma téléchargé avant un remplacement (mode replace). */
   preReplaceBackupFilename?: string
+  /** Journal court des étapes import (diagnostic UI / tests). */
+  importLog?: string[]
 }
 
 export interface FormaBackup {
@@ -121,6 +123,8 @@ export async function importBackupFile(
 ): Promise<ImportBackupResult> {
   const mode = options?.mode ?? 'replace'
 
+  const importLog: string[] = [`mode=${mode}`, `file=${file.name}`]
+
   if (!options?.confirmed) {
     if (mode === 'merge') {
       const ok = await confirm(
@@ -161,8 +165,15 @@ export async function importBackupFile(
 
   const validationSummary = formatValidationSummary(result.validationIssues)
 
+  importLog.push('forma_parsed', `notebooks=${data.notebooks.length}`, `pages=${data.pages.length}`)
+
   if (mode === 'merge') {
     const merged = await mergeImportLibrary(data, zip, result.format)
+    importLog.push(
+      `merged_notebooks=${merged.notebooks}`,
+      `merged_pages=${merged.pages}`,
+      `remapped_nb=${merged.remapped}`,
+    )
     await backfillMissingPdfText()
     appendSaveJournalEvent({
       type: 'import_backup',
@@ -177,6 +188,7 @@ export async function importBackupFile(
       remappedPages: merged.remappedPages,
       remappedAssets: merged.remappedAssets,
       validationSummary: validationSummary || undefined,
+      importLog,
     }
   }
 
@@ -219,12 +231,14 @@ export async function importBackupFile(
     at: Date.now(),
     notebooks: result.notebooks,
   })
+  importLog.push('replace_complete')
   return {
     notebooks: result.notebooks,
     pages: result.pages,
     skippedPages: result.skippedPages,
     preReplaceBackupFilename,
     validationSummary: validationSummary || undefined,
+    importLog,
   }
 }
 

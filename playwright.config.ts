@@ -20,6 +20,10 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'ipad',
+      use: { ...devices['iPad (gen 7)'] },
+    },
   ],
   webServer: {
     command: `npm run dev -- --host localhost --port ${PORT} --strictPort`,

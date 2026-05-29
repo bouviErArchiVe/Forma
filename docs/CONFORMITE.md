@@ -1,6 +1,6 @@
 # Matrice de conformité — Spec ↔ Code
 
-**Version** : 0.24.0 · **Dernière revue QA** : 2026-05-29
+**Version** : 0.25.0 · **Dernière revue QA** : 2026-05-29
 
 | ID | Exigence | Statut | Notes |
 |----|----------|--------|-------|
@@ -8,7 +8,7 @@
 | PWA-2 | Service Worker offline | ✅ | `sw.js` v8 — shell precache, network-first HTML, cache-first `/assets/` |
 | PWA-3 | Icônes PNG multi-tailles | ✅ | `icon-192.png`, `icon-512.png` |
 | PWA-4 | Indicateur offline | ✅ | `OfflineBanner.tsx` + reconnexion |
-| PWA-6 | Multi-onglets | ✅ | `MultiTabBanner` + BroadcastChannel |
+| PWA-6 | Multi-onglets | ✅ | Verrou dur localStorage ; 2e onglet lecture seule |
 | PWA-5 | Update flow | ✅ | `pwa.ts` + Paramètres — SKIP_WAITING, reload |
 | ARCH-1 | Pas de refactor massif | ✅ | Diffs ciblés par périmètre |
 | CANVAS-1 | Coordonnées world/screen | 🟡 | World OK ; zoom par carnet persisté |
@@ -28,16 +28,17 @@
 | PDF-3 | Liens mode lecture | ✅ | |
 | PERF-1 | Virtualisation vue continue | 🟡 | IO + pool canvas + démontage différé |
 | PERF-2 | Mesures FPS / SLA | 🟡 | HUD dev ; pas de gate CI |
-| SEL-1 | Moteur sélection | 🟡 | Lasso ; rotation clavier `[` `]` (0.24) |
-| DATA-1 | Cycle de vie assets | ✅ | GC, clone, move ; Dexie v6 migration |
+| SEL-1 | Moteur sélection | 🟡 | Lasso ; rotation clavier + visuelle texte/image/sticker |
+| DATA-1 | Cycle de vie assets | ✅ | GC, clone, move ; Dexie v6–v7 migrations |
 | DATA-2 | `.forma` round-trip | ✅ | merge + replace (backup auto avant replace) |
 | DATA-3 | Import replace sécurisé | ✅ | Sauvegarde `.forma` auto horodatée |
 | SYNC-1 | Queue / oplog futur | 🟡 | localStorage ; tests ; pas de backend |
 | EXPORT-1 | PNG 2× | ✅ | `exportPageToPng` async |
 | EXPORT-2 | SVG vecteur | 🟡 | RDP `path-simplify` ; images inline |
-| TEST-1 | Suite Vitest | ✅ | **94/94** (17 fichiers) |
+| TEST-1 | Suite Vitest | ✅ | **102/102** (19 fichiers) |
 | TEST-2 | Journal save | ✅ | `save-journal.test.ts` |
-| TEST-3 | E2E Playwright | 🟡 | Smoke : accueil, carnet, navigation |
+| TEST-3 | E2E Playwright | ✅ | **12 tests** Chromium (smoke, éditeur, backup replace/merge, PDF, dossier, multi-onglets) |
+| CI-1 | GitHub Actions | 🟡 | Workflow prêt ; **remote Git absent** |
 
 ## Couverture tests (0.22.0)
 
@@ -59,8 +60,9 @@
 ## Résultats build / test (2026-05-29)
 
 ```
-npm run test  → 70 passed (15 files)
-npm run build → OK
+npm run test     → 102 passed (19 files)
+npm run build    → OK
+npm run test:e2e → 12 passed (chromium)
 ```
 
 Légende : ✅ conforme · 🟡 partiel · ❌ absent

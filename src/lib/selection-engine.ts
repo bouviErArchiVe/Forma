@@ -276,17 +276,32 @@ export function rotateSelection(
       if (!textIds.has(t.id)) return t
       const h = Math.max(t.height, 40)
       const center = mapPt(t.x + t.width / 2, t.y + h / 2)
-      return { ...t, x: center.x - t.width / 2, y: center.y - h / 2 }
+      return {
+        ...t,
+        x: center.x - t.width / 2,
+        y: center.y - h / 2,
+        rotation: (t.rotation ?? 0) + angleRad,
+      }
     }),
     images: page.images.map((i) => {
       if (!imageIds.has(i.id)) return i
       const center = mapPt(i.x + i.width / 2, i.y + i.height / 2)
-      return { ...i, x: center.x - i.width / 2, y: center.y - i.height / 2 }
+      return {
+        ...i,
+        x: center.x - i.width / 2,
+        y: center.y - i.height / 2,
+        rotation: (i.rotation ?? 0) + angleRad,
+      }
     }),
     stickers: page.stickers.map((st) => {
       if (!stickerIds.has(st.id)) return st
       const center = mapPt(st.x + st.size / 2, st.y + st.size / 2)
-      return { ...st, x: center.x - st.size / 2, y: center.y - st.size / 2 }
+      return {
+        ...st,
+        x: center.x - st.size / 2,
+        y: center.y - st.size / 2,
+        rotation: (st.rotation ?? 0) + angleRad,
+      }
     }),
     tapes: page.tapes.map((t) => {
       if (!tapeIds.has(t.id)) return t

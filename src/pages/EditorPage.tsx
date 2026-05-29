@@ -53,6 +53,14 @@ import {
   updatePage,
 } from '../services/pages'
 import { createId } from '../lib/id'
+import {
+  getDocumentLockTabId,
+  isDocumentLockedByOther,
+  refreshDocumentLock,
+  releaseDocumentLock,
+  subscribeDocumentLock,
+  tryAcquireDocumentLock,
+} from '../lib/document-lock'
 import { getNotebookZoom, setNotebookZoom } from '../lib/notebook-zoom'
 import { popPageRecovery } from '../lib/save-recovery'
 import { useEditorStore } from '../stores/editorStore'
@@ -104,6 +112,8 @@ export function EditorPage() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const pageBlockRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const snapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lockTabIdRef = useRef(getDocumentLockTabId())
+  const [docLockBlocked, setDocLockBlocked] = useState(false)
   const pageViewMode = useSettingsStore((s) => s.pageViewMode)
   const readMode = useEditorStore((s) => s.readMode)
   const autoSnapshot = useSettingsStore((s) => s.autoSnapshot)
@@ -222,6 +232,26 @@ export function EditorPage() {
     if (!id) return
     setZoom(getNotebookZoom(id, defaultZoom))
   }, [id, defaultZoom])
+
+  useEffect(() => {
+    if (!id) return
+    const tabId = lockTabIdRef.current
+    const applyLockState = (blocked: boolean) => {
+      setDocLockBlocked(blocked)
+      if (blocked) useEditorStore.setState({ readMode: true })
+    }
+    applyLockState(!tryAcquireDocumentLock(id, tabId))
+    const unsubStorage = subscribeDocumentLock(id, tabId, applyLockState)
+    const interval = window.setInterval(() => {
+      refreshDocumentLock(id, tabId)
+      applyLockState(isDocumentLockedByOther(id, tabId))
+    }, 5000)
+    return () => {
+      window.clearInterval(interval)
+      unsubStorage()
+      releaseDocumentLock(id, tabId)
+    }
+  }, [id])
 
   useEffect(() => {
     if (!id) return
@@ -611,6 +641,15 @@ export function EditorPage() {
       className={`h-full flex flex-col print:bg-white ${presentation ? 'bg-gray-950' : 'bg-forma-bg'}`}
     >
       {!presentation && !focusMode && <DocumentTabs />}
+      {docLockBlocked && !presentation && (
+        <div
+          data-testid="document-lock-banner"
+          className="shrink-0 text-center text-xs py-1.5 bg-amber-100 text-amber-950 dark:bg-amber-950 dark:text-amber-100 border-b border-amber-300/60"
+          role="status"
+        >
+          Ce carnet est ouvert dans un autre onglet — édition désactivée (lecture seule)
+        </div>
+      )}
       {!presentation && !focusMode && (
         <header className="flex items-center gap-2 px-4 py-2 bg-forma-surface border-b border-forma-border shrink-0 flex-wrap print-hide">
           <Link to="/" className="text-sm text-forma-muted hover:text-forma-accent shrink-0">
@@ -844,6 +883,7 @@ export function EditorPage() {
       {!presentation && !focusMode && (
         <div className="print-hide overflow-x-auto shrink-0 border-b border-forma-border">
         <Toolbar
+          readOnlyLocked={docLockBlocked}
           canUndo={canUndo}
           canRedo={canRedo}
           onUndo={() => canvasRef.current?.undo()}

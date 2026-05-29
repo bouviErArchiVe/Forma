@@ -263,49 +263,76 @@ function drawTape(ctx: CanvasRenderingContext2D, t: TapeElement): void {
   ctx.restore()
 }
 
+function drawRotatedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  rotation: number | undefined,
+  draw: () => void,
+): void {
+  ctx.save()
+  if (rotation) {
+    const cx = x + w / 2
+    const cy = y + h / 2
+    ctx.translate(cx, cy)
+    ctx.rotate(rotation)
+    ctx.translate(-cx, -cy)
+  }
+  draw()
+  ctx.restore()
+}
+
 function drawStickerEl(ctx: CanvasRenderingContext2D, st: StickerElement): void {
   const def = getSticker(st.stickerId)
   if (!def) return
-  ctx.save()
-  ctx.font = `${st.size}px Segoe UI Emoji, Apple Color Emoji, sans-serif`
-  ctx.textAlign = 'left'
-  ctx.textBaseline = 'top'
-  ctx.fillText(def.emoji, st.x, st.y)
-  ctx.restore()
+  drawRotatedRect(ctx, st.x, st.y, st.size, st.size, st.rotation, () => {
+    ctx.font = `${st.size}px Segoe UI Emoji, Apple Color Emoji, sans-serif`
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'top'
+    ctx.fillText(def.emoji, st.x, st.y)
+  })
 }
 
 function drawImageEl(ctx: CanvasRenderingContext2D, img: ImageElement): void {
   const src = img.dataUrl
   if (!src) return
+  const drawAt = (image: CanvasImageSource) => {
+    drawRotatedRect(ctx, img.x, img.y, img.width, img.height, img.rotation, () => {
+      ctx.drawImage(image, img.x, img.y, img.width, img.height)
+    })
+  }
   const image = imageCache.get(src)
   if (image?.complete) {
-    ctx.drawImage(image, img.x, img.y, img.width, img.height)
+    drawAt(image)
   } else if (image) {
-    image.onload = () => ctx.drawImage(image, img.x, img.y, img.width, img.height)
+    image.onload = () => drawAt(image)
   } else {
     const el = new Image()
     el.src = src
     imageCache.set(src, el)
-    el.onload = () => ctx.drawImage(el, img.x, img.y, img.width, img.height)
+    el.onload = () => drawAt(el)
   }
 }
 
 function drawTextPreview(ctx: CanvasRenderingContext2D, t: TextElement): void {
-  ctx.save()
-  ctx.fillStyle = t.color
-  ctx.font = `${t.fontSize}px Segoe UI, sans-serif`
-  ctx.textAlign = t.align
-  const lines = t.content.split('\n')
-  let y = t.y + t.fontSize
-  const lineH = t.fontSize * 1.35
-  for (const line of lines) {
-    let x = t.x
-    if (t.align === 'center') x = t.x + t.width / 2
-    if (t.align === 'right') x = t.x + t.width
-    ctx.fillText(line, x, y, t.width)
-    y += lineH
-  }
-  ctx.restore()
+  const h = Math.max(t.height, 40)
+  drawRotatedRect(ctx, t.x, t.y, t.width, h, t.rotation, () => {
+    ctx.fillStyle = t.color
+    ctx.font = `${t.fontSize}px Segoe UI, sans-serif`
+    ctx.textAlign = t.align
+    const lines = t.content.split('\n')
+    let y = t.y + t.fontSize
+    const lineH = t.fontSize * 1.35
+    for (const line of lines) {
+      let x = t.x
+      if (t.align === 'center') x = t.x + t.width / 2
+      if (t.align === 'right') x = t.x + t.width
+      ctx.fillText(line, x, y, t.width)
+      y += lineH
+    }
+  })
 }
 
 const imageCache = new Map<string, HTMLImageElement>()

@@ -492,6 +492,7 @@ export function SettingsPage() {
         </button>
         <input
           ref={fileRef}
+          data-testid="import-replace-input"
           type="file"
           accept=".zip,.json,application/zip"
           className="hidden"
@@ -518,6 +519,7 @@ export function SettingsPage() {
         />
         <input
           ref={mergeFileRef}
+          data-testid="import-merge-input"
           type="file"
           accept=".zip,.json,application/zip"
           className="hidden"

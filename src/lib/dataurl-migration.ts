@@ -5,7 +5,7 @@
  */
 
 import type { Transaction } from 'dexie'
-import type { Page } from '../types'
+import type { Notebook, Page } from '../types'
 import { normalizePage } from '../types'
 
 /** Taille de lot par passe (upgrade bloquant — plus grand que l’idle UI). */
@@ -15,6 +15,10 @@ const MIN_INLINE_BYTES = 4096
 
 export interface DataUrlMigrationResult {
   pagesMigrated: number
+}
+
+export interface PdfSourceMigrationResult {
+  notebooksMigrated: number
 }
 
 function dataUrlByteSize(dataUrl: string): number {
@@ -96,6 +100,34 @@ export async function runDexieDataUrlMigrationTx(tx: Transaction): Promise<DataU
     }
   }
   return { pagesMigrated }
+}
+
+/** Dexie v7 : externalise `notebook.pdfSourceDataUrl` inline vers assets. */
+export async function runDexiePdfSourceMigrationTx(
+  tx: Transaction,
+): Promise<PdfSourceMigrationResult> {
+  let notebooksMigrated = 0
+  const notebooks = (await tx.table('notebooks').toArray()) as Notebook[]
+  for (const nb of notebooks) {
+    if (nb.deletedAt) continue
+    if (!nb.pdfSourceDataUrl?.startsWith('data:') || nb.pdfSourceAssetId) continue
+    const blob = dataUrlToBlob(nb.pdfSourceDataUrl)
+    const assetId = `${nb.id}-pdf-source`
+    await tx.table('assets').put({
+      id: assetId,
+      notebookId: nb.id,
+      blob,
+      mimeType: blob.type || 'application/pdf',
+      createdAt: Date.now(),
+    })
+    await tx.table('notebooks').put({
+      ...nb,
+      pdfSourceAssetId: assetId,
+      pdfSourceDataUrl: undefined,
+    })
+    notebooksMigrated++
+  }
+  return { notebooksMigrated }
 }
 
 /**

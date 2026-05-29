@@ -27,6 +27,8 @@ interface ToolbarProps {
   onCustomize?: () => void
   onRevealAllTapes?: () => void
   onHideAllTapes?: () => void
+  /** Verrou multi-onglets : force lecture seule, désactive bascule édition. */
+  readOnlyLocked?: boolean
 }
 
 export function Toolbar({
@@ -40,6 +42,7 @@ export function Toolbar({
   onCustomize,
   onRevealAllTapes,
   onHideAllTapes,
+  readOnlyLocked = false,
 }: ToolbarProps) {
   const fileRef = useRef<HTMLInputElement>(null)
   const {
@@ -87,12 +90,17 @@ export function Toolbar({
     <div className="flex items-center gap-2 px-3 py-2 bg-forma-surface border-b border-forma-border flex-wrap shrink-0">
       <button
         type="button"
-        onClick={toggleReadMode}
+        onClick={() => {
+          if (readOnlyLocked) return
+          toggleReadMode()
+        }}
+        disabled={readOnlyLocked}
+        title={readOnlyLocked ? 'Ouvert dans un autre onglet — lecture seule' : undefined}
         className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
-          readMode ? 'bg-forma-accent text-white' : 'bg-gray-100 text-forma-muted'
-        }`}
+          readMode || readOnlyLocked ? 'bg-forma-accent text-white' : 'bg-gray-100 text-forma-muted'
+        } ${readOnlyLocked ? 'opacity-90 cursor-not-allowed' : ''}`}
       >
-        {readMode ? 'Lecture' : 'Édition'}
+        {readOnlyLocked ? 'Lecture (verrouillée)' : readMode ? 'Lecture' : 'Édition'}
       </button>
       {readMode && onRevealAllTapes && (
         <>
