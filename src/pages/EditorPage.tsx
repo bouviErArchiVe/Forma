@@ -18,6 +18,7 @@ import { computePrefetchIndices } from '../lib/continuous-viewport'
 import { prefetchPdfPages } from '../lib/pdf-page-render'
 import { Toolbar } from '../components/editor/Toolbar'
 import { ToolbarCustomize } from '../components/editor/ToolbarCustomize'
+import { ToolsPanel, ToolsToolbarButtons } from '../components/tools/ToolsPanel'
 import { useCanvasPanZoom } from '../hooks/useCanvasPanZoom'
 import { usePinchZoom } from '../hooks/usePinchZoom'
 import { useEditorShortcuts } from '../hooks/useEditorShortcuts'
@@ -829,6 +830,7 @@ export function EditorPage() {
           >
             📐
           </button>
+          <ToolsToolbarButtons className="hidden md:flex" />
           <button
             type="button"
             onClick={() =>
@@ -1144,6 +1146,7 @@ export function EditorPage() {
         />
       )}
       {showPerfHud && <PerfHud />}
+      <ToolsPanel />
     </div>
   )
 }

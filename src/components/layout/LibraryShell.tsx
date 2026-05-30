@@ -25,6 +25,7 @@ const NAV_ITEMS: { id: LibrarySidebarTab; label: string; emoji: string }[] = [
 ]
 
 const LINK_ITEMS = [
+  { label: 'Formules', path: '/formulas', emoji: '📐' },
   { label: 'Modèles', path: '/templates', emoji: '📋' },
   { label: 'Paramètres', path: '/settings', emoji: '⚙️' },
   { label: 'Corbeille', path: '/trash', emoji: '🗑️' },

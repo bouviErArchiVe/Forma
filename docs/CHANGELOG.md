@@ -1,5 +1,16 @@
 # Changelog Forma
 
+## 0.29.0 — Pack 3 outils : calc, convertisseur, traduction, dico, formules
+
+### Outils contextuels (legacy ArchNote → Forma)
+- Calculatrice drawer : scientifique + outils architecture (surface, pente, échelle, unités…)
+- Convertisseur unités longueur / surface / volume + échelles de dessin
+- Widget traduction EN↔FR (MyMemory / LibreTranslate / API / mode démo)
+- FormaDico : dictionnaire Wiktionary + cache local
+- Catalogue **67 formules** architecture (`/formulas`) : Blondel, pentes, structures, accessibilité…
+- Barre outils éditeur : 🧮 🌐 📖 📐 + panneau latéral
+- Lien Formules dans sidebar bibliothèque
+
 ## 0.28.0 — Pack 2 bibliothèque : matières, tableau, chronologie
 
 ### Bibliothèque (legacy ArchNote → Forma)

@@ -16,6 +16,7 @@ const PlansPage = lazy(() => import('./pages/PlansPage').then((m) => ({ default:
 const ShareViewPage = lazy(() => import('./pages/ShareViewPage').then((m) => ({ default: m.ShareViewPage })))
 const TemplatesPage = lazy(() => import('./pages/TemplatesPage').then((m) => ({ default: m.TemplatesPage })))
 const TrashPage = lazy(() => import('./pages/TrashPage').then((m) => ({ default: m.TrashPage })))
+const FormulasPage = lazy(() => import('./pages/FormulasPage').then((m) => ({ default: m.FormulasPage })))
 
 function PageFallback() {
   return (
@@ -51,6 +52,7 @@ export default function App() {
             <Route path="/share/:token" element={<ShareViewPage />} />
             <Route path="/plans" element={<PlansPage />} />
             <Route path="/trash" element={<TrashPage />} />
+            <Route path="/formulas" element={<FormulasPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
