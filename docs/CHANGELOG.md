@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.47.0 — Pack 16 FormaDico : favoris hors-ligne
+
+### Favoris épinglés (disponibles sans connexion)
+- Le cache du dictionnaire est limité à 120 entrées (éviction LRU) : un favori consulté il y a longtemps pouvait disparaître et devenir introuvable hors-ligne
+- Les favoris épinglent désormais leur définition dans le cache : exemptés de l'éviction, ils restent consultables hors connexion
+- Un nouveau lookup ne désépingle plus un favori (épingle conservée)
+- Indicateur « ● hors-ligne » dans le panneau et mention « hors-ligne » sur la liste des favoris
+- 100 % local, aucune dépendance ajoutée
+
 ## 0.46.0 — Pack 15 Instantanés portables : export/import fichier
 
 ### Instantanés cloud → fichier unique (.formasnap.zip)

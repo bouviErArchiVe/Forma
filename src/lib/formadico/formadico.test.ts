@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getCachedEntry, setCachedEntry, readDicoCache } from './cache'
+import {
+  getCachedEntry,
+  setCachedEntry,
+  readDicoCache,
+  pinCachedEntry,
+  unpinCachedEntry,
+} from './cache'
 import { FD_MAX_CACHE, type DicoEntry } from './constants'
 import { useFormaDicoStore } from '../../stores/formadicoStore'
 
@@ -31,6 +37,29 @@ describe('formadico cache', () => {
     expect(getCachedEntry('w0', 'fr')).toBeNull()
     expect(getCachedEntry(`w${FD_MAX_CACHE + 4}`, 'fr')).not.toBeNull()
   })
+
+  it('keeps pinned (favorite) entries despite eviction pressure', () => {
+    setCachedEntry('béton', 'fr', makeEntry('béton'))
+    pinCachedEntry('béton', 'fr')
+    for (let i = 0; i < FD_MAX_CACHE + 20; i += 1) {
+      setCachedEntry(`w${i}`, 'fr', makeEntry(`w${i}`))
+    }
+    expect(getCachedEntry('béton', 'fr')).not.toBeNull()
+  })
+
+  it('preserves the pinned flag across a fresh lookup write', () => {
+    setCachedEntry('mur', 'fr', makeEntry('mur'))
+    pinCachedEntry('mur', 'fr')
+    setCachedEntry('mur', 'fr', makeEntry('mur'))
+    expect(readDicoCache()['fr:mur']?.pinned).toBe(true)
+  })
+
+  it('unpins across languages', () => {
+    setCachedEntry('wall', 'en', makeEntry('wall'))
+    pinCachedEntry('wall', 'en')
+    unpinCachedEntry('wall')
+    expect(readDicoCache()['en:wall']?.pinned).toBe(false)
+  })
 })
 
 describe('formadico store', () => {
@@ -56,5 +85,13 @@ describe('formadico store', () => {
     useFormaDicoStore.getState().setPendingWord('façade')
     expect(useFormaDicoStore.getState().consumePendingWord()).toBe('façade')
     expect(useFormaDicoStore.getState().consumePendingWord()).toBeNull()
+  })
+
+  it('pins the cached entry when favoriting and unpins when removing', () => {
+    setCachedEntry('béton', 'fr', makeEntry('béton'))
+    useFormaDicoStore.getState().toggleFavorite('béton')
+    expect(readDicoCache()['fr:béton']?.pinned).toBe(true)
+    useFormaDicoStore.getState().toggleFavorite('béton')
+    expect(readDicoCache()['fr:béton']?.pinned).toBe(false)
   })
 })

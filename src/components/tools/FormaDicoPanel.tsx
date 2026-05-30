@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { GlassPanel } from '../ui/GlassPanel'
 import { GlassButton } from '../ui/GlassButton'
 import { FD_LANGS } from '../../lib/formadico/constants'
@@ -53,6 +53,20 @@ export function FormaDicoPanel({
 
   const { query, setQuery, entry, suggestions, loading, error, search, fetchSuggestions } =
     useFormaDicoLookup(initialWord)
+
+  const [online, setOnline] = useState(() =>
+    typeof navigator === 'undefined' ? true : navigator.onLine,
+  )
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine)
+    window.addEventListener('online', update)
+    window.addEventListener('offline', update)
+    return () => {
+      window.removeEventListener('online', update)
+      window.removeEventListener('offline', update)
+    }
+  }, [])
 
   useEffect(() => {
     const pending = useFormaDicoStore.getState().consumePendingWord()
@@ -109,6 +123,11 @@ export function FormaDicoPanel({
           Mode scolaire
         </label>
         {entry?.fromCache && <span>📦 cache</span>}
+        {!online && (
+          <span className="text-amber-600" title="Les favoris épinglés restent disponibles">
+            ● hors-ligne
+          </span>
+        )}
         {entry?.source && <span>Source : {entry.source}</span>}
         {onClose && (
           <button type="button" className="ml-auto text-forma-accent" onClick={onClose}>
@@ -187,7 +206,9 @@ export function FormaDicoPanel({
 
       {(!compact || !entry?.found) && favorites.length > 0 && (
         <div className="mt-3">
-          <div className="text-xs text-forma-muted mb-1">★ Favoris</div>
+          <div className="text-xs text-forma-muted mb-1" title="Disponibles hors-ligne">
+            ★ Favoris <span className="opacity-60">· hors-ligne</span>
+          </div>
           <div className="flex flex-wrap gap-1">
             {favorites.slice(0, compact ? 12 : 60).map((w) => (
               <button

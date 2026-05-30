@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { FD_MAX_FAVORITES, FD_MAX_HISTORY } from '../lib/formadico/constants'
+import { pinCachedEntry, unpinCachedEntry } from '../lib/formadico/cache'
 
 interface FormaDicoState {
   lang: string
@@ -34,6 +35,9 @@ export const useFormaDicoStore = create<FormaDicoState>()(
           const has = s.favorites.includes(w)
           let next = has ? s.favorites.filter((x) => x !== w) : [...s.favorites, w]
           if (next.length > FD_MAX_FAVORITES) next = next.slice(-FD_MAX_FAVORITES)
+          // Épingle l'entrée en cache (favori → disponible hors-ligne) ou la désépingle.
+          if (has) unpinCachedEntry(w)
+          else pinCachedEntry(w, s.lang)
           return { favorites: next }
         }),
       isFavorite: (word) => get().favorites.includes(word.toLowerCase()),
