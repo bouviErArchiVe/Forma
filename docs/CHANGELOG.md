@@ -1,5 +1,15 @@
 # Changelog Forma
 
+## 0.44.0 — Pack 13 Sauvegarde des modules : export/import complet
+
+### Sauvegarde des modules (.formamods.zip)
+- La sauvegarde `.forma` ne couvrait que carnets/pages/assets ; les modules étaient perdus à la restauration
+- Nouveau bundle `.formamods.zip` : FormaDoc, FormaTab, FormaPresent, FormatCal, FormaReview, FormaCombine, Moodboard, FormaLibrary + réglages + préférences locales
+- Blobs inclus : ressources FormaLibrary (stockées en ligne) et images Moodboard (table `assets`)
+- Préférences localStorage sauvegardées (Mode Focus, FormaDico)
+- Import fusion (par défaut, conserve les ids existants) ou remplacement ; 100 % local
+- Boutons d'export/import dans Paramètres › Sauvegarde des modules ; aucune dépendance ajoutée
+
 ## 0.43.0 — Pack 12 FormaLibrary : bibliothèque de ressources locale
 
 ### FormaLibrary (legacy ArchNote → Forma)

@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { importBackupFile } from '../lib/backup'
+import {
+  exportModulesBundle,
+  importModulesBundle,
+  type ModulesBackupCounts,
+} from '../lib/modules-backup'
 import { restoreFromCloudSlot } from '../lib/cloud-restore'
 import { backfillMissingPdfText } from '../lib/pdf-backfill'
 import { indexAllInk } from '../lib/handwriting-index'
@@ -35,6 +40,8 @@ export function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const mergeFileRef = useRef<HTMLInputElement>(null)
   const shareImportRef = useRef<HTMLInputElement>(null)
+  const modulesFileRef = useRef<HTMLInputElement>(null)
+  const [modulesMsg, setModulesMsg] = useState('')
   const [importMsg, setImportMsg] = useState('')
   const [syncMsg, setSyncMsg] = useState('')
   const [indexMsg, setIndexMsg] = useState('')
@@ -600,6 +607,72 @@ export function SettingsPage() {
           }}
         />
         {importMsg && <p className="text-sm text-green-700 dark:text-green-400">{importMsg}</p>}
+      </section>
+
+      <section className="mb-8 space-y-3">
+        <h2 className="text-sm font-semibold text-forma-muted uppercase">Sauvegarde des modules</h2>
+        <p className="text-xs text-forma-muted">
+          Exporte les données des modules non couvertes par la sauvegarde .forma : FormaDoc, FormaTab,
+          FormaPresent, FormatCal, FormaReview, FormaCombine, Moodboard, FormaLibrary, ainsi que les
+          réglages et préférences (.formamods.zip). L’import fusionne par défaut (les éléments dont
+          l’identifiant existe déjà sont conservés).
+        </p>
+        <button
+          type="button"
+          data-testid="export-modules"
+          onClick={async () => {
+            setModulesMsg('Export modules…')
+            try {
+              const blob = await exportModulesBundle()
+              const url = URL.createObjectURL(blob)
+              const a = document.createElement('a')
+              a.href = url
+              a.download = `forma-modules-${new Date().toISOString().slice(0, 10)}.formamods.zip`
+              a.click()
+              URL.revokeObjectURL(url)
+              setModulesMsg('Export modules téléchargé.')
+            } catch (err) {
+              setModulesMsg(err instanceof Error ? err.message : 'Export modules échoué')
+            }
+          }}
+          className="w-full py-2.5 bg-forma-accent text-white rounded-lg"
+        >
+          Exporter les modules (fichier)
+        </button>
+        <button
+          type="button"
+          onClick={() => modulesFileRef.current?.click()}
+          className="w-full py-2.5 border border-forma-accent/40 text-forma-accent rounded-lg dark:border-forma-accent/50"
+        >
+          Importer les modules (fusionner)
+        </button>
+        <input
+          ref={modulesFileRef}
+          data-testid="import-modules-input"
+          type="file"
+          accept=".zip,.formamods,application/zip"
+          className="hidden"
+          onChange={async (e) => {
+            const f = e.target.files?.[0]
+            if (!f) return
+            setModulesMsg('Import modules…')
+            try {
+              const c: ModulesBackupCounts = await importModulesBundle(f, 'merge')
+              setModulesMsg(
+                `Modules importés : ${c.formaDocuments} doc, ${c.formaSheets} feuille(s), ` +
+                  `${c.formaDecks} présentation(s), ${c.formaCalEvents} événement(s), ` +
+                  `${c.formaReviewSessions} revue(s), ${c.formaCombineProjects} combinaison(s), ` +
+                  `${c.moodboardBoards} moodboard(s), ${c.libraryItems} ressource(s). Rechargez la page.`,
+              )
+            } catch (err) {
+              setModulesMsg(err instanceof Error ? err.message : 'Erreur import modules')
+            }
+            e.target.value = ''
+          }}
+        />
+        {modulesMsg && (
+          <p className="text-sm text-green-700 dark:text-green-400">{modulesMsg}</p>
+        )}
       </section>
 
       <section className="mb-8 space-y-3">
