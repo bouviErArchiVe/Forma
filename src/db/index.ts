@@ -1,6 +1,7 @@
 import Dexie, { type Table } from 'dexie'
 import type { StoredAsset } from '../lib/assets'
 import type { LibraryFolder, LibraryItem } from '../lib/formalibrary/model'
+import type { CloudSnapshotRow } from '../lib/cloud-snapshots'
 import { runDexieDataUrlMigrationTx, runDexiePdfSourceMigrationTx } from '../lib/dataurl-migration'
 import type {
   AudioRecording,
@@ -38,6 +39,7 @@ import { emptyPageFields, normalizePage } from '../types'
  * v13 : formaReviewSessions (FormaReview annotation sessions)
  * v14 : formaCombineProjects (FormaCombine merge projects)
  * v15 : libraryFolders, libraryItems (FormaLibrary — blobs inline dans la row)
+ * v16 : cloudSnapshots (instantanés cloud locaux — blobs .forma + .formamods)
  *
  * Champs temporels (gaps connus, non bloquants pour l’index Dexie) :
  * - Page : id ✓ — pas de createdAt/updatedAt (ordre via `order`, pas d’historique row)
@@ -65,6 +67,7 @@ export class FormaDatabase extends Dexie {
   formaCombineProjects!: Table<FormaCombineProject>
   libraryFolders!: Table<LibraryFolder>
   libraryItems!: Table<LibraryItem>
+  cloudSnapshots!: Table<CloudSnapshotRow>
 
   constructor() {
     super('forma')
@@ -288,11 +291,33 @@ export class FormaDatabase extends Dexie {
       libraryFolders: 'id, parentId, updatedAt',
       libraryItems: 'id, folderId, category, updatedAt',
     })
+    this.version(16).stores({
+      folders: 'id, parentId, name, updatedAt',
+      notebooks: 'id, folderId, name, updatedAt, favorite, deletedAt, pdfSourceAssetId',
+      pages: 'id, notebookId, order, pdfAssetId',
+      audio: 'id, notebookId, createdAt',
+      studyCards: 'id, notebookId, nextReview',
+      shareLinks: 'id, notebookId, token',
+      pageSnapshots: 'id, pageId, createdAt',
+      assets: 'id, notebookId, createdAt',
+      settings: 'key',
+      moodboardBoards: 'id, archived, updatedAt',
+      moodboardImages: 'id, boardId, starred, zIndex, updatedAt',
+      formaDocuments: 'id, name, updatedAt',
+      formaSheets: 'id, name, updatedAt',
+      formaDecks: 'id, title, template, updatedAt',
+      formaCalEvents: 'id, startAt, category, status, updatedAt',
+      formaReviewSessions: 'id, title, mode, updatedAt',
+      formaCombineProjects: 'id, name, updatedAt',
+      libraryFolders: 'id, parentId, updatedAt',
+      libraryItems: 'id, folderId, category, updatedAt',
+      cloudSnapshots: 'id, createdAt',
+    })
   }
 }
 
 /** Version Dexie courante (tests / diagnostics). */
-export const FORMA_DB_VERSION = 15
+export const FORMA_DB_VERSION = 16
 
 export const db = new FormaDatabase()
 

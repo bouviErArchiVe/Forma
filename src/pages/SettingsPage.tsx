@@ -22,12 +22,13 @@ import {
   type BrowserStorageEstimate,
 } from '../lib/storage-quota'
 import { shareUrl } from '../services/share'
+import { getLastBackupTime, runManualBackupDownload, saveBackupToCloudSlot } from '../services/sync'
 import {
-  getLastBackupTime,
-  runAutoBackupIfDue,
-  runManualBackupDownload,
-  saveBackupToCloudSlot,
-} from '../services/sync'
+  deleteCloudSnapshot,
+  listCloudSnapshots,
+  restoreCloudSnapshot,
+  type CloudSnapshotMeta,
+} from '../lib/cloud-snapshots'
 import { useSettingsStore } from '../stores/settingsStore'
 import { FORMA_THEMES } from '../theme/themes'
 import { TEMPLATE_LABELS } from '../lib/templates'
@@ -42,6 +43,7 @@ export function SettingsPage() {
   const shareImportRef = useRef<HTMLInputElement>(null)
   const modulesFileRef = useRef<HTMLInputElement>(null)
   const [modulesMsg, setModulesMsg] = useState('')
+  const [snapshotsNonce, setSnapshotsNonce] = useState(0)
   const [importMsg, setImportMsg] = useState('')
   const [syncMsg, setSyncMsg] = useState('')
   const [indexMsg, setIndexMsg] = useState('')
@@ -678,7 +680,8 @@ export function SettingsPage() {
       <section className="mb-8 space-y-3">
         <h2 className="text-sm font-semibold text-forma-muted uppercase">Sync & sauvegarde auto</h2>
         <p className="text-xs text-forma-muted">
-          La sauvegarde automatique écrit dans le slot cloud local (silencieux, sans boîte de dialogue).
+          Les instantanés cloud locaux regroupent carnets (.forma) et modules (.formamods) dans
+          IndexedDB (sans limite de taille). La sauvegarde automatique en crée un, silencieusement.
         </p>
         <label className="block text-sm">
           Fréquence
@@ -699,27 +702,20 @@ export function SettingsPage() {
         )}
         <button
           type="button"
-          className="w-full py-2 border rounded-lg dark:border-gray-600"
+          data-testid="cloud-snapshot-now"
+          className="w-full py-2.5 bg-forma-accent text-white rounded-lg"
           onClick={async () => {
-            const ok = await runAutoBackupIfDue()
-            setSyncMsg(ok ? 'Slot cloud mis à jour.' : 'Pas encore due ou échec.')
-          }}
-        >
-          Sauvegarder maintenant
-        </button>
-        <button
-          type="button"
-          className="w-full py-2 border rounded-lg dark:border-gray-600 text-sm"
-          onClick={async () => {
+            setSyncMsg('Création de l’instantané…')
             try {
               await saveBackupToCloudSlot()
-              setSyncMsg('Copie locale « cloud slot » enregistrée (navigateur).')
+              setSyncMsg('Instantané cloud local créé (carnets + modules).')
+              setSnapshotsNonce((n) => n + 1)
             } catch (err) {
               setSyncMsg(err instanceof Error ? err.message : 'Erreur')
             }
           }}
         >
-          Copie cloud locale (5 Mo max)
+          Créer un instantané maintenant
         </button>
         <button
           type="button"
@@ -763,6 +759,7 @@ export function SettingsPage() {
           Restaurer depuis cloud (fusionner)
         </button>
         {syncMsg && <p className="text-sm text-forma-accent">{syncMsg}</p>}
+        <CloudSnapshotsPanel nonce={snapshotsNonce} onChange={() => setSnapshotsNonce((n) => n + 1)} />
         <SyncQueuePanel />
       </section>
 
@@ -882,6 +879,78 @@ function PwaSettingsSection() {
       </div>
       {checkMsg && <p className="text-xs text-forma-muted">{checkMsg}</p>}
     </section>
+  )
+}
+
+function CloudSnapshotsPanel({ nonce, onChange }: { nonce: number; onChange: () => void }) {
+  const [snapshots, setSnapshots] = useState<CloudSnapshotMeta[]>([])
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState('')
+
+  useEffect(() => {
+    let alive = true
+    listCloudSnapshots().then((list) => {
+      if (alive) setSnapshots(list)
+    })
+    return () => {
+      alive = false
+    }
+  }, [nonce])
+
+  return (
+    <div className="mt-3 p-3 rounded-lg border border-forma-border bg-forma-surface/40 text-xs space-y-2">
+      <p className="font-medium text-forma-muted">
+        Instantanés cloud locaux ({snapshots.length})
+      </p>
+      {snapshots.length === 0 && <p className="text-forma-muted">Aucun instantané enregistré.</p>}
+      {snapshots.map((s) => (
+        <div
+          key={s.id}
+          className="flex items-center justify-between gap-2 py-1 border-b border-forma-border/40 last:border-0"
+        >
+          <div className="min-w-0">
+            <p className="truncate text-forma-text">{s.label}</p>
+            <p className="text-forma-muted">
+              {s.notebooks} carnet(s), {s.pages} page(s){s.hasModules ? ' · modules' : ''} ·{' '}
+              {formatBytes(s.size)}
+            </p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              type="button"
+              disabled={busy}
+              className="text-forma-accent disabled:opacity-50"
+              onClick={async () => {
+                setBusy(true)
+                setMsg('Restauration (fusion)…')
+                try {
+                  const r = await restoreCloudSnapshot(s.id, { mode: 'merge', confirmed: true })
+                  setMsg(`Fusionné : ${r.library.notebooks} carnet(s)` + (r.modules ? ' + modules' : ''))
+                } catch (err) {
+                  setMsg(err instanceof Error ? err.message : 'Erreur restauration')
+                } finally {
+                  setBusy(false)
+                }
+              }}
+            >
+              Restaurer
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              className="text-red-600 disabled:opacity-50"
+              onClick={async () => {
+                await deleteCloudSnapshot(s.id)
+                onChange()
+              }}
+            >
+              Suppr.
+            </button>
+          </div>
+        </div>
+      ))}
+      {msg && <p className="text-forma-accent">{msg}</p>}
+    </div>
   )
 }
 

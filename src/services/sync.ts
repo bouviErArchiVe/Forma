@@ -1,4 +1,5 @@
-import { downloadBackup, exportFullBackup } from '../lib/backup'
+import { downloadBackup } from '../lib/backup'
+import { saveCloudSnapshot } from '../lib/cloud-snapshots'
 
 const AUTO_KEY = 'forma-auto-backup'
 import type { SyncInterval } from '../types'
@@ -51,22 +52,11 @@ export async function runManualBackupDownload(options?: {
   }
 }
 
-export async function saveBackupToCloudSlot(): Promise<void> {
-  const blob = await exportFullBackup()
-  const reader = new FileReader()
-  const dataUrl = await new Promise<string>((res, rej) => {
-    reader.onload = () => res(reader.result as string)
-    reader.onerror = rej
-    reader.readAsDataURL(blob)
-  })
-  try {
-    localStorage.setItem('forma-cloud-slot', dataUrl.slice(0, 5000000))
-    markBackupDone()
-  } catch {
-    throw new Error('Sauvegarde cloud locale trop volumineuse (>5 Mo slot)')
-  }
-}
-
-export function loadCloudSlot(): string | null {
-  return localStorage.getItem('forma-cloud-slot')
+/**
+ * Sauvegarde dans le slot cloud local. Désormais un instantané IndexedDB
+ * (carnets + modules), sans le plafond 5 Mo de l'ancien slot localStorage.
+ */
+export async function saveBackupToCloudSlot(label?: string): Promise<void> {
+  await saveCloudSnapshot(label)
+  markBackupDone()
 }

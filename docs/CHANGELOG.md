@@ -1,5 +1,16 @@
 # Changelog Forma
 
+## 0.45.0 — Pack 14 FormaCloud local : instantanés IndexedDB fiables
+
+### Slot cloud local → instantanés IndexedDB
+- L'ancien « slot cloud » localStorage plafonnait à 5 Mo et tronquait silencieusement les grosses sauvegardes (restauration corrompue)
+- Nouveau stockage `cloudSnapshots` dans IndexedDB (schéma v16) : aucune limite de taille
+- Chaque instantané regroupe **carnets (.forma) + modules (.formamods)** — la sauvegarde auto couvre enfin tous les modules
+- Historique local des 8 derniers instantanés (purge automatique des plus anciens)
+- Paramètres › Sync : « Créer un instantané maintenant », liste des instantanés avec restauration (fusion) et suppression par entrée
+- Migration transparente de l'ancien slot localStorage en instantané, puis nettoyage
+- 100 % local, aucune dépendance ajoutée
+
 ## 0.44.0 — Pack 13 Sauvegarde des modules : export/import complet
 
 ### Sauvegarde des modules (.formamods.zip)

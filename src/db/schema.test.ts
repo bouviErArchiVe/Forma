@@ -130,6 +130,7 @@ describe('Dexie schema', () => {
         'formaCombineProjects',
         'libraryFolders',
         'libraryItems',
+        'cloudSnapshots',
         'notebooks',
         'pages',
         'pageSnapshots',

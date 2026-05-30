@@ -1,6 +1,6 @@
-import { importBackupFile, type ImportBackupMode, type ImportBackupResult } from './backup'
+import { type ImportBackupMode, type ImportBackupResult } from './backup'
 import { confirm } from '../stores/confirmStore'
-import { loadCloudSlot } from '../services/sync'
+import { latestCloudSnapshot, restoreCloudSnapshot } from './cloud-snapshots'
 
 export interface RestoreCloudSlotOptions {
   mode?: ImportBackupMode
@@ -35,10 +35,8 @@ export async function restoreFromCloudSlot(
     }
   }
 
-  const dataUrl = loadCloudSlot()
-  if (!dataUrl) throw new Error('Aucune copie cloud locale enregistrée')
-  const res = await fetch(dataUrl)
-  const blob = await res.blob()
-  const file = new File([blob], 'forma-cloud-restore.forma.zip', { type: 'application/zip' })
-  return importBackupFile(file, { confirmed: true, mode })
+  const latest = await latestCloudSnapshot()
+  if (!latest) throw new Error('Aucune copie cloud locale enregistrée')
+  const result = await restoreCloudSnapshot(latest.id, { mode, confirmed: true })
+  return result.library
 }
