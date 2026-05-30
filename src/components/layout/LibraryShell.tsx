@@ -29,6 +29,7 @@ const LINK_ITEMS = [
   { label: 'FormaAI', path: '/formaai', emoji: '✦' },
   { label: 'Traduction', path: '/translate', emoji: '🌐' },
   { label: 'FormaDico', path: '/formadico', emoji: '📖' },
+  { label: 'FormaLibrary', path: '/formalibrary', emoji: '🗂' },
   { label: 'FormaCombine', path: '/formacombine', emoji: '📎' },
   { label: 'FormaReview', path: '/formareview', emoji: '💬' },
   { label: 'FormatCal', path: '/formatcal', emoji: '📅' },

@@ -1,5 +1,15 @@
 # Changelog Forma
 
+## 0.43.0 — Pack 12 FormaLibrary : bibliothèque de ressources locale
+
+### FormaLibrary (legacy ArchNote → Forma)
+- Page `/formalibrary` : dossiers, presets (CNB, CCQ, détails, matériaux, textures, références), lien sidebar
+- Import image / PDF / SVG / texte (glisser-déposer ou bouton) avec classement automatique par nom/contenu
+- Stockage 100 % local : métadonnées + blobs dans Dexie (tables `libraryFolders`, `libraryItems`, schéma v15)
+- Recherche pondérée, filtres par type/favoris, tri (modifié/créé/nom/type), surlignage des résultats
+- Aperçu (image, PDF, texte), favoris, suppression, téléchargement ; liens vers FormaDoc / FormaTab existants
+- Extraction de texte PDF locale via PDF.js ; aucune dépendance ajoutée
+
 ## 0.42.0 — Pack 11 Mode Focus : minuteur Pomodoro flottant
 
 ### Mode Focus (legacy ArchNote → Forma)
