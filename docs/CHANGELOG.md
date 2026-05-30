@@ -1,5 +1,13 @@
 # Changelog Forma
 
+## 0.34.0 — Pack 5 FormatCal : calendrier Dexie et vues agenda
+
+### FormatCal (legacy ArchNote → Forma)
+- Dexie v12 : table `formaCalEvents` (événements, catégories, rappels, checklist)
+- Page `/formatcal` : vues mois/semaine/jour/agenda/timeline + listes projets/remises
+- Modal événement : presets architecture/école, filtres sidebar, drag-drop mois
+- Export ICS et PDF agenda, notifications locales, lien FormatCal sidebar
+
 ## 0.33.0 — Pack 5 FormaPresent : diaporamas Dexie et mode présentation
 
 ### FormaPresent (legacy ArchNote → Forma)

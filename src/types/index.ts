@@ -369,6 +369,68 @@ export interface FormaDeck {
   updatedAt: number
 }
 
+export type FormaCalCategory =
+  | 'school'
+  | 'project'
+  | 'architecture'
+  | 'work'
+  | 'personal'
+  | 'exam'
+  | 'deadline'
+  | 'reading'
+  | 'meeting'
+  | 'homework'
+  | 'reminder'
+
+export type FormaCalPriority = 'low' | 'normal' | 'high' | 'urgent'
+export type FormaCalStatus = 'todo' | 'in_progress' | 'done' | 'late'
+export type FormaCalViewId =
+  | 'day'
+  | 'week'
+  | 'month'
+  | 'year'
+  | 'planning'
+  | 'timeline'
+  | 'agenda'
+  | 'project'
+  | 'deadlines'
+
+export interface FormaCalChecklistItem {
+  id: string
+  text: string
+  done: boolean
+}
+
+export interface FormaCalEvent {
+  id: string
+  title: string
+  description: string
+  startAt: number
+  endAt: number
+  allDay: boolean
+  category: FormaCalCategory
+  presetId: string | null
+  color: string
+  icon: string
+  priority: FormaCalPriority
+  status: FormaCalStatus
+  tags: string[]
+  reminderOffsets: number[]
+  recurrence: unknown | null
+  attachments: unknown[]
+  links: Record<string, string>
+  checklist: FormaCalChecklistItem[]
+  completed: boolean
+  createdAt: number
+  updatedAt: number
+}
+
+export interface FormaCalSettings {
+  weekStartsOn: 0 | 1
+  defaultView: FormaCalViewId
+  defaultReminder: number
+}
+
 export interface ToolPreset {
   tool: 'pen' | 'pencil' | 'highlighter'
   color: string
