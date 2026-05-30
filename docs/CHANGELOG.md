@@ -1,5 +1,15 @@
 # Changelog Forma
 
+## 0.37.0 — Pack 6 : docs architecture future (collab / sync / IA)
+
+### Documentation (aucun changement de code applicatif)
+- `docs/COLLAB-DESIGN.md` (nouveau) : modèle collaboration hérité (profils, amis,
+  partages, dossiers, commentaires, permissions) → cible local-first opt-in
+- `docs/SYNC-DESIGN.md` enrichi : moteur sync legacy (providers, file d'attente,
+  détection conflits), snapshots/versions, FormaCloud bundles, backlog Hub
+- `docs/AI-PRIVACY.md` enrichi : couche FormaAI (provider api/mock + fallback local,
+  actions locales, indexeur de recherche unifié 100 % local)
+
 ## 0.36.0 — Pack 5 FormaCombine : assemblage multi-sources et export PDF
 
 ### FormaCombine (legacy ArchNote → Forma)

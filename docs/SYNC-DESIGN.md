@@ -61,3 +61,86 @@ Voir aussi [SYNC_API.md](./SYNC_API.md).
 - Ops locales doivent rester **JSON-safe** (pas de Blob inline)
 - Replay : ordre `seq` strict ; idempotence via `op.id`
 - Feature flag futur : `VITE_SYNC_ENABLED` (default off)
+
+---
+
+## Pack 6 — moteur de sync hérité (ArchNote → cible Forma)
+
+Cette section documente le moteur de synchronisation legacy d'ArchNote afin de guider
+une intégration progressive. Rien n'est branché : Forma reste **local-first**, le cloud
+est opt-in derrière un flag.
+
+### Fournisseurs cloud (`lib/sync/cloudProviders.js`)
+
+| Provider | id | Statut |
+|----------|----|--------|
+| Local seulement | `local` | actif (défaut) |
+| Supabase Cloud | `supabase` | actif si `isSupabaseConfigured` |
+| iCloud / CloudKit | `icloud` | préparé, `comingSoon` |
+
+- `resolveSyncModeLabel({...})` calcule un statut UI : `saved_local`, `offline`,
+  `syncing_cloud`, `synced`, `error`.
+- `connectCloudProvider(id)` valide la config (ex : `VITE_SUPABASE_URL` /
+  `VITE_SUPABASE_ANON_KEY`) avant d'activer.
+
+### File d'attente cloud (`lib/sync/cloudQueue.js`)
+
+- Queue persistée en `localStorage` (clé `SYNC_KEYS.cloudQueue`), **bornée à 100 items**.
+- Items : `{ id, resourceType, resourceId, label, enqueuedAt, attempts, lastAttempt }`.
+- `enqueueCloudSync` dédoublonne par `(resourceType, resourceId)`.
+- `processCloudQueue(handlers, { cloudEnabled })` : no-op si offline ou cloud désactivé ;
+  back-off via `CLOUD_RETRY_MS` après échec ; succès → `removeFromCloudQueue`.
+- **Cible Forma** : remplacer le `localStorage` par la table Dexie `sync-queue.ts`
+  existante (mêmes statuts `pending`/`applied`/`synced`/`failed`).
+
+### Détection de conflits (`detectSyncConflict`)
+
+```
+detectSyncConflict({ localUpdatedAt, remoteUpdatedAt, localHash, remoteHash })
+```
+
+- Égalité de hash → pas de conflit.
+- Sinon compare les horodatages : version locale plus récente conservée, version cloud
+  plus récente → proposer restauration depuis l'historique. Aligné sur le LWW décrit ci-dessus.
+
+### Push page → cloud (`lib/sync/cloudSync.js`)
+
+- `syncNotebookPageToCloud(pageId, notebookId, pageRecord)` : ignore les carnets locaux
+  (`isLocalNotebookId`), met à jour `pages` (canvas_data, elements) + `notebooks.updated_at`.
+
+## Versions & snapshots
+
+Le legacy stocke des **snapshots** versionnés (récupération / historique) :
+
+| Fonction | Table | Rôle |
+|----------|-------|------|
+| `saveCloudSnapshot({ userId, resourceType, resourceId, payload, label })` | `resource_snapshots` | sauvegarde versionnée |
+| `listCloudSnapshots(userId, type, id, limit=20)` | `resource_snapshots` | historique récent |
+| `getCloudSnapshot` / `restoreCloudSnapshot` | `resource_snapshots` | lecture / restauration |
+
+UI associée legacy : `SyncStatusBadge`, `SyncSettingsSection`, `SyncRecoveryModal`.
+
+## FormaCloud — bundles (`lib/formacloud/sync.js`)
+
+Orchestration multi-provider (Drive/iCloud-like) + **export/import bundle local** sans serveur :
+
+- `runFormaCloudSync(store, { force })` : machine à états (`offline`/`syncing`/`synced`/
+  `conflict`/`error`) avec file d'attente dédiée (`lib/formacloud/queue.js`).
+- `exportFormaBundle()` → fichier JSON `forma-cloud-bundle` v1 (index + contenus).
+- `importFormaBundle(file, { confirmOverwrite })` : **jamais d'écrasement sans confirmation
+  explicite** ; mappe les chemins du bundle vers les clés de stockage locales.
+- **Cible Forma** : `exportFormaBundle`/`importFormaBundle` sont les meilleurs candidats à
+  porter en premier (transfert manuel multi-appareils, zéro dépendance cloud) sur Dexie.
+
+## Hub / Message — backlog
+
+- Messagerie inter-utilisateurs (`lib/formamessage/cloud.js` legacy) : hors périmètre.
+- Dépend de la couche collaboration ([COLLAB-DESIGN.md](./COLLAB-DESIGN.md)) et de Supabase
+  Realtime. À planifier après Phase B collaboration.
+
+## Ordre de portage recommandé
+
+1. `exportFormaBundle` / `importFormaBundle` sur Dexie (backup/restore manuel) — sans réseau.
+2. `resource_snapshots` local → table Dexie `snapshots` (historique + restauration).
+3. Branchement Supabase opt-in (`VITE_SYNC_ENABLED`) : queue Dexie → `/ops`.
+4. Conflits avancés (merge manuel) et temps réel.
