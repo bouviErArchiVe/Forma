@@ -247,6 +247,25 @@ export interface MoodboardImage {
   updatedAt: number
 }
 
+export interface FormaDocumentPage {
+  id: string
+  html: string
+}
+
+export type FormaDocTemplateId = 'blank' | 'notes' | 'course' | 'technical'
+
+export interface FormaDocument {
+  id: string
+  name: string
+  templateId: FormaDocTemplateId
+  createdAt: number
+  updatedAt: number
+  fontFamily: string
+  fontSize: number
+  lineHeight: number
+  pages: FormaDocumentPage[]
+}
+
 export interface ToolPreset {
   tool: 'pen' | 'pencil' | 'highlighter'
   color: string

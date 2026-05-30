@@ -122,6 +122,7 @@ describe('Dexie schema', () => {
         'folders',
         'moodboardBoards',
         'moodboardImages',
+        'formaDocuments',
         'notebooks',
         'pages',
         'pageSnapshots',

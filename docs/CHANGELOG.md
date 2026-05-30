@@ -1,5 +1,15 @@
 # Changelog Forma
 
+## 0.31.0 — Pack 5 FormaDoc : documents riches Dexie
+
+### FormaDoc (legacy ArchNote → Forma)
+- Dexie v9 : table `formaDocuments` (pages HTML multi-pages)
+- Page `/formadoc` : bibliothèque (recherche, tri, aperçu), éditeur riche
+- 4 templates : vierge, notes, cours, fiche technique
+- Toolbar : gras/italique/titres/listes/images, gestion pages
+- Export TXT, MD, PDF (texte via pdf-lib)
+- Autosave debounced + lien FormaDoc dans sidebar bibliothèque
+
 ## 0.30.0 — Pack 4 moodboard : boards Dexie, grille et canvas
 
 ### FMoodboard (legacy ArchNote → Forma)

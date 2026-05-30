@@ -25,6 +25,7 @@ const NAV_ITEMS: { id: LibrarySidebarTab; label: string; emoji: string }[] = [
 ]
 
 const LINK_ITEMS = [
+  { label: 'FormaDoc', path: '/formadoc', emoji: '📄' },
   { label: 'Moodboard', path: '/moodboard', emoji: '🖼' },
   { label: 'Formules', path: '/formulas', emoji: '📐' },
   { label: 'Modèles', path: '/templates', emoji: '📋' },

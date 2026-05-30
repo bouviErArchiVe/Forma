@@ -1,2 +1,2 @@
 /** Version affichée dans Paramètres (alignée sur les releases Forma). */
-export const APP_VERSION = '0.30.0'
+export const APP_VERSION = '0.31.0'
