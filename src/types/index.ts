@@ -216,6 +216,37 @@ export interface ShareLink {
   createdAt: number
 }
 
+export interface MoodboardBoard {
+  id: string
+  name: string
+  emoji: string
+  color: string
+  archived: boolean
+  createdAt: number
+  updatedAt: number
+}
+
+export interface MoodboardImage {
+  id: string
+  boardId: string
+  assetId?: string
+  remoteUrl?: string
+  name: string
+  tags: string[]
+  description: string
+  starred: boolean
+  x: number
+  y: number
+  w: number
+  h: number
+  rotation: number
+  zIndex: number
+  naturalWidth?: number
+  naturalHeight?: number
+  createdAt: number
+  updatedAt: number
+}
+
 export interface ToolPreset {
   tool: 'pen' | 'pencil' | 'highlighter'
   color: string

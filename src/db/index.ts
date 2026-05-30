@@ -4,6 +4,8 @@ import { runDexieDataUrlMigrationTx, runDexiePdfSourceMigrationTx } from '../lib
 import type {
   AudioRecording,
   Folder,
+  MoodboardBoard,
+  MoodboardImage,
   Notebook,
   Page,
   PageSnapshot,
@@ -21,6 +23,7 @@ import { emptyPageFields, normalizePage } from '../types'
  * v5 : table assets (blobs) — pas de migration inline→blob au schéma
  * v6 : upgrade dataURL→blob + index pdfAssetId sur pages
  * v7 : migration pdfSourceDataUrl carnet → assets + index pdfSourceAssetId
+ * v8 : moodboardBoards, moodboardImages (assets via table assets)
  *
  * Champs temporels (gaps connus, non bloquants pour l’index Dexie) :
  * - Page : id ✓ — pas de createdAt/updatedAt (ordre via `order`, pas d’historique row)
@@ -38,6 +41,8 @@ export class FormaDatabase extends Dexie {
   pageSnapshots!: Table<PageSnapshot>
   assets!: Table<StoredAsset>
   settings!: Table<{ key: string; value: string }>
+  moodboardBoards!: Table<MoodboardBoard>
+  moodboardImages!: Table<MoodboardImage>
 
   constructor() {
     super('forma')
@@ -128,11 +133,24 @@ export class FormaDatabase extends Dexie {
       .upgrade(async (tx) => {
         await runDexiePdfSourceMigrationTx(tx)
       })
+    this.version(8).stores({
+      folders: 'id, parentId, name, updatedAt',
+      notebooks: 'id, folderId, name, updatedAt, favorite, deletedAt, pdfSourceAssetId',
+      pages: 'id, notebookId, order, pdfAssetId',
+      audio: 'id, notebookId, createdAt',
+      studyCards: 'id, notebookId, nextReview',
+      shareLinks: 'id, notebookId, token',
+      pageSnapshots: 'id, pageId, createdAt',
+      assets: 'id, notebookId, createdAt',
+      settings: 'key',
+      moodboardBoards: 'id, archived, updatedAt',
+      moodboardImages: 'id, boardId, starred, zIndex, updatedAt',
+    })
   }
 }
 
 /** Version Dexie courante (tests / diagnostics). */
-export const FORMA_DB_VERSION = 7
+export const FORMA_DB_VERSION = 8
 
 export const db = new FormaDatabase()
 

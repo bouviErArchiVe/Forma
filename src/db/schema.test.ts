@@ -120,6 +120,8 @@ describe('Dexie schema', () => {
         'assets',
         'audio',
         'folders',
+        'moodboardBoards',
+        'moodboardImages',
         'notebooks',
         'pages',
         'pageSnapshots',
@@ -196,7 +198,7 @@ describe('Dexie schema', () => {
 
     const freshDb = new FormaDatabase()
     await freshDb.open()
-    expect(freshDb.verno).toBe(7)
+    expect(freshDb.verno).toBe(FORMA_DB_VERSION)
 
     const nb = await freshDb.notebooks.get(nbId)
     expect(nb?.pdfSourceAssetId).toBe(`${nbId}-pdf-source`)

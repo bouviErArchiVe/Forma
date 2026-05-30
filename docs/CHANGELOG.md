@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.30.0 — Pack 4 moodboard : boards Dexie, grille et canvas
+
+### FMoodboard (legacy ArchNote → Forma)
+- Dexie v8 : tables `moodboardBoards`, `moodboardImages` (blobs via `assets`)
+- Page `/moodboard` : sidebar boards / favoris / archives, création board emoji+couleur
+- Vues grille (masonry) et canvas (drag, resize, rotation, z-index)
+- Import fichier, URL distante, export PNG, lien partage `?board=`
+- Lien Moodboard dans sidebar bibliothèque
+
 ## 0.29.0 — Pack 3 outils : calc, convertisseur, traduction, dico, formules
 
 ### Outils contextuels (legacy ArchNote → Forma)
