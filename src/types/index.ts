@@ -307,6 +307,68 @@ export interface FormaSheet {
   locked: boolean
 }
 
+export type FormaSlideTransition = 'none' | 'fade' | 'slide' | 'zoom'
+export type FormaSlideAnimation = 'none' | 'fadeIn' | 'slideUp' | 'zoomIn'
+export type FormaSlideElementType = 'text' | 'image'
+export type FormaPresentTemplateId =
+  | 'blank'
+  | 'architecture'
+  | 'portfolio'
+  | 'jury'
+  | 'scolaire'
+  | 'concept'
+
+export interface FormaSlideElement {
+  id: string
+  type: FormaSlideElementType
+  x: number
+  y: number
+  w: number
+  h: number
+  rotation: number
+  opacity: number
+  zIndex: number
+  animation: FormaSlideAnimation
+  createdAt: number
+  content?: string
+  fontSize?: number
+  color?: string
+  align?: 'left' | 'center' | 'right'
+  fontFamily?: string
+  bold?: boolean
+  dataUrl?: string | null
+  src?: string | null
+  label?: string
+}
+
+export interface FormaSlide {
+  id: string
+  name: string
+  bgColor: string
+  bgImage: string | null
+  transition: FormaSlideTransition
+  notes: string
+  elements: FormaSlideElement[]
+  createdAt: number
+}
+
+export interface FormaDeckSettings {
+  showGrid: boolean
+  showGuides: boolean
+  snapToGrid: boolean
+  gridSize: number
+}
+
+export interface FormaDeck {
+  id: string
+  title: string
+  template: FormaPresentTemplateId | string
+  slides: FormaSlide[]
+  settings: FormaDeckSettings
+  createdAt: number
+  updatedAt: number
+}
+
 export interface ToolPreset {
   tool: 'pen' | 'pencil' | 'highlighter'
   color: string

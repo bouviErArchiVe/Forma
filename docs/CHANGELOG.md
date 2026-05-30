@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.33.0 — Pack 5 FormaPresent : diaporamas Dexie et mode présentation
+
+### FormaPresent (legacy ArchNote → Forma)
+- Dexie v11 : table `formaDecks` (slides 16:9, éléments texte/image)
+- Page `/formapresent` : bibliothèque templates, éditeur stage + sidebar slides
+- 6 templates : vierge, architecture, portfolio, jury, scolaire, planche concept
+- Mode présentation plein écran : navigation, notes (N), laser (L), transitions
+- Grille, guides, magnétisme, alignement, autosave + lien FormaPresent sidebar
+
 ## 0.32.0 — Pack 5 FormaTab : tableur Dexie et formules
 
 ### FormaTab (legacy ArchNote → Forma)
