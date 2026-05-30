@@ -19,6 +19,7 @@ const TrashPage = lazy(() => import('./pages/TrashPage').then((m) => ({ default:
 const FormulasPage = lazy(() => import('./pages/FormulasPage').then((m) => ({ default: m.FormulasPage })))
 const MoodboardPage = lazy(() => import('./pages/MoodboardPage').then((m) => ({ default: m.MoodboardPage })))
 const FormaDocPage = lazy(() => import('./pages/FormaDocPage').then((m) => ({ default: m.FormaDocPage })))
+const FormaTabPage = lazy(() => import('./pages/FormaTabPage').then((m) => ({ default: m.FormaTabPage })))
 
 function PageFallback() {
   return (
@@ -57,6 +58,7 @@ export default function App() {
             <Route path="/formulas" element={<FormulasPage />} />
             <Route path="/moodboard" element={<MoodboardPage />} />
             <Route path="/formadoc" element={<FormaDocPage />} />
+            <Route path="/formatab" element={<FormaTabPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

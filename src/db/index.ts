@@ -7,6 +7,7 @@ import type {
   MoodboardBoard,
   MoodboardImage,
   FormaDocument,
+  FormaSheet,
   Notebook,
   Page,
   PageSnapshot,
@@ -26,6 +27,7 @@ import { emptyPageFields, normalizePage } from '../types'
  * v7 : migration pdfSourceDataUrl carnet → assets + index pdfSourceAssetId
  * v8 : moodboardBoards, moodboardImages (assets via table assets)
  * v9 : formaDocuments (FormaDoc rich-text pages)
+ * v10 : formaSheets (FormaTab spreadsheets)
  *
  * Champs temporels (gaps connus, non bloquants pour l’index Dexie) :
  * - Page : id ✓ — pas de createdAt/updatedAt (ordre via `order`, pas d’historique row)
@@ -46,6 +48,7 @@ export class FormaDatabase extends Dexie {
   moodboardBoards!: Table<MoodboardBoard>
   moodboardImages!: Table<MoodboardImage>
   formaDocuments!: Table<FormaDocument>
+  formaSheets!: Table<FormaSheet>
 
   constructor() {
     super('forma')
@@ -163,11 +166,26 @@ export class FormaDatabase extends Dexie {
       moodboardImages: 'id, boardId, starred, zIndex, updatedAt',
       formaDocuments: 'id, name, updatedAt',
     })
+    this.version(10).stores({
+      folders: 'id, parentId, name, updatedAt',
+      notebooks: 'id, folderId, name, updatedAt, favorite, deletedAt, pdfSourceAssetId',
+      pages: 'id, notebookId, order, pdfAssetId',
+      audio: 'id, notebookId, createdAt',
+      studyCards: 'id, notebookId, nextReview',
+      shareLinks: 'id, notebookId, token',
+      pageSnapshots: 'id, pageId, createdAt',
+      assets: 'id, notebookId, createdAt',
+      settings: 'key',
+      moodboardBoards: 'id, archived, updatedAt',
+      moodboardImages: 'id, boardId, starred, zIndex, updatedAt',
+      formaDocuments: 'id, name, updatedAt',
+      formaSheets: 'id, name, updatedAt',
+    })
   }
 }
 
 /** Version Dexie courante (tests / diagnostics). */
-export const FORMA_DB_VERSION = 9
+export const FORMA_DB_VERSION = 10
 
 export const db = new FormaDatabase()
 

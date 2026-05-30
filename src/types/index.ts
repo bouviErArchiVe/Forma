@@ -266,6 +266,47 @@ export interface FormaDocument {
   pages: FormaDocumentPage[]
 }
 
+export interface SheetCellStyle {
+  bold?: boolean
+  italic?: boolean
+  underline?: boolean
+  fontSize?: number
+  color?: string
+  bg?: string
+  alignH?: 'left' | 'center' | 'right'
+  alignV?: 'top' | 'middle' | 'bottom'
+  format?: 'text' | 'number' | 'percent' | 'date' | 'title'
+  border?: boolean
+}
+
+export interface SheetCellData {
+  raw: string
+  style?: SheetCellStyle
+}
+
+export interface SheetMergeRange {
+  r1: number
+  c1: number
+  r2: number
+  c2: number
+}
+
+export interface FormaSheet {
+  id: string
+  name: string
+  createdAt: number
+  updatedAt: number
+  rows: number
+  cols: number
+  rowHeights: number[]
+  colWidths: number[]
+  cells: Record<string, SheetCellData>
+  merges: SheetMergeRange[]
+  sortCol: number | null
+  sortDir: 'asc' | 'desc'
+  locked: boolean
+}
+
 export interface ToolPreset {
   tool: 'pen' | 'pencil' | 'highlighter'
   color: string

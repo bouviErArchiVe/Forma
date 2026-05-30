@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.32.0 — Pack 5 FormaTab : tableur Dexie et formules
+
+### FormaTab (legacy ArchNote → Forma)
+- Dexie v10 : table `formaSheets` (grille 20×26, cellules, fusions)
+- Page `/formatab` : bibliothèque + éditeur grille avec barre de formules
+- Formules : SOMME, MOYENNE, MIN, MAX, COMPTER + arithmétique A1:B5
+- Styles cellule, fusion, tri colonne, undo/redo, verrouillage
+- Export CSV et JSON + lien FormaTab dans sidebar bibliothèque
+
 ## 0.31.0 — Pack 5 FormaDoc : documents riches Dexie
 
 ### FormaDoc (legacy ArchNote → Forma)
