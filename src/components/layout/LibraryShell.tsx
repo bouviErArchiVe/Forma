@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BrandLogo } from '../BrandLogo'
 import { GlassButton } from '../ui/GlassButton'
+import { useFocusStore } from '../../stores/focusStore'
 
 export type LibrarySidebarTab =
   | 'all'
@@ -44,6 +45,8 @@ const LINK_ITEMS = [
 
 export function LibraryShell({ activeTab, onTabChange, children }: LibraryShellProps) {
   const navigate = useNavigate()
+  const toggleFocus = useFocusStore((s) => s.toggleOpen)
+  const focusOpen = useFocusStore((s) => s.open)
 
   return (
     <div className="min-h-full flex flex-col lg:flex-row">
@@ -85,6 +88,18 @@ export function LibraryShell({ activeTab, onTabChange, children }: LibraryShellP
               {item.label}
             </button>
           ))}
+          <button
+            type="button"
+            onClick={toggleFocus}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all text-left ${
+              focusOpen
+                ? 'bg-forma-accent/15 text-forma-accent'
+                : 'text-forma-muted hover:text-forma-text hover:bg-white/40 dark:hover:bg-white/5'
+            }`}
+          >
+            <span>⚡</span>
+            Mode Focus
+          </button>
         </div>
 
         <div className="hidden lg:block mt-auto pt-6 px-1">

@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppBackground } from './components/layout/AppBackground'
 import { CommandPalette } from './components/CommandPalette'
+import { FocusWidget } from './components/focus/FocusWidget'
 import { ConfirmDialog } from './components/ConfirmDialog'
 import { MultiTabBanner, OfflineBanner } from './components/OfflineBanner'
 import { Onboarding } from './components/Onboarding'
@@ -87,6 +88,7 @@ export default function App() {
           </Routes>
         </Suspense>
         <CommandPalette />
+        <FocusWidget />
         <ConfirmDialog />
         <Onboarding />
         <PwaInstallBanner />

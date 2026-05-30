@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.42.0 — Pack 11 Mode Focus : minuteur Pomodoro flottant
+
+### Mode Focus (legacy ArchNote → Forma)
+- Widget Pomodoro flottant monté globalement (survit à la navigation), bouton sidebar ⚡ Mode Focus
+- Cycles Focus / Pause configurables (1–120 min), anneau de progression suivant le thème
+- Alarme audio : bip Web Audio par défaut, son personnalisé enregistré (micro) ou importé
+- Préférences (durées, type d'alarme) persistées ; alarme perso conservée en localStorage
+- 100 % hors-ligne, aucune dépendance ajoutée
+
 ## 0.41.0 — Pack 10 FormaDico : page dictionnaire dédiée
 
 ### FormaDico (legacy ArchNote → Forma)
