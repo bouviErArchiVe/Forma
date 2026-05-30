@@ -42,6 +42,42 @@ export async function ocrPage(page: Page): Promise<string> {
   return text.trim()
 }
 
+/** OCR sur une image déjà décodée (canvas, image, bitmap). */
+export async function ocrImageSource(
+  source: CanvasImageSource | HTMLCanvasElement,
+): Promise<string> {
+  notifyProgress(0)
+  const worker = await getWorker()
+  const {
+    data: { text },
+  } = await worker.recognize(source as Parameters<WorkerInstance['recognize']>[0])
+  notifyProgress(100)
+  return text.trim()
+}
+
+function loadImageEl(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = () => reject(new Error('Image illisible'))
+    img.src = src
+  })
+}
+
+/** OCR sur une data URL d'image. */
+export async function ocrImageDataUrl(dataUrl: string): Promise<string> {
+  const img = await loadImageEl(dataUrl)
+  return ocrImageSource(img)
+}
+
+/** OCR sur un fichier image. Renvoie le texte et l'URL objet de prévisualisation. */
+export async function ocrImageFile(file: File): Promise<{ text: string; previewUrl: string }> {
+  const previewUrl = URL.createObjectURL(file)
+  const img = await loadImageEl(previewUrl)
+  const text = await ocrImageSource(img)
+  return { text, previewUrl }
+}
+
 export async function ocrRegion(
   page: Page,
   x: number,

@@ -34,6 +34,7 @@ const FormaCombinePage = lazy(() =>
 )
 const FormaAIPage = lazy(() => import('./pages/FormaAIPage').then((m) => ({ default: m.FormaAIPage })))
 const FPausePage = lazy(() => import('./pages/FPausePage').then((m) => ({ default: m.FPausePage })))
+const TranslatePage = lazy(() => import('./pages/TranslatePage').then((m) => ({ default: m.TranslatePage })))
 
 function PageFallback() {
   return (
@@ -79,6 +80,7 @@ export default function App() {
             <Route path="/formacombine" element={<FormaCombinePage />} />
             <Route path="/formaai" element={<FormaAIPage />} />
             <Route path="/fpause" element={<FPausePage />} />
+            <Route path="/translate" element={<TranslatePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

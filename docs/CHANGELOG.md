@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.40.0 — Pack 9 Traduction : OCR local + traduction EN ↔ FR
+
+### Traduction (legacy ArchNote → Forma)
+- Page `/translate` : import image / PDF, extraction de texte et traduction, lien sidebar
+- OCR 100 % local (Tesseract) sur images, texte PDF natif via PDF.js avec repli OCR (jusqu'à 12 pages)
+- Traduction EN ↔ FR : fournisseurs `api`, `browser` (MyMemory / LibreTranslate, en ligne) et `mock` (démo hors-ligne mot à mot)
+- Inversion des langues, copie et téléchargement `.txt` du résultat
+- Réseau déclenché uniquement à l'action « Traduire » ; aucune dépendance ajoutée (Tesseract / PDF.js déjà présents)
+
 ## 0.39.0 — Pack 8 FPause : mini-jeux de détente hors-ligne
 
 ### FPause (legacy ArchNote → Forma)
