@@ -1,5 +1,16 @@
 # Changelog Forma
 
+## 0.38.0 — Pack 7 FormaAI : recherche unifiée locale et assistant
+
+### FormaAI (legacy ArchNote → Forma)
+- Page `/formaai` : onglets Recherche et Assistant, lien sidebar
+- Recherche unifiée **100 % locale** sur carnets, FormaDoc, FormaTab, FormaPresent,
+  FormatCal, FormaReview, FormaCombine, moodboards, dossiers et formules (index Dexie caché)
+- Surlignage des termes, filtres par source, navigation clavier (↑↓ / Entrée)
+- Assistant : provider IA opt-in (`VITE_AI_API_KEY`) avec **fallback local garanti**
+  (résumer, corriger, reformuler, notes techniques, classer…), historique persistant
+- Aucune dépendance ajoutée, aucune donnée envoyée sans clé API explicite
+
 ## 0.37.0 — Pack 6 : docs architecture future (collab / sync / IA)
 
 ### Documentation (aucun changement de code applicatif)
