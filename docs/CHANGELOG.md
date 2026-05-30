@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.35.0 — Pack 5 FormaReview : sessions annotation Dexie et commentaires
+
+### FormaReview (legacy ArchNote → Forma)
+- Dexie v13 : table `formaReviewSessions` (pages, pins, markups, threads commentaires)
+- Page `/formareview` : bibliothèque modes (plans, équipe, jury, prof), éditeur canvas
+- Outils annotation : crayon, surligneur, flèches, formes, texte, gomme, pins
+- Panneau fil commentaires : réponses, édition, historique, résolution pin/thread
+- Import PDF/images, autosave, lien FormaReview sidebar
+
 ## 0.34.0 — Pack 5 FormatCal : calendrier Dexie et vues agenda
 
 ### FormatCal (legacy ArchNote → Forma)

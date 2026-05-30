@@ -431,6 +431,97 @@ export interface FormaCalSettings {
   defaultReminder: number
 }
 
+export type FormaReviewMode = 'plans' | 'team' | 'jury' | 'prof'
+export type FormaReviewRole = 'prof' | 'student' | 'team' | 'jury'
+export type FormaReviewTool =
+  | 'select'
+  | 'hand'
+  | 'draw'
+  | 'eraser'
+  | 'highlight'
+  | 'text'
+  | 'arrow'
+  | 'rect'
+  | 'circle'
+  | 'pin'
+
+export type FormaReviewMarkupType = 'highlight' | 'text' | 'arrow' | 'draw' | 'rect' | 'circle'
+
+export interface FormaReviewPage {
+  id: string
+  name: string
+  width: number
+  height: number
+  dataUrl: string | null
+  previewScale?: number
+  createdAt: number
+}
+
+export interface FormaReviewPin {
+  id: string
+  pageId: string
+  x: number
+  y: number
+  label: string
+  authorId: string
+  authorName: string
+  role: FormaReviewRole
+  status: 'open' | 'resolved'
+  createdAt: number
+}
+
+export interface FormaReviewCommentHistory {
+  content: string
+  editedAt: number
+}
+
+export interface FormaReviewComment {
+  id: string
+  pinId: string | null
+  pageId: string | null
+  parentId: string | null
+  content: string
+  authorId: string
+  authorName: string
+  role: FormaReviewRole
+  resolved: boolean
+  history: FormaReviewCommentHistory[]
+  createdAt: number
+  updatedAt: number
+}
+
+export interface FormaReviewMarkup {
+  id: string
+  pageId: string
+  type: FormaReviewMarkupType
+  data: Record<string, unknown>
+  authorId: string
+  authorName: string
+  role: FormaReviewRole
+  createdAt: number
+}
+
+export interface FormaReviewSessionSettings {
+  authorRole: FormaReviewRole
+  authorName: string
+  authorId?: string
+  showResolved: boolean
+}
+
+export interface FormaReviewSession {
+  id: string
+  title: string
+  description: string
+  mode: FormaReviewMode
+  pages: FormaReviewPage[]
+  pins: FormaReviewPin[]
+  markups: FormaReviewMarkup[]
+  comments: FormaReviewComment[]
+  settings: FormaReviewSessionSettings
+  createdAt: number
+  updatedAt: number
+}
+
 export interface ToolPreset {
   tool: 'pen' | 'pencil' | 'highlighter'
   color: string
