@@ -34,6 +34,7 @@ const LINK_ITEMS = [
   { label: 'FormaDoc', path: '/formadoc', emoji: '📄' },
   { label: 'Moodboard', path: '/moodboard', emoji: '🖼' },
   { label: 'Formules', path: '/formulas', emoji: '📐' },
+  { label: 'FPause', path: '/fpause', emoji: '🎮' },
   { label: 'Modèles', path: '/templates', emoji: '📋' },
   { label: 'Paramètres', path: '/settings', emoji: '⚙️' },
   { label: 'Corbeille', path: '/trash', emoji: '🗑️' },

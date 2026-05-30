@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.39.0 — Pack 8 FPause : mini-jeux de détente hors-ligne
+
+### FPause (legacy ArchNote → Forma)
+- Page `/fpause` : 5 mini-jeux canvas chargés à la demande (lazy), lien sidebar
+- Jeux : Dino Run, Snake, Pong, Ball Bounce, Breakout — clavier, souris et tactile
+- Thème canvas dérivé des variables CSS Forma (suit le thème actif)
+- Meilleurs scores persistés localement par jeu, modale de jeu fermable (Échap)
+- 100 % hors-ligne, aucune dépendance ajoutée
+
 ## 0.38.0 — Pack 7 FormaAI : recherche unifiée locale et assistant
 
 ### FormaAI (legacy ArchNote → Forma)
