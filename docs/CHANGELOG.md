@@ -1,5 +1,15 @@
 # Changelog Forma
 
+## 0.41.0 — Pack 10 FormaDico : page dictionnaire dédiée
+
+### FormaDico (legacy ArchNote → Forma)
+- Page `/formadico` dédiée (parité legacy) réutilisant le panneau Outils existant, lien sidebar
+- Favoris désormais **navigables** : pastilles cliquables relançant la recherche (panneau + page)
+- Historique et favoris visibles en permanence sur la page (et au repli dans le tiroir Outils)
+- Lien « Traduire » → `/translate?text=…` (préremplissage du texte source)
+- Définitions, synonymes, antonymes, expressions, mode scolaire, cache hors-ligne (inchangés)
+- Source libre Wiktionary (CC BY-SA) + dictionaryapi.dev (EN) ; aucune dépendance ajoutée
+
 ## 0.40.0 — Pack 9 Traduction : OCR local + traduction EN ↔ FR
 
 ### Traduction (legacy ArchNote → Forma)

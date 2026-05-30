@@ -47,6 +47,7 @@ export function FormaDicoPanel({
   const setSchoolMode = useFormaDicoStore((s) => s.setSchoolMode)
   const toggleFavorite = useFormaDicoStore((s) => s.toggleFavorite)
   const isFavorite = useFormaDicoStore((s) => s.isFavorite)
+  const favorites = useFormaDicoStore((s) => s.favorites)
   const history = useFormaDicoStore((s) => s.history)
   const clearHistory = useFormaDicoStore((s) => s.clearHistory)
 
@@ -184,8 +185,29 @@ export function FormaDicoPanel({
         </GlassPanel>
       )}
 
-      {history.length > 0 && !entry?.found && (
-        <div className="mt-2">
+      {(!compact || !entry?.found) && favorites.length > 0 && (
+        <div className="mt-3">
+          <div className="text-xs text-forma-muted mb-1">★ Favoris</div>
+          <div className="flex flex-wrap gap-1">
+            {favorites.slice(0, compact ? 12 : 60).map((w) => (
+              <button
+                key={w}
+                type="button"
+                className="text-xs px-2 py-0.5 rounded-full bg-forma-accent/10 text-forma-accent hover:bg-forma-accent/20"
+                onClick={() => {
+                  setQuery(w)
+                  void search(w)
+                }}
+              >
+                {w}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {(!compact || !entry?.found) && history.length > 0 && (
+        <div className="mt-3">
           <div className="flex justify-between text-xs text-forma-muted mb-1">
             <span>Historique</span>
             <button type="button" onClick={clearHistory} className="hover:text-forma-accent">
@@ -193,7 +215,7 @@ export function FormaDicoPanel({
             </button>
           </div>
           <div className="flex flex-wrap gap-1">
-            {history.slice(0, 8).map((h) => (
+            {history.slice(0, compact ? 8 : 40).map((h) => (
               <button
                 key={`${h.lang}-${h.word}`}
                 type="button"

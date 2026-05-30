@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { BrandLogo } from '../components/BrandLogo'
 import { GlassButton } from '../components/ui/GlassButton'
 import { subscribeOcrProgress } from '../lib/ocr'
@@ -17,9 +17,10 @@ export function TranslatePage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const previewUrlRef = useRef<string | null>(null)
 
+  const [searchParams] = useSearchParams()
   const [sourceLang, setSourceLang] = useState('en')
   const [targetLang, setTargetLang] = useState('fr')
-  const [sourceText, setSourceText] = useState('')
+  const [sourceText, setSourceText] = useState(() => searchParams.get('text') || '')
   const [resultText, setResultText] = useState('')
   const [translating, setTranslating] = useState(false)
   const [error, setError] = useState('')
