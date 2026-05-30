@@ -29,6 +29,9 @@ const FormatcalPage = lazy(() =>
 const FormaReviewPage = lazy(() =>
   import('./pages/FormaReviewPage').then((m) => ({ default: m.FormaReviewPage })),
 )
+const FormaCombinePage = lazy(() =>
+  import('./pages/FormaCombinePage').then((m) => ({ default: m.FormaCombinePage })),
+)
 
 function PageFallback() {
   return (
@@ -71,6 +74,7 @@ export default function App() {
             <Route path="/formapresent" element={<FormaPresentPage />} />
             <Route path="/formatcal" element={<FormatcalPage />} />
             <Route path="/formareview" element={<FormaReviewPage />} />
+            <Route path="/formacombine" element={<FormaCombinePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

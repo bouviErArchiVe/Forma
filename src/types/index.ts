@@ -522,6 +522,45 @@ export interface FormaReviewSession {
   updatedAt: number
 }
 
+export type FormaCombinePageType = 'raster' | 'text' | 'blank' | 'separator' | 'title'
+
+export interface FormaCombinePage {
+  id: string
+  name: string
+  type: FormaCombinePageType
+  width: number
+  height: number
+  rotation: number
+  dataUrl: string | null
+  text: string
+  bgColor: string
+  sourceType: string
+  sourceRef: string | null
+  createdAt: number
+}
+
+export interface FormaCombineProjectSettings {
+  pageNumbers: boolean
+  title: string
+}
+
+export interface FormaCombineProject {
+  id: string
+  name: string
+  pages: FormaCombinePage[]
+  settings: FormaCombineProjectSettings
+  createdAt: number
+  updatedAt: number
+}
+
+export interface InternalCombineSource {
+  id: string
+  name: string
+  type: 'formadoc' | 'formatab' | 'forma'
+  nbId?: string
+  pageId?: string
+}
+
 export interface ToolPreset {
   tool: 'pen' | 'pencil' | 'highlighter'
   color: string

@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.36.0 — Pack 5 FormaCombine : assemblage multi-sources et export PDF
+
+### FormaCombine (legacy ArchNote → Forma)
+- Dexie v14 : table `formaCombineProjects` (pages combinées, réglages numérotation)
+- Page `/formacombine` : bibliothèque projets, sidebar réordonnable, aperçu canvas
+- Import fichiers : PDF, images, TXT/MD/CSV, DOCX + sources FormaDoc/FormaTab/carnets
+- Pages spéciales : blanc, titre, séparateur · rotation, duplication, drag-drop
+- Export PDF combiné (pdf-lib), ZIP PNG/JPG, dossier projet, pages individuelles
+
 ## 0.35.0 — Pack 5 FormaReview : sessions annotation Dexie et commentaires
 
 ### FormaReview (legacy ArchNote → Forma)

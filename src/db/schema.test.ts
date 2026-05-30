@@ -127,6 +127,7 @@ describe('Dexie schema', () => {
         'formaDecks',
         'formaCalEvents',
         'formaReviewSessions',
+        'formaCombineProjects',
         'notebooks',
         'pages',
         'pageSnapshots',
