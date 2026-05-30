@@ -1,5 +1,15 @@
 # Changelog Forma
 
+## 0.46.0 — Pack 15 Instantanés portables : export/import fichier
+
+### Instantanés cloud → fichier unique (.formasnap.zip)
+- Les instantanés vivaient uniquement dans IndexedDB (perdus si le stockage navigateur est effacé)
+- Nouveau : télécharger un instantané en un seul fichier `.formasnap.zip` regroupant carnets (.forma) + modules (.formamods)
+- Import d'un fichier `.formasnap.zip` comme nouvel instantané local (puis restaurable comme les autres)
+- Sauvegarde complète portable en un seul fichier (plus besoin de deux téléchargements séparés)
+- Paramètres › Sync : bouton « Télécharger » par instantané + « Importer un fichier »
+- 100 % local, aucune dépendance ajoutée
+
 ## 0.45.0 — Pack 14 FormaCloud local : instantanés IndexedDB fiables
 
 ### Slot cloud local → instantanés IndexedDB

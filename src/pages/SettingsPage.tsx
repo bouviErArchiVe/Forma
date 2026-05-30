@@ -29,6 +29,7 @@ import {
   restoreCloudSnapshot,
   type CloudSnapshotMeta,
 } from '../lib/cloud-snapshots'
+import { downloadSnapshotFile, importSnapshotFile } from '../lib/snapshot-file'
 import { useSettingsStore } from '../stores/settingsStore'
 import { FORMA_THEMES } from '../theme/themes'
 import { TEMPLATE_LABELS } from '../lib/templates'
@@ -886,6 +887,7 @@ function CloudSnapshotsPanel({ nonce, onChange }: { nonce: number; onChange: () 
   const [snapshots, setSnapshots] = useState<CloudSnapshotMeta[]>([])
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
+  const importRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     let alive = true
@@ -899,9 +901,38 @@ function CloudSnapshotsPanel({ nonce, onChange }: { nonce: number; onChange: () 
 
   return (
     <div className="mt-3 p-3 rounded-lg border border-forma-border bg-forma-surface/40 text-xs space-y-2">
-      <p className="font-medium text-forma-muted">
-        Instantanés cloud locaux ({snapshots.length})
-      </p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="font-medium text-forma-muted">
+          Instantanés cloud locaux ({snapshots.length})
+        </p>
+        <button
+          type="button"
+          className="text-forma-accent"
+          onClick={() => importRef.current?.click()}
+        >
+          Importer un fichier
+        </button>
+      </div>
+      <input
+        ref={importRef}
+        data-testid="import-snapshot-file"
+        type="file"
+        accept=".zip,.formasnap,application/zip"
+        className="hidden"
+        onChange={async (e) => {
+          const f = e.target.files?.[0]
+          if (!f) return
+          setMsg('Import de l’instantané…')
+          try {
+            const meta = await importSnapshotFile(f)
+            setMsg(`Instantané importé : ${meta.label}.`)
+            onChange()
+          } catch (err) {
+            setMsg(err instanceof Error ? err.message : 'Import échoué')
+          }
+          e.target.value = ''
+        }}
+      />
       {snapshots.length === 0 && <p className="text-forma-muted">Aucun instantané enregistré.</p>}
       {snapshots.map((s) => (
         <div
@@ -934,6 +965,21 @@ function CloudSnapshotsPanel({ nonce, onChange }: { nonce: number; onChange: () 
               }}
             >
               Restaurer
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              className="text-forma-muted disabled:opacity-50"
+              onClick={async () => {
+                try {
+                  const name = await downloadSnapshotFile(s.id)
+                  setMsg(`Téléchargé : ${name}`)
+                } catch (err) {
+                  setMsg(err instanceof Error ? err.message : 'Téléchargement échoué')
+                }
+              }}
+            >
+              Télécharger
             </button>
             <button
               type="button"
