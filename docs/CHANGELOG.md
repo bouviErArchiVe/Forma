@@ -1,5 +1,15 @@
 # Changelog Forma
 
+## 0.52.0 — Pack 21 Formules : historique de calculs
+
+### Nouveau — conserver et rejouer ses calculs (100 % local)
+- Bouton « Conserver le calcul » dans le calculateur : enregistre la formule, le mode, les valeurs saisies et le résultat
+- Nouvelle section « Historique » (jusqu'à 40 calculs, persistés localement via `forma-formula-history`)
+- Clic sur un calcul conservé → rouvre la formule avec les valeurs pré-remplies (restauration du mode + des champs)
+- Suppression d'un calcul à l'unité ou purge complète
+- Nettoyage : casts de type devenus inutiles retirés de `FormulasPage` (catalogue désormais typé)
+- Aucune dépendance ajoutée
+
 ## 0.51.0 — Pack 20 Formules : affichage des « Maths de base »
 
 ### Correctif d'affichage

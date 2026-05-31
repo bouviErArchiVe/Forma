@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { GlassButton } from '../ui/GlassButton'
 import { GlassPanel } from '../ui/GlassPanel'
-import type { FormulaDef } from '../../lib/formulas/types'
+import type { FormulaDef, FormulaResult } from '../../lib/formulas/types'
 
 const LENGTH_UNITS = [
   { id: 'mm', label: 'mm' },
@@ -26,6 +26,9 @@ interface FormulaCalculatorProps {
   onToggleFavorite: () => void
   onBack: () => void
   onCopy: (text: string) => void
+  initialMode?: string
+  initialValues?: Record<string, string>
+  onSaveCalculation?: (payload: { mode: string; values: Record<string, string>; result: FormulaResult }) => void
 }
 
 export function FormulaCalculator({
@@ -36,14 +39,24 @@ export function FormulaCalculator({
   onToggleFavorite,
   onBack,
   onCopy,
+  initialMode,
+  initialValues,
+  onSaveCalculation,
 }: FormulaCalculatorProps) {
-  const [mode, setMode] = useState(formula.defaultMode || formula.modes?.[0]?.id || 'default')
+  const [mode, setMode] = useState(initialMode || formula.defaultMode || formula.modes?.[0]?.id || 'default')
   const fields = useMemo(() => formula.fieldsForMode(mode), [formula, mode])
-  const [values, setValues] = useState(() =>
-    defaultValues(formula.fieldsForMode(formula.defaultMode || 'default')),
-  )
+  const [values, setValues] = useState(() => ({
+    ...defaultValues(formula.fieldsForMode(initialMode || formula.defaultMode || 'default')),
+    ...(initialValues || {}),
+  }))
+  // Preserve restored inputs on the first effect run; subsequent mode switches reset normally.
+  const skipResetRef = useRef(Boolean(initialValues))
 
   useEffect(() => {
+    if (skipResetRef.current) {
+      skipResetRef.current = false
+      return
+    }
     setValues(defaultValues(fields))
   }, [formula.id, mode, fields])
 
@@ -68,6 +81,11 @@ export function FormulaCalculator({
       result.summary,
     ]
     onCopy(lines.join('\n'))
+  }
+
+  const saveCalc = () => {
+    if (!result || result.error || !onSaveCalculation) return
+    onSaveCalculation({ mode, values, result })
   }
 
   return (
@@ -183,9 +201,16 @@ export function FormulaCalculator({
               )}
             </>
           )}
-          <GlassButton size="sm" className="mt-3" disabled={!!result?.error} onClick={copyText}>
-            Copier le résultat
-          </GlassButton>
+          <div className="flex flex-wrap gap-2 mt-3">
+            <GlassButton size="sm" disabled={!!result?.error} onClick={copyText}>
+              Copier le résultat
+            </GlassButton>
+            {onSaveCalculation && (
+              <GlassButton size="sm" disabled={!!result?.error} onClick={saveCalc}>
+                Conserver le calcul
+              </GlassButton>
+            )}
+          </div>
         </GlassPanel>
       </div>
     </div>

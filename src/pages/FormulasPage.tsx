@@ -3,20 +3,16 @@ import { Link } from 'react-router-dom'
 import { BrandLogo } from '../components/BrandLogo'
 import { FormulaCalculator } from '../components/tools/FormulaCalculator'
 import { FormulaCard } from '../components/tools/FormulaCard'
-import { FORMULA_CATEGORIES, getFormulaById, filterFormulas as filterFormulasRaw } from '../lib/formulas/catalog'
-import type { FormulaDef } from '../lib/formulas/types'
+import { FORMULA_CATEGORIES, getFormulaById, filterFormulas } from '../lib/formulas/catalog'
+import { formatRelativeTime } from '../lib/format-relative'
 import { useFormulaPrefsStore } from '../stores/formulaPrefsStore'
+import { useFormulaHistoryStore } from '../stores/formulaHistoryStore'
 import { useToastStore } from '../stores/toastStore'
-
-const filterFormulas = filterFormulasRaw as (opts: {
-  categoryId?: string
-  search?: string
-  favorites?: string[]
-}) => FormulaDef[]
 
 const MENU_CATEGORIES = [
   { id: 'favorites', label: 'Favoris', icon: '★' },
   { id: 'recent', label: 'Récents', icon: '🕐' },
+  { id: 'history', label: 'Historique', icon: '🧮' },
   ...FORMULA_CATEGORIES.filter((c) => c.id !== 'all'),
 ]
 
@@ -28,14 +24,26 @@ export function FormulasPage() {
   const toggleFavorite = useFormulaPrefsStore((s) => s.toggleFavorite)
   const touchRecent = useFormulaPrefsStore((s) => s.touchRecent)
 
+  const history = useFormulaHistoryStore((s) => s.entries)
+  const addHistoryEntry = useFormulaHistoryStore((s) => s.addEntry)
+  const removeHistoryEntry = useFormulaHistoryStore((s) => s.removeEntry)
+  const clearHistory = useFormulaHistoryStore((s) => s.clear)
+
   const [categoryId, setCategoryId] = useState('structures')
   const [search, setSearch] = useState('')
   const [activeFormulaId, setActiveFormulaId] = useState<string | null>(null)
+  const [restore, setRestore] = useState<{ mode?: string; values: Record<string, string> } | null>(null)
 
   const activeFormula = useMemo(
-    () => (activeFormulaId ? (getFormulaById(activeFormulaId) as FormulaDef | null) : null),
+    () => (activeFormulaId ? getFormulaById(activeFormulaId) : null),
     [activeFormulaId],
   )
+
+  const openFormula = (id: string, restoreState: { mode?: string; values: Record<string, string> } | null = null) => {
+    setRestore(restoreState)
+    setActiveFormulaId(id)
+    touchRecent(id)
+  }
 
   const listedFormulas = useMemo(() => {
     let list = filterFormulas({
@@ -72,21 +80,35 @@ export function FormulasPage() {
             void navigator.clipboard.writeText(text)
             useToastStore.getState().show('Résultat copié')
           }}
+          initialMode={restore?.mode}
+          initialValues={restore?.values}
+          onSaveCalculation={({ mode, values, result }) => {
+            addHistoryEntry({
+              formulaId: activeFormula.id,
+              title: activeFormula.title,
+              mode,
+              values,
+              summary: result.summary || activeFormula.title,
+            })
+            useToastStore.getState().show('Calcul conservé')
+          }}
         />
       ) : (
         <>
-          <div className="flex flex-wrap gap-2 mb-4">
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher une formule…"
-              className="flex-1 min-w-[200px] border border-forma-border rounded-lg px-3 py-2 text-sm"
-            />
-            <span className="text-xs text-forma-muted self-center">
-              {listedFormulas.length} formule{listedFormulas.length !== 1 ? 's' : ''}
-            </span>
-          </div>
+          {categoryId !== 'history' && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher une formule…"
+                className="flex-1 min-w-[200px] border border-forma-border rounded-lg px-3 py-2 text-sm"
+              />
+              <span className="text-xs text-forma-muted self-center">
+                {listedFormulas.length} formule{listedFormulas.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+          )}
 
           <div className="flex flex-col lg:flex-row gap-4">
             <aside className="lg:w-48 shrink-0 flex lg:flex-col gap-1 overflow-x-auto pb-2 lg:pb-0">
@@ -106,22 +128,79 @@ export function FormulasPage() {
               ))}
             </aside>
 
-            <div className="flex-1 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {listedFormulas.map((f) => (
-                <FormulaCard
-                  key={f.id}
-                  formula={f}
-                  favorite={favorites.includes(f.id)}
-                  onOpen={() => {
-                    setActiveFormulaId(f.id)
-                    touchRecent(f.id)
-                  }}
-                />
-              ))}
-              {listedFormulas.length === 0 && (
-                <p className="col-span-full text-center text-forma-muted py-12">Aucune formule trouvée</p>
-              )}
-            </div>
+            {categoryId === 'history' ? (
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-sm font-bold text-forma-muted uppercase">
+                    Historique de calculs ({history.length})
+                  </h2>
+                  {history.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={clearHistory}
+                      className="text-xs text-forma-muted hover:text-red-600"
+                    >
+                      Tout effacer
+                    </button>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  {history.map((entry) => {
+                    const exists = Boolean(getFormulaById(entry.formulaId))
+                    return (
+                      <div
+                        key={entry.id}
+                        className="flex items-start gap-2 p-3 rounded-xl forma-glass-card"
+                      >
+                        <button
+                          type="button"
+                          disabled={!exists}
+                          onClick={() => openFormula(entry.formulaId, { mode: entry.mode, values: entry.values })}
+                          className="flex-1 min-w-0 text-left disabled:opacity-50"
+                          title={exists ? 'Rouvrir avec ces valeurs' : 'Formule indisponible'}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm truncate">{entry.title}</span>
+                            <span className="text-[10px] text-forma-muted shrink-0">
+                              {formatRelativeTime(entry.createdAt)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-forma-accent/80 mt-1 truncate">{entry.summary}</p>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeHistoryEntry(entry.id)}
+                          className="text-forma-muted hover:text-red-600 px-1 leading-none"
+                          aria-label="Supprimer de l'historique"
+                          title="Supprimer"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )
+                  })}
+                  {history.length === 0 && (
+                    <p className="text-center text-forma-muted py-12">
+                      Aucun calcul conservé. Ouvrez une formule et utilisez « Conserver le calcul ».
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {listedFormulas.map((f) => (
+                  <FormulaCard
+                    key={f.id}
+                    formula={f}
+                    favorite={favorites.includes(f.id)}
+                    onOpen={() => openFormula(f.id)}
+                  />
+                ))}
+                {listedFormulas.length === 0 && (
+                  <p className="col-span-full text-center text-forma-muted py-12">Aucune formule trouvée</p>
+                )}
+              </div>
+            )}
           </div>
         </>
       )}
