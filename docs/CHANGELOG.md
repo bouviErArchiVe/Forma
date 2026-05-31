@@ -1,5 +1,13 @@
 # Changelog Forma
 
+## 0.48.0 — Pack 17 FormaDico : préparer les favoris hors-ligne
+
+### Préparation hors-ligne + gestion du cache
+- Les favoris ajoutés avant l'épinglage (Pack 16) ou dont l'entrée avait été évincée n'étaient toujours pas disponibles hors-ligne
+- Nouveau bouton « Préparer hors-ligne » : récupère et épingle toutes les définitions favorites en une fois (avec progression), favoris déjà prêts ignorés
+- `dicoCacheStats()` (total / épinglés) et `clearUnpinnedDicoCache()` (purge le cache en conservant les favoris)
+- `isPinned()` exposé ; 100 % local, aucune dépendance ajoutée
+
 ## 0.47.0 — Pack 16 FormaDico : favoris hors-ligne
 
 ### Favoris épinglés (disponibles sans connexion)

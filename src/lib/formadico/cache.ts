@@ -75,3 +75,35 @@ export function unpinCachedEntry(word: string): void {
   }
   if (changed) writeDicoCache(cache)
 }
+
+/** Indique si une entrée est en cache ET épinglée (disponible hors-ligne). */
+export function isPinned(word: string, lang: string): boolean {
+  return !!readDicoCache()[cacheKey(word, lang)]?.pinned
+}
+
+export interface DicoCacheStats {
+  total: number
+  pinned: number
+}
+
+export function dicoCacheStats(): DicoCacheStats {
+  const cache = readDicoCache()
+  const keys = Object.keys(cache)
+  return {
+    total: keys.length,
+    pinned: keys.filter((k) => cache[k].pinned).length,
+  }
+}
+
+/** Vide les entrées non épinglées (conserve les favoris hors-ligne). Renvoie le nombre supprimé. */
+export function clearUnpinnedDicoCache(): number {
+  const cache = readDicoCache()
+  const next: Record<string, CachedEntry> = {}
+  let removed = 0
+  for (const [k, v] of Object.entries(cache)) {
+    if (v.pinned) next[k] = v
+    else removed++
+  }
+  writeDicoCache(next)
+  return removed
+}

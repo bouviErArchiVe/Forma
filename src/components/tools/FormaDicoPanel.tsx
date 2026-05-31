@@ -4,6 +4,7 @@ import { GlassButton } from '../ui/GlassButton'
 import { FD_LANGS } from '../../lib/formadico/constants'
 import { useFormaDicoLookup } from '../../hooks/useFormaDicoLookup'
 import { useFormaDicoStore } from '../../stores/formadicoStore'
+import { prepareFavoritesOffline } from '../../lib/formadico/offline'
 
 function Section({ title, items }: { title: string; items?: string[] | { pos?: string; text: string }[] }) {
   if (!items?.length) return null
@@ -57,6 +58,25 @@ export function FormaDicoPanel({
   const [online, setOnline] = useState(() =>
     typeof navigator === 'undefined' ? true : navigator.onLine,
   )
+  const [prepareMsg, setPrepareMsg] = useState('')
+  const [preparing, setPreparing] = useState(false)
+
+  const runPrepareOffline = async () => {
+    setPreparing(true)
+    setPrepareMsg('')
+    try {
+      const res = await prepareFavoritesOffline(favorites, lang, (p) =>
+        setPrepareMsg(`${p.done}/${p.total} · ${p.word}…`),
+      )
+      const parts = [`${res.pinned} préparé(s)`, `${res.alreadyReady} déjà prêt(s)`]
+      if (res.failed.length) parts.push(`${res.failed.length} échec(s)`)
+      setPrepareMsg(parts.join(' · '))
+    } catch {
+      setPrepareMsg('Échec de la préparation hors-ligne.')
+    } finally {
+      setPreparing(false)
+    }
+  }
 
   useEffect(() => {
     const update = () => setOnline(navigator.onLine)
@@ -206,9 +226,25 @@ export function FormaDicoPanel({
 
       {(!compact || !entry?.found) && favorites.length > 0 && (
         <div className="mt-3">
-          <div className="text-xs text-forma-muted mb-1" title="Disponibles hors-ligne">
-            ★ Favoris <span className="opacity-60">· hors-ligne</span>
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <span className="text-xs text-forma-muted" title="Disponibles hors-ligne">
+              ★ Favoris <span className="opacity-60">· hors-ligne</span>
+            </span>
+            <button
+              type="button"
+              className="text-xs text-forma-accent disabled:opacity-50"
+              disabled={preparing || !online}
+              title={
+                online ?
+                  'Met en cache toutes les définitions favorites pour une consultation hors-ligne'
+                : 'Connexion requise'
+              }
+              onClick={() => void runPrepareOffline()}
+            >
+              {preparing ? 'Préparation…' : 'Préparer hors-ligne'}
+            </button>
           </div>
+          {prepareMsg && <p className="text-[11px] text-forma-muted mb-1">{prepareMsg}</p>}
           <div className="flex flex-wrap gap-1">
             {favorites.slice(0, compact ? 12 : 60).map((w) => (
               <button

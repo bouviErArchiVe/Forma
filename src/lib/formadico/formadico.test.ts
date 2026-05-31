@@ -5,6 +5,9 @@ import {
   readDicoCache,
   pinCachedEntry,
   unpinCachedEntry,
+  dicoCacheStats,
+  clearUnpinnedDicoCache,
+  isPinned,
 } from './cache'
 import { FD_MAX_CACHE, type DicoEntry } from './constants'
 import { useFormaDicoStore } from '../../stores/formadicoStore'
@@ -59,6 +62,27 @@ describe('formadico cache', () => {
     pinCachedEntry('wall', 'en')
     unpinCachedEntry('wall')
     expect(readDicoCache()['en:wall']?.pinned).toBe(false)
+  })
+
+  it('reports cache stats (total and pinned)', () => {
+    setCachedEntry('a', 'fr', makeEntry('a'))
+    setCachedEntry('b', 'fr', makeEntry('b'))
+    pinCachedEntry('b', 'fr')
+    const stats = dicoCacheStats()
+    expect(stats.total).toBe(2)
+    expect(stats.pinned).toBe(1)
+    expect(isPinned('b', 'fr')).toBe(true)
+    expect(isPinned('a', 'fr')).toBe(false)
+  })
+
+  it('clearUnpinnedDicoCache keeps pinned favorites only', () => {
+    setCachedEntry('keep', 'fr', makeEntry('keep'))
+    pinCachedEntry('keep', 'fr')
+    setCachedEntry('drop', 'fr', makeEntry('drop'))
+    const removed = clearUnpinnedDicoCache()
+    expect(removed).toBe(1)
+    expect(getCachedEntry('keep', 'fr')).not.toBeNull()
+    expect(getCachedEntry('drop', 'fr')).toBeNull()
   })
 })
 
