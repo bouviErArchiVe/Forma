@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { fmt, parseNum } from './units'
+import type { FormulaResult, FormulaResultRow, FormulaValues, FormulaVerdict } from '../types'
 
-function ok(rows, summary, verdict) {
+function ok(rows: FormulaResultRow[], summary: string, verdict?: FormulaVerdict): FormulaResult {
   return { rows, summary, verdict: verdict || { id: 'ok', label: 'Calculé', color: '#2d6a4f' } }
 }
 
-export function accessRampSlope(v) {
+export function accessRampSlope(v: FormulaValues): FormulaResult {
   const rise = parseNum(v.rise)
   const run = parseNum(v.run)
   const maxPct = parseNum(v.maxPercent) ?? 5
@@ -21,7 +21,7 @@ export function accessRampSlope(v) {
   ], `${fmt(pct, 2)} % — ${verdict.label}`, verdict)
 }
 
-export function accessRampLength(v) {
+export function accessRampLength(v: FormulaValues): FormulaResult {
   const rise = parseNum(v.rise)
   const maxPct = parseNum(v.maxPercent) ?? 5
   if (rise == null || maxPct <= 0) return { error: 'Hauteur à franchir requise.' }
@@ -33,7 +33,7 @@ export function accessRampLength(v) {
   ], `Rampe min. ${fmt(run)} m`)
 }
 
-export function accessClearHeight(v) {
+export function accessClearHeight(v: FormulaValues): FormulaResult {
   const floor = parseNum(v.floorHeight)
   const minClear = parseNum(v.minClear) ?? 2.05
   if (floor == null) return { error: 'Hauteur sous plafond requise.' }

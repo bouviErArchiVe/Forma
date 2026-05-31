@@ -1,12 +1,12 @@
-// @ts-nocheck
 import { toCm, fromCm, fmt, parseNum } from './units'
 import { blondelVerdict } from './blondel'
+import type { FormulaResult, FormulaResultRow, FormulaValues, FormulaVerdict } from '../types'
 
-function ok(rows, summary, verdict) {
+function ok(rows: FormulaResultRow[], summary: string, verdict?: FormulaVerdict): FormulaResult {
   return { rows, summary, verdict: verdict || { id: 'ok', label: 'Calculé', color: '#2d6a4f' } }
 }
 
-export function stairSlope(v, unit = 'cm') {
+export function stairSlope(v: FormulaValues, unit = 'cm'): FormulaResult {
   const rise = toCm(v.totalHeight, unit)
   const run = toCm(v.totalRun, unit)
   if (rise == null || run == null || run <= 0) return { error: 'Hauteur et longueur requises.' }
@@ -18,7 +18,7 @@ export function stairSlope(v, unit = 'cm') {
   ], `Pente escalier : ${fmt(pct, 2)} %`)
 }
 
-export function stairStepCount(v, unit = 'cm') {
+export function stairStepCount(v: FormulaValues, unit = 'cm'): FormulaResult {
   const rise = toCm(v.totalHeight, unit)
   const targetH = toCm(v.targetStepHeight, unit) ?? 17
   if (rise == null) return { error: 'Hauteur totale requise.' }
@@ -32,7 +32,7 @@ export function stairStepCount(v, unit = 'cm') {
   ], `${steps} marches de ${fmt(fromCm(stepH, unit))} ${unit}`)
 }
 
-export function stairDevelopedLength(v, unit = 'cm') {
+export function stairDevelopedLength(v: FormulaValues, unit = 'cm'): FormulaResult {
   const steps = parseNum(v.steps)
   const tread = toCm(v.tread, unit)
   if (steps == null || tread == null) return { error: 'Marches et giron requis.' }
@@ -40,7 +40,7 @@ export function stairDevelopedLength(v, unit = 'cm') {
   return ok([{ label: 'Longueur développée', value: `${fmt(fromCm(len, unit))} ${unit}` }], `L = ${fmt(fromCm(len, unit))} ${unit}`)
 }
 
-export function stairStepGiron(v, unit = 'cm') {
+export function stairStepGiron(v: FormulaValues, unit = 'cm'): FormulaResult {
   const stepH = toCm(v.stepHeight, unit)
   const tread = toCm(v.tread, unit)
   if (stepH == null || tread == null) return { error: 'H et G requis.' }

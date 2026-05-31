@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { fmt, parseNum } from './units'
+import type { FormulaResult, FormulaResultRow, FormulaValues } from '../types'
 
-function ok(rows, summary) {
+function ok(rows: FormulaResultRow[], summary: string): FormulaResult {
   return { rows, summary, verdict: { id: 'ok', label: 'Calculé', color: '#2d6a4f' } }
 }
 
-export function areaRectangle(v) {
+export function areaRectangle(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const w = parseNum(v.width)
   if (l == null || w == null) return { error: 'Longueur et largeur requises.' }
@@ -16,7 +16,7 @@ export function areaRectangle(v) {
   ], `Surface rectangle = ${fmt(area)} m²`)
 }
 
-export function areaTriangle(v) {
+export function areaTriangle(v: FormulaValues): FormulaResult {
   const b = parseNum(v.base)
   const h = parseNum(v.height)
   if (b == null || h == null) return { error: 'Base et hauteur requises.' }
@@ -24,7 +24,7 @@ export function areaTriangle(v) {
   return ok([{ label: 'Surface', value: `${fmt(area)} m²` }], `Surface triangle = ${fmt(area)} m²`)
 }
 
-export function areaCircle(v) {
+export function areaCircle(v: FormulaValues): FormulaResult {
   const d = parseNum(v.diameter)
   if (d == null) return { error: 'Diamètre requis.' }
   const r = d / 2
@@ -35,7 +35,7 @@ export function areaCircle(v) {
   ], `Surface cercle = ${fmt(area)} m²`)
 }
 
-export function areaTrapezoid(v) {
+export function areaTrapezoid(v: FormulaValues): FormulaResult {
   const a = parseNum(v.baseA)
   const b = parseNum(v.baseB)
   const h = parseNum(v.height)
@@ -44,7 +44,7 @@ export function areaTrapezoid(v) {
   return ok([{ label: 'Surface', value: `${fmt(area)} m²` }], `Surface trapèze = ${fmt(area)} m²`)
 }
 
-export function areaRoom(v) {
+export function areaRoom(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const w = parseNum(v.width)
   if (l == null || w == null) return { error: 'Dimensions requises.' }
@@ -55,7 +55,7 @@ export function areaRoom(v) {
   ], `Pièce : ${fmt(area)} m²`)
 }
 
-export function areaWall(v) {
+export function areaWall(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const h = parseNum(v.height)
   const openings = parseNum(v.openings) || 0
@@ -69,7 +69,7 @@ export function areaWall(v) {
   ], `Mur net : ${fmt(net)} m²`)
 }
 
-export function areaFloor(v) {
+export function areaFloor(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const w = parseNum(v.width)
   const waste = parseNum(v.waste) ?? 10

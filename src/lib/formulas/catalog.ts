@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { computeBlondel } from './compute/blondel'
 import * as areas from './compute/areas'
 import * as volumes from './compute/volumes'
@@ -11,8 +10,15 @@ import * as accessibility from './compute/accessibility'
 import * as light from './compute/light'
 import * as structures from './compute/structures'
 import * as basic from './compute/basic'
+import type { FormulaDef } from './types'
 
-export const FORMULA_CATEGORIES = [
+export interface FormulaCategory {
+  id: string
+  label: string
+  icon: string
+}
+
+export const FORMULA_CATEGORIES: FormulaCategory[] = [
   { id: 'all', label: 'Toutes', icon: '📚' },
   { id: 'stairs', label: 'Escaliers', icon: '🪜' },
   { id: 'areas', label: 'Surfaces', icon: '📐' },
@@ -28,25 +34,7 @@ export const FORMULA_CATEGORIES = [
   { id: 'math', label: 'Maths de base', icon: '🔢' },
 ]
 
-/** @typedef {{ key: string, label: string, type?: string, placeholder?: string, step?: number, min?: number, unit?: string, options?: {value:string,label:string}[] }} FormulaField */
-
-/**
- * @typedef {Object} FormulaDef
- * @property {string} id
- * @property {string} categoryId
- * @property {string} title
- * @property {string} icon
- * @property {string} description
- * @property {string} formulaText
- * @property {string[]} tags
- * @property {{ id: string, label: string }[]} [modes]
- * @property {string} [defaultMode]
- * @property {(mode: string) => FormulaField[]} fieldsForMode
- * @property {(mode: string, values: Record<string, string>, opts?: { lengthUnit?: string }) => object} compute
- */
-
-/** @type {FormulaDef[]} */
-export const FORMULAS = [
+export const FORMULAS: FormulaDef[] = [
   {
     id: 'blondel',
     categoryId: 'stairs',
@@ -93,7 +81,7 @@ export const FORMULAS = [
       { key: 'totalHeight', label: 'Hauteur totale', type: 'number', unit: 'length' },
       { key: 'totalRun', label: 'Longueur horizontale', type: 'number', unit: 'length' },
     ],
-    compute: (mode, values, opts) => stairs.stairSlope(values, opts?.lengthUnit),
+    compute: (_mode, values, opts) => stairs.stairSlope(values, opts?.lengthUnit),
   },
   {
     id: 'stair-steps',
@@ -107,7 +95,7 @@ export const FORMULAS = [
       { key: 'totalHeight', label: 'Hauteur totale', type: 'number', unit: 'length' },
       { key: 'targetStepHeight', label: 'H cible (déf. 17 cm)', type: 'number', unit: 'length', placeholder: '17' },
     ],
-    compute: (mode, values, opts) => stairs.stairStepCount(values, opts?.lengthUnit),
+    compute: (_mode, values, opts) => stairs.stairStepCount(values, opts?.lengthUnit),
   },
   {
     id: 'stair-developed',
@@ -121,7 +109,7 @@ export const FORMULAS = [
       { key: 'steps', label: 'Nombre de marches', type: 'number', step: 1 },
       { key: 'tread', label: 'Giron (G)', type: 'number', unit: 'length' },
     ],
-    compute: (mode, values, opts) => stairs.stairDevelopedLength(values, opts?.lengthUnit),
+    compute: (_mode, values, opts) => stairs.stairDevelopedLength(values, opts?.lengthUnit),
   },
   {
     id: 'area-rect',
@@ -1010,11 +998,17 @@ export const FORMULAS = [
   },
 ]
 
-export function getFormulaById(id) {
+export function getFormulaById(id: string): FormulaDef | null {
   return FORMULAS.find((f) => f.id === id) || null
 }
 
-export function filterFormulas({ categoryId = 'all', search = '', favorites = [] }) {
+export interface FilterFormulasOptions {
+  categoryId?: string
+  search?: string
+  favorites?: string[]
+}
+
+export function filterFormulas({ categoryId = 'all', search = '', favorites = [] }: FilterFormulasOptions = {}): FormulaDef[] {
   const q = search.trim().toLowerCase()
   return FORMULAS.filter((f) => {
     if (categoryId !== 'all' && f.categoryId !== categoryId && categoryId !== 'favorites' && categoryId !== 'recent') return false

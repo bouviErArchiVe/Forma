@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { fmt, parseNum } from './units'
+import type { FormulaResult, FormulaResultRow, FormulaValues, FormulaVerdict } from '../types'
 
-function ok(rows, summary, verdict) {
+function ok(rows: FormulaResultRow[], summary: string, verdict?: FormulaVerdict): FormulaResult {
   return { rows, summary, verdict: verdict || { id: 'ok', label: 'Calculé', color: '#2d6a4f' } }
 }
 
-export function roofPitch(v) {
+export function roofPitch(v: FormulaValues): FormulaResult {
   const rise = parseNum(v.rise)
   const run = parseNum(v.run)
   if (rise == null || run == null || run <= 0) return { error: 'Hauteur et portée requises.' }
@@ -17,7 +17,7 @@ export function roofPitch(v) {
   ], `Pente : ${fmt(pct, 1)} %`)
 }
 
-export function roofRidgeHeight(v) {
+export function roofRidgeHeight(v: FormulaValues): FormulaResult {
   const span = parseNum(v.span)
   const pitch = parseNum(v.pitchPercent)
   if (span == null || pitch == null) return { error: 'Portée et pente requises.' }
@@ -29,7 +29,7 @@ export function roofRidgeHeight(v) {
   ], `Faîtage ≈ ${fmt(h)} m`)
 }
 
-export function roofRafterLength(v) {
+export function roofRafterLength(v: FormulaValues): FormulaResult {
   const span = parseNum(v.span)
   const pitch = parseNum(v.pitchPercent)
   const overhang = parseNum(v.overhang) || 0
@@ -43,7 +43,7 @@ export function roofRafterLength(v) {
   ], `Rampant ≈ ${fmt(len)} m`)
 }
 
-export function roofSurface(v) {
+export function roofSurface(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const w = parseNum(v.width)
   const pitch = parseNum(v.pitchPercent) || 0

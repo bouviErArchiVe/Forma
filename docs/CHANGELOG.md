@@ -1,5 +1,13 @@
 # Changelog Forma
 
+## 0.50.0 — Pack 19 Formules : typage strict (fin des @ts-nocheck)
+
+### Qualité du code — module Formules d'architecture
+- Les 15 derniers fichiers en `@ts-nocheck` du codebase (catalogue + 12 modules de calcul + `FormulaCard`) sont désormais entièrement typés, sans `any`
+- Types partagés `FormulaResult` / `FormulaResultRow` / `FormulaVerdict` / `FormulaValues` ajoutés à `types.ts`, `compute` du `FormulaDef` renvoie un `FormulaResult`
+- `units.ts`, `blondel.ts`, `areas/volumes/slopes/scales/stairs/roof/materials/accessibility/light/structures/basic.ts` et `catalog.ts` typés (signatures `FormulaValues → FormulaResult`)
+- Aucun `@ts-nocheck` restant dans `src/` ; aucun changement de comportement, aucune dépendance ajoutée
+
 ## 0.49.0 — Pack 18 FormaDico : typage strict + gestion du cache
 
 ### Qualité du code + cache dans les Paramètres

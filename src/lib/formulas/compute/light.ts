@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { fmt, parseNum } from './units'
+import type { FormulaResult, FormulaResultRow, FormulaValues, FormulaVerdict } from '../types'
 
-function ok(rows, summary, verdict) {
+function ok(rows: FormulaResultRow[], summary: string, verdict?: FormulaVerdict): FormulaResult {
   return { rows, summary, verdict: verdict || { id: 'ok', label: 'Calculé', color: '#2d6a4f' } }
 }
 
-export function lightWindowRatio(v) {
+export function lightWindowRatio(v: FormulaValues): FormulaResult {
   const room = parseNum(v.roomArea)
   const window = parseNum(v.windowArea)
   const minPct = parseNum(v.minPercent) ?? 17
@@ -23,7 +23,7 @@ export function lightWindowRatio(v) {
   ], `${fmt(pct, 1)} % vitrage — ${verdict.label}`, verdict)
 }
 
-export function lightOpeningPercent(v) {
+export function lightOpeningPercent(v: FormulaValues): FormulaResult {
   const wall = parseNum(v.wallArea)
   const opening = parseNum(v.openingArea)
   if (wall == null || opening == null || wall <= 0) return { error: 'Surfaces requises.' }
@@ -35,7 +35,7 @@ export function lightOpeningPercent(v) {
   ], `Ouverture = ${fmt(pct, 1)} % du mur`)
 }
 
-export function lightMinGlazing(v) {
+export function lightMinGlazing(v: FormulaValues): FormulaResult {
   const room = parseNum(v.roomArea)
   const minPct = parseNum(v.minPercent) ?? 17
   if (room == null) return { error: 'Surface pièce requise.' }

@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { fmt, parseNum } from './units'
+import type { FormulaResult, FormulaResultRow, FormulaValues } from '../types'
 
-function ok(rows, summary) {
+function ok(rows: FormulaResultRow[], summary: string): FormulaResult {
   return { rows, summary, verdict: { id: 'ok', label: 'Calculé', color: '#2d6a4f' } }
 }
 
-export function materialTiles(v) {
+export function materialTiles(v: FormulaValues): FormulaResult {
   const area = parseNum(v.area)
   const tileW = parseNum(v.tileWidth)
   const tileH = parseNum(v.tileHeight)
@@ -20,7 +20,7 @@ export function materialTiles(v) {
   ], `${qty} carreaux (+${waste}%)`)
 }
 
-export function materialPaint(v) {
+export function materialPaint(v: FormulaValues): FormulaResult {
   const area = parseNum(v.area)
   const coverage = parseNum(v.coverage) ?? 10
   const coats = parseNum(v.coats) ?? 2
@@ -34,7 +34,7 @@ export function materialPaint(v) {
   ], `${fmt(liters, 1)} L de peinture`)
 }
 
-export function materialConcrete(v) {
+export function materialConcrete(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const w = parseNum(v.width)
   const t = parseNum(v.thickness)
@@ -43,7 +43,7 @@ export function materialConcrete(v) {
   return ok([{ label: 'Volume béton', value: `${fmt(m3)} m³` }], `Béton : ${fmt(m3)} m³`)
 }
 
-export function materialBaseboard(v) {
+export function materialBaseboard(v: FormulaValues): FormulaResult {
   const perimeter = parseNum(v.perimeter)
   const openings = parseNum(v.openings) || 0
   if (perimeter == null) return { error: 'Périmètre requis.' }
@@ -55,7 +55,7 @@ export function materialBaseboard(v) {
   ], `Plinthes : ${fmt(len)} m lin.`)
 }
 
-export function materialDrywall(v) {
+export function materialDrywall(v: FormulaValues): FormulaResult {
   const area = parseNum(v.area)
   const sheet = parseNum(v.sheetArea) ?? 2.88
   const waste = parseNum(v.waste) ?? 10

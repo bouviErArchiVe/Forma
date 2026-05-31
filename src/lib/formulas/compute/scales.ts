@@ -1,12 +1,12 @@
-// @ts-nocheck
 import { convertDrawingScale, parseScaleFactor } from '../../units'
 import { fmt, parseNum } from './units'
+import type { FormulaResult, FormulaResultRow, FormulaValues } from '../types'
 
-function ok(rows, summary) {
+function ok(rows: FormulaResultRow[], summary: string): FormulaResult {
   return { rows, summary, verdict: { id: 'ok', label: 'Converti', color: '#2d6a4f' } }
 }
 
-export function scaleDrawingToReal(v) {
+export function scaleDrawingToReal(v: FormulaValues): FormulaResult {
   const drawing = parseNum(v.drawing)
   const fromUnit = v.fromUnit || 'mm'
   const scale = v.scale || '1:50'
@@ -22,7 +22,7 @@ export function scaleDrawingToReal(v) {
   ], `À l'échelle ${scale} : ${fmt(r.m)} m`)
 }
 
-export function scaleRealToDrawing(v) {
+export function scaleRealToDrawing(v: FormulaValues): FormulaResult {
   const real = parseNum(v.real)
   const toUnit = v.toUnit || 'mm'
   const scale = v.scale || '1:50'
@@ -39,7 +39,7 @@ export function scaleRealToDrawing(v) {
   ], `Sur plan ${scale} : ${fmt(draw)} ${toUnit}`)
 }
 
-export function scaleFactor(v) {
+export function scaleFactor(v: FormulaValues): FormulaResult {
   const scale = v.scale || '1:50'
   const factor = parseScaleFactor(scale)
   return ok([

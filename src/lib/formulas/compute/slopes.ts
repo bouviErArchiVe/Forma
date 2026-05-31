@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { fmt, parseNum } from './units'
+import type { FormulaResult, FormulaResultRow, FormulaValues, FormulaVerdict } from '../types'
 
-function ok(rows, summary, verdict) {
+function ok(rows: FormulaResultRow[], summary: string, verdict?: FormulaVerdict): FormulaResult {
   return { rows, summary, verdict: verdict || { id: 'ok', label: 'Calculé', color: '#2d6a4f' } }
 }
 
-export function slopePercentToDegrees(v) {
+export function slopePercentToDegrees(v: FormulaValues): FormulaResult {
   const p = parseNum(v.percent)
   if (p == null) return { error: 'Pente % requise.' }
   const deg = (Math.atan(p / 100) * 180) / Math.PI
@@ -16,7 +16,7 @@ export function slopePercentToDegrees(v) {
   ], `${fmt(p, 2)} % = ${fmt(deg, 2)}°`)
 }
 
-export function slopeDegreesToPercent(v) {
+export function slopeDegreesToPercent(v: FormulaValues): FormulaResult {
   const d = parseNum(v.degrees)
   if (d == null) return { error: 'Angle requis.' }
   const p = Math.tan((d * Math.PI) / 180) * 100
@@ -26,13 +26,13 @@ export function slopeDegreesToPercent(v) {
   ], `${fmt(d, 2)}° = ${fmt(p, 2)} %`)
 }
 
-export function slopeRamp(v) {
+export function slopeRamp(v: FormulaValues): FormulaResult {
   const rise = parseNum(v.rise)
   const run = parseNum(v.run)
   if (rise == null || run == null || run <= 0) return { error: 'Dénivelé et longueur requis.' }
   const pct = (rise / run) * 100
   const deg = (Math.atan(rise / run) * 180) / Math.PI
-  let verdict
+  let verdict: FormulaVerdict
   if (pct <= 5) verdict = { id: 'ok', label: 'Rampe accessible (≤ 5 %)', color: '#2d6a4f' }
   else if (pct <= 8) verdict = { id: 'limit', label: 'Limite PMR (5–8 %)', color: '#f5a623' }
   else verdict = { id: 'bad', label: 'Pente trop forte', color: '#e94560' }

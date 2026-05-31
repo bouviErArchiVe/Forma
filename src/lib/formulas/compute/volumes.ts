@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { fmt, parseNum } from './units'
+import type { FormulaResult, FormulaResultRow, FormulaValues } from '../types'
 
-function ok(rows, summary) {
+function ok(rows: FormulaResultRow[], summary: string): FormulaResult {
   return { rows, summary, verdict: { id: 'ok', label: 'Calculé', color: '#2d6a4f' } }
 }
 
-export function volumeBox(v) {
+export function volumeBox(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const w = parseNum(v.width)
   const h = parseNum(v.height)
@@ -14,7 +14,7 @@ export function volumeBox(v) {
   return ok([{ label: 'Volume', value: `${fmt(vol)} m³` }], `Volume = ${fmt(vol)} m³`)
 }
 
-export function volumeCylinder(v) {
+export function volumeCylinder(v: FormulaValues): FormulaResult {
   const d = parseNum(v.diameter)
   const h = parseNum(v.height)
   if (d == null || h == null) return { error: 'Diamètre et hauteur requis.' }
@@ -22,7 +22,7 @@ export function volumeCylinder(v) {
   return ok([{ label: 'Volume', value: `${fmt(vol)} m³` }], `Cylindre = ${fmt(vol)} m³`)
 }
 
-export function volumeConcrete(v) {
+export function volumeConcrete(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const w = parseNum(v.width)
   const h = parseNum(v.thickness)
@@ -35,7 +35,7 @@ export function volumeConcrete(v) {
   ], `Béton : ${fmt(vol)} m³ (~${bags} sacs)`)
 }
 
-export function volumeExcavation(v) {
+export function volumeExcavation(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const w = parseNum(v.width)
   const d = parseNum(v.depth)
@@ -50,7 +50,7 @@ export function volumeExcavation(v) {
   ], `Excavation : ${fmt(haul)} m³`)
 }
 
-export function volumeRoom(v) {
+export function volumeRoom(v: FormulaValues): FormulaResult {
   const l = parseNum(v.length)
   const w = parseNum(v.width)
   const h = parseNum(v.height)

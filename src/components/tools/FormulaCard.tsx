@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { FormulaDef } from '../../lib/formulas/types'
 
 interface FormulaCardProps {

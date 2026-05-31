@@ -1,10 +1,10 @@
-// @ts-nocheck
 import { toCm, fromCm, fmt, parseNum } from './units'
+import type { FormulaResult, FormulaValues, FormulaVerdict } from '../types'
 
 const BLONDEL_MIN = 60
 const BLONDEL_MAX = 64
 
-export function blondelVerdict(sumCm) {
+export function blondelVerdict(sumCm: number | null | undefined): FormulaVerdict {
   if (sumCm == null || !isFinite(sumCm)) return { id: 'unknown', label: 'Données insuffisantes', color: '#888' }
   if (sumCm < 58) return { id: 'steep', label: 'Trop raide', color: '#e94560' }
   if (sumCm < BLONDEL_MIN) return { id: 'limit-low', label: 'Limite (raide)', color: '#f5a623' }
@@ -13,7 +13,17 @@ export function blondelVerdict(sumCm) {
   return { id: 'flat', label: 'Non conforme (trop plat)', color: '#e94560' }
 }
 
-function baseResults({ stepH, tread, steps, totalLength, slopeDeg, blondelSum, unit }) {
+interface BaseResultInput {
+  stepH: number
+  tread: number
+  steps: number | null
+  totalLength: number | null
+  slopeDeg: number | null
+  blondelSum: number | null
+  unit: string
+}
+
+function baseResults({ stepH, tread, steps, totalLength, slopeDeg, blondelSum, unit }: BaseResultInput): FormulaResult {
   const verdict = blondelVerdict(blondelSum)
   return {
     verdict,
@@ -33,7 +43,7 @@ function baseResults({ stepH, tread, steps, totalLength, slopeDeg, blondelSum, u
 }
 
 /** Mode 1 : hauteur totale + nombre de marches */
-export function blondelFromHeightSteps(values, unit = 'cm') {
+export function blondelFromHeightSteps(values: FormulaValues, unit = 'cm'): FormulaResult {
   const totalH = toCm(values.totalHeight, unit)
   const steps = parseNum(values.steps)
   if (totalH == null || steps == null || steps < 1) return { error: 'Entrez une hauteur totale et un nombre de marches valides.' }
@@ -48,7 +58,7 @@ export function blondelFromHeightSteps(values, unit = 'cm') {
 }
 
 /** Mode 2 : H + G → vérification */
-export function blondelFromStepTread(values, unit = 'cm') {
+export function blondelFromStepTread(values: FormulaValues, unit = 'cm'): FormulaResult {
   const stepH = toCm(values.stepHeight, unit)
   const tread = toCm(values.tread, unit)
   if (stepH == null || tread == null) return { error: 'Entrez H et G.' }
@@ -58,13 +68,23 @@ export function blondelFromStepTread(values, unit = 'cm') {
   return baseResults({ stepH, tread, steps: null, totalLength: tread, slopeDeg, blondelSum, unit })
 }
 
+interface BlondelCandidate {
+  steps: number
+  stepH: number
+  tread: number
+  blondelSum: number
+  totalLength: number
+  score: number
+  slopeDeg: number
+}
+
 /** Mode 3 : hauteur totale + longueur disponible */
-export function blondelFromHeightLength(values, unit = 'cm') {
+export function blondelFromHeightLength(values: FormulaValues, unit = 'cm'): FormulaResult {
   const totalH = toCm(values.totalHeight, unit)
   const avail = toCm(values.availableLength, unit)
   if (totalH == null || avail == null || avail <= 0) return { error: 'Entrez hauteur totale et longueur disponible.' }
 
-  let best = null
+  let best: BlondelCandidate | null = null
   for (let steps = 2; steps <= 30; steps += 1) {
     const stepH = totalH / steps
     const tread = avail / Math.max(steps - 1, 1)
@@ -79,7 +99,7 @@ export function blondelFromHeightLength(values, unit = 'cm') {
   return baseResults({ ...best, unit })
 }
 
-export function computeBlondel(mode, values, unit = 'cm') {
+export function computeBlondel(mode: string, values: FormulaValues, unit = 'cm'): FormulaResult {
   switch (mode) {
     case 'height-steps': return blondelFromHeightSteps(values, unit)
     case 'step-tread': return blondelFromStepTread(values, unit)
