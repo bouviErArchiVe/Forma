@@ -1,5 +1,13 @@
 # Changelog Forma
 
+## 0.51.0 — Pack 20 Formules : affichage des « Maths de base »
+
+### Correctif d'affichage
+- Les formules de la catégorie « Maths de base » (sin/cos/tan, Pythagore, aires, volumes, conversions deg/rad) renvoyaient un résultat au format `{ ok, label, value }` que le calculateur n'affichait pas : le panneau Résultat restait vide et la copie était impossible
+- `compute/basic.ts` produit désormais le format standard `rows` + `summary` (valeur formatée avec unité, ligne « Détail » quand pertinent) comme tous les autres modules — affichage et bouton « Copier le résultat » fonctionnels
+- Test unitaire `basic.test.ts` verrouillant le format de sortie
+- Aucune dépendance ajoutée
+
 ## 0.50.0 — Pack 19 Formules : typage strict (fin des @ts-nocheck)
 
 ### Qualité du code — module Formules d'architecture

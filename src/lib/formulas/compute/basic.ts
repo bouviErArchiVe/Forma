@@ -1,10 +1,19 @@
 /** Formules maths de base */
+import { fmt } from './units'
 import type { FormulaResult, FormulaValues } from '../types'
 
 const n = (v: string | undefined): number => parseFloat(String(v ?? '').replace(',', '.')) || 0
 
 function ok(label: string, value: number, unit = '', detail = ''): FormulaResult {
-  return { ok: true, label, value: Number.isFinite(value) ? value : 0, unit, detail }
+  const safe = Number.isFinite(value) ? value : 0
+  const display = unit ? `${fmt(safe)} ${unit}` : fmt(safe)
+  const rows = [{ label, value: display }]
+  if (detail) rows.push({ label: 'Détail', value: detail })
+  return {
+    rows,
+    summary: `${label} = ${display}`,
+    verdict: { id: 'ok', label: 'Calculé', color: '#2d6a4f' },
+  }
 }
 
 export function sinDeg(v: FormulaValues): FormulaResult {
