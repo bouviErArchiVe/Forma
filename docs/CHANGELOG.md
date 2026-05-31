@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.54.0 — Pack 23 Formules : export et copie de l'historique
+
+### Partage local des calculs conservés
+- Bouton **Copier** (⎘) sur chaque entrée de l'historique : titre, valeurs saisies et résumé du résultat
+- Bouton **Exporter (.txt)** : télécharge l'historique complet en fichier texte (`forma-formules-YYYY-MM-DD.txt`)
+- Module `history-export.ts` : `formatHistoryEntry`, `formatHistoryReport`, `downloadHistoryReport`
+- Tests unitaires du formatage
+- Aucune dépendance ajoutée
+
 ## 0.53.0 — Pack 22 Formules : recherche globale
 
 ### Correctif d'usage

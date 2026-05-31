@@ -4,6 +4,7 @@ import { BrandLogo } from '../components/BrandLogo'
 import { FormulaCalculator } from '../components/tools/FormulaCalculator'
 import { FormulaCard } from '../components/tools/FormulaCard'
 import { FORMULA_CATEGORIES, getFormulaById, filterFormulas } from '../lib/formulas/catalog'
+import { formatHistoryEntry, downloadHistoryReport } from '../lib/formulas/history-export'
 import { formatRelativeTime } from '../lib/format-relative'
 import { useFormulaPrefsStore } from '../stores/formulaPrefsStore'
 import { useFormulaHistoryStore } from '../stores/formulaHistoryStore'
@@ -144,13 +145,22 @@ export function FormulasPage() {
                     Historique de calculs ({history.length})
                   </h2>
                   {history.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={clearHistory}
-                      className="text-xs text-forma-muted hover:text-red-600"
-                    >
-                      Tout effacer
-                    </button>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => downloadHistoryReport(history)}
+                        className="text-xs text-forma-accent hover:underline"
+                      >
+                        Exporter (.txt)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={clearHistory}
+                        className="text-xs text-forma-muted hover:text-red-600"
+                      >
+                        Tout effacer
+                      </button>
+                    </div>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -175,6 +185,18 @@ export function FormulasPage() {
                             </span>
                           </div>
                           <p className="text-xs text-forma-accent/80 mt-1 truncate">{entry.summary}</p>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            void navigator.clipboard.writeText(formatHistoryEntry(entry))
+                            useToastStore.getState().show('Calcul copié')
+                          }}
+                          className="text-xs text-forma-muted hover:text-forma-accent px-1"
+                          title="Copier le calcul"
+                          aria-label="Copier le calcul"
+                        >
+                          ⎘
                         </button>
                         <button
                           type="button"
