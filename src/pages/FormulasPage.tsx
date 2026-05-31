@@ -16,6 +16,10 @@ const MENU_CATEGORIES = [
   ...FORMULA_CATEGORIES.filter((c) => c.id !== 'all'),
 ]
 
+const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
+  FORMULA_CATEGORIES.map((c) => [c.id, c.label]),
+)
+
 export function FormulasPage() {
   const favorites = useFormulaPrefsStore((s) => s.favorites)
   const recent = useFormulaPrefsStore((s) => s.recent)
@@ -45,18 +49,18 @@ export function FormulasPage() {
     touchRecent(id)
   }
 
+  const searching = search.trim().length > 0
+
   const listedFormulas = useMemo(() => {
-    let list = filterFormulas({
-      categoryId: categoryId === 'recent' ? 'all' : categoryId,
-      search,
-      favorites,
-    })
-    if (categoryId === 'recent') {
+    // A non-empty query searches the whole catalog, regardless of the selected category.
+    const effectiveCategory = searching || categoryId === 'recent' ? 'all' : categoryId
+    let list = filterFormulas({ categoryId: effectiveCategory, search, favorites })
+    if (!searching && categoryId === 'recent') {
       const order = new Map(recent.map((id, i) => [id, i]))
       list = list.filter((f) => order.has(f.id)).sort((a, b) => (order.get(a.id)! - order.get(b.id)!))
     }
     return list
-  }, [categoryId, search, favorites, recent])
+  }, [searching, categoryId, search, favorites, recent])
 
   return (
     <div className="min-h-full flex flex-col max-w-6xl mx-auto w-full p-4">
@@ -105,7 +109,9 @@ export function FormulasPage() {
                 className="flex-1 min-w-[200px] border border-forma-border rounded-lg px-3 py-2 text-sm"
               />
               <span className="text-xs text-forma-muted self-center">
-                {listedFormulas.length} formule{listedFormulas.length !== 1 ? 's' : ''}
+                {searching
+                  ? `${listedFormulas.length} résultat${listedFormulas.length !== 1 ? 's' : ''} dans toutes les catégories`
+                  : `${listedFormulas.length} formule${listedFormulas.length !== 1 ? 's' : ''}`}
               </span>
             </div>
           )}
@@ -116,9 +122,12 @@ export function FormulasPage() {
                 <button
                   key={cat.id}
                   type="button"
-                  onClick={() => setCategoryId(cat.id)}
+                  onClick={() => {
+                    setCategoryId(cat.id)
+                    setSearch('')
+                  }}
                   className={`whitespace-nowrap text-left px-3 py-2 rounded-xl text-sm ${
-                    categoryId === cat.id
+                    !searching && categoryId === cat.id
                       ? 'bg-forma-accent/15 text-forma-accent font-medium'
                       : 'text-forma-muted hover:bg-white/30'
                   }`}
@@ -194,6 +203,7 @@ export function FormulasPage() {
                     formula={f}
                     favorite={favorites.includes(f.id)}
                     onOpen={() => openFormula(f.id)}
+                    categoryLabel={searching ? CATEGORY_LABELS[f.categoryId] : undefined}
                   />
                 ))}
                 {listedFormulas.length === 0 && (

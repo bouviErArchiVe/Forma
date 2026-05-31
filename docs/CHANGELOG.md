@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.53.0 — Pack 22 Formules : recherche globale
+
+### Correctif d'usage
+- La recherche était limitée à la catégorie sélectionnée : taper « béton » depuis « Escaliers » ne renvoyait rien
+- La recherche balaie désormais **tout le catalogue** dès qu'une requête est saisie, quelle que soit la catégorie active
+- Indicateur « X résultats dans toutes les catégories » et puce de catégorie sur chaque carte pour situer le résultat
+- Choisir une catégorie dans le menu efface la recherche (navigation et recherche mutuellement exclusives)
+- Aucune dépendance ajoutée
+
 ## 0.52.0 — Pack 21 Formules : historique de calculs
 
 ### Nouveau — conserver et rejouer ses calculs (100 % local)

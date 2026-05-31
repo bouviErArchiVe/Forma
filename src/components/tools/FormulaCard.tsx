@@ -4,9 +4,10 @@ interface FormulaCardProps {
   formula: FormulaDef
   favorite?: boolean
   onOpen: () => void
+  categoryLabel?: string
 }
 
-export function FormulaCard({ formula, favorite, onOpen }: FormulaCardProps) {
+export function FormulaCard({ formula, favorite, onOpen, categoryLabel }: FormulaCardProps) {
   return (
     <button
       type="button"
@@ -22,6 +23,11 @@ export function FormulaCard({ formula, favorite, onOpen }: FormulaCardProps) {
           </div>
           <p className="text-xs text-forma-muted mt-1 line-clamp-2">{formula.description}</p>
           <p className="text-[10px] font-mono text-forma-accent/80 mt-2 truncate">{formula.formulaText}</p>
+          {categoryLabel && (
+            <span className="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full bg-forma-accent/10 text-forma-accent">
+              {categoryLabel}
+            </span>
+          )}
         </div>
       </div>
     </button>
