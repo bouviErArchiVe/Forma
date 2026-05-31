@@ -30,6 +30,7 @@ import {
   type CloudSnapshotMeta,
 } from '../lib/cloud-snapshots'
 import { downloadSnapshotFile, importSnapshotFile } from '../lib/snapshot-file'
+import { dicoCacheStats, clearUnpinnedDicoCache } from '../lib/formadico/cache'
 import { useSettingsStore } from '../stores/settingsStore'
 import { FORMA_THEMES } from '../theme/themes'
 import { TEMPLATE_LABELS } from '../lib/templates'
@@ -45,6 +46,7 @@ export function SettingsPage() {
   const modulesFileRef = useRef<HTMLInputElement>(null)
   const [modulesMsg, setModulesMsg] = useState('')
   const [snapshotsNonce, setSnapshotsNonce] = useState(0)
+  const [dicoStats, setDicoStats] = useState(() => dicoCacheStats())
   const [importMsg, setImportMsg] = useState('')
   const [syncMsg, setSyncMsg] = useState('')
   const [indexMsg, setIndexMsg] = useState('')
@@ -762,6 +764,31 @@ export function SettingsPage() {
         {syncMsg && <p className="text-sm text-forma-accent">{syncMsg}</p>}
         <CloudSnapshotsPanel nonce={snapshotsNonce} onChange={() => setSnapshotsNonce((n) => n + 1)} />
         <SyncQueuePanel />
+      </section>
+
+      <section className="mb-8 space-y-3">
+        <h2 className="text-sm font-semibold text-forma-muted uppercase">Dictionnaire (FormaDico)</h2>
+        <p className="text-xs text-forma-muted">
+          {dicoStats.total} définition(s) en cache, dont {dicoStats.pinned} épinglée(s) (favoris,
+          disponibles hors-ligne). Vider conserve les favoris.
+        </p>
+        <button
+          type="button"
+          data-testid="clear-dico-cache"
+          className="w-full py-2 border rounded-lg dark:border-gray-600 text-sm"
+          disabled={dicoStats.total - dicoStats.pinned === 0}
+          onClick={() => {
+            const removed = clearUnpinnedDicoCache()
+            setDicoStats(dicoCacheStats())
+            setImportMsg(
+              removed > 0 ?
+                `${removed} définition(s) non épinglée(s) supprimée(s).`
+              : 'Aucune définition à supprimer.',
+            )
+          }}
+        >
+          Vider le cache du dictionnaire (garder les favoris)
+        </button>
       </section>
 
       <section className="mb-8 space-y-2">

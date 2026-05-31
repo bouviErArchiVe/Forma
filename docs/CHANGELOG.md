@@ -1,5 +1,13 @@
 # Changelog Forma
 
+## 0.49.0 — Pack 18 FormaDico : typage strict + gestion du cache
+
+### Qualité du code + cache dans les Paramètres
+- `provider.ts` et `parse.ts` étaient en `@ts-nocheck` (non vérifiés) : désormais entièrement typés (interfaces réponses Wiktionary/dictionaryapi.dev, retours `DicoEntry`), sans `any`
+- Paramètres › Dictionnaire (FormaDico) : compteur de définitions en cache (dont épinglées) + bouton « Vider le cache (garder les favoris) »
+- Test unitaire du parseur Wiktionary (extraction définitions/grammaire)
+- Aucune dépendance ajoutée, aucun changement de comportement
+
 ## 0.48.0 — Pack 17 FormaDico : préparer les favoris hors-ligne
 
 ### Préparation hors-ligne + gestion du cache

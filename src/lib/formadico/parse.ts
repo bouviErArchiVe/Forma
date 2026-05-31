@@ -1,7 +1,9 @@
-// @ts-nocheck
 /** Parse Wiktionary wikitext → sections structurées */
+import type { DicoDefinition, DicoEntry } from './constants'
 
-function cleanWikiLine(line) {
+type Grammar = NonNullable<DicoEntry['grammar']>
+
+function cleanWikiLine(line: string): string {
   return line
     .replace(/\[\[([^|\]]+)\|([^\]]+)]]/g, '$2')
     .replace(/\[\[([^\]]+)]]/g, '$1')
@@ -14,10 +16,10 @@ function cleanWikiLine(line) {
     .trim()
 }
 
-function extractSection(wikitext, titles) {
+function extractSection(wikitext: string, titles: string[]): string[] {
   if (!wikitext) return []
   const lines = wikitext.split('\n')
-  const out = []
+  const out: string[] = []
   let inSection = false
   let depth = 0
   for (const raw of lines) {
@@ -40,9 +42,9 @@ function extractSection(wikitext, titles) {
   return [...new Set(out)].slice(0, 24)
 }
 
-function extractDefinitions(wikitext, lang = 'fr') {
+function extractDefinitions(wikitext: string, lang = 'fr'): DicoDefinition[] {
   if (!wikitext) return []
-  const defs = []
+  const defs: DicoDefinition[] = []
   const langMarker = lang === 'fr' ? '{{S|fr' : '{{S|en'
   const lines = wikitext.split('\n')
   let currentPos = ''
@@ -59,8 +61,8 @@ function extractDefinitions(wikitext, lang = 'fr') {
   return defs.slice(0, 12)
 }
 
-function extractGrammar(wikitext, lang = 'fr') {
-  const grammar = { pos: null, gender: null, plural: null, feminine: null }
+function extractGrammar(wikitext: string, lang = 'fr'): Grammar {
+  const grammar: Grammar = { pos: null, gender: null, plural: null, feminine: null }
   const langBlock = lang === 'fr' ? '{{S|fr' : '{{S|en'
   const posMatch = wikitext.match(new RegExp(`${langBlock.replace(/[{}|]/g, '\\$&')}[^|]*\\|([^|}|]+)`))
   if (posMatch) grammar.pos = posMatch[1]
@@ -78,7 +80,7 @@ function extractGrammar(wikitext, lang = 'fr') {
   return grammar
 }
 
-export function parseWiktionaryEntry(wikitext, word, lang = 'fr') {
+export function parseWiktionaryEntry(wikitext: string, word: string, lang = 'fr'): DicoEntry {
   const wikiHost = lang === 'en' ? 'en.wiktionary.org' : 'fr.wiktionary.org'
   const definitions = extractDefinitions(wikitext, lang)
   const synonyms = extractSection(wikitext, ['synonyme', 'synonym'])

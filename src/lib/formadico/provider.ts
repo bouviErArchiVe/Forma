@@ -1,15 +1,14 @@
-// @ts-nocheck
 /** FormaDico — Wiktionary (libre) + cache hors ligne */
 
-import { FD_LANGS } from './constants'
+import { FD_LANGS, type DicoEntry } from './constants'
 import { parseWiktionaryEntry } from './parse'
 import { getCachedEntry, setCachedEntry } from './cache'
 
-function wikiHost(lang) {
+function wikiHost(lang: string): string {
   return FD_LANGS.find((l) => l.id === lang)?.wiki || 'fr.wiktionary.org'
 }
 
-async function wikiFetch(params, lang = 'fr') {
+async function wikiFetch(params: Record<string, string>, lang = 'fr'): Promise<unknown> {
   const host = wikiHost(lang)
   const qs = new URLSearchParams({ format: 'json', origin: '*', ...params })
   const res = await fetch(`https://${host}/w/api.php?${qs}`)
@@ -17,57 +16,87 @@ async function wikiFetch(params, lang = 'fr') {
   return res.json()
 }
 
-export async function searchSuggestions(query, lang = 'fr', limit = 8) {
+export async function searchSuggestions(query: string, lang = 'fr', limit = 8): Promise<string[]> {
   const q = String(query || '').trim()
   if (q.length < 2) return []
-  const data = await wikiFetch({
-    action: 'opensearch',
-    search: q,
-    limit: String(limit),
-    namespace: '0',
-  }, lang)
-  return Array.isArray(data?.[1]) ? data[1] : []
+  const data = await wikiFetch(
+    { action: 'opensearch', search: q, limit: String(limit), namespace: '0' },
+    lang,
+  )
+  return Array.isArray(data) && Array.isArray(data[1]) ? (data[1] as string[]) : []
 }
 
-async function fetchWiktionaryWikitext(word, lang = 'fr') {
+interface WikiParseResponse {
+  parse?: { wikitext?: { '*'?: string } }
+}
+
+async function fetchWiktionaryWikitext(word: string, lang = 'fr'): Promise<DicoEntry | null> {
   const page = word.trim().replace(/ /g, '_')
-  const data = await wikiFetch({ action: 'parse', page, prop: 'wikitext', redirects: '1' }, lang)
+  const data = (await wikiFetch(
+    { action: 'parse', page, prop: 'wikitext', redirects: '1' },
+    lang,
+  )) as WikiParseResponse
   const wt = data?.parse?.wikitext?.['*']
   if (!wt) return null
   return parseWiktionaryEntry(wt, word, lang)
 }
 
-async function fetchFreeDictionaryEn(word) {
-  const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`)
+interface FreeDictDefinition {
+  definition: string
+  example?: string
+}
+interface FreeDictMeaning {
+  partOfSpeech?: string
+  definitions?: FreeDictDefinition[]
+  synonyms?: string[]
+  antonyms?: string[]
+}
+interface FreeDictEntry {
+  meanings?: FreeDictMeaning[]
+}
+
+async function fetchFreeDictionaryEn(word: string): Promise<DicoEntry | null> {
+  const res = await fetch(
+    `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`,
+  )
   if (!res.ok) return null
-  const data = await res.json()
+  const data = (await res.json()) as FreeDictEntry[]
   const entry = data?.[0]
   if (!entry) return null
+  const meanings = entry.meanings || []
   return {
     word,
     lang: 'en',
     found: true,
-    definitions: (entry.meanings || []).flatMap((m) =>
-      (m.definitions || []).slice(0, 3).map((d) => ({
-        pos: m.partOfSpeech || '—',
-        text: d.definition,
-      }))
-    ).slice(0, 10),
-    synonyms: (entry.meanings || []).flatMap((m) => (m.synonyms || [])).slice(0, 12),
-    antonyms: (entry.meanings || []).flatMap((m) => (m.antonyms || [])).slice(0, 12),
-    examples: (entry.meanings || []).flatMap((m) =>
-      (m.definitions || []).map((d) => d.example).filter(Boolean)
-    ).slice(0, 8),
+    definitions: meanings
+      .flatMap((m) =>
+        (m.definitions || []).slice(0, 3).map((d) => ({
+          pos: m.partOfSpeech || '—',
+          text: d.definition,
+        })),
+      )
+      .slice(0, 10),
+    synonyms: meanings.flatMap((m) => m.synonyms || []).slice(0, 12),
+    antonyms: meanings.flatMap((m) => m.antonyms || []).slice(0, 12),
+    examples: meanings
+      .flatMap((m) => (m.definitions || []).map((d) => d.example).filter(Boolean) as string[])
+      .slice(0, 8),
     expressions: [],
     conjugation: null,
-    grammar: { pos: entry.meanings?.[0]?.partOfSpeech || null, gender: null, plural: null, feminine: null },
+    grammar: { pos: meanings[0]?.partOfSpeech || null, gender: null, plural: null, feminine: null },
     source: 'dictionaryapi.dev',
     url: `https://en.wiktionary.org/wiki/${encodeURIComponent(word)}`,
   }
 }
 
-export async function lookupWord(word, lang = 'fr', { useCache = true } = {}) {
-  const q = String(word || '').trim().toLowerCase()
+export async function lookupWord(
+  word: string,
+  lang = 'fr',
+  { useCache = true }: { useCache?: boolean } = {},
+): Promise<DicoEntry> {
+  const q = String(word || '')
+    .trim()
+    .toLowerCase()
   if (!q || q.length < 2) {
     return { word: q, lang, found: false, error: 'Mot trop court.' }
   }
@@ -77,17 +106,24 @@ export async function lookupWord(word, lang = 'fr', { useCache = true } = {}) {
     if (cached) return { ...cached, fromCache: true }
   }
 
-  let entry = null
+  let entry: DicoEntry | null = null
   try {
     entry = await fetchWiktionaryWikitext(q, lang)
   } catch (err) {
-    return { word: q, lang, found: false, error: err.message || 'Recherche impossible.' }
+    return {
+      word: q,
+      lang,
+      found: false,
+      error: err instanceof Error ? err.message : 'Recherche impossible.',
+    }
   }
 
   if ((!entry || !entry.found) && lang === 'en') {
     try {
       entry = await fetchFreeDictionaryEn(q)
-    } catch { /* fallback */ }
+    } catch {
+      /* fallback */
+    }
   }
 
   if (!entry || !entry.found) {
@@ -97,8 +133,9 @@ export async function lookupWord(word, lang = 'fr', { useCache = true } = {}) {
       lang,
       found: false,
       suggestions,
-      error: suggestions.length
-        ? 'Mot introuvable — suggestions ci-dessous.'
+      error:
+        suggestions.length ?
+          'Mot introuvable — suggestions ci-dessous.'
         : 'Mot introuvable dans le dictionnaire libre.',
     }
   }
@@ -107,7 +144,7 @@ export async function lookupWord(word, lang = 'fr', { useCache = true } = {}) {
   return entry
 }
 
-export function extractWordFromSelection() {
+export function extractWordFromSelection(): string | null {
   const sel = window.getSelection?.()
   if (!sel?.toString().trim()) return null
   const raw = sel.toString().trim().split(/\s+/)[0]
@@ -116,10 +153,12 @@ export function extractWordFromSelection() {
 }
 
 /** API externe future — VITE_DICO_API_URL */
-export async function lookupCustomApi(word, lang = 'fr') {
+export async function lookupCustomApi(word: string, lang = 'fr'): Promise<unknown> {
   const base = import.meta.env.VITE_DICO_API_URL
   if (!base) return null
-  const res = await fetch(`${base.replace(/\/$/, '')}/lookup?word=${encodeURIComponent(word)}&lang=${lang}`)
+  const res = await fetch(
+    `${base.replace(/\/$/, '')}/lookup?word=${encodeURIComponent(word)}&lang=${lang}`,
+  )
   if (!res.ok) return null
   return res.json()
 }
