@@ -67,6 +67,7 @@ export function drawStroke(ctx: CanvasRenderingContext2D, stroke: Stroke): void 
 }
 
 function drawSmoothPath(ctx: CanvasRenderingContext2D, pts: Point[]): void {
+  if (pts.length < 2) return
   ctx.beginPath()
   ctx.moveTo(pts[0].x, pts[0].y)
   for (let i = 1; i < pts.length - 1; i++) {

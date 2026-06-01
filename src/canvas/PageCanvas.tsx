@@ -842,6 +842,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       if (shape) commit({ ...local, shapes: [...local.shapes, shape] })
       setShapePoints([])
       finishGestureHistory(!!shape)
+      store.restoreStickyTool()
       return
     }
 
@@ -1006,7 +1007,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
             : store.readMode
               ? 'default'
               : store.activeTool === 'eraser'
-                ? 'cell'
+                ? 'none'
                 : 'crosshair',
           pointerEvents: interactive ? 'auto' : 'none',
         }}
