@@ -5,7 +5,13 @@ import { COVER_COLORS, type Orientation, type PaperTemplate } from '../../types'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 
-export type NewDocKind = 'notebook' | 'whiteboard'
+export type NewDocKind = 'notebook' | 'whiteboard' | 'formadoc'
+
+const KIND_META: Record<NewDocKind, { icon: string; label: string }> = {
+  notebook: { icon: '📓', label: 'Carnet' },
+  whiteboard: { icon: '🖼', label: 'Whiteboard' },
+  formadoc: { icon: '📝', label: 'Document' },
+}
 
 interface NewNotebookModalProps {
   onClose: () => void
@@ -29,24 +35,24 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
   const [paperTemplate, setPaperTemplate] = useState<PaperTemplate>(defaultTemplate)
   const [orientation, setOrientation] = useState<Orientation>('portrait')
 
+  const isFormadoc = kind === 'formadoc'
+
   return (
     <Modal open onClose={onClose} maxWidth="max-w-md">
       <div className="p-6 space-y-4">
         <h2 className="text-lg font-semibold text-forma-text">Nouveau document</h2>
 
         {/* Kind selector */}
-        <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl">
-          {(['notebook', 'whiteboard'] as NewDocKind[]).map((k) => (
+        <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl">
+          {(Object.keys(KIND_META) as NewDocKind[]).map((k) => (
             <button
               key={k}
               type="button"
               onClick={() => {
                 setKind(k)
-                if (k === 'whiteboard') {
-                  setName('Tableau blanc')
-                  setPaperTemplate('grid')
-                  setOrientation('landscape')
-                }
+                if (k === 'whiteboard') { setName('Tableau blanc'); setPaperTemplate('grid'); setOrientation('landscape') }
+                else if (k === 'notebook') { setName('Nouveau carnet') }
+                else if (k === 'formadoc') { setName('Nouveau document') }
               }}
               className={`flex-1 py-1.5 rounded-lg border text-sm font-medium transition-all duration-150 ${
                 kind === k
@@ -54,7 +60,7 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
                   : 'border-transparent text-forma-muted hover:text-forma-text'
               }`}
             >
-              {k === 'notebook' ? '📓 Carnet' : '🖼 Whiteboard'}
+              {KIND_META[k].icon} {KIND_META[k].label}
             </button>
           ))}
         </div>
@@ -89,40 +95,49 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
           </div>
         </div>
 
-        {/* Paper template */}
-        <div>
-          <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Papier</label>
-          <select
-            value={paperTemplate}
-            onChange={(e) => setPaperTemplate(e.target.value as PaperTemplate)}
-            className="forma-input w-full"
-          >
-            {(Object.keys(TEMPLATE_LABELS) as PaperTemplate[]).map((t) => (
-              <option key={t} value={t}>{TEMPLATE_LABELS[t]}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Orientation */}
-        <div>
-          <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Orientation</label>
-          <div className="flex gap-2">
-            {(['portrait', 'landscape'] as Orientation[]).map((o) => (
-              <button
-                key={o}
-                type="button"
-                onClick={() => setOrientation(o)}
-                className={`flex-1 py-1.5 rounded-lg border text-sm transition-all duration-150 ${
-                  orientation === o
-                    ? 'border-forma-accent bg-forma-accent/10 text-forma-accent font-medium'
-                    : 'border-forma-border text-forma-muted hover:border-forma-accent/40'
-                }`}
-              >
-                {o === 'portrait' ? 'Portrait' : 'Paysage'}
-              </button>
-            ))}
+        {/* Paper template — hidden for FormaDoc */}
+        {!isFormadoc && (
+          <div>
+            <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Papier</label>
+            <select
+              value={paperTemplate}
+              onChange={(e) => setPaperTemplate(e.target.value as PaperTemplate)}
+              className="forma-input w-full"
+            >
+              {(Object.keys(TEMPLATE_LABELS) as PaperTemplate[]).map((t) => (
+                <option key={t} value={t}>{TEMPLATE_LABELS[t]}</option>
+              ))}
+            </select>
           </div>
-        </div>
+        )}
+
+        {/* Orientation — hidden for FormaDoc */}
+        {!isFormadoc && (
+          <div>
+            <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Orientation</label>
+            <div className="flex gap-2">
+              {(['portrait', 'landscape'] as Orientation[]).map((o) => (
+                <button
+                  key={o}
+                  type="button"
+                  onClick={() => setOrientation(o)}
+                  className={`flex-1 py-1.5 rounded-lg border text-sm transition-all duration-150 ${
+                    orientation === o
+                      ? 'border-forma-accent bg-forma-accent/10 text-forma-accent font-medium'
+                      : 'border-forma-border text-forma-muted hover:border-forma-accent/40'
+                  }`}
+                >
+                  {o === 'portrait' ? 'Portrait' : 'Paysage'}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {isFormadoc && (
+          <p className="text-xs text-forma-muted">
+            📝 Un document texte riche — titres, paragraphes, listes, images, export PDF et Markdown.
+          </p>
+        )}
 
         <div className="flex gap-2 pt-1">
           <Button variant="outline" size="md" className="flex-1" onClick={onClose}>Annuler</Button>

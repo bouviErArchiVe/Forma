@@ -295,3 +295,67 @@ html.dark .hover\:bg-white\/80:hover {
   color: var(--color-forma-muted);
   margin-bottom: 0.5rem;
 }
+
+/* ─── FormaDoc editor prose styles ─── */
+.formadoc-editor h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 0.75rem;
+  color: var(--color-forma-text);
+}
+.formadoc-editor h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--color-forma-text);
+}
+.formadoc-editor h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 1.25rem 0 0.4rem;
+  color: var(--color-forma-text);
+}
+.formadoc-editor p {
+  margin: 0 0 0.75rem;
+}
+.formadoc-editor ul,
+.formadoc-editor ol {
+  margin: 0 0 0.75rem 1.5rem;
+  padding: 0;
+}
+.formadoc-editor li {
+  margin-bottom: 0.25rem;
+}
+.formadoc-editor blockquote {
+  border-left: 3px solid var(--color-forma-accent);
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  color: var(--color-forma-muted);
+  font-style: italic;
+}
+.formadoc-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+  display: block;
+}
+.formadoc-editor a {
+  color: var(--color-forma-accent);
+  text-decoration: underline;
+}
+.formadoc-editor hr {
+  border: none;
+  border-top: 1px solid var(--color-forma-border);
+  margin: 1.5rem 0;
+}
+/* Placeholder when empty */
+.formadoc-editor:empty::before,
+.formadoc-editor p:only-child:empty::before {
+  content: attr(data-placeholder);
+  color: var(--color-forma-muted);
+  pointer-events: none;
+}

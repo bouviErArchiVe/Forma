@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { PageCanvas, type PageCanvasHandle } from '../canvas/PageCanvas'
 import { addImageToPage } from '../canvas/page-ops'
@@ -71,10 +71,32 @@ import { useToastStore } from '../stores/toastStore'
 import type { Notebook, Page } from '../types'
 import { normalizePage } from '../types'
 
+const LazyFormaDocPage = React.lazy(() =>
+  import('./FormaDocPage').then((m) => ({ default: m.FormaDocPage }))
+)
+
+function FormaDocPageInline() {
+  return (
+    <React.Suspense fallback={<div className="flex items-center justify-center h-full text-forma-muted">Chargement…</div>}>
+      <LazyFormaDocPage />
+    </React.Suspense>
+  )
+}
+
 export function EditorPage() {
   const { id } = useParams<{ id: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+
+  // FormaDoc documents use a dedicated editor — render it via lazy import
+  const [isFormaDoc, setIsFormaDoc] = useState<boolean | null>(null)
+  useEffect(() => {
+    if (!id) return
+    getNotebook(id).then((nb) => {
+      setIsFormaDoc(nb?.type === 'formadoc' ? true : false)
+    })
+  }, [id])
+
   useOpenDocument(id)
 
   const [notebook, setNotebook] = useState<Notebook | null>(null)
@@ -624,6 +646,18 @@ export function EditorPage() {
   }, [presentation, activePage, notebook, load, pageIndex])
 
   const pageText = activePage ? buildPageContextText(activePage, ocrAppend) : ''
+
+  // FormaDoc: delegate to dedicated editor
+  if (isFormaDoc === null) {
+    return (
+      <div className="flex items-center justify-center h-full text-forma-muted">
+        Chargement…
+      </div>
+    )
+  }
+  if (isFormaDoc) {
+    return <FormaDocPageInline />
+  }
 
   if (locked === null || !notebook) {
     return (

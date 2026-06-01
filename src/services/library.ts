@@ -95,6 +95,28 @@ export async function createWhiteboard(
   })
 }
 
+export async function createFormaDoc(
+  name: string,
+  folderId: string | null = null,
+): Promise<Notebook> {
+  const nb = await createNotebook({
+    name: name || 'Nouveau document',
+    folderId,
+    coverColor: '#6366f1',
+    paperTemplate: 'blank',
+    orientation: 'portrait',
+  })
+  await db.notebooks.update(nb.id, { type: 'formadoc' })
+  // Set initial HTML content on the first (and only) page
+  const page = await db.pages.where('notebookId').equals(nb.id).first()
+  if (page) {
+    await db.pages.update(page.id, {
+      content: `<h1>${name || 'Nouveau document'}</h1><p></p>`,
+    })
+  }
+  return { ...nb, type: 'formadoc' as const }
+}
+
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const r = new FileReader()

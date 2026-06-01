@@ -28,6 +28,7 @@ import {
   createNotebookFromImage,
   createNotebookFromImages,
   createNotebookFromPdf,
+  createFormaDoc,
   createWhiteboard,
   deleteFolder,
   duplicateFolder,
@@ -593,6 +594,7 @@ export function LibraryPage() {
             <option value="notebook">Carnets</option>
             <option value="pdf">PDF</option>
             <option value="whiteboard">Whiteboards</option>
+            <option value="formadoc">Documents</option>
           </select>
 
           {/* View mode */}
@@ -1073,7 +1075,9 @@ export function LibraryPage() {
             const nb =
               kind === 'whiteboard'
                 ? await createWhiteboard(opts.name, currentFolderId)
-                : await createNotebook({ ...opts, folderId: currentFolderId })
+                : kind === 'formadoc'
+                  ? await createFormaDoc(opts.name, currentFolderId)
+                  : await createNotebook({ ...opts, folderId: currentFolderId })
             setShowNewNotebook(false)
             navigate(`/document/${nb.id}`)
           }}
