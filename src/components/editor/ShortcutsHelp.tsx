@@ -63,7 +63,7 @@ export function ShortcutsHelp({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div
-        className="bg-forma-surface dark:bg-gray-900 rounded-xl shadow-xl max-w-md w-full p-6"
+        className="bg-forma-surface rounded-xl shadow-xl max-w-md w-full p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold mb-4">Raccourcis clavier</h2>

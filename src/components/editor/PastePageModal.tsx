@@ -33,7 +33,7 @@ export function PastePageModal({
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div
-        className="bg-forma-surface dark:bg-gray-900 rounded-xl shadow-xl max-w-sm w-full p-4"
+        className="bg-forma-surface rounded-xl shadow-xl max-w-sm w-full p-4"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="font-semibold mb-2">Coller la page</h3>
@@ -44,7 +44,7 @@ export function PastePageModal({
           <select
             value={targetId}
             onChange={(e) => setTargetId(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 text-sm mb-3 dark:bg-gray-800 dark:border-gray-600"
+            className="forma-input w-full mb-3"
           >
             {list.map((nb) => (
               <option key={nb.id} value={nb.id}>

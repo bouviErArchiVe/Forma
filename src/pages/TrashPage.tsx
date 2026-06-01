@@ -26,8 +26,8 @@ export function TrashPage() {
   }, [])
 
   return (
-    <div className="min-h-full p-4 max-w-4xl mx-auto">
-      <Link to="/" className="text-sm text-forma-accent">
+    <div className="min-h-full p-6 max-w-4xl mx-auto">
+      <Link to="/" className="inline-flex items-center gap-1 text-sm text-forma-muted hover:text-forma-accent transition-colors mb-6">
         ← Bibliothèque
       </Link>
       <div className="flex items-center justify-between mt-4 mb-4 gap-3 flex-wrap">
@@ -87,7 +87,7 @@ export function TrashPage() {
           {items
             .filter((nb) => !query.trim() || nb.name.toLowerCase().includes(query.toLowerCase()))
             .map((nb) => (
-            <li key={nb.id} className="flex items-center gap-3 p-3 border rounded-lg bg-white dark:bg-gray-900">
+            <li key={nb.id} className="flex items-center gap-3 p-3 border border-forma-border rounded-xl bg-forma-surface hover:shadow-sm transition-shadow">
               <div className="w-8 h-10 rounded shrink-0" style={{ backgroundColor: nb.coverColor }} />
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">{nb.name}</p>

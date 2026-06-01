@@ -57,7 +57,7 @@ export function SearchPanel({ notebookId, pageId, onSelectPage, onHighlight }: S
             }
           }}
           placeholder="Mot-clé…"
-          className="flex-1 border rounded px-2 py-1 text-sm"
+          className="forma-input flex-1"
         />
         {q.trim() && (
           <button

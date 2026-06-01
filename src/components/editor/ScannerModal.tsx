@@ -65,7 +65,7 @@ export function ScannerModal({ onCapture, onClose }: ScannerModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden max-w-lg w-full">
+      <div className="bg-white rounded-xl overflow-hidden max-w-lg w-full">
         <div className="p-3 flex justify-between items-center border-b dark:border-gray-700">
           <h3 className="font-medium">{raw ? 'Ajuster le scan' : 'Scanner'}</h3>
           <button type="button" onClick={onClose}>

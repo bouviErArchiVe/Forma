@@ -69,7 +69,7 @@ export default function App() {
   return (
     <AppErrorBoundary>
     <BrowserRouter>
-      <div className="h-full min-h-screen flex flex-col bg-forma-bg dark:bg-gray-950 dark:text-gray-100">
+      <div className="h-full min-h-screen flex flex-col bg-forma-bg text-forma-text">
         <OfflineBanner />
         <MultiTabBanner />
         <Suspense fallback={<PageFallback />}>

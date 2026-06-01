@@ -402,15 +402,19 @@ export function LibraryPage() {
       }}
     >
     <div className="min-h-full flex flex-col">
-      <header className="sticky top-0 z-10 bg-forma-surface border-b border-forma-border px-4 py-3 shadow-sm">
-        <div className="flex items-center gap-2 flex-wrap max-w-6xl mx-auto">
-          <h1 className="text-xl font-bold text-forma-accent mr-1">Forma</h1>
-          <span className="text-xs text-forma-muted hidden sm:inline">Notes reimagined</span>
+      <header className="sticky top-0 z-10 bg-forma-surface border-b border-forma-border shadow-sm" style={{ boxShadow: 'var(--shadow-forma-sm)' }}>
+        {/* Row 1 — Brand + search + controls */}
+        <div className="flex items-center gap-2.5 px-4 py-2.5 flex-wrap max-w-6xl mx-auto">
+          <div className="flex items-center gap-2 shrink-0">
+            <h1 className="text-lg font-bold tracking-tight text-forma-accent">Forma</h1>
+            <span className="text-[10px] text-forma-muted hidden sm:inline font-medium uppercase tracking-wider">Beta</span>
+          </div>
+
           {storageWarning && (
             <button
               type="button"
               onClick={() => navigate('/settings')}
-              className="text-xs text-red-700 dark:text-red-400 px-2 py-0.5 rounded bg-red-100 dark:bg-red-950/50 font-medium"
+              className="text-xs text-red-700 dark:text-red-400 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/50 font-medium hover:bg-red-200 dark:hover:bg-red-950 transition-colors"
               title="Espace de stockage presque plein — libérez de l'espace"
             >
               ⚠ Stockage presque plein
@@ -424,7 +428,7 @@ export function LibraryPage() {
               <button
                 type="button"
                 onClick={() => navigate('/settings')}
-                className="text-xs text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950/50"
+                className="text-xs text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/50 hover:bg-amber-200 transition-colors"
                 title="Configurer la sauvegarde auto"
               >
                 Sauvegarde &gt; 7 j
@@ -432,46 +436,51 @@ export function LibraryPage() {
             )
           })()}
 
-          <nav className="flex items-center gap-1 text-sm text-forma-muted flex-wrap min-w-0">
-            <button type="button" onClick={() => setFolder(null)} className="hover:text-forma-accent shrink-0">
-              Bibliothèque
-            </button>
-            {folderPath.map((f, i) => (
-              <span key={f.id} className="flex items-center gap-1 shrink-0">
-                <span>/</span>
-                <button
-                  type="button"
-                  className="hover:text-forma-accent truncate max-w-[100px]"
-                  onClick={() => setFolder(f.id)}
-                  title={f.name}
-                >
-                  {f.name}
-                </button>
-                {i === folderPath.length - 1 && currentFolderId && (
-                  <span className="sr-only">(actuel)</span>
-                )}
-              </span>
-            ))}
-          </nav>
+          {/* Breadcrumb */}
+          {folderPath.length > 0 && (
+            <nav className="flex items-center gap-1 text-sm text-forma-muted min-w-0">
+              <button type="button" onClick={() => setFolder(null)} className="hover:text-forma-accent transition-colors shrink-0">
+                ⌂
+              </button>
+              {folderPath.map((f) => (
+                <span key={f.id} className="flex items-center gap-1 shrink-0">
+                  <span className="text-forma-border">/</span>
+                  <button
+                    type="button"
+                    className="hover:text-forma-accent transition-colors truncate max-w-[100px]"
+                    onClick={() => setFolder(f.id)}
+                    title={f.name}
+                  >
+                    {f.name}
+                  </button>
+                </span>
+              ))}
+            </nav>
+          )}
 
-          <input
-            type="search"
-            placeholder="Rechercher carnets, texte…"
-            value={searchQuery}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') setSearch('')
-            }}
-            className="flex-1 min-w-[180px] max-w-md border border-forma-border rounded-lg px-3 py-1.5 text-sm"
-          />
+          <div className="flex-1" />
 
+          {/* Search */}
+          <div className="relative">
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-forma-muted text-xs pointer-events-none">🔍</span>
+            <input
+              type="search"
+              placeholder="Rechercher…"
+              value={searchQuery}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Escape') setSearch('') }}
+              className="w-40 sm:w-56 border border-forma-border rounded-xl pl-7 pr-3 py-1.5 text-sm bg-forma-bg focus:outline-none focus:border-forma-accent focus:ring-1 focus:ring-forma-accent/30 transition-all"
+            />
+          </div>
+
+          {/* Sort + type */}
           <select
             value={`${sortBy}-${sortOrder}`}
             onChange={(e) => {
               const [by, ord] = e.target.value.split('-') as [typeof sortBy, typeof sortOrder]
               setSort(by, ord)
             }}
-            className="text-sm border rounded-lg px-2 py-1.5"
+            className="text-xs border border-forma-border rounded-lg px-2 py-1.5 bg-forma-surface hidden sm:block"
           >
             <option value="modified-desc">Modifié ↓</option>
             <option value="modified-asc">Modifié ↑</option>
@@ -484,7 +493,7 @@ export function LibraryPage() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as 'all' | DocumentType)}
-            className="text-sm border rounded-lg px-2 py-1.5"
+            className="text-xs border border-forma-border rounded-lg px-2 py-1.5 bg-forma-surface hidden sm:block"
             title="Filtrer par type"
           >
             <option value="all">Tous types</option>
@@ -493,13 +502,19 @@ export function LibraryPage() {
             <option value="whiteboard">Whiteboards</option>
           </select>
 
-          <div className="flex border rounded-lg overflow-hidden">
+          {/* View mode */}
+          <div className="flex border border-forma-border rounded-lg overflow-hidden">
             {(['grid', 'list'] as const).map((m) => (
               <button
                 key={m}
                 type="button"
                 onClick={() => setViewMode(m)}
-                className={`px-3 py-1.5 text-sm ${viewMode === m ? 'bg-forma-accent text-white' : ''}`}
+                className={`px-2.5 py-1.5 text-sm transition-colors ${
+                  viewMode === m
+                    ? 'bg-forma-accent text-white'
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-forma-muted'
+                }`}
+                title={m === 'grid' ? 'Grille' : 'Liste'}
               >
                 {m === 'grid' ? '▦' : '☰'}
               </button>
@@ -507,54 +522,60 @@ export function LibraryPage() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto mt-2 flex flex-wrap gap-2 items-center">
-          {(['all', 'favorites', 'recent'] as FilterTab[]).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setFilterTab(t)}
-              className={`text-xs px-3 py-1 rounded-full ${
-                filterTab === t ? 'bg-forma-accent text-white' : 'bg-gray-100'
-              }`}
-            >
-              {t === 'all' ? 'Tous' : t === 'favorites' ? '★ Favoris' : 'Récents'}
+        {/* Row 2 — Filter tabs + actions */}
+        <div className="max-w-6xl mx-auto px-4 pb-2 flex flex-wrap gap-1.5 items-center">
+          {/* Filter tabs */}
+          <div className="flex gap-1 p-0.5 bg-gray-100 dark:bg-gray-800 rounded-full">
+            {(['all', 'favorites', 'recent'] as FilterTab[]).map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setFilterTab(t)}
+                className={`text-xs px-3 py-1 rounded-full transition-all font-medium ${
+                  filterTab === t
+                    ? 'bg-white dark:bg-gray-700 text-forma-text shadow-sm'
+                    : 'text-forma-muted hover:text-forma-text'
+                }`}
+              >
+                {t === 'all' ? 'Tous' : t === 'favorites' ? '★ Favoris' : 'Récents'}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1" />
+
+          {/* Secondary nav */}
+          <div className="flex items-center gap-1 flex-wrap">
+            <button type="button" onClick={async () => navigate(`/document/${await openQuickNote(currentFolderId)}`)}
+              className="text-xs px-2.5 py-1 bg-amber-400 hover:bg-amber-500 text-amber-950 rounded-lg font-medium transition-colors"
+              title="Ouvre toujours le même carnet rapide">
+              ⚡
             </button>
-          ))}
-          <button type="button" onClick={() => navigate('/templates')} className="text-xs text-forma-muted hover:text-forma-accent">
-            Modèles
-          </button>
-          <button type="button" onClick={() => navigate('/plans')} className="text-xs text-forma-muted hover:text-forma-accent">
-            Offres
-          </button>
-          <button type="button" onClick={() => navigate('/settings')} className="text-xs text-forma-muted hover:text-forma-accent">
-            Paramètres
-          </button>
-          <button type="button" onClick={() => setShowShortcuts(true)} className="text-xs text-forma-muted hover:text-forma-accent">
-            Raccourcis ?
-          </button>
-          <button
-            type="button"
-            onClick={async () => navigate(`/document/${await openQuickNote(currentFolderId)}`)}
-            className="text-xs px-2 py-1 bg-amber-400 text-amber-950 rounded-lg font-medium"
-            title="Ouvre toujours le même carnet rapide"
-          >
-            ⚡ Rapide
-          </button>
-          <button type="button" onClick={() => navigate('/trash')} className="text-xs text-forma-muted hover:text-red-600">
-            Corbeille
-          </button>
-          <button type="button" onClick={() => setSelectionMode(!selectionMode)} className="text-xs px-2 py-1 border rounded-lg">
-            {selectionMode ? 'Annuler' : 'Sélection'}
-          </button>
-          <button type="button" onClick={() => setShowNewNotebook(true)} className="text-xs px-3 py-1.5 bg-forma-accent text-white rounded-lg">
-            + Carnet
-          </button>
-          <button type="button" onClick={() => fileRef.current?.click()} className="text-xs px-3 py-1.5 border rounded-lg">
-            PDF
-          </button>
-          <button type="button" onClick={() => formaRef.current?.click()} className="text-xs px-3 py-1.5 border rounded-lg">
-            .forma
-          </button>
+            <button type="button" onClick={() => setSelectionMode(!selectionMode)}
+              className={`text-xs px-2.5 py-1 border rounded-lg transition-colors ${selectionMode ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted hover:border-forma-accent hover:text-forma-accent'}`}>
+              {selectionMode ? '✕ Annuler' : 'Sélection'}
+            </button>
+            <button type="button" onClick={() => setShowNewNotebook(true)}
+              className="text-xs px-2.5 py-1 bg-forma-accent hover:bg-forma-accent-hover text-white rounded-lg font-medium transition-colors shadow-sm">
+              + Carnet
+            </button>
+            <button type="button" onClick={() => fileRef.current?.click()}
+              className="text-xs px-2.5 py-1 border border-forma-border rounded-lg text-forma-muted hover:text-forma-accent hover:border-forma-accent transition-colors">
+              PDF
+            </button>
+            <button type="button" onClick={() => formaRef.current?.click()}
+              className="text-xs px-2.5 py-1 border border-forma-border rounded-lg text-forma-muted hover:text-forma-accent hover:border-forma-accent transition-colors">
+              .forma
+            </button>
+            <button type="button" onClick={() => navigate('/settings')}
+              className="text-xs text-forma-muted hover:text-forma-accent transition-colors px-1" title="Paramètres">
+              ⚙
+            </button>
+            <button type="button" onClick={() => navigate('/trash')}
+              className="text-xs text-forma-muted hover:text-red-500 transition-colors px-1" title="Corbeille">
+              🗑
+            </button>
+          </div>
           <input ref={fileRef} type="file" accept="application/pdf" className="hidden" onChange={(e) => {
             const f = e.target.files?.[0]
             if (f) handleImportPdf(f)

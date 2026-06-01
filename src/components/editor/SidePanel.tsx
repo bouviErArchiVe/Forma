@@ -40,6 +40,28 @@ interface SidePanelProps {
   openPanel?: SidePanelId
 }
 
+const PANEL_ICONS: Record<NonNullable<SidePanelId>, string> = {
+  search: '⌕',
+  outline: '≡',
+  audio: '🎙',
+  ai: '✦',
+  ocr: '⊡',
+  study: '📚',
+  share: '↗',
+  history: '⏱',
+}
+
+const PANEL_LABELS: Record<NonNullable<SidePanelId>, string> = {
+  search: 'Recherche',
+  outline: 'Plan',
+  audio: 'Audio',
+  ai: 'IA',
+  ocr: 'OCR',
+  study: 'Révision',
+  share: 'Partage',
+  history: 'Versions',
+}
+
 export function SidePanel({
   notebookId,
   page,
@@ -64,79 +86,91 @@ export function SidePanel({
     if (open) localStorage.setItem(LAST_PANEL_KEY, open)
   }, [open])
 
-  const tabs: { id: Panel; label: string; hint: string }[] = [
-    { id: 'search', label: 'Recherche', hint: 'Ctrl+F' },
-    { id: 'outline', label: 'Plan', hint: 'Blocs' },
-    { id: 'audio', label: 'Audio', hint: 'Micro' },
-    { id: 'ai', label: 'IA', hint: 'Local' },
-    { id: 'ocr', label: 'OCR', hint: 'Scan' },
-    { id: 'study', label: 'Révision', hint: 'SM-2' },
-    { id: 'share', label: 'Partage', hint: 'Lien' },
-    { id: 'history', label: 'Versions', hint: '15 max' },
-  ]
+  const panelIds = Object.keys(PANEL_ICONS) as NonNullable<SidePanelId>[]
 
   return (
     <>
-      <div className="w-12 shrink-0 bg-forma-surface border-l border-forma-border flex flex-col items-center py-2 gap-1">
-        {tabs.map((t) => (
+      {/* Icon dock */}
+      <div className="w-11 shrink-0 bg-forma-surface border-l border-forma-border flex flex-col items-center pt-2 pb-3 gap-0.5">
+        {panelIds.map((id) => (
           <button
-            key={t.id}
+            key={id}
             type="button"
-            title={`${t.label} (${t.hint})`}
-            onClick={() => setOpen(open === t.id ? null : t.id)}
-            className={`w-9 h-9 rounded text-xs font-medium ${
-              open === t.id ? 'bg-forma-accent text-white' : 'hover:bg-gray-100'
+            title={`${PANEL_LABELS[id]} (${id === 'search' ? 'Ctrl+F' : id === 'history' ? '15 max' : ''})`}
+            onClick={() => setOpen(open === id ? null : id)}
+            className={`w-9 h-9 rounded-xl flex items-center justify-center text-base transition-all duration-150 ${
+              open === id
+                ? 'bg-forma-accent text-white shadow-sm'
+                : 'text-forma-muted hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-forma-text'
             }`}
           >
-            {t.label.slice(0, 2)}
+            <span className={id === 'ai' ? 'text-sm font-bold' : ''}>{PANEL_ICONS[id]}</span>
           </button>
         ))}
       </div>
+
+      {/* Panel content */}
       {open && (
-        <aside className="w-72 shrink-0 bg-forma-surface border-l border-forma-border overflow-y-auto p-3">
-          <button type="button" className="text-xs text-forma-muted mb-2" onClick={() => setOpen(null)}>
-            Fermer ×
-          </button>
-          {open === 'search' && (
-            <SearchPanel
-              notebookId={notebookId}
-              pageId={pageId}
-              onSelectPage={onSelectPage}
-              onHighlight={onSearchHighlight}
-            />
-          )}
-          {open === 'outline' && (
-            <OutlinePanel page={page} pageIndex={pageIndex} onHighlight={onSearchHighlight} />
-          )}
-          {open === 'audio' && (
-            <AudioPanel notebookId={notebookId} pageId={pageId} onSelectPage={onSelectPage} />
-          )}
-          {open === 'ai' && (
-            <AIPanel
-              contextText={pageText}
-              onAddStudyPairs={
-                onAddStudy
-                  ? async (pairs) => {
-                      for (const p of pairs) await onAddStudy(p.front, p.back)
-                    }
-                  : undefined
-              }
-            />
-          )}
-          {open === 'ocr' && (
-            <OCRPanel
-              pageId={pageId}
-              onInsertText={onOcrText}
-              onAddToStudy={onAddStudy ? (t) => onAddStudy(t.slice(0, 120), t) : undefined}
-            />
-          )}
-          {open === 'study' && (
-            <StudyPanel notebookId={notebookId} pageText={pageText} selectionText={studySnippet} />
-          )}
-          {open === 'share' && <SharePanel notebookId={notebookId} />}
-          {open === 'history' && onPageRestored && (
-            <HistoryPanel page={page} onRestored={onPageRestored} />
-          )}
+        <aside
+          className="w-72 shrink-0 bg-forma-surface border-l border-forma-border flex flex-col overflow-hidden panel-slide-right"
+          key={open}
+        >
+          {/* Panel header */}
+          <div className="flex items-center justify-between px-3 py-2.5 border-b border-forma-border shrink-0">
+            <h3 className="text-sm font-semibold text-forma-text">{PANEL_LABELS[open]}</h3>
+            <button
+              type="button"
+              onClick={() => setOpen(null)}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-forma-muted hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-forma-text transition-colors text-base"
+              title="Fermer"
+            >
+              ×
+            </button>
+          </div>
+
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto p-3">
+            {open === 'search' && (
+              <SearchPanel
+                notebookId={notebookId}
+                pageId={pageId}
+                onSelectPage={onSelectPage}
+                onHighlight={onSearchHighlight}
+              />
+            )}
+            {open === 'outline' && (
+              <OutlinePanel page={page} pageIndex={pageIndex} onHighlight={onSearchHighlight} />
+            )}
+            {open === 'audio' && (
+              <AudioPanel notebookId={notebookId} pageId={pageId} onSelectPage={onSelectPage} />
+            )}
+            {open === 'ai' && (
+              <AIPanel
+                contextText={pageText}
+                onAddStudyPairs={
+                  onAddStudy
+                    ? async (pairs) => {
+                        for (const p of pairs) await onAddStudy(p.front, p.back)
+                      }
+                    : undefined
+                }
+              />
+            )}
+            {open === 'ocr' && (
+              <OCRPanel
+                pageId={pageId}
+                onInsertText={onOcrText}
+                onAddToStudy={onAddStudy ? (t) => onAddStudy(t.slice(0, 120), t) : undefined}
+              />
+            )}
+            {open === 'study' && (
+              <StudyPanel notebookId={notebookId} pageText={pageText} selectionText={studySnippet} />
+            )}
+            {open === 'share' && <SharePanel notebookId={notebookId} />}
+            {open === 'history' && onPageRestored && (
+              <HistoryPanel page={page} onRestored={onPageRestored} />
+            )}
+          </div>
         </aside>
       )}
     </>

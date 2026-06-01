@@ -27,7 +27,7 @@ export function MovePageModal({ page, onClose, onMoved }: MovePageModalProps) {
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div
-        className="bg-forma-surface dark:bg-gray-900 rounded-xl shadow-xl max-w-sm w-full p-4"
+        className="bg-forma-surface rounded-xl shadow-xl max-w-sm w-full p-4"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="font-semibold mb-2">Déplacer la page</h3>
@@ -43,12 +43,12 @@ export function MovePageModal({ page, onClose, onMoved }: MovePageModalProps) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Filtrer les carnets…"
-              className="w-full border rounded-lg px-3 py-2 text-sm mb-2 dark:bg-gray-800 dark:border-gray-600"
+              className="forma-input w-full mb-2"
             />
             <select
               value={targetId}
               onChange={(e) => setTargetId(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 text-sm mb-3 dark:bg-gray-800 dark:border-gray-600"
+              className="forma-input w-full mb-3"
             >
               {list
                 .filter((nb) => !query.trim() || nb.name.toLowerCase().includes(query.toLowerCase()))

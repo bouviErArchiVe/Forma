@@ -86,12 +86,12 @@ export function Toolbar({
     r.readAsDataURL(file)
   }
 
-  const activeToolClass = 'bg-forma-accent text-white shadow-sm scale-105'
+  const activeToolClass = 'bg-forma-accent text-white shadow-sm scale-105 ring-2 ring-forma-accent/20'
   const inactiveToolClass =
-    'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-35'
+    'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 disabled:opacity-30 hover:scale-105 active:scale-95'
 
   return (
-    <div className="flex items-center gap-1.5 px-3 py-2 bg-forma-surface border-b border-forma-border flex-wrap shrink-0 min-h-[52px]">
+    <div className="flex items-center gap-1 px-3 py-1.5 bg-forma-surface border-b border-forma-border flex-wrap shrink-0 min-h-[48px]" style={{ boxShadow: 'var(--shadow-forma-xs)' }}>
       {/* Mode édition / lecture */}
       <button
         type="button"
@@ -101,10 +101,10 @@ export function Toolbar({
         }}
         disabled={readOnlyLocked}
         title={readOnlyLocked ? 'Ouvert dans un autre onglet — lecture seule' : undefined}
-        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-150 ${
           readMode || readOnlyLocked
-            ? 'bg-blue-600 text-white'
-            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
+            ? 'bg-blue-600 text-white shadow-sm'
+            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'
         } ${readOnlyLocked ? 'opacity-80 cursor-not-allowed' : ''}`}
       >
         {readOnlyLocked ? '🔒 Lecture' : readMode ? '📖 Lecture' : '✏️ Édition'}
@@ -231,9 +231,7 @@ export function Toolbar({
         }}
       />
 
-      <div className="w-px h-8 bg-forma-border" />
-
-      <div className="w-px h-7 bg-forma-border mx-1" />
+      <div className="w-px h-7 bg-forma-border/60 mx-1" />
 
       {/* Presets trousse */}
       {!readMode && (activeTool === 'pen' || activeTool === 'pencil' || activeTool === 'highlighter') && (

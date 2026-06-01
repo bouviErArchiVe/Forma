@@ -13,6 +13,17 @@
     <meta name="apple-mobile-web-app-title" content="Forma" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Forma</title>
+    <!-- Prevent theme flash: apply stored theme before first paint -->
+    <script>
+      (function(){
+        try {
+          var s = JSON.parse(localStorage.getItem('forma-settings') || '{}');
+          var t = (s.state && s.state.theme) || 'dark';
+          var dark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch(e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

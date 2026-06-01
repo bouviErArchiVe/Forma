@@ -13,7 +13,7 @@ export function PinGate({
 
   return (
     <div className="flex items-center justify-center h-full bg-forma-bg p-4">
-      <div className="bg-forma-surface dark:bg-gray-900 rounded-xl shadow-lg p-6 max-w-xs w-full">
+      <div className="bg-forma-surface rounded-xl shadow-lg p-6 max-w-xs w-full">
         <h2 className="font-semibold mb-2">Carnet verrouillé</h2>
         <p className="text-sm text-forma-muted mb-4">Entrez votre code PIN</p>
         <input

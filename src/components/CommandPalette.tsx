@@ -257,61 +257,79 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-[110] flex items-start justify-center pt-[12vh] bg-black/40 p-4"
+      className="fixed inset-0 z-[110] flex items-start justify-center pt-[12vh] p-4"
+      style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(3px)', animation: 'fade-in 120ms ease-out' }}
       onClick={() => setOpen(false)}
     >
       <div
-        className="bg-forma-surface dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-forma-border"
+        className="bg-forma-surface rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-forma-border"
+        style={{ animation: 'zoom-in 150ms cubic-bezier(0.16,1,0.3,1)' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <input
-          ref={inputRef}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={
-            inEditor
-              ? 'Carnet, pages (2+ car.), action…'
-              : 'Carnet, pages (2+ car.), navigation…'
-          }
-          className="w-full px-4 py-3 border-b border-forma-border bg-transparent outline-none text-base"
-          onKeyDown={(e) => {
-            if (e.key === 'ArrowDown') {
-              e.preventDefault()
-              setIdx((i) => Math.min(i + 1, items.length - 1))
+        <div className="flex items-center gap-2 px-4 border-b border-forma-border">
+          <span className="text-forma-muted text-sm shrink-0">⌘</span>
+          <input
+            ref={inputRef}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={
+              inEditor
+                ? 'Carnet, pages, action…'
+                : 'Carnet, pages, navigation…'
             }
-            if (e.key === 'ArrowUp') {
-              e.preventDefault()
-              setIdx((i) => Math.max(i - 1, 0))
-            }
-            if (e.key === 'Enter' && items[idx]) {
-              e.preventDefault()
-              run(items[idx])
-            }
-          }}
-        />
-        <ul className="max-h-72 overflow-y-auto py-1">
+            className="flex-1 py-3.5 bg-transparent outline-none text-sm"
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowDown') {
+                e.preventDefault()
+                setIdx((i) => Math.min(i + 1, items.length - 1))
+              }
+              if (e.key === 'ArrowUp') {
+                e.preventDefault()
+                setIdx((i) => Math.max(i - 1, 0))
+              }
+              if (e.key === 'Enter' && items[idx]) {
+                e.preventDefault()
+                run(items[idx])
+              }
+            }}
+          />
+          {query && (
+            <button type="button" onClick={() => setQuery('')} className="text-forma-muted hover:text-forma-text text-sm shrink-0 px-1">×</button>
+          )}
+        </div>
+        <ul className="max-h-[320px] overflow-y-auto py-1.5">
           {items.length === 0 && (
-            <li className="px-4 py-3 text-sm text-forma-muted">Aucun résultat</li>
+            <li className="px-4 py-8 text-sm text-forma-muted text-center">Aucun résultat</li>
           )}
           {items.map((item, i) => (
             <li key={item.id}>
               <button
                 type="button"
-                className={`w-full text-left px-4 py-2 text-sm flex justify-between gap-2 ${
-                  i === idx ? 'bg-forma-accent/15 text-forma-accent' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                className={`w-full text-left px-4 py-2.5 text-sm flex justify-between gap-3 rounded-lg mx-1 transition-colors duration-100 ${
+                  i === idx
+                    ? 'bg-forma-accent/12 text-forma-accent'
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-forma-text'
                 }`}
+                style={{ width: 'calc(100% - 8px)' }}
                 onMouseEnter={() => setIdx(i)}
                 onClick={() => run(item)}
               >
-                <span>{item.label}</span>
-                {item.hint && <span className="text-forma-muted text-xs shrink-0">{item.hint}</span>}
+                <span className="truncate">{item.label}</span>
+                {item.hint && (
+                  <span className="text-forma-muted text-xs shrink-0 font-mono bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                    {item.hint}
+                  </span>
+                )}
               </button>
             </li>
           ))}
         </ul>
-        <p className="px-4 py-2 text-[10px] text-forma-muted border-t border-forma-border">
-          ↑↓ · Entrée · Échap · Ctrl+K · /{inEditor ? ' · actions éditeur' : ''}
-        </p>
+        <div className="px-4 py-2 text-[10px] text-forma-muted border-t border-forma-border flex gap-3">
+          <span>↑↓ naviguer</span>
+          <span>↵ ouvrir</span>
+          <span>Échap fermer</span>
+          {inEditor && <span>· actions éditeur</span>}
+        </div>
       </div>
     </div>
   )

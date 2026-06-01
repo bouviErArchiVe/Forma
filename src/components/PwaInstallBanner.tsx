@@ -33,7 +33,7 @@ export function PwaInstallBanner() {
   if (window.matchMedia('(display-mode: standalone)').matches) return null
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-[95] bg-forma-surface dark:bg-gray-900 border border-forma-border rounded-xl shadow-lg p-4 text-sm">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-[95] bg-forma-surface border border-forma-border rounded-xl shadow-lg p-4 text-sm">
       <p className="font-medium mb-1">Installer Forma</p>
       <p className="text-forma-muted text-xs mb-3">
         Ajoutez l’app à l’écran d’accueil pour un accès rapide hors navigateur.

@@ -21,7 +21,7 @@ export function ExportRangeDialog({
   return (
     <div className="fixed inset-0 z-[85] flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div
-        className="bg-forma-surface dark:bg-gray-900 rounded-xl shadow-xl max-w-xs w-full p-4"
+        className="bg-forma-surface rounded-xl shadow-xl max-w-xs w-full p-4"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="font-semibold text-sm mb-3">Plage de pages</h3>
@@ -34,7 +34,7 @@ export function ExportRangeDialog({
               max={pageCount}
               value={from}
               onChange={(e) => setFrom(Math.max(1, Math.min(pageCount, +e.target.value || 1)))}
-              className="mt-1 w-full border rounded px-2 py-1 dark:bg-gray-800"
+              className="forma-input w-full mt-1"
             />
           </label>
           <label className="flex-1">
@@ -45,7 +45,7 @@ export function ExportRangeDialog({
               max={pageCount}
               value={to}
               onChange={(e) => setTo(Math.max(1, Math.min(pageCount, +e.target.value || 1)))}
-              className="mt-1 w-full border rounded px-2 py-1 dark:bg-gray-800"
+              className="forma-input w-full mt-1"
             />
           </label>
         </div>

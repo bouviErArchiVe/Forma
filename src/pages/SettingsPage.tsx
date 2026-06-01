@@ -92,15 +92,15 @@ export function SettingsPage() {
   }, [])
 
   return (
-    <div className="min-h-full p-4 max-w-lg mx-auto">
-      <Link to="/" className="text-sm text-forma-accent">
+    <div className="min-h-full p-6 max-w-lg mx-auto">
+      <Link to="/" className="inline-flex items-center gap-1 text-sm text-forma-muted hover:text-forma-accent transition-colors mb-6">
         ← Bibliothèque
       </Link>
-      <h1 className="text-2xl font-bold mt-4 mb-6">Paramètres</h1>
+      <h1 className="text-2xl font-bold mb-6 text-forma-text">Paramètres</h1>
 
       {stats && (
         <section className="mb-8 p-4 rounded-xl border border-forma-border bg-forma-surface/50 space-y-1 text-sm">
-          <h2 className="text-sm font-semibold text-forma-muted uppercase mb-2">Bibliothèque</h2>
+          <h2 className="panel-section-title">Bibliothèque</h2>
           <p>{stats.notebooks} carnet(s) · {stats.pages} page(s)</p>
           <p>
             {stats.folders} dossier(s) · {stats.studyCards} cartes Study · {stats.audioRecordings}{' '}
@@ -155,7 +155,7 @@ export function SettingsPage() {
       )}
 
       <section className="mb-8 space-y-4">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">Apparence</h2>
+        <h2 className="panel-section-title">Apparence</h2>
         <label className="block text-sm">
           Thème
           <select
@@ -164,7 +164,7 @@ export function SettingsPage() {
               setTheme(e.target.value as ThemeMode)
               applyTheme()
             }}
-            className="mt-1 w-full border rounded-lg px-3 py-2 dark:bg-gray-800 dark:border-gray-600"
+            className="forma-input w-full mt-1"
           >
             <option value="system">Système</option>
             <option value="light">Clair</option>
@@ -176,7 +176,7 @@ export function SettingsPage() {
           <select
             value={paperTone}
             onChange={(e) => setPaperTone(e.target.value as PaperTone)}
-            className="mt-1 w-full border rounded-lg px-3 py-2 dark:bg-gray-800 dark:border-gray-600"
+            className="forma-input w-full mt-1"
           >
             <option value="cream">Crème (défaut)</option>
             <option value="white">Blanc</option>
@@ -186,7 +186,7 @@ export function SettingsPage() {
       </section>
 
       <section className="mb-8 space-y-3">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">Stylet & tactile</h2>
+        <h2 className="panel-section-title">Stylet & tactile</h2>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -250,7 +250,7 @@ export function SettingsPage() {
       </section>
 
       <section className="mb-8 space-y-3">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">Éditeur</h2>
+        <h2 className="panel-section-title">Éditeur</h2>
         <label className="block text-sm mb-2">
           Couverture par défaut (nouveaux carnets)
           <div className="flex flex-wrap gap-1 mt-1">
@@ -273,7 +273,7 @@ export function SettingsPage() {
           <select
             value={defaultPaperTemplate}
             onChange={(e) => setDefaultPaperTemplate(e.target.value as PaperTemplate)}
-            className="mt-1 w-full border rounded-lg px-3 py-2 dark:bg-gray-800 dark:border-gray-600"
+            className="forma-input w-full mt-1"
           >
             {(Object.keys(TEMPLATE_LABELS) as PaperTemplate[]).map((t) => (
               <option key={t} value={t}>
@@ -287,7 +287,7 @@ export function SettingsPage() {
           <select
             value={pageViewMode}
             onChange={(e) => setPageViewMode(e.target.value as typeof pageViewMode)}
-            className="mt-1 w-full border rounded-lg px-3 py-2 dark:bg-gray-800 dark:border-gray-600"
+            className="forma-input w-full mt-1"
           >
             <option value="single">Une page à la fois</option>
             <option value="continuous">Défilement continu</option>
@@ -328,7 +328,7 @@ export function SettingsPage() {
       </section>
 
       <section className="mb-8 space-y-3">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">Partage portable</h2>
+        <h2 className="panel-section-title">Partage portable</h2>
         <p className="text-xs text-forma-muted">
           Importez un fichier <code>.forma-share.zip</code> reçu d&apos;un autre appareil pour activer le lien de partage.
         </p>
@@ -360,7 +360,7 @@ export function SettingsPage() {
       </section>
 
       <section className="mb-8 space-y-3">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">Recherche manuscrit</h2>
+        <h2 className="panel-section-title">Recherche manuscrit</h2>
         <p className="text-xs text-forma-muted">
           Indexe l’écriture au stylo via OCR (long). Les pages déjà indexées sont ignorées.
         </p>
@@ -387,7 +387,7 @@ export function SettingsPage() {
       </section>
 
       <section className="mb-8 space-y-3">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">Sauvegarde</h2>
+        <h2 className="panel-section-title">Sauvegarde</h2>
         <p className="text-xs text-forma-muted">
           Exportez toute votre bibliothèque en .forma.zip. Remplacer télécharge d’abord une sauvegarde
           horodatée puis efface les données locales ; fusionner ajoute les carnets (conflits d’id →
@@ -552,7 +552,7 @@ export function SettingsPage() {
       </section>
 
       <section className="mb-8 space-y-3">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">Sync & sauvegarde auto</h2>
+        <h2 className="panel-section-title">Sync & sauvegarde auto</h2>
         <p className="text-xs text-forma-muted">
           La sauvegarde automatique écrit dans le slot cloud local (silencieux, sans boîte de dialogue).
         </p>
@@ -561,7 +561,7 @@ export function SettingsPage() {
           <select
             value={syncInterval}
             onChange={(e) => setSyncInterval(e.target.value as typeof syncInterval)}
-            className="mt-1 w-full border rounded-lg px-3 py-2 dark:bg-gray-800 dark:border-gray-600"
+            className="forma-input w-full mt-1"
           >
             <option value="off">Désactivée</option>
             <option value="daily">Quotidienne</option>
@@ -643,7 +643,7 @@ export function SettingsPage() {
       </section>
 
       <section className="mb-8 space-y-2">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">Historique de navigation</h2>
+        <h2 className="panel-section-title">Historique de navigation</h2>
         <p className="text-xs text-forma-muted">
           Efface les listes « Récents » et « pages récentes » de la palette (Ctrl+K).
         </p>
@@ -661,7 +661,7 @@ export function SettingsPage() {
       </section>
 
       <section className="mb-8">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase mb-2">Raccourcis utiles</h2>
+        <h2 className="panel-section-title">Raccourcis utiles</h2>
         <ul className="text-xs text-forma-muted space-y-1">
           <li><strong className="text-forma-text">Ctrl+K</strong> ou <strong className="text-forma-text">/</strong> — palette de commandes</li>
           <li><strong className="text-forma-text">Ctrl+F</strong> — recherche dans le document</li>
@@ -674,7 +674,7 @@ export function SettingsPage() {
       <PwaSettingsSection />
 
       <section className="mb-8 space-y-2">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">À propos</h2>
+        <h2 className="panel-section-title">À propos</h2>
         <p className="text-xs text-forma-muted">
           Forma v{APP_VERSION} — données 100 % locales (IndexedDB)
         </p>
@@ -701,7 +701,7 @@ function PwaSettingsSection() {
   if (!supported) {
     return (
       <section className="mb-8 space-y-2">
-        <h2 className="text-sm font-semibold text-forma-muted uppercase">Application (PWA)</h2>
+        <h2 className="panel-section-title">Application (PWA)</h2>
         <p className="text-xs text-forma-muted">
           Service worker actif uniquement en production (<code>npm run build</code> + preview ou
           déploiement). En dev Vite, pas de cache offline.
@@ -712,7 +712,7 @@ function PwaSettingsSection() {
 
   return (
     <section className="mb-8 space-y-3">
-      <h2 className="text-sm font-semibold text-forma-muted uppercase">Application (PWA)</h2>
+      <h2 className="panel-section-title">Application (PWA)</h2>
       <p className="text-xs text-forma-muted">
         Forma peut être installée et ouverte hors ligne. Le shell de l&apos;app est mis en cache ;
         vos carnets restent dans IndexedDB.

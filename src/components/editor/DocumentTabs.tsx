@@ -18,12 +18,14 @@ export function DocumentTabs() {
   if (!openIds.length) return null
 
   return (
-    <div className="flex items-center gap-0.5 px-2 py-1 bg-gray-100 border-b border-forma-border overflow-x-auto shrink-0">
+    <div className="flex items-center gap-0.5 px-2 py-1 bg-forma-bg border-b border-forma-border overflow-x-auto shrink-0 min-h-[36px]" style={{ scrollbarWidth: 'none' }}>
       {openIds.map((id) => (
         <div
           key={id}
-          className={`flex items-center gap-1 px-3 py-1 rounded-t text-sm cursor-pointer shrink-0 ${
-            activeId === id ? 'bg-forma-surface shadow-sm' : 'hover:bg-white/80'
+          className={`group flex items-center gap-1 px-3 py-1 rounded-lg text-sm cursor-pointer shrink-0 transition-all duration-150 ${
+            activeId === id
+              ? 'bg-forma-surface shadow-sm border border-forma-border text-forma-text'
+              : 'text-forma-muted hover:bg-forma-surface/70 hover:text-forma-text'
           }`}
         >
           <button type="button" className="truncate max-w-[120px]" onClick={() => {
@@ -34,8 +36,8 @@ export function DocumentTabs() {
           </button>
           <button
             type="button"
-            className="text-forma-muted hover:text-red-500 ml-1"
-            title="Fermer l’onglet (clic molette aussi)"
+            className="opacity-0 group-hover:opacity-100 text-forma-muted hover:text-red-500 transition-opacity ml-0.5 w-4 h-4 flex items-center justify-center rounded text-xs"
+            title="Fermer l’onglet"
             onMouseDown={(e) => {
               if (e.button !== 1) return
               e.preventDefault()
@@ -59,20 +61,20 @@ export function DocumentTabs() {
         </div>
       ))}
       {openIds.length > 1 && activeId && (
-        <>
+        <div className="ml-auto flex items-center gap-0.5 shrink-0">
           <button
             type="button"
-            className="text-xs text-forma-muted hover:text-forma-accent px-2 shrink-0"
+            className="text-xs text-forma-muted hover:text-forma-accent px-2 py-0.5 rounded-md hover:bg-forma-surface/70 transition-colors"
             title="Garder uniquement cet onglet"
             onClick={() => {
               void flushAllPending().then(() => closeOtherTabs(activeId))
             }}
           >
-            Autres ×
+            Conserver
           </button>
           <button
             type="button"
-            className="text-xs text-forma-muted hover:text-red-500 px-2 shrink-0"
+            className="text-xs text-forma-muted hover:text-red-500 px-2 py-0.5 rounded-md hover:bg-forma-surface/70 transition-colors"
             title="Fermer tous les onglets"
             onClick={() => {
               void flushAllPending().then(() => {
@@ -83,7 +85,7 @@ export function DocumentTabs() {
           >
             Tout fermer
           </button>
-        </>
+        </div>
       )}
     </div>
   )

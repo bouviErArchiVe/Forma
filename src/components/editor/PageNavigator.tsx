@@ -49,7 +49,7 @@ export function PageNavigator({
         type="button"
         disabled={index <= 0}
         onClick={onPrev}
-        className="w-8 h-8 rounded-full hover:bg-gray-100 disabled:opacity-30"
+        className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 transition-colors"
         title="Page précédente (Alt+←)"
       >
         ‹
@@ -63,7 +63,7 @@ export function PageNavigator({
           onChange={(e) => setValue(e.target.value)}
           onBlur={commit}
           onKeyDown={(e) => e.key === 'Enter' && commit()}
-          className="w-12 text-xs text-center border rounded"
+          className="w-12 text-xs text-center border border-forma-border rounded bg-forma-surface text-forma-text"
           autoFocus
         />
       ) : (
@@ -85,7 +85,7 @@ export function PageNavigator({
         type="button"
         disabled={index >= total - 1}
         onClick={onNext}
-        className="w-8 h-8 rounded-full hover:bg-gray-100 disabled:opacity-30"
+        className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 transition-colors"
         title="Page suivante (Alt+→)"
       >
         ›

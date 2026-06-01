@@ -56,8 +56,8 @@ export function DocumentCard({
       <div
         role="button"
         tabIndex={0}
-        className={`flex items-center gap-3 p-3 rounded-lg border bg-forma-surface cursor-pointer hover:shadow-sm transition ${
-          selected ? 'border-forma-accent ring-2 ring-forma-accent/30' : 'border-forma-border'
+        className={`flex items-center gap-3 p-3 rounded-xl border bg-forma-surface cursor-pointer hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-forma-accent/40 ${
+          selected ? 'border-forma-accent ring-2 ring-forma-accent/30' : 'border-forma-border hover:border-forma-accent/30'
         }`}
         onClick={selectionMode ? onToggleSelect : onClick}
         onKeyDown={handleKey}
@@ -120,10 +120,10 @@ export function DocumentCard({
     <div
       role="button"
       tabIndex={0}
-      className={`relative rounded-xl border bg-forma-surface overflow-hidden cursor-pointer hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-forma-accent/40 ${
+      className={`group relative rounded-2xl border bg-forma-surface overflow-hidden cursor-pointer transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-forma-accent/40 ${
         selected || focused
-          ? 'border-forma-accent ring-2 ring-forma-accent/30'
-          : 'border-forma-border'
+          ? 'border-forma-accent ring-2 ring-forma-accent/30 shadow-md'
+          : 'border-forma-border hover:border-forma-accent/30 hover:shadow-md'
       }`}
       onClick={selectionMode ? onToggleSelect : onClick}
       onKeyDown={handleKey}
@@ -146,7 +146,7 @@ export function DocumentCard({
         {thumbUrl && (
           <img src={thumbUrl} alt="" className="absolute inset-0 w-full h-full object-cover object-top" />
         )}
-        <div className="relative z-10 bg-white/90 dark:bg-gray-900/90 rounded px-2 py-1 text-xs font-medium truncate max-w-full">
+        <div className="relative z-10 bg-white/90 dark:bg-gray-900/90 rounded-lg px-2.5 py-1 text-xs font-medium truncate max-w-full shadow-sm">
           {renaming ? (
             <input
               value={name}
@@ -177,7 +177,7 @@ export function DocumentCard({
           )}
         </div>
         {!selectionMode && (onRename || onCoverColor) && (
-          <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 opacity-0 group-hover:opacity-100">
+          <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             {onRename && (
               <button
                 type="button"

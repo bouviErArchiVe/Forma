@@ -4,6 +4,8 @@ import { COVER_COLORS, type Notebook, type Orientation, type PaperTemplate } fro
 import { clearNotebookPin, hasNotebookPin, setNotebookPin } from '../../services/lock'
 import { updateNotebookMetadata } from '../../services/library'
 import { getPages } from '../../services/pages'
+import { Modal } from '../ui/Modal'
+import { Button } from '../ui/Button'
 
 const TEMPLATES: PaperTemplate[] = [
   'blank',
@@ -46,110 +48,118 @@ export function NotebookOptions({ notebook, onClose, onUpdated }: NotebookOption
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
-      <div
-        className="bg-forma-surface dark:bg-gray-900 rounded-xl shadow-xl max-w-sm w-full p-5 max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="font-semibold mb-3">Options du carnet</h3>
-        <p className="text-xs text-forma-muted mb-3">
-          {pageCount} page{pageCount !== 1 ? 's' : ''} · ~{wordCount} mot{wordCount !== 1 ? 's' : ''} indexés
-        </p>
+    <Modal open onClose={onClose} maxWidth="max-w-sm">
+      <div className="p-5 space-y-4">
+        {/* Header */}
+        <div>
+          <h3 className="font-semibold text-base">Options du carnet</h3>
+          <p className="text-xs text-forma-muted mt-0.5">
+            {pageCount} page{pageCount !== 1 ? 's' : ''} · ~{wordCount} mot{wordCount !== 1 ? 's' : ''} indexés
+          </p>
+        </div>
 
-        <label className="block text-sm mb-2">
-          Couleur de couverture
-          <div className="flex flex-wrap gap-1 mt-1">
+        {/* Cover color */}
+        <div>
+          <p className="text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Couleur de couverture</p>
+          <div className="flex flex-wrap gap-1.5">
             {COVER_COLORS.map((c) => (
               <button
                 key={c}
                 type="button"
                 onClick={() => setCoverColor(c)}
-                className={`w-7 h-7 rounded-full border-2 ${coverColor === c ? 'border-forma-accent' : 'border-gray-300'}`}
+                className={`w-7 h-7 rounded-full border-2 transition-transform hover:scale-110 ${
+                  coverColor === c ? 'border-forma-accent ring-2 ring-forma-accent/30 scale-110' : 'border-gray-300 dark:border-gray-600'
+                }`}
                 style={{ backgroundColor: c }}
               />
             ))}
           </div>
-        </label>
+        </div>
 
-        <label className="block text-sm mb-2">
-          Modèle par défaut (nouvelles pages)
+        {/* Paper template */}
+        <div>
+          <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">
+            Modèle par défaut
+          </label>
           <select
             value={paperTemplate}
             onChange={(e) => setPaperTemplate(e.target.value as PaperTemplate)}
-            className="mt-1 w-full border rounded-lg px-2 py-1.5 dark:bg-gray-800"
+            className="forma-input w-full"
           >
             {TEMPLATES.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
+              <option key={t} value={t}>{t}</option>
             ))}
           </select>
-        </label>
+        </div>
 
-        <label className="block text-sm mb-3">
-          Orientation
+        {/* Orientation */}
+        <div>
+          <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">
+            Orientation
+          </label>
           <select
             value={orientation}
             onChange={(e) => setOrientation(e.target.value as Orientation)}
-            className="mt-1 w-full border rounded-lg px-2 py-1.5 dark:bg-gray-800"
+            className="forma-input w-full"
           >
             <option value="portrait">Portrait</option>
             <option value="landscape">Paysage</option>
           </select>
-        </label>
+        </div>
 
-        <button
-          type="button"
-          onClick={() => void saveMeta()}
-          className="w-full py-2 mb-4 bg-forma-accent text-white rounded-lg text-sm"
-        >
+        <Button variant="primary" size="sm" className="w-full" onClick={() => void saveMeta()}>
           Enregistrer apparence
-        </button>
+        </Button>
 
-        <p className="text-sm text-forma-muted mb-2">Code PIN (verrouillage local)</p>
-        <input
-          type="password"
-          inputMode="numeric"
-          maxLength={8}
-          value={pin}
-          onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-          placeholder="4–8 chiffres"
-          className="w-full border rounded-lg px-3 py-2 mb-2 dark:bg-gray-800"
-        />
-        <div className="flex gap-2">
-          <button
-            type="button"
-            className="flex-1 py-2 bg-forma-accent text-white rounded-lg text-sm"
-            onClick={async () => {
-              if (pin.length >= 4) {
-                await setNotebookPin(notebook.id, pin)
-                setHasPin(true)
-                setMsg('PIN enregistré')
-                setPin('')
-              }
-            }}
-          >
-            Définir PIN
-          </button>
-          {hasPin && (
-            <button
-              type="button"
-              className="flex-1 py-2 border rounded-lg text-sm dark:border-gray-600"
+        <div className="border-t border-forma-border pt-4 space-y-2">
+          <p className="text-xs font-medium text-forma-muted uppercase tracking-wide">Code PIN (verrouillage local)</p>
+          <input
+            type="password"
+            inputMode="numeric"
+            maxLength={8}
+            value={pin}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+            placeholder="4–8 chiffres"
+            className="forma-input w-full"
+          />
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="flex-1"
               onClick={async () => {
-                await clearNotebookPin(notebook.id)
-                setHasPin(false)
-                setMsg('PIN supprimé')
+                if (pin.length >= 4) {
+                  await setNotebookPin(notebook.id, pin)
+                  setHasPin(true)
+                  setMsg('PIN enregistré')
+                  setPin('')
+                }
               }}
             >
-              Retirer
-            </button>
-          )}
+              Définir PIN
+            </Button>
+            {hasPin && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={async () => {
+                  await clearNotebookPin(notebook.id)
+                  setHasPin(false)
+                  setMsg('PIN supprimé')
+                }}
+              >
+                Retirer
+              </Button>
+            )}
+          </div>
+          {msg && <p className="text-xs text-forma-success">{msg}</p>}
         </div>
-        {msg && <p className="text-xs text-green-600 mt-2">{msg}</p>}
-        <button type="button" onClick={onClose} className="mt-4 w-full py-2 border rounded-lg text-sm">
+
+        <Button variant="ghost" size="sm" className="w-full" onClick={onClose}>
           Fermer
-        </button>
+        </Button>
       </div>
-    </div>
+    </Modal>
   )
 }

@@ -527,7 +527,7 @@ export function EditorPage() {
           if (activePage) {
             void indexPageInk(activePage).then((text) => {
               useToastStore.getState().show(
-                text.trim() ? 'Encre indexée pour la recherche' : 'Pas assez d’encre à indexer',
+                text.trim() ? 'Encre indexée pour la recherche' : "Pas assez d'encre à indexer",
               )
             })
           }
@@ -676,7 +676,7 @@ export function EditorPage() {
                 }
               }}
               onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
-              className="font-semibold border rounded px-2 py-0.5 max-w-[200px]"
+              className="forma-input font-semibold max-w-[200px]"
               autoFocus
             />
           ) : (
@@ -699,15 +699,15 @@ export function EditorPage() {
             </span>
           )}
           {readMode && (
-            <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200">
-              Lecture
+            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-medium">
+              📖 Lecture
             </span>
           )}
           <button
             type="button"
-            className="text-xs text-forma-muted hover:text-forma-accent"
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-xs text-forma-muted hover:text-forma-accent hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             onClick={() => setShowOptions(true)}
-            title="Options"
+            title="Options du carnet"
           >
             ⚙
           </button>
@@ -715,7 +715,7 @@ export function EditorPage() {
           {saveStatus === 'error' ? (
             <button
               type="button"
-              className="text-xs text-red-600 hover:underline hidden sm:inline"
+              className="text-xs text-red-600 hover:text-red-700 hidden sm:inline font-medium"
               onClick={() => {
                 void retryFailedSaves().then((ok) => {
                   if (ok) useToastStore.getState().show('Enregistrement réussi')
@@ -723,7 +723,7 @@ export function EditorPage() {
                     const kind = getAutosaveErrorKind()
                     useToastStore.getState().show(
                       kind === 'quota'
-                        ? 'Espace toujours insuffisant — libérez de l’espace dans Paramètres'
+                        ? "Espace toujours insuffisant — libérez de l'espace dans Paramètres"
                         : 'Échec — réessayez',
                       6000,
                     )
@@ -734,8 +734,8 @@ export function EditorPage() {
               {autosaveErrorButtonLabel(getAutosaveErrorKind())}
             </button>
           ) : (
-            <span className="text-xs text-forma-muted hidden sm:inline">
-              {saveStatus === 'saving' ? 'Enregistrement…' : 'Enregistré'}
+            <span className={`text-xs hidden sm:inline transition-colors ${saveStatus === 'saving' ? 'text-forma-accent' : 'text-forma-muted'}`}>
+              {saveStatus === 'saving' ? '● Enregistrement…' : '✓ Enregistré'}
             </span>
           )}
           <PageNavigator
