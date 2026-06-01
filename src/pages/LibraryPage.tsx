@@ -50,6 +50,7 @@ import { useLibraryStore } from '../stores/libraryStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import { getPages } from '../services/pages'
 import { getLastBackupTime } from '../services/sync'
+import { getBrowserStorageEstimate, isStorageNearlyFull } from '../lib/storage-quota'
 import { confirm } from '../stores/confirmStore'
 import { useToastStore } from '../stores/toastStore'
 import type { DocumentType } from '../types'
@@ -97,6 +98,7 @@ export function LibraryPage() {
   const [listRefresh, setListRefresh] = useState(0)
   const [folderCounts, setFolderCounts] = useState<Record<string, number>>({})
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set())
+  const [storageWarning, setStorageWarning] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
@@ -122,6 +124,13 @@ export function LibraryPage() {
 
   const navCount =
     (filterTab === 'all' ? folders.length : 0) + notebooks.length
+
+  // Vérification quota stockage au montage
+  useEffect(() => {
+    getBrowserStorageEstimate().then((est) => {
+      setStorageWarning(isStorageNearlyFull(est.percent, 85))
+    })
+  }, [])
 
   useEffect(() => {
     setFocusIdx(-1)
@@ -397,7 +406,17 @@ export function LibraryPage() {
         <div className="flex items-center gap-2 flex-wrap max-w-6xl mx-auto">
           <h1 className="text-xl font-bold text-forma-accent mr-1">Forma</h1>
           <span className="text-xs text-forma-muted hidden sm:inline">Notes reimagined</span>
-          {(() => {
+          {storageWarning && (
+            <button
+              type="button"
+              onClick={() => navigate('/settings')}
+              className="text-xs text-red-700 dark:text-red-400 px-2 py-0.5 rounded bg-red-100 dark:bg-red-950/50 font-medium"
+              title="Espace de stockage presque plein — libérez de l'espace"
+            >
+              ⚠ Stockage presque plein
+            </button>
+          )}
+          {!storageWarning && (() => {
             const last = getLastBackupTime()
             const stale = last && Date.now() - last > 7 * 86400000
             if (!stale) return null

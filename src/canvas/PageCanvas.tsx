@@ -148,6 +148,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   const tapeEndDraftRef = useRef<Point | null>(null)
   const dragStart = useRef<Point | null>(null)
   const penStartTime = useRef(0)
+  const eraserPosRef = useRef<{ x: number; y: number } | null>(null)
   const resizeRef = useRef<{
     kind: 'image' | 'sticker' | 'group'
     id?: string
@@ -338,6 +339,22 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       )
     }
     if (showRuler) drawRulerOverlay(oCtx, w, h)
+    // Eraser cursor circle — visual size indicator
+    if (store.activeTool === 'eraser' && eraserPosRef.current) {
+      const { x, y } = eraserPosRef.current
+      const r = store.eraserSize
+      oCtx.beginPath()
+      oCtx.arc(x, y, r, 0, Math.PI * 2)
+      oCtx.strokeStyle = 'rgba(239, 68, 68, 0.85)'
+      oCtx.lineWidth = 1.5
+      oCtx.setLineDash([5, 3])
+      oCtx.stroke()
+      oCtx.setLineDash([])
+      oCtx.beginPath()
+      oCtx.arc(x, y, 2.5, 0, Math.PI * 2)
+      oCtx.fillStyle = 'rgba(239, 68, 68, 0.9)'
+      oCtx.fill()
+    }
   }, [
     lasso,
     selection,
@@ -345,6 +362,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     tapeEnd,
     store.activeTool,
     store.tapeColor,
+    store.eraserSize,
     searchHighlightTextId,
     searchHighlightSource,
     showRuler,
@@ -537,6 +555,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       const pt = getPoint(e)
       commit(addStickerToPage(local, pendingSticker, pt.x, pt.y))
       setPendingSticker(null)
+      store.restoreStickyTool()
       return
     }
 
@@ -670,6 +689,12 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!interactive) return
+    // Always update eraser cursor position for visual feedback (even without pointer down)
+    if (store.activeTool === 'eraser') {
+      const pt = getPoint(e)
+      eraserPosRef.current = { x: pt.x, y: pt.y }
+      scheduleOverlayRedraw()
+    }
     if (!isDrawing.current || (store.readMode && !laserPointer)) return
     if (isPalmTouch(e)) return
     const pt = getPoint(e)
@@ -951,7 +976,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  })
+  }, [performUndo, performRedo, selection, local, commit, onOcrSelection, onAddToStudy])
 
   const editingText = local.texts.find((t) => t.id === editingTextId)
   const displayW = display.width * scale
@@ -988,7 +1013,13 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
+        onPointerLeave={() => {
+          if (eraserPosRef.current) {
+            eraserPosRef.current = null
+            scheduleOverlayRedraw()
+          }
+          handlePointerUp()
+        }}
         onDoubleClick={(e) => {
           if (store.readMode) return
           const canvas = drawRef.current
@@ -1376,9 +1407,20 @@ function eraseAt(page: Page, pt: Point): Page {
   let shapes = page.shapes
   if (mode === 'all' || mode === 'shapes') {
     shapes = shapes.filter((s) => {
-      const near =
-        Math.hypot(s.x1 - pt.x, s.y1 - pt.y) < r || Math.hypot(s.x2 - pt.x, s.y2 - pt.y) < r
-      return !near
+      // Check endpoints and closest point on segment
+      if (Math.hypot(s.x1 - pt.x, s.y1 - pt.y) < r) return false
+      if (Math.hypot(s.x2 - pt.x, s.y2 - pt.y) < r) return false
+      // Closest point on the segment to eraser center
+      const dx = s.x2 - s.x1
+      const dy = s.y2 - s.y1
+      const lenSq = dx * dx + dy * dy
+      if (lenSq > 0) {
+        const t = Math.max(0, Math.min(1, ((pt.x - s.x1) * dx + (pt.y - s.y1) * dy) / lenSq))
+        const nearX = s.x1 + t * dx
+        const nearY = s.y1 + t * dy
+        if (Math.hypot(nearX - pt.x, nearY - pt.y) < r) return false
+      }
+      return true
     })
   }
 
@@ -1411,9 +1453,22 @@ export function addStickerToPage(
   return { ...page, stickers: [...page.stickers, el] }
 }
 
-export function addImageToPage(page: Page, dataUrl: string, cx: number, cy: number): Page {
-  const w = 240
-  const h = 180
+export function addImageToPage(
+  page: Page,
+  dataUrl: string,
+  cx: number,
+  cy: number,
+  dims?: { width: number; height: number },
+): Page {
+  // Scale to fit within 380px max dimension while preserving aspect ratio
+  const MAX = 380
+  let w = dims?.width ?? 240
+  let h = dims?.height ?? 180
+  if (w > MAX || h > MAX) {
+    const ratio = Math.min(MAX / w, MAX / h)
+    w = Math.round(w * ratio)
+    h = Math.round(h * ratio)
+  }
   const img: ImageElement = {
     id: createId(),
     x: cx - w / 2,

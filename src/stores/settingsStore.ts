@@ -45,7 +45,7 @@ interface SettingsState extends AppSettings {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set, get) => ({
-      theme: 'system',
+      theme: 'dark',
       palmRejection: true,
       fingerScroll: true,
       gridSnap: false,

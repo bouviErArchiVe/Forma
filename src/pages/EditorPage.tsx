@@ -396,7 +396,14 @@ export function EditorPage() {
 
   const handleInsertImage = async (dataUrl: string) => {
     if (!activePage) return
-    const next = addImageToPage(normalizePage(activePage), dataUrl, 397, 561)
+    // Detect real image dimensions for proper placement
+    const dims = await new Promise<{ width: number; height: number }>((resolve) => {
+      const img = new Image()
+      img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
+      img.onerror = () => resolve({ width: 240, height: 180 })
+      img.src = dataUrl
+    })
+    const next = addImageToPage(normalizePage(activePage), dataUrl, 397, 561, dims)
     handlePageChange(next)
     restoreStickyTool()
   }

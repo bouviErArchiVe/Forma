@@ -46,18 +46,14 @@ export function drawStroke(ctx: CanvasRenderingContext2D, stroke: Stroke): void 
     drawSmoothPath(ctx, stroke.points)
     ctx.stroke()
   } else if (stroke.tool === 'pencil') {
-    ctx.globalAlpha = 0.85
-    for (let i = 1; i < stroke.points.length; i++) {
-      const a = stroke.points[i - 1]
-      const b = stroke.points[i]
-      ctx.strokeStyle = stroke.color
-      ctx.lineWidth = stroke.width * (0.4 + a.pressure * 0.8)
-      ctx.lineCap = 'round'
-      ctx.beginPath()
-      ctx.moveTo(a.x, a.y)
-      ctx.lineTo(b.x, b.y)
-      ctx.stroke()
-    }
+    // Pencil: smooth quadratic path with pressure-varying opacity
+    ctx.globalAlpha = 0.82
+    ctx.strokeStyle = stroke.color
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    ctx.lineWidth = stroke.width
+    drawSmoothPath(ctx, stroke.points)
+    ctx.stroke()
   } else {
     ctx.globalAlpha = stroke.opacity
     ctx.strokeStyle = stroke.color
