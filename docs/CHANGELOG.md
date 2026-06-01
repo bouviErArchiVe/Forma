@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.60.0 — Pack 29 Formules : palette Ctrl+K
+
+### Accès rapide depuis n'importe où
+- **Ctrl+K** (ou `/`) : entrées **Formules / normes**, FormaDoc et FormaAI dans la navigation
+- Recherche **formules du catalogue** et **calculs conservés** (≥ 2 caractères), avant les pages carnets
+- Ouverture directe avec restauration des valeurs pour l'historique (`palette-search.ts`)
+- Tests unitaires
+- Aucune dépendance ajoutée
+
 ## 0.59.0 — Pack 28 Calculatrice : lien Formules et copie
 
 ### Pont calculateur → Formules

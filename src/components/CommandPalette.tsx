@@ -5,6 +5,7 @@ import { globalHitSourceLabel, searchGlobalPages, type GlobalPageHit } from '../
 import { getRecentPages } from '../lib/recent-pages'
 import { openQuickNote } from '../lib/quick-note'
 import { getRecentIds } from '../lib/recent'
+import { searchFormulasForPalette, prepareFormulaPaletteNavigation } from '../lib/formulas/palette-search'
 import { useLibraryStore } from '../stores/libraryStore'
 import { getAllNotebooks, getNotebooksByIds } from '../services/library'
 import { useTabsStore } from '../stores/tabsStore'
@@ -153,6 +154,9 @@ export function CommandPalette() {
         },
       },
       { id: 'lib', label: 'Bibliothèque', hint: '/', run: () => nav('/') },
+      { id: 'formulas', label: 'Formules / normes', hint: '/formulas', run: () => nav('/formulas') },
+      { id: 'formadoc', label: 'FormaDoc', hint: '/formadoc', run: () => nav('/formadoc') },
+      { id: 'formaai', label: 'FormaAI — recherche', hint: '/formaai', run: () => nav('/formaai') },
       { id: 'settings', label: 'Paramètres', hint: '/settings', run: () => nav('/settings') },
       { id: 'templates', label: 'Modèles de page', run: () => nav('/templates') },
       { id: 'trash', label: 'Corbeille', run: () => nav('/trash') },
@@ -192,6 +196,20 @@ export function CommandPalette() {
         run: () => nav(`/document/${nb.id}`),
       }))
   }, [openIds, notebooks, query])
+
+  const formulaActions: Action[] = useMemo(() => {
+    const q = query.trim()
+    if (q.length < 2) return []
+    return searchFormulasForPalette(q).map((hit) => ({
+      id: hit.id,
+      label: hit.label,
+      hint: `Formules · ${hit.hint.slice(0, 40)}`,
+      run: () => {
+        prepareFormulaPaletteNavigation(hit)
+        nav('/formulas')
+      },
+    }))
+  }, [query])
 
   const pageActions: Action[] = useMemo(
     () =>
@@ -234,8 +252,9 @@ export function CommandPalette() {
         ...notebookActions,
       ]
     }
-    return [...pageActions, ...matchEditor, ...notebookActions, ...matchStatic]
+    return [...formulaActions, ...pageActions, ...matchEditor, ...notebookActions, ...matchStatic]
   }, [
+    formulaActions,
     tabActions,
     staticActions,
     notebookActions,
@@ -270,8 +289,8 @@ export function CommandPalette() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder={
             inEditor
-              ? 'Carnet, pages (2+ car.), action…'
-              : 'Carnet, pages (2+ car.), navigation…'
+              ? 'Carnet, pages, formules (2+ car.)…'
+              : 'Carnet, pages, formules (2+ car.), navigation…'
           }
           className="w-full px-4 py-3 border-b border-forma-border bg-transparent outline-none text-base"
           onKeyDown={(e) => {
