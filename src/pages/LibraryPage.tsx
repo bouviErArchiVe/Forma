@@ -99,6 +99,9 @@ export function LibraryPage() {
   const [folderCounts, setFolderCounts] = useState<Record<string, number>>({})
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set())
   const [storageWarning, setStorageWarning] = useState(false)
+  const [importBusy, setImportBusy] = useState(false)
+  const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null)
+  const importAbortRef = useRef<AbortController | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
@@ -342,10 +345,33 @@ export function LibraryPage() {
   }, [currentFolderId])
 
   const handleImportPdf = async (file: File) => {
-    const { pages, pdfSourceDataUrl } = await importPdfFile(file)
-    const name = file.name.replace(/\.pdf$/i, '')
-    const nb = await createNotebookFromPdf(name, currentFolderId, pages, pdfSourceDataUrl)
-    navigate(`/document/${nb.id}`)
+    const abortController = new AbortController()
+    importAbortRef.current = abortController
+    setImportBusy(true)
+    setImportProgress(null)
+    try {
+      const { pages, pdfSourceDataUrl } = await importPdfFile(file, {
+        lazy: true,
+        signal: abortController.signal,
+        onProgress: (current, total) => setImportProgress({ current, total }),
+      })
+      const name = file.name.replace(/\.pdf$/i, '')
+      const nb = await createNotebookFromPdf(name, currentFolderId, pages, pdfSourceDataUrl)
+      navigate(`/document/${nb.id}`)
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        useToastStore.getState().show('Import PDF annulé')
+      } else {
+        useToastStore.getState().show(
+          err instanceof Error ? `Import PDF échoué : ${err.message}` : 'Import PDF échoué',
+          6000,
+        )
+      }
+    } finally {
+      setImportBusy(false)
+      setImportProgress(null)
+      importAbortRef.current = null
+    }
   }
 
   const handleImportImage = async (file: File) => {
@@ -401,6 +427,37 @@ export function LibraryPage() {
         }
       }}
     >
+    {/* PDF Import progress overlay */}
+    {importBusy && (
+      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="bg-forma-surface rounded-2xl shadow-xl p-6 max-w-xs w-full mx-4 text-center" style={{ animation: 'zoom-in 150ms cubic-bezier(0.16,1,0.3,1)' }}>
+          <div className="text-3xl mb-3">📄</div>
+          <h3 className="font-semibold text-sm mb-1">Import PDF en cours…</h3>
+          {importProgress ? (
+            <>
+              <p className="text-xs text-forma-muted mb-3">
+                Page {importProgress.current} / {importProgress.total}
+              </p>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="bg-forma-accent h-full rounded-full transition-all duration-200"
+                  style={{ width: `${Math.round((importProgress.current / importProgress.total) * 100)}%` }}
+                />
+              </div>
+            </>
+          ) : (
+            <p className="text-xs text-forma-muted">Lecture du fichier…</p>
+          )}
+          <button
+            type="button"
+            className="mt-4 text-xs text-forma-muted hover:text-red-500 transition-colors"
+            onClick={() => importAbortRef.current?.abort()}
+          >
+            Annuler
+          </button>
+        </div>
+      </div>
+    )}
     <div className="min-h-full flex flex-col">
       <header className="sticky top-0 z-10 bg-forma-surface border-b border-forma-border shadow-sm" style={{ boxShadow: 'var(--shadow-forma-sm)' }}>
         {/* Row 1 — Brand + search + controls */}

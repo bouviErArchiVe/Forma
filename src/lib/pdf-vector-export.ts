@@ -24,21 +24,56 @@ import type {
   TapeElement,
 } from '../types'
 
+/**
+ * Decode a data URL to ArrayBuffer without going through fetch().
+ * ~10× faster than fetch() for data: URLs since it avoids the network stack.
+ */
+function dataUrlToArrayBuffer(dataUrl: string): ArrayBuffer {
+  const comma = dataUrl.indexOf(',')
+  const base64 = comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return bytes.buffer
+}
+
 async function embedRasterImage(
   pdfDoc: PDFDocument,
   src: string,
 ): Promise<Awaited<ReturnType<PDFDocument['embedPng']>> | null> {
   if (!src) return null
   try {
-    const bytes = await fetch(src).then((r) => r.arrayBuffer())
-    if (src.includes('png') || src.startsWith('blob:')) {
+    let bytes: ArrayBuffer
+    if (src.startsWith('data:')) {
+      // Decode data URL directly — avoids fetch() overhead
+      bytes = dataUrlToArrayBuffer(src)
+    } else {
+      bytes = await fetch(src).then((r) => r.arrayBuffer())
+    }
+
+    const isJpeg = src.includes('jpeg') || src.includes('jpg')
+    const isPng = src.includes('png') || src.startsWith('data:image/png')
+
+    if (isPng && !isJpeg) {
       try {
         return await pdfDoc.embedPng(bytes)
       } catch {
         return await pdfDoc.embedJpg(bytes)
       }
     }
-    return await pdfDoc.embedJpg(bytes)
+    if (isJpeg) {
+      try {
+        return await pdfDoc.embedJpg(bytes)
+      } catch {
+        return await pdfDoc.embedPng(bytes)
+      }
+    }
+    // Unknown format — try JPEG first (most common for cached pages), then PNG
+    try {
+      return await pdfDoc.embedJpg(bytes)
+    } catch {
+      return await pdfDoc.embedPng(bytes)
+    }
   } catch {
     return null
   }
@@ -181,7 +216,11 @@ async function stickerToDataUrl(st: StickerElement): Promise<string | null> {
   ctx.font = `${st.size}px Segoe UI Emoji, Apple Color Emoji, sans-serif`
   ctx.textBaseline = 'top'
   ctx.fillText(def.emoji, pad, pad)
-  return canvas.toDataURL('image/png')
+  const dataUrl = canvas.toDataURL('image/png')
+  // Release canvas after encoding
+  canvas.width = 0
+  canvas.height = 0
+  return dataUrl
 }
 
 export async function exportNotebookToVectorPdf(
@@ -270,10 +309,12 @@ export async function exportNotebookToVectorPdf(
   }
 
   const bytes = await pdfDoc.save()
-  const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: 'application/pdf' }))
+  const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' })
+  const safeFilename = filename.endsWith('.pdf') ? filename : `${filename}.pdf`
+  const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = filename.endsWith('.pdf') ? filename : `${filename}.pdf`
+  a.download = safeFilename
   a.click()
-  URL.revokeObjectURL(url)
+  setTimeout(() => URL.revokeObjectURL(url), 10_000)
 }

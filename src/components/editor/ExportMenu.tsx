@@ -39,6 +39,7 @@ export function ExportMenu({
   const [open, setOpen] = useState(false)
   const [rangePdf, setRangePdf] = useState(false)
   const [rangeZip, setRangeZip] = useState(false)
+  const [exportProgress, setExportProgress] = useState<{ label: string; current: number; total: number } | null>(null)
   const pdfAppendRef = useRef<HTMLInputElement>(null)
   const jsonImportRef = useRef<HTMLInputElement>(null)
 
@@ -52,7 +53,12 @@ export function ExportMenu({
       useToastStore.getState().show(err instanceof Error ? err.message : `${label} échoué`, 6000)
     } finally {
       onExporting?.(false)
+      setExportProgress(null)
     }
+  }
+
+  const makeProgress = (label: string) => (current: number, total: number) => {
+    setExportProgress({ label, current, total })
   }
 
   const items: { label: string; deferred?: boolean; action: () => void | Promise<void> }[] = [
@@ -109,7 +115,7 @@ export function ExportMenu({
           pages,
           notebook.name,
           notebook.orientation,
-          (i, t) => useToastStore.getState().show(`SVG… ${i}/${t}`, 2000),
+          makeProgress('SVG vecteur'),
           notebook,
         )
       },
@@ -122,7 +128,7 @@ export function ExportMenu({
           pages,
           notebook.name,
           notebook.orientation,
-          (i, t) => useToastStore.getState().show(`ZIP… ${i}/${t}`, 2000),
+          makeProgress('ZIP PNG'),
           undefined,
           notebook,
         )
@@ -136,7 +142,7 @@ export function ExportMenu({
           pages,
           `${notebook.name}.pdf`,
           notebook.orientation,
-          (i, t) => useToastStore.getState().show(`PDF… ${i}/${t}`, 2000),
+          makeProgress('Export PDF'),
           undefined,
           notebook,
         )
@@ -151,7 +157,7 @@ export function ExportMenu({
           `${notebook.name}-vector.pdf`,
           notebook.orientation,
           undefined,
-          (i, t) => useToastStore.getState().show(`PDF vectoriel… ${i}/${t}`, 2000),
+          makeProgress('PDF vectoriel'),
           notebook,
         )
       },
@@ -262,7 +268,7 @@ export function ExportMenu({
                 slice,
                 `${notebook.name}-p${from}-${to}.pdf`,
                 notebook.orientation,
-                (i, t) => useToastStore.getState().show(`PDF… ${i}/${t}`, 2000),
+                makeProgress('PDF plage'),
                 undefined,
                 notebook,
               )
@@ -284,13 +290,31 @@ export function ExportMenu({
                 slice,
                 `${notebook.name}-p${from}-${to}`,
                 notebook.orientation,
-                (i, t) => useToastStore.getState().show(`ZIP… ${i}/${t}`, 2000),
+                makeProgress('ZIP plage'),
                 undefined,
                 notebook,
               )
             })
           }
         />
+      )}
+      {/* Export progress overlay */}
+      {exportProgress && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm pointer-events-none">
+          <div className="bg-forma-surface rounded-2xl shadow-xl p-5 max-w-xs w-full mx-4 text-center pointer-events-auto" style={{ animation: 'zoom-in 150ms cubic-bezier(0.16,1,0.3,1)' }}>
+            <div className="text-2xl mb-2">⏳</div>
+            <h3 className="font-semibold text-sm mb-1">{exportProgress.label}…</h3>
+            <p className="text-xs text-forma-muted mb-2">
+              Page {exportProgress.current} / {exportProgress.total}
+            </p>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+              <div
+                className="bg-forma-accent h-full rounded-full transition-all duration-200"
+                style={{ width: `${Math.round((exportProgress.current / exportProgress.total) * 100)}%` }}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

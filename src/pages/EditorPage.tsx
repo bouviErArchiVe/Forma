@@ -16,7 +16,7 @@ import { SidePanel, type SidePanelId } from '../components/editor/SidePanel'
 import { ContinuousPageBlock } from '../components/editor/ContinuousPageBlock'
 import { resolveNotebookPdfSource } from '../lib/assets'
 import { computePrefetchIndices } from '../lib/continuous-viewport'
-import { prefetchPdfPages } from '../lib/pdf-page-render'
+import { clearPdfDocCache, prefetchPdfPages } from '../lib/pdf-page-render'
 import { Toolbar } from '../components/editor/Toolbar'
 import { ToolbarCustomize } from '../components/editor/ToolbarCustomize'
 import { useCanvasPanZoom } from '../hooks/useCanvasPanZoom'
@@ -226,6 +226,8 @@ export function EditorPage() {
       document.removeEventListener('visibilitychange', onHide)
       window.removeEventListener('pagehide', onUnload)
       void flushAllPending()
+      // Release PDF worker memory when leaving the editor
+      clearPdfDocCache()
     }
   }, [id])
 

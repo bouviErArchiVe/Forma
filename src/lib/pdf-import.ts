@@ -20,16 +20,20 @@ export interface ImportedPdfPage {
 export interface PdfImportResult {
   pages: ImportedPdfPage[]
   pdfSourceDataUrl: string
+  /** Nombre total de pages dans le PDF source */
+  pageCount: number
 }
 
-function bufferToDataUrl(buffer: ArrayBuffer): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const blob = new Blob([buffer], { type: 'application/pdf' })
-    const r = new FileReader()
-    r.onload = () => resolve(r.result as string)
-    r.onerror = reject
-    r.readAsDataURL(blob)
-  })
+/** Convert ArrayBuffer → base64 data URL without FileReader (faster, no callback). */
+function bufferToDataUrl(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer)
+  // Build base64 in 8 KB chunks to avoid call stack overflow on large PDFs
+  const CHUNK = 8192
+  let binary = ''
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK))
+  }
+  return 'data:application/pdf;base64,' + btoa(binary)
 }
 
 async function resolveDestPageIndex(
@@ -87,31 +91,61 @@ async function extractLinks(
 }
 
 export interface PdfImportOptions {
-  /** true = pas de raster à l’import (rendu à la demande) */
+  /** true = pas de raster à l'import (rendu à la demande) */
   lazy?: boolean
+  /** Callback progression (1-based page index, total pages) */
+  onProgress?: (current: number, total: number) => void
+  /** Signal d'annulation ; l'import s'arrête proprement si déclenché */
+  signal?: AbortSignal
 }
+
+/** Max pages rasté en mode non-lazy (garde un canvas à la fois) */
+const MAX_NON_LAZY_PAGES = 50
 
 export async function importPdfFile(
   file: File,
   options: PdfImportOptions = { lazy: true },
 ): Promise<PdfImportResult> {
-  const buffer = await file.arrayBuffer()
-  const pdfSourceDataUrl = await bufferToDataUrl(buffer)
-  const pdf = await pdfjs.getDocument({ data: buffer }).promise
-  const pages: ImportedPdfPage[] = []
+  const { onProgress, signal } = options
   const lazy = options.lazy !== false
 
-  for (let i = 1; i <= pdf.numPages; i++) {
+  // Read file buffer once — reuse for both pdfjs and data URL
+  const buffer = await file.arrayBuffer()
+
+  // Convert to data URL synchronously (no FileReader, no extra copy)
+  const pdfSourceDataUrl = bufferToDataUrl(buffer)
+
+  const pdf = await pdfjs.getDocument({ data: buffer }).promise
+  const total = pdf.numPages
+  const pages: ImportedPdfPage[] = []
+
+  // Limit non-lazy raster to avoid OOM on large PDFs
+  const effectiveLazy = lazy || total > MAX_NON_LAZY_PAGES
+
+  for (let i = 1; i <= total; i++) {
+    if (signal?.aborted) {
+      // Clean up pdf document
+      void pdf.destroy()
+      throw new DOMException('Import PDF annulé', 'AbortError')
+    }
+
+    onProgress?.(i, total)
+
     const page = await pdf.getPage(i)
     const viewport = page.getViewport({ scale: 1 })
-    const content = await page.getTextContent()
-    const pdfText = content.items
+
+    // Extract text and links in parallel
+    const [contentResult, pdfLinks] = await Promise.all([
+      page.getTextContent(),
+      extractLinks(pdf, page, viewport),
+    ])
+
+    const pdfText = contentResult.items
       .map((item) => ('str' in item ? item.str : ''))
       .join(' ')
-    const pdfLinks = await extractLinks(pdf, page, viewport)
 
     let pdfDataUrl: string | undefined
-    if (!lazy) {
+    if (!effectiveLazy) {
       const scale = 2
       const vp = page.getViewport({ scale })
       const canvas = document.createElement('canvas')
@@ -120,9 +154,15 @@ export async function importPdfFile(
       const ctx = canvas.getContext('2d')
       if (ctx) {
         await page.render({ canvas, canvasContext: ctx, viewport: vp }).promise
-        pdfDataUrl = canvas.toDataURL('image/png')
+        pdfDataUrl = canvas.toDataURL('image/jpeg', 0.85)
+        // Explicit canvas release to help GC
+        canvas.width = 0
+        canvas.height = 0
       }
     }
+
+    // Cleanup page to release internal resources
+    page.cleanup()
 
     pages.push({
       order: i - 1,
@@ -134,5 +174,8 @@ export async function importPdfFile(
     })
   }
 
-  return { pages, pdfSourceDataUrl }
+  // Destroy PDF document to release worker memory
+  void pdf.destroy()
+
+  return { pages, pdfSourceDataUrl, pageCount: total }
 }

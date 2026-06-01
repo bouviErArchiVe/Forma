@@ -35,6 +35,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 const docCache = new Map<string, Promise<pdfjs.PDFDocumentProxy>>()
 const pageCache = new Map<string, string>()
 
+/** Max concurrent document loads (prevents saturating memory on multi-notebook scenarios). */
+const MAX_DOC_CACHE = 4
+
 function touchPageCache(key: string, value: string): string {
   pageCache.delete(key)
   pageCache.set(key, value)
@@ -49,10 +52,26 @@ function evictIfNeeded(): void {
   }
 }
 
+/** Evict oldest document from doc cache if over limit, destroying the PDF to free worker memory. */
+function evictDocCacheIfNeeded(): void {
+  if (docCache.size <= MAX_DOC_CACHE) return
+  const firstKey = docCache.keys().next().value
+  if (!firstKey) return
+  const pending = docCache.get(firstKey)
+  docCache.delete(firstKey)
+  if (pending) {
+    void pending.then((doc) => {
+      try { doc.destroy() } catch { /* ignore */ }
+    })
+  }
+}
+
 async function loadPdf(source: string, scope: string): Promise<pdfjs.PDFDocumentProxy> {
   const key = pdfDocCacheKey(source, scope)
   let pending = docCache.get(key)
   if (!pending) {
+    evictDocCacheIfNeeded()
+    // Use fetch + ArrayBuffer for data URLs; pdfjs handles both
     const data = await fetch(source).then((r) => r.arrayBuffer())
     pending = pdfjs.getDocument({ data }).promise
     docCache.set(key, pending)
@@ -89,8 +108,14 @@ export async function renderPdfPageDataUrl(
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Canvas 2D indisponible')
   await page.render({ canvas, canvasContext: ctx, viewport }).promise
-  const dataUrl = canvas.toDataURL('image/png')
-  pageCache.set(key, dataUrl)
+  // Use JPEG for cached page renders to reduce memory footprint (~3-5× smaller than PNG)
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.88)
+  // Release canvas immediately after encoding
+  canvas.width = 0
+  canvas.height = 0
+  // Release pdfjs internal page resources
+  page.cleanup()
+  touchPageCache(key, dataUrl)
   evictIfNeeded()
   return dataUrl
 }
@@ -138,6 +163,17 @@ export function getPdfPrefetchInFlight(): number {
 }
 
 export function clearPdfRenderCache(): void {
+  pageCache.clear()
+}
+
+/** Destroy all cached PDF documents to release worker memory (call on notebook close). */
+export function clearPdfDocCache(): void {
+  for (const pending of docCache.values()) {
+    void pending.then((doc) => {
+      try { doc.destroy() } catch { /* ignore */ }
+    })
+  }
+  docCache.clear()
   pageCache.clear()
 }
 
