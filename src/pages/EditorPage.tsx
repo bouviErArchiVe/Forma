@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { addImageToPage, PageCanvas, type PageCanvasHandle } from '../canvas/PageCanvas'
+import { PageCanvas, type PageCanvasHandle } from '../canvas/PageCanvas'
+import { addImageToPage } from '../canvas/page-ops'
 import { DocumentTabs, useOpenDocument } from '../components/editor/DocumentTabs'
 import { NotebookOptions } from '../components/editor/NotebookOptions'
 import { PageNavigator } from '../components/editor/PageNavigator'
