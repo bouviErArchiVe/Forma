@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { GlassPanel } from '../ui/GlassPanel'
 import { GlassButton } from '../ui/GlassButton'
 import {
@@ -14,6 +15,7 @@ import {
 } from '../../lib/arch-calculator'
 import { evaluateExpression, formatResult } from '../../lib/calculator-engine'
 import { UNIT_CATEGORIES, UNITS_BY_CATEGORY, type UnitCategoryId } from '../../lib/units'
+import { useToastStore } from '../../stores/toastStore'
 
 type ArchTool =
   | 'area'
@@ -52,6 +54,7 @@ interface CalculatorDrawerProps {
 }
 
 export function CalculatorDrawer({ open, onClose }: CalculatorDrawerProps) {
+  const navigate = useNavigate()
   const [tab, setTab] = useState<'calc' | 'arch'>('calc')
   const [expr, setExpr] = useState('')
   const [memory, setMemory] = useState<number | null>(null)
@@ -65,6 +68,18 @@ export function CalculatorDrawer({ open, onClose }: CalculatorDrawerProps) {
   const [convFrom, setConvFrom] = useState('m')
   const [convTo, setConvTo] = useState('mm')
   const [archOut, setArchOut] = useState('')
+
+  const copyText = useCallback((text: string) => {
+    const value = text.trim()
+    if (!value) return
+    void navigator.clipboard.writeText(value)
+    useToastStore.getState().show('Résultat copié')
+  }, [])
+
+  const openFormulas = useCallback(() => {
+    onClose()
+    navigate('/formulas')
+  }, [navigate, onClose])
 
   const append = useCallback((key: string) => {
     if (key === 'C') {
@@ -143,9 +158,19 @@ export function CalculatorDrawer({ open, onClose }: CalculatorDrawerProps) {
             <h2 className="font-semibold text-sm">Calculatrice</h2>
             <p className="text-[10px] text-forma-muted">Scientifique + outils architecture</p>
           </div>
-          <button type="button" onClick={onClose} className="text-forma-muted hover:text-forma-text px-2">
-            ✕
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={openFormulas}
+              className="text-xs text-forma-accent px-2 py-1 hover:underline"
+              title="Catalogue Formules / normes"
+            >
+              📐 Formules
+            </button>
+            <button type="button" onClick={onClose} className="text-forma-muted hover:text-forma-text px-2">
+              ✕
+            </button>
+          </div>
         </header>
 
         <div className="flex border-b border-forma-border/40">
@@ -183,11 +208,16 @@ export function CalculatorDrawer({ open, onClose }: CalculatorDrawerProps) {
                 </button>
                 <span className="text-[10px] text-forma-muted">M={memory != null ? formatResult(memory) : '—'}</span>
               </div>
-              <input
-                readOnly
-                value={expr}
-                className="w-full mb-3 px-3 py-2 text-right text-lg font-mono border border-forma-border rounded-lg bg-white/20"
-              />
+              <div className="flex gap-2 mb-3">
+                <input
+                  readOnly
+                  value={expr}
+                  className="flex-1 px-3 py-2 text-right text-lg font-mono border border-forma-border rounded-lg bg-white/20"
+                />
+                <GlassButton size="sm" disabled={!expr.trim()} onClick={() => copyText(expr)} title="Copier le résultat">
+                  ⎘
+                </GlassButton>
+              </div>
               <div className="grid grid-cols-4 gap-1.5">
                 {CALC_KEYS.flat().map((key, i) => (
                   <button
@@ -308,7 +338,18 @@ export function CalculatorDrawer({ open, onClose }: CalculatorDrawerProps) {
                 Calculer
               </GlassButton>
               {archOut && (
-                <p className="text-sm p-2 rounded-lg bg-forma-accent/10 text-forma-text">{archOut}</p>
+                <div className="flex items-start gap-2">
+                  <p className="flex-1 text-sm p-2 rounded-lg bg-forma-accent/10 text-forma-text">{archOut}</p>
+                  <button
+                    type="button"
+                    onClick={() => copyText(archOut)}
+                    className="text-xs text-forma-muted hover:text-forma-accent px-1 shrink-0"
+                    title="Copier le résultat"
+                    aria-label="Copier le résultat"
+                  >
+                    ⎘
+                  </button>
+                </div>
               )}
             </>
           )}

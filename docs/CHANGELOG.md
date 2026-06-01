@@ -1,5 +1,13 @@
 # Changelog Forma
 
+## 0.59.0 — Pack 28 Calculatrice : lien Formules et copie
+
+### Pont calculateur → Formules
+- **Calculatrice** (tiroir éditeur et moodboard) : lien **📐 Formules** vers le catalogue `/formulas`
+- Bouton **Copier** (⎘) sur le résultat scientifique et sur chaque calcul outils architecture
+- Toast « Résultat copié » (même comportement que Formules)
+- Aucune dépendance ajoutée
+
 ## 0.58.0 — Pack 27 FormaAI : lien profond vers Formules
 
 ### Navigation depuis la recherche
