@@ -37,6 +37,15 @@ describe('formaai rankItems', () => {
     { id: 'doc:1', source: 'doc', type: 'doc', title: 'Mur coupe-feu', text: 'détail RF60', route: '/formadoc', updatedAt: 2 },
     { id: 'sheet:1', source: 'sheet', type: 'sheet', title: 'Métré', text: 'mur béton', route: '/formatab', updatedAt: 5 },
     { id: 'f:1', source: 'formula', type: 'formula', title: 'Blondel', text: 'escalier giron', route: '/formulas', updatedAt: 0 },
+    {
+      id: 'fh:1',
+      source: 'formula',
+      type: 'formula-history',
+      title: 'Loi de Blondel (calcul)',
+      text: 'Loi de Blondel 2H + G = 62 cm 280',
+      route: '/formulas',
+      updatedAt: 1000,
+    },
   ]
 
   it('returns nothing for empty query', () => {
@@ -58,6 +67,12 @@ describe('formaai rankItems', () => {
   it('attaches a snippet to each result', () => {
     const res = rankItems(index, 'escalier')
     expect(res[0].snippet).toContain('escalier')
+  })
+
+  it('finds saved formula calculations under the formula source filter', () => {
+    const res = rankItems(index, '62 cm', { sourceFilter: 'formula' })
+    expect(res).toHaveLength(1)
+    expect(res[0].type).toBe('formula-history')
   })
 })
 

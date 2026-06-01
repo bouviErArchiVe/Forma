@@ -618,8 +618,8 @@ export function SettingsPage() {
         <h2 className="text-sm font-semibold text-forma-muted uppercase">Sauvegarde des modules</h2>
         <p className="text-xs text-forma-muted">
           Exporte les données des modules non couvertes par la sauvegarde .forma : FormaDoc, FormaTab,
-          FormaPresent, FormatCal, FormaReview, FormaCombine, Moodboard, FormaLibrary, ainsi que les
-          réglages et préférences (.formamods.zip). L’import fusionne par défaut (les éléments dont
+          FormaPresent, FormatCal, FormaReview, FormaCombine, Moodboard, FormaLibrary, Formules
+          (favoris, historique de calculs), ainsi que les réglages et préférences (.formamods.zip). L’import fusionne par défaut (les éléments dont
           l’identifiant existe déjà sont conservés).
         </p>
         <button

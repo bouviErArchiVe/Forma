@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.57.0 — Pack 26 FormaAI : index des calculs Formules conservés
+
+### Recherche unifiée
+- L'index FormaAI inclut désormais les **calculs conservés** dans l'historique Formules (titre, valeurs, résumé)
+- Les résultats apparaissent sous la source « Formules / normes » et renvoient vers `/formulas`
+- `history-read.ts` : lecture de l'historique persisté sans initialiser le store Zustand
+- Paramètres : texte de la section « Sauvegarde des modules » mentionne Formules (favoris + historique)
+- Aucune dépendance ajoutée
+
 ## 0.56.0 — Pack 25 Formules : insertion dans FormaDoc
 
 ### Pont Formules → FormaDoc

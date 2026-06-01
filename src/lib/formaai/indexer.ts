@@ -1,6 +1,7 @@
 /** FormaAI — index de recherche unifié (100 % local, lecture Dexie). */
 
 import { FORMULAS } from '../formulas/catalog'
+import { readPersistedFormulaHistory } from '../formulas/history-read'
 import { getAllNotebooks, getFolders } from '../../services/library'
 import { getPages } from '../../services/pages'
 import { listDocuments } from '../../services/formadoc'
@@ -222,6 +223,19 @@ export async function buildSearchIndex({ force = false } = {}): Promise<SearchIt
         route: '/formulas',
         meta: { formulaId: f.id },
         updatedAt: 0,
+      })
+    }
+
+    for (const entry of readPersistedFormulaHistory()) {
+      items.push({
+        id: `formula-history:${entry.id}`,
+        source: 'formula',
+        type: 'formula-history',
+        title: `${entry.title} (calcul)`,
+        text: [entry.title, entry.summary, ...Object.values(entry.values)].filter(Boolean).join(' '),
+        route: '/formulas',
+        meta: { formulaId: entry.formulaId, historyId: entry.id },
+        updatedAt: entry.createdAt,
       })
     }
 
