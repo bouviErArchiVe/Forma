@@ -303,16 +303,35 @@ function drawImageEl(ctx: CanvasRenderingContext2D, img: ImageElement): void {
       ctx.drawImage(image, img.x, img.y, img.width, img.height)
     })
   }
-  const image = imageCache.get(src)
-  if (image?.complete) {
-    drawAt(image)
-  } else if (image) {
-    image.onload = () => drawAt(image)
+  const cached = imageCache.get(src)
+  if (cached === 'error') {
+    // Fallback: draw placeholder rect
+    ctx.save()
+    ctx.strokeStyle = '#94a3b8'
+    ctx.setLineDash([6, 4])
+    ctx.strokeRect(img.x, img.y, img.width, img.height)
+    ctx.fillStyle = '#f1f5f9'
+    ctx.fillRect(img.x, img.y, img.width, img.height)
+    ctx.setLineDash([])
+    ctx.restore()
+    return
+  }
+  if (cached?.complete) {
+    drawAt(cached)
+  } else if (cached) {
+    // Already loading, hook onload to trigger repaint
+    const prev = cached.onload
+    cached.onload = (ev) => {
+      if (prev && typeof prev === 'function') (prev as EventListener)(ev)
+      drawAt(cached)
+    }
   } else {
     const el = new Image()
-    el.src = src
     imageCache.set(src, el)
+    evictImageCacheIfNeeded()
     el.onload = () => drawAt(el)
+    el.onerror = () => { imageCache.set(src, 'error') }
+    el.src = src
   }
 }
 
@@ -335,22 +354,46 @@ function drawTextPreview(ctx: CanvasRenderingContext2D, t: TextElement): void {
   })
 }
 
-const imageCache = new Map<string, HTMLImageElement>()
+const IMAGE_CACHE_MAX = 120
+const imageCache = new Map<string, HTMLImageElement | 'error'>()
 
-export function clearPageImageCache(): void {
-  imageCache.clear()
+export function clearPageImageCache(keepKeys?: Set<string>): void {
+  if (!keepKeys) {
+    imageCache.clear()
+    return
+  }
+  for (const key of imageCache.keys()) {
+    if (!keepKeys.has(key)) imageCache.delete(key)
+  }
+}
+
+function evictImageCacheIfNeeded(): void {
+  if (imageCache.size <= IMAGE_CACHE_MAX) return
+  // evict oldest entries (insertion order)
+  const toDelete = imageCache.size - IMAGE_CACHE_MAX
+  let n = 0
+  for (const key of imageCache.keys()) {
+    if (n >= toDelete) break
+    imageCache.delete(key)
+    n++
+  }
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   const cached = imageCache.get(src)
+  if (cached === 'error') return Promise.reject(new Error('Image failed previously'))
   if (cached?.complete) return Promise.resolve(cached)
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => {
       imageCache.set(src, img)
+      evictImageCacheIfNeeded()
       resolve(img)
     }
-    img.onerror = reject
+    img.onerror = () => {
+      imageCache.set(src, 'error')
+      reject(new Error('Failed to load image'))
+    }
     img.src = src
   })
 }

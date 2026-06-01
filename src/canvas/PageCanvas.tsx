@@ -43,7 +43,6 @@ import { detectShapeFromPoints, snapLineToAxis } from '../lib/shape-detect'
 import { appendStrokes } from '../lib/stroke-finalize'
 import {
   createPoint,
-  getStrokeBounds,
   pointNearStroke,
 } from '../lib/stroke-render'
 import { StickerPicker } from '../components/editor/StickerPicker'
@@ -60,6 +59,7 @@ import type {
 } from '../types'
 import { normalizePage } from '../types'
 import { addStickerToPage } from './page-ops'
+import { getStrokeBBox } from '../engine/spatialIndex'
 
 interface PageCanvasProps {
   page: Page
@@ -258,6 +258,8 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   const overlayRafRef = useRef<number | null>(null)
   const paintInkLayerRef = useRef<(clip?: InkClip) => void>(() => {})
   const paintOverlayRef = useRef<() => void>(() => {})
+  // Track last hydrated page id + asset keys to avoid redundant hydratePageForRender calls
+  const lastHydratedKeyRef = useRef<string>('')
 
   const invalidateBackground = useCallback(() => {
     bgDirtyRef.current = true
@@ -423,6 +425,8 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     paintOverlayRef.current()
   }, [dragOffset])
 
+  const prevEraserPosRef = useRef<{ x: number; y: number } | null>(null)
+
   const scheduleOverlayRedraw = useCallback(() => {
     if (overlayRafRef.current != null) return
     overlayRafRef.current = requestAnimationFrame(() => {
@@ -446,13 +450,26 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     if (!bg || !draw) return
     const w = PAGE_WIDTH
     const h = PAGE_HEIGHT
-    const hydrated = await hydratePageForRender(local, notebook)
-    hydratedPageRef.current = hydrated.page
-    resolvedPdfSourceRef.current = hydrated.pdfSourceDataUrl ?? pdfSourceDataUrl
+
+    // Build a cache key covering all asset-relevant fields of local
+    const hydrateKey = [
+      local.id,
+      local.pdfAssetId ?? '',
+      local.pdfDataUrl ? 'pdf' : '',
+      (local.images ?? []).map((i) => i.id).join(','),
+      (local.stickers ?? []).map((s) => s.stickerId).join(','),
+    ].join('|')
+
+    if (hydrateKey !== lastHydratedKeyRef.current || bgDirtyRef.current) {
+      const hydrated = await hydratePageForRender(local, notebook)
+      hydratedPageRef.current = hydrated.page
+      resolvedPdfSourceRef.current = hydrated.pdfSourceDataUrl ?? pdfSourceDataUrl
+      lastHydratedKeyRef.current = hydrateKey
+    }
 
     if (bgDirtyRef.current) {
       const bgCtx = bg.getContext('2d')!
-      await renderPageBackground(bgCtx, hydrated.page, w, h, {
+      await renderPageBackground(bgCtx, hydratedPageRef.current, w, h, {
         pdfSourceDataUrl: resolvedPdfSourceRef.current,
         notebook,
       })
@@ -472,12 +489,25 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
 
   useEffect(() => {
     if (shapePoints.length <= 1) return
-    scheduleInkRedraw()
+    // Compute bounding box of current shape points for partial redraw
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    for (const p of shapePoints) {
+      if (p.x < minX) minX = p.x
+      if (p.y < minY) minY = p.y
+      if (p.x > maxX) maxX = p.x
+      if (p.y > maxY) maxY = p.y
+    }
+    if (isFinite(minX)) {
+      scheduleInkRedraw({ x: minX, y: minY, w: Math.max(maxX - minX, 1), h: Math.max(maxY - minY, 1) })
+    } else {
+      scheduleInkRedraw()
+    }
   }, [shapePoints, scheduleInkRedraw])
 
   useEffect(() => {
     if (!currentStroke || currentStroke.points.length < 2) return
-    const b = getStrokeBounds(currentStroke)
+    // Use cached bbox from spatial index to avoid recomputing on every point
+    const b = getStrokeBBox(currentStroke)
     scheduleInkRedraw({
       x: b.minX,
       y: b.minY,
@@ -691,6 +721,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     // Always update eraser cursor position for visual feedback (even without pointer down)
     if (store.activeTool === 'eraser') {
       const pt = getPoint(e)
+      prevEraserPosRef.current = eraserPosRef.current
       eraserPosRef.current = { x: pt.x, y: pt.y }
       scheduleOverlayRedraw()
     }
