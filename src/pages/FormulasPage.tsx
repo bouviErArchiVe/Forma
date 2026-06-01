@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BrandLogo } from '../components/BrandLogo'
 import { FormulaCalculator } from '../components/tools/FormulaCalculator'
@@ -6,6 +6,7 @@ import { FormulaCard } from '../components/tools/FormulaCard'
 import { FormulaDocInsertModal } from '../components/tools/FormulaDocInsertModal'
 import { FORMULA_CATEGORIES, getFormulaById, filterFormulas } from '../lib/formulas/catalog'
 import { formatHistoryEntry, downloadHistoryReport } from '../lib/formulas/history-export'
+import { consumeFormulaRestoreIntent } from '../lib/formulas/nav'
 import { appendCalculationToDocument, formatCalculationHtml } from '../lib/formulas/to-doc'
 import type { FormulaResult } from '../lib/formulas/types'
 import { formatRelativeTime } from '../lib/format-relative'
@@ -62,6 +63,21 @@ export function FormulasPage() {
     setActiveFormulaId(id)
     touchRecent(id)
   }
+
+  useEffect(() => {
+    const intent = consumeFormulaRestoreIntent()
+    if (!intent) return
+    if (!getFormulaById(intent.formulaId)) {
+      useToastStore.getState().show('Formule introuvable')
+      return
+    }
+    const restoreState =
+      intent.mode || intent.values
+        ? { mode: intent.mode, values: intent.values ?? {} }
+        : null
+    openFormula(intent.formulaId, restoreState)
+    if (restoreState) useToastStore.getState().show('Calcul restauré')
+  }, [])
 
   const searching = search.trim().length > 0
 

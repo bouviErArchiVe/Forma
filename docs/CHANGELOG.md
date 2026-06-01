@@ -1,5 +1,15 @@
 # Changelog Forma
 
+## 0.58.0 — Pack 27 FormaAI : lien profond vers Formules
+
+### Navigation depuis la recherche
+- Clic sur un résultat **formule du catalogue** : ouvre directement la formule dans `/formulas`
+- Clic sur un **calcul conservé** (`formula-history`) : restaure mode et valeurs saisies
+- Module `nav.ts` : intent sessionStorage (`forma-formula-restore`) consommé au chargement de Formules
+- Icône 🧮 pour les calculs conservés dans les résultats FormaAI
+- Tests unitaires de la navigation
+- Aucune dépendance ajoutée
+
 ## 0.57.0 — Pack 26 FormaAI : index des calculs Formules conservés
 
 ### Recherche unifiée

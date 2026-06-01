@@ -5,6 +5,7 @@ import { GlassButton } from '../components/ui/GlassButton'
 import { HighlightText } from '../components/formaai/HighlightText'
 import { searchAll, type SearchResult } from '../lib/formaai/search'
 import { invalidateSearchIndex } from '../lib/formaai/indexer'
+import { prepareFormulaNavigationFromSearch } from '../lib/formulas/nav'
 import {
   getAIProviderLabel,
   isAIChatConfigured,
@@ -29,6 +30,7 @@ const SOURCE_EMOJI: Record<string, string> = {
   moodboard: '🖼',
   folder: '📁',
   formula: '📐',
+  'formula-history': '🧮',
 }
 
 interface ChatEntry extends ChatMessage {
@@ -112,6 +114,7 @@ function SearchPanel() {
 
   const goTo = useCallback(
     (item: SearchResult) => {
+      prepareFormulaNavigationFromSearch(item)
       if (item.route) navigate(item.route)
     },
     [navigate],
