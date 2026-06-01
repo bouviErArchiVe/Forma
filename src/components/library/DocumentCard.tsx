@@ -86,7 +86,7 @@ export function DocumentCard({
                   setRenaming(false)
                 }
               }}
-              className="w-full text-sm border rounded px-1"
+              className="forma-input w-full text-sm"
               autoFocus
               onClick={(e) => e.stopPropagation()}
             />

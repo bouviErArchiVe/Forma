@@ -157,7 +157,11 @@ export function LibraryPage() {
           pdfSourceDataUrl: nb.pdfSourceDataUrl,
           notebook: nb,
         })
-        return canvas.toDataURL('image/jpeg', 0.6)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.6)
+        // Release canvas GPU memory immediately after encoding
+        canvas.width = 0
+        canvas.height = 0
+        return dataUrl
       })
       .then((url) => {
         if (url) setThumbs((prev) => ({ ...prev, [nb.id]: url }))
@@ -374,15 +378,47 @@ export function LibraryPage() {
     }
   }
 
+  const MAX_IMAGE_IMPORT_BYTES = 20 * 1024 * 1024 // 20 MB per image
+  const ACCEPTED_IMAGE_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
+
+  const validateImageFile = (file: File): string | null => {
+    if (!ACCEPTED_IMAGE_MIMES.includes(file.type)) {
+      return `Format non supporté : ${file.type || 'inconnu'} (JPEG, PNG, GIF, WebP, SVG)`
+    }
+    if (file.size > MAX_IMAGE_IMPORT_BYTES) {
+      return `Image trop volumineuse (${(file.size / (1024 * 1024)).toFixed(1)} Mo, max 20 Mo)`
+    }
+    return null
+  }
+
   const handleImportImage = async (file: File) => {
-    const nb = await createNotebookFromImage(file.name, currentFolderId, file)
-    navigate(`/document/${nb.id}`)
+    const err = validateImageFile(file)
+    if (err) {
+      useToastStore.getState().show(err, 5000)
+      return
+    }
+    try {
+      const nb = await createNotebookFromImage(file.name, currentFolderId, file)
+      navigate(`/document/${nb.id}`)
+    } catch {
+      useToastStore.getState().show("Impossible d'importer l'image", 5000)
+    }
   }
 
   const handleImportImages = async (files: File[]) => {
-    const name = files[0]?.name.replace(/\.[^.]+$/, '') || 'Album'
-    const nb = await createNotebookFromImages(name, currentFolderId, files)
-    navigate(`/document/${nb.id}`)
+    const valid = files.filter((f) => {
+      const err = validateImageFile(f)
+      if (err) useToastStore.getState().show(err, 4000)
+      return !err
+    })
+    if (!valid.length) return
+    try {
+      const name = valid[0].name.replace(/\.[^.]+$/, '') || 'Album'
+      const nb = await createNotebookFromImages(name, currentFolderId, valid)
+      navigate(`/document/${nb.id}`)
+    } catch {
+      useToastStore.getState().show("Impossible d'importer les images", 5000)
+    }
   }
 
   const handleDeleteSelected = async () => {

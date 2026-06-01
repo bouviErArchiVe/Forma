@@ -119,21 +119,30 @@ export async function createNotebookFromImage(
   })
   const page = await db.pages.where('notebookId').equals(notebook.id).first()
   if (!page) return notebook
-  const w = 320
-  const h = 240
-  await db.pages.update(page.id, {
-    images: [
-      {
-        id: createId(),
-        x: 237,
-        y: 441,
-        width: w,
-        height: h,
-        dataUrl,
-        pageId: page.id,
-      },
-    ],
+
+  // Detect real image dimensions, scale to fit within page (max 600px wide)
+  const dims = await new Promise<{ width: number; height: number }>((resolve) => {
+    const img = new Image()
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
+    img.onerror = () => resolve({ width: 400, height: 300 })
+    img.src = dataUrl
   })
+  const MAX_W = 600
+  const MAX_H = 700
+  const ratio = Math.min(1, MAX_W / dims.width, MAX_H / dims.height)
+  const w = Math.round(dims.width * ratio)
+  const h = Math.round(dims.height * ratio)
+  // Center horizontally on page (794 wide), place in upper half
+  const x = Math.round((794 - w) / 2)
+  const y = Math.round((1123 - h) / 2)
+
+  const { persistPageAssets } = await import('../lib/assets')
+  const rawPage = normalizePage({
+    ...page,
+    images: [{ id: createId(), x, y, width: w, height: h, dataUrl, pageId: page.id }],
+  })
+  const stored = await persistPageAssets(rawPage)
+  await db.pages.put(stored)
   return notebook
 }
 
@@ -385,6 +394,33 @@ export async function updateNotebookMetadata(
   })
 }
 
+/** Calcule la position + dimensions centrées d'une image sur la page portrait. */
+async function computeImagePlacement(
+  dataUrl: string,
+  pageId: string,
+): Promise<{ id: string; x: number; y: number; width: number; height: number; dataUrl: string; pageId: string }> {
+  const dims = await new Promise<{ width: number; height: number }>((resolve) => {
+    const img = new Image()
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
+    img.onerror = () => resolve({ width: 400, height: 300 })
+    img.src = dataUrl
+  })
+  const MAX_W = 600
+  const MAX_H = 700
+  const ratio = Math.min(1, MAX_W / dims.width, MAX_H / dims.height)
+  const w = Math.round(dims.width * ratio)
+  const h = Math.round(dims.height * ratio)
+  return {
+    id: createId(),
+    x: Math.round((794 - w) / 2),
+    y: Math.round((1123 - h) / 2),
+    width: w,
+    height: h,
+    dataUrl,
+    pageId,
+  }
+}
+
 export async function createNotebookFromImages(
   name: string,
   folderId: string | null,
@@ -399,41 +435,22 @@ export async function createNotebookFromImages(
   })
   if (files.length === 0) return notebook
 
-  const first = files[0]
-  const firstUrl = await fileToDataUrl(first)
+  const { persistPageAssets } = await import('../lib/assets')
+
+  const firstUrl = await fileToDataUrl(files[0])
   const page0 = await db.pages.where('notebookId').equals(notebook.id).first()
   if (page0) {
-    await db.pages.update(page0.id, {
-      images: [
-        {
-          id: createId(),
-          x: 120,
-          y: 200,
-          width: 400,
-          height: 300,
-          dataUrl: firstUrl,
-          pageId: page0.id,
-        },
-      ],
-    })
+    const placement = await computeImagePlacement(firstUrl, page0.id)
+    const rawPage = normalizePage({ ...page0, images: [placement] })
+    await db.pages.put(await persistPageAssets(rawPage))
   }
 
   for (let i = 1; i < files.length; i++) {
     const dataUrl = await fileToDataUrl(files[i])
     const p = await addPage(notebook.id, 'blank')
-    await db.pages.update(p.id, {
-      images: [
-        {
-          id: createId(),
-          x: 120,
-          y: 200,
-          width: 400,
-          height: 300,
-          dataUrl,
-          pageId: p.id,
-        },
-      ],
-    })
+    const placement = await computeImagePlacement(dataUrl, p.id)
+    const rawPage = normalizePage({ ...p, images: [placement] })
+    await db.pages.put(await persistPageAssets(rawPage))
   }
   return notebook
 }

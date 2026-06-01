@@ -1,6 +1,12 @@
 import { useRef } from 'react'
 import { useEditorStore } from '../../stores/editorStore'
+import { useToastStore } from '../../stores/toastStore'
 import { DEFAULT_TOOL_PRESETS, PEN_COLORS, type ShapeType, type ToolType } from '../../types'
+
+/** Max image file size accepted for insertion (10 MB). */
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024
+
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
 
 const TOOL_META: Record<ToolType, { label: string; icon: string }> = {
   pen: { label: 'Stylo', icon: '✏️' },
@@ -78,10 +84,24 @@ export function Toolbar({
   } = useEditorStore()
 
   const handleImageFile = (file: File) => {
+    // Validate file type
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      useToastStore.getState().show(`Format non supporté : ${file.type || 'inconnu'}`, 5000)
+      return
+    }
+    // Validate file size
+    if (file.size > MAX_IMAGE_BYTES) {
+      const mb = (file.size / (1024 * 1024)).toFixed(1)
+      useToastStore.getState().show(`Image trop volumineuse (${mb} Mo, max 10 Mo)`, 5000)
+      return
+    }
     const r = new FileReader()
     r.onload = () => {
       onInsertImage?.(r.result as string)
       restoreStickyTool()
+    }
+    r.onerror = () => {
+      useToastStore.getState().show('Impossible de lire le fichier image', 5000)
     }
     r.readAsDataURL(file)
   }
