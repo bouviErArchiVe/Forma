@@ -2,7 +2,8 @@
  * Sauvegarde des modules Forma (.formamods.zip) — complète le backup .forma
  * (qui ne couvre que carnets/pages/assets) en exportant les tables modules :
  * FormaDoc, FormaTab, FormaPresent, FormatCal, FormaReview, FormaCombine,
- * Moodboard et FormaLibrary, plus les réglages et préférences locales.
+ * Moodboard, FormaLibrary et Formules (favoris, récents, historique), plus les
+ * réglages et préférences locales.
  *
  * 100 % local : aucune donnée ne quitte l'appareil.
  */
@@ -30,6 +31,8 @@ export const MODULE_PREF_KEYS = [
   'forma_alarm',
   'forma-dico-prefs',
   'forma-dico-cache-v1',
+  'forma-formula-prefs',
+  'forma-formula-history',
 ] as const
 
 export type ModulesBackupMode = 'replace' | 'merge'

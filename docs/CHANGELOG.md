@@ -1,5 +1,13 @@
 # Changelog Forma
 
+## 0.55.0 — Pack 24 Formules : sauvegarde modules (favoris + historique)
+
+### Portabilité des données Formules
+- Les préférences Formules (`forma-formula-prefs` : favoris, récents, unité) et l'historique de calculs (`forma-formula-history`) sont désormais inclus dans l'export/import **.formamods.zip** et les instantanés cloud locaux
+- Restauration en mode **replace** : favoris, récents et historique reviennent avec le reste des modules
+- Test modules-backup étendu pour verrouiller le round-trip
+- Aucune dépendance ajoutée
+
 ## 0.54.0 — Pack 23 Formules : export et copie de l'historique
 
 ### Partage local des calculs conservés

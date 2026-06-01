@@ -89,6 +89,29 @@ describe('modules-backup', () => {
     )
     await db.settings.put({ key: 'foo', value: 'bar' })
     localStorage.setItem('forma-focus-prefs', '{"workMin":30}')
+    localStorage.setItem(
+      'forma-formula-prefs',
+      JSON.stringify({ state: { favorites: ['blondel'], recent: ['area-rect'], lengthUnit: 'cm' }, version: 0 }),
+    )
+    localStorage.setItem(
+      'forma-formula-history',
+      JSON.stringify({
+        state: {
+          entries: [
+            {
+              id: 'h1',
+              formulaId: 'blondel',
+              title: 'Loi de Blondel',
+              mode: 'height-steps',
+              values: { totalHeight: '280', steps: '18' },
+              summary: '2H + G = 62 cm',
+              createdAt: 1000,
+            },
+          ],
+        },
+        version: 0,
+      }),
+    )
 
     const blob = await exportModulesBundle()
     expect(blob.size).toBeGreaterThan(0)
@@ -109,6 +132,8 @@ describe('modules-backup', () => {
     await db.assets.clear()
     await db.settings.clear()
     localStorage.removeItem('forma-focus-prefs')
+    localStorage.removeItem('forma-formula-prefs')
+    localStorage.removeItem('forma-formula-history')
 
     const counts = await importModulesBundle(new File([blob], 'm.formamods.zip'), 'replace')
     expect(counts.formaDocuments).toBe(2)
@@ -124,6 +149,8 @@ describe('modules-backup', () => {
     expect(restoredItem?.mimeType).toBe('image/svg+xml')
     expect((await db.settings.get('foo'))?.value).toBe('bar')
     expect(localStorage.getItem('forma-focus-prefs')).toBe('{"workMin":30}')
+    expect(localStorage.getItem('forma-formula-prefs')).toContain('blondel')
+    expect(localStorage.getItem('forma-formula-history')).toContain('Loi de Blondel')
   })
 
   it('merge mode keeps existing rows and adds only new ones', async () => {
