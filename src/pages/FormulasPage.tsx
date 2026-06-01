@@ -1,14 +1,19 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { BrandLogo } from '../components/BrandLogo'
 import { FormulaCalculator } from '../components/tools/FormulaCalculator'
 import { FormulaCard } from '../components/tools/FormulaCard'
+import { FormulaDocInsertModal } from '../components/tools/FormulaDocInsertModal'
 import { FORMULA_CATEGORIES, getFormulaById, filterFormulas } from '../lib/formulas/catalog'
 import { formatHistoryEntry, downloadHistoryReport } from '../lib/formulas/history-export'
+import { appendCalculationToDocument, formatCalculationHtml } from '../lib/formulas/to-doc'
+import type { FormulaResult } from '../lib/formulas/types'
 import { formatRelativeTime } from '../lib/format-relative'
-import { useFormulaPrefsStore } from '../stores/formulaPrefsStore'
+import { saveDocument, FORMA_DOC_OPEN_ID_KEY } from '../services/formadoc'
 import { useFormulaHistoryStore } from '../stores/formulaHistoryStore'
+import { useFormulaPrefsStore } from '../stores/formulaPrefsStore'
 import { useToastStore } from '../stores/toastStore'
+import type { FormaDocument } from '../types'
 
 const MENU_CATEGORIES = [
   { id: 'favorites', label: 'Favoris', icon: '★' },
@@ -22,6 +27,7 @@ const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
 )
 
 export function FormulasPage() {
+  const navigate = useNavigate()
   const favorites = useFormulaPrefsStore((s) => s.favorites)
   const recent = useFormulaPrefsStore((s) => s.recent)
   const lengthUnit = useFormulaPrefsStore((s) => s.lengthUnit)
@@ -38,6 +44,13 @@ export function FormulasPage() {
   const [search, setSearch] = useState('')
   const [activeFormulaId, setActiveFormulaId] = useState<string | null>(null)
   const [restore, setRestore] = useState<{ mode?: string; values: Record<string, string> } | null>(null)
+  const [docInsertOpen, setDocInsertOpen] = useState(false)
+  const [pendingDocInsert, setPendingDocInsert] = useState<{
+    mode: string
+    values: Record<string, string>
+    result: FormulaResult
+    fieldLabels: Record<string, string>
+  } | null>(null)
 
   const activeFormula = useMemo(
     () => (activeFormulaId ? getFormulaById(activeFormulaId) : null),
@@ -96,6 +109,10 @@ export function FormulasPage() {
               summary: result.summary || activeFormula.title,
             })
             useToastStore.getState().show('Calcul conservé')
+          }}
+          onInsertToDoc={(payload) => {
+            setPendingDocInsert(payload)
+            setDocInsertOpen(true)
           }}
         />
       ) : (
@@ -235,6 +252,32 @@ export function FormulasPage() {
             )}
           </div>
         </>
+      )}
+
+      {activeFormula && (
+        <FormulaDocInsertModal
+          open={docInsertOpen}
+          onClose={() => {
+            setDocInsertOpen(false)
+            setPendingDocInsert(null)
+          }}
+          onSelect={async (doc: FormaDocument) => {
+            if (!pendingDocInsert) return
+            const html = formatCalculationHtml({
+              title: activeFormula.title,
+              formulaText: activeFormula.formulaText,
+              values: pendingDocInsert.values,
+              fieldLabels: pendingDocInsert.fieldLabels,
+              result: pendingDocInsert.result,
+            })
+            const updated = appendCalculationToDocument(doc, html)
+            await saveDocument(updated)
+            sessionStorage.setItem(FORMA_DOC_OPEN_ID_KEY, doc.id)
+            useToastStore.getState().show(`Calcul inséré dans « ${doc.name} »`)
+            setPendingDocInsert(null)
+            navigate('/formadoc')
+          }}
+        />
       )}
     </div>
   )

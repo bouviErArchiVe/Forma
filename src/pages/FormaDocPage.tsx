@@ -11,6 +11,8 @@ import {
   createDocument,
   deleteDocument,
   duplicateDocument,
+  FORMA_DOC_OPEN_ID_KEY,
+  getDocument,
   listDocuments,
   searchDocuments,
   sortDocuments,
@@ -43,6 +45,18 @@ export function FormaDocPage() {
   useEffect(() => {
     void loadDocs()
   }, [loadDocs])
+
+  useEffect(() => {
+    const id = sessionStorage.getItem(FORMA_DOC_OPEN_ID_KEY)
+    if (!id) return
+    sessionStorage.removeItem(FORMA_DOC_OPEN_ID_KEY)
+    void getDocument(id).then((doc) => {
+      if (doc) {
+        setActiveDoc(doc)
+        setView('editor')
+      }
+    })
+  }, [])
 
   const displayed = useMemo(() => docs, [docs])
 

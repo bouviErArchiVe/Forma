@@ -29,6 +29,12 @@ interface FormulaCalculatorProps {
   initialMode?: string
   initialValues?: Record<string, string>
   onSaveCalculation?: (payload: { mode: string; values: Record<string, string>; result: FormulaResult }) => void
+  onInsertToDoc?: (payload: {
+    mode: string
+    values: Record<string, string>
+    result: FormulaResult
+    fieldLabels: Record<string, string>
+  }) => void
 }
 
 export function FormulaCalculator({
@@ -42,6 +48,7 @@ export function FormulaCalculator({
   initialMode,
   initialValues,
   onSaveCalculation,
+  onInsertToDoc,
 }: FormulaCalculatorProps) {
   const [mode, setMode] = useState(initialMode || formula.defaultMode || formula.modes?.[0]?.id || 'default')
   const fields = useMemo(() => formula.fieldsForMode(mode), [formula, mode])
@@ -86,6 +93,15 @@ export function FormulaCalculator({
   const saveCalc = () => {
     if (!result || result.error || !onSaveCalculation) return
     onSaveCalculation({ mode, values, result })
+  }
+
+  const insertToDoc = () => {
+    if (!result || result.error || !onInsertToDoc) return
+    const fieldLabels: Record<string, string> = {}
+    fields.forEach((f) => {
+      fieldLabels[f.key] = f.label
+    })
+    onInsertToDoc({ mode, values, result, fieldLabels })
   }
 
   return (
@@ -208,6 +224,11 @@ export function FormulaCalculator({
             {onSaveCalculation && (
               <GlassButton size="sm" disabled={!!result?.error} onClick={saveCalc}>
                 Conserver le calcul
+              </GlassButton>
+            )}
+            {onInsertToDoc && (
+              <GlassButton size="sm" disabled={!!result?.error} onClick={insertToDoc}>
+                Insérer dans FormaDoc
               </GlassButton>
             )}
           </div>

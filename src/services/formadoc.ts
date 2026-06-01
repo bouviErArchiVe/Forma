@@ -2,6 +2,9 @@ import { db } from '../db'
 import { cloneDocument, createDocument as buildDocument } from '../lib/docs/model'
 import type { FormaDocTemplateId, FormaDocument } from '../types'
 
+/** sessionStorage : ouvrir ce document au prochain chargement de FormaDoc (ex. insertion depuis Formules). */
+export const FORMA_DOC_OPEN_ID_KEY = 'forma-doc-open-id'
+
 export async function listDocuments(): Promise<FormaDocument[]> {
   return db.formaDocuments.orderBy('updatedAt').reverse().toArray()
 }

@@ -1,5 +1,14 @@
 # Changelog Forma
 
+## 0.56.0 — Pack 25 Formules : insertion dans FormaDoc
+
+### Pont Formules → FormaDoc
+- Bouton **Insérer dans FormaDoc** sur le calculateur : choix du document cible, bloc HTML ajouté à la fin de la dernière page
+- Module `to-doc.ts` : `formatCalculationHtml` (échappement HTML, valeurs, tableau de résultats) et `appendCalculationToDocument`
+- Modal de sélection des documents FormaDoc ; après insertion, navigation vers FormaDoc avec ouverture automatique du document
+- Tests unitaires du formatage et de l'ajout en page
+- Aucune dépendance ajoutée
+
 ## 0.55.0 — Pack 24 Formules : sauvegarde modules (favoris + historique)
 
 ### Portabilité des données Formules
