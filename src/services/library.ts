@@ -117,6 +117,21 @@ export async function createFormaDoc(
   return { ...nb, type: 'formadoc' as const }
 }
 
+export async function createFormaTab(
+  name: string,
+  folderId: string | null = null,
+): Promise<Notebook> {
+  const nb = await createNotebook({
+    name: name || 'Nouveau tableau',
+    folderId,
+    coverColor: '#0ea5e9',
+    paperTemplate: 'blank',
+    orientation: 'portrait',
+  })
+  await db.notebooks.update(nb.id, { type: 'formataб' })
+  return { ...nb, type: 'formataб' as const }
+}
+
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const r = new FileReader()

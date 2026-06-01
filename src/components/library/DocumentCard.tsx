@@ -104,7 +104,7 @@ export function DocumentCard({
             </p>
           )}
           <p className="text-xs text-forma-muted">
-            {notebook.type === 'pdf' ? 'PDF' : notebook.type === 'whiteboard' ? 'Whiteboard' : notebook.type === 'formadoc' ? 'Document' : 'Carnet'}
+            {notebook.type === 'pdf' ? 'PDF' : notebook.type === 'whiteboard' ? 'Whiteboard' : notebook.type === 'formadoc' ? 'Document' : notebook.type === 'formataб' ? 'Tableau' : 'Carnet'}
             {pageCount != null ? ` · ${pageCount} p.` : ''} · {relative}
           </p>
         </div>
@@ -215,7 +215,7 @@ export function DocumentCard({
       </div>
       <div className="px-3 py-2 text-left">
         <p className="text-xs text-forma-muted">
-          {notebook.type === 'pdf' ? 'PDF' : notebook.type === 'whiteboard' ? 'Whiteboard' : notebook.type === 'formadoc' ? 'Document' : 'Carnet'}
+          {notebook.type === 'pdf' ? 'PDF' : notebook.type === 'whiteboard' ? 'Whiteboard' : notebook.type === 'formadoc' ? 'Document' : notebook.type === 'formataб' ? 'Tableau' : 'Carnet'}
           {pageCount != null ? ` · ${pageCount} p.` : ''} · {relative}
         </p>
       </div>

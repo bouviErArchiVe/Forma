@@ -29,6 +29,7 @@ import {
   createNotebookFromImages,
   createNotebookFromPdf,
   createFormaDoc,
+  createFormaTab,
   createWhiteboard,
   deleteFolder,
   duplicateFolder,
@@ -595,6 +596,7 @@ export function LibraryPage() {
             <option value="pdf">PDF</option>
             <option value="whiteboard">Whiteboards</option>
             <option value="formadoc">Documents</option>
+            <option value="formataб">Tableaux</option>
           </select>
 
           {/* View mode */}
@@ -1077,7 +1079,9 @@ export function LibraryPage() {
                 ? await createWhiteboard(opts.name, currentFolderId)
                 : kind === 'formadoc'
                   ? await createFormaDoc(opts.name, currentFolderId)
-                  : await createNotebook({ ...opts, folderId: currentFolderId })
+                  : kind === 'formataб'
+                    ? await createFormaTab(opts.name, currentFolderId)
+                    : await createNotebook({ ...opts, folderId: currentFolderId })
             setShowNewNotebook(false)
             navigate(`/document/${nb.id}`)
           }}

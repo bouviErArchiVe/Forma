@@ -75,10 +75,22 @@ const LazyFormaDocPage = React.lazy(() =>
   import('./FormaDocPage').then((m) => ({ default: m.FormaDocPage }))
 )
 
+const LazyFormaTabPage = React.lazy(() =>
+  import('./FormaTabPage').then((m) => ({ default: m.FormaTabPage }))
+)
+
 function FormaDocPageInline() {
   return (
     <React.Suspense fallback={<div className="flex items-center justify-center h-full text-forma-muted">Chargement…</div>}>
       <LazyFormaDocPage />
+    </React.Suspense>
+  )
+}
+
+function FormaTabPageInline() {
+  return (
+    <React.Suspense fallback={<div className="flex items-center justify-center h-full text-forma-muted">Chargement…</div>}>
+      <LazyFormaTabPage />
     </React.Suspense>
   )
 }
@@ -88,12 +100,12 @@ export function EditorPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
-  // FormaDoc documents use a dedicated editor — render it via lazy import
-  const [isFormaDoc, setIsFormaDoc] = useState<boolean | null>(null)
+  // FormaDoc / FormaTab documents use dedicated editors — render via lazy import
+  const [docType, setDocType] = useState<string | null>(null)
   useEffect(() => {
     if (!id) return
     getNotebook(id).then((nb) => {
-      setIsFormaDoc(nb?.type === 'formadoc' ? true : false)
+      setDocType(nb?.type ?? 'notebook')
     })
   }, [id])
 
@@ -647,16 +659,19 @@ export function EditorPage() {
 
   const pageText = activePage ? buildPageContextText(activePage, ocrAppend) : ''
 
-  // FormaDoc: delegate to dedicated editor
-  if (isFormaDoc === null) {
+  // FormaDoc / FormaTab: delegate to dedicated editors
+  if (docType === null) {
     return (
       <div className="flex items-center justify-center h-full text-forma-muted">
         Chargement…
       </div>
     )
   }
-  if (isFormaDoc) {
+  if (docType === 'formadoc') {
     return <FormaDocPageInline />
+  }
+  if (docType === 'formataб') {
+    return <FormaTabPageInline />
   }
 
   if (locked === null || !notebook) {

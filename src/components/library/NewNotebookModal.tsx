@@ -5,12 +5,13 @@ import { COVER_COLORS, type Orientation, type PaperTemplate } from '../../types'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 
-export type NewDocKind = 'notebook' | 'whiteboard' | 'formadoc'
+export type NewDocKind = 'notebook' | 'whiteboard' | 'formadoc' | 'formataб'
 
 const KIND_META: Record<NewDocKind, { icon: string; label: string }> = {
   notebook: { icon: '📓', label: 'Carnet' },
   whiteboard: { icon: '🖼', label: 'Whiteboard' },
   formadoc: { icon: '📝', label: 'Document' },
+  'formataб': { icon: '📊', label: 'Tableau' },
 }
 
 interface NewNotebookModalProps {
@@ -36,6 +37,8 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
   const [orientation, setOrientation] = useState<Orientation>('portrait')
 
   const isFormadoc = kind === 'formadoc'
+  const isFormataб = kind === 'formataб'
+  const hidePageOptions = isFormadoc || isFormataб
 
   return (
     <Modal open onClose={onClose} maxWidth="max-w-md">
@@ -53,6 +56,7 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
                 if (k === 'whiteboard') { setName('Tableau blanc'); setPaperTemplate('grid'); setOrientation('landscape') }
                 else if (k === 'notebook') { setName('Nouveau carnet') }
                 else if (k === 'formadoc') { setName('Nouveau document') }
+                else if (k === 'formataб') { setName('Nouveau tableau') }
               }}
               className={`flex-1 py-1.5 rounded-lg border text-sm font-medium transition-all duration-150 ${
                 kind === k
@@ -95,8 +99,8 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
           </div>
         </div>
 
-        {/* Paper template — hidden for FormaDoc */}
-        {!isFormadoc && (
+        {/* Paper template — hidden for FormaDoc/FormaTab */}
+        {!hidePageOptions && (
           <div>
             <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Papier</label>
             <select
@@ -111,8 +115,8 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
           </div>
         )}
 
-        {/* Orientation — hidden for FormaDoc */}
-        {!isFormadoc && (
+        {/* Orientation — hidden for FormaDoc/FormaTab */}
+        {!hidePageOptions && (
           <div>
             <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Orientation</label>
             <div className="flex gap-2">
@@ -136,6 +140,11 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
         {isFormadoc && (
           <p className="text-xs text-forma-muted">
             📝 Un document texte riche — titres, paragraphes, listes, images, export PDF et Markdown.
+          </p>
+        )}
+        {isFormataб && (
+          <p className="text-xs text-forma-muted">
+            📊 Un tableur simple — cellules, formules (=SUM, =AVG…), styles, export CSV.
           </p>
         )}
 
