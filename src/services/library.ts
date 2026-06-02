@@ -117,6 +117,21 @@ export async function createFormaDoc(
   return { ...nb, type: 'formadoc' as const }
 }
 
+export async function createFMoodboard(
+  name: string,
+  folderId: string | null = null,
+): Promise<Notebook> {
+  const nb = await createNotebook({
+    name: name || 'Nouveau moodboard',
+    folderId,
+    coverColor: '#ec4899',
+    paperTemplate: 'blank',
+    orientation: 'landscape',
+  })
+  await db.notebooks.update(nb.id, { type: 'fmoodboard' })
+  return { ...nb, type: 'fmoodboard' as const }
+}
+
 export async function createFormaTab(
   name: string,
   folderId: string | null = null,

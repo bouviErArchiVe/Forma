@@ -27,7 +27,7 @@ export type ToolType =
   | 'laser'
 
 export type ShapeType = 'line' | 'arrow' | 'rectangle' | 'ellipse'
-export type DocumentType = 'notebook' | 'pdf' | 'whiteboard' | 'formadoc' | 'formataб'
+export type DocumentType = 'notebook' | 'pdf' | 'whiteboard' | 'formadoc' | 'formataб' | 'fmoodboard'
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type Orientation = 'portrait' | 'landscape'
 export type StrokeTool = 'pen' | 'highlighter' | 'pencil'
@@ -149,6 +149,8 @@ export interface Page {
   content?: string
   /** Données tableau JSON pour FormaTab (type formataб uniquement). */
   tableData?: string
+  /** Données moodboard JSON pour FMoodboard (type fmoodboard uniquement). */
+  moodboardData?: string
 }
 
 export interface Notebook {

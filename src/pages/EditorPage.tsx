@@ -79,6 +79,10 @@ const LazyFormaTabPage = React.lazy(() =>
   import('./FormaTabPage').then((m) => ({ default: m.FormaTabPage }))
 )
 
+const LazyFMoodboardPage = React.lazy(() =>
+  import('./FMoodboardPage').then((m) => ({ default: m.FMoodboardPage }))
+)
+
 function FormaDocPageInline() {
   return (
     <React.Suspense fallback={<div className="flex items-center justify-center h-full text-forma-muted">Chargement…</div>}>
@@ -91,6 +95,14 @@ function FormaTabPageInline() {
   return (
     <React.Suspense fallback={<div className="flex items-center justify-center h-full text-forma-muted">Chargement…</div>}>
       <LazyFormaTabPage />
+    </React.Suspense>
+  )
+}
+
+function FMoodboardPageInline() {
+  return (
+    <React.Suspense fallback={<div className="flex items-center justify-center h-full text-forma-muted">Chargement…</div>}>
+      <LazyFMoodboardPage />
     </React.Suspense>
   )
 }
@@ -672,6 +684,9 @@ export function EditorPage() {
   }
   if (docType === 'formataб') {
     return <FormaTabPageInline />
+  }
+  if (docType === 'fmoodboard') {
+    return <FMoodboardPageInline />
   }
 
   if (locked === null || !notebook) {

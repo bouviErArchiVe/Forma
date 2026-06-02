@@ -30,6 +30,7 @@ import {
   createNotebookFromPdf,
   createFormaDoc,
   createFormaTab,
+  createFMoodboard,
   createWhiteboard,
   deleteFolder,
   duplicateFolder,
@@ -597,6 +598,7 @@ export function LibraryPage() {
             <option value="whiteboard">Whiteboards</option>
             <option value="formadoc">Documents</option>
             <option value="formataб">Tableaux</option>
+            <option value="fmoodboard">Moodboards</option>
           </select>
 
           {/* View mode */}
@@ -1081,7 +1083,9 @@ export function LibraryPage() {
                   ? await createFormaDoc(opts.name, currentFolderId)
                   : kind === 'formataб'
                     ? await createFormaTab(opts.name, currentFolderId)
-                    : await createNotebook({ ...opts, folderId: currentFolderId })
+                    : kind === 'fmoodboard'
+                      ? await createFMoodboard(opts.name, currentFolderId)
+                      : await createNotebook({ ...opts, folderId: currentFolderId })
             setShowNewNotebook(false)
             navigate(`/document/${nb.id}`)
           }}

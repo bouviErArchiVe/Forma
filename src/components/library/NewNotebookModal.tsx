@@ -5,13 +5,14 @@ import { COVER_COLORS, type Orientation, type PaperTemplate } from '../../types'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 
-export type NewDocKind = 'notebook' | 'whiteboard' | 'formadoc' | 'formataб'
+export type NewDocKind = 'notebook' | 'whiteboard' | 'formadoc' | 'formataб' | 'fmoodboard'
 
 const KIND_META: Record<NewDocKind, { icon: string; label: string }> = {
   notebook: { icon: '📓', label: 'Carnet' },
   whiteboard: { icon: '🖼', label: 'Whiteboard' },
   formadoc: { icon: '📝', label: 'Document' },
   'formataб': { icon: '📊', label: 'Tableau' },
+  fmoodboard: { icon: '🎨', label: 'Moodboard' },
 }
 
 interface NewNotebookModalProps {
@@ -38,7 +39,8 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
 
   const isFormadoc = kind === 'formadoc'
   const isFormataб = kind === 'formataб'
-  const hidePageOptions = isFormadoc || isFormataб
+  const isFMoodboard = kind === 'fmoodboard'
+  const hidePageOptions = isFormadoc || isFormataб || isFMoodboard
 
   return (
     <Modal open onClose={onClose} maxWidth="max-w-md">
@@ -57,6 +59,7 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
                 else if (k === 'notebook') { setName('Nouveau carnet') }
                 else if (k === 'formadoc') { setName('Nouveau document') }
                 else if (k === 'formataб') { setName('Nouveau tableau') }
+                else if (k === 'fmoodboard') { setName('Nouveau moodboard') }
               }}
               className={`flex-1 py-1.5 rounded-lg border text-sm font-medium transition-all duration-150 ${
                 kind === k
@@ -145,6 +148,11 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
         {isFormataб && (
           <p className="text-xs text-forma-muted">
             📊 Un tableur simple — cellules, formules (=SUM, =AVG…), styles, export CSV.
+          </p>
+        )}
+        {isFMoodboard && (
+          <p className="text-xs text-forma-muted">
+            🎨 Un tableau de vision libre — images, textes, formes, groupes, export PNG.
           </p>
         )}
 
