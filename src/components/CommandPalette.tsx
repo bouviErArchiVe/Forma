@@ -153,6 +153,15 @@ export function CommandPalette() {
         },
       },
       { id: 'lib', label: 'Bibliothèque', hint: '/', run: () => nav('/') },
+      {
+        id: 'search',
+        label: 'Recherche globale',
+        hint: '/search',
+        run: () => {
+          const q = query.trim()
+          nav(q.length >= 2 ? `/search?q=${encodeURIComponent(q)}` : '/search')
+        },
+      },
       { id: 'settings', label: 'Paramètres', hint: '/settings', run: () => nav('/settings') },
       { id: 'templates', label: 'Modèles de page', run: () => nav('/templates') },
       { id: 'trash', label: 'Corbeille', run: () => nav('/trash') },

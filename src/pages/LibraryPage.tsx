@@ -557,16 +557,31 @@ export function LibraryPage() {
           <div className="flex-1" />
 
           {/* Search */}
-          <div className="relative">
+          <div className="relative flex items-center gap-1.5">
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-forma-muted text-xs pointer-events-none">🔍</span>
             <input
               type="search"
               placeholder="Rechercher…"
               value={searchQuery}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Escape') setSearch('') }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setSearch('')
+                if (e.key === 'Enter' && searchQuery.trim().length >= 2) {
+                  navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+                }
+              }}
               className="w-40 sm:w-56 border border-forma-border rounded-xl pl-7 pr-3 py-1.5 text-sm bg-forma-bg focus:outline-none focus:border-forma-accent focus:ring-1 focus:ring-forma-accent/30 transition-all"
             />
+            {searchQuery.trim().length >= 2 && (
+              <button
+                type="button"
+                onClick={() => navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)}
+                className="text-xs text-forma-accent hover:underline shrink-0 hidden sm:inline"
+                title="Recherche globale approfondie"
+              >
+                Global →
+              </button>
+            )}
           </div>
 
           {/* Sort + type */}
