@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { AISettingsSection } from '../components/settings/AISettingsSection'
 import { Link, useNavigate } from 'react-router-dom'
 import { importBackupFile } from '../lib/backup'
 import { restoreFromCloudSlot } from '../lib/cloud-restore'
@@ -684,12 +685,15 @@ export function SettingsPage() {
           className="text-xs text-forma-accent"
           onClick={() => {
             setOnboardingDone(false)
-            setImportMsg('L’introduction s’affichera au prochain rechargement.')
+            setImportMsg("L’introduction s’affichera au prochain rechargement.")
           }}
         >
           Revoir l’introduction
         </button>
       </section>
+
+      {/* ── AI Section ──────────────────────────────────────────────────────── */}
+      <AISettingsSection />
     </div>
   )
 }

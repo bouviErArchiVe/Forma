@@ -146,6 +146,8 @@ export function SidePanel({
             )}
             {open === 'ai' && (
               <AIPanel
+                page={page}
+                notebookName={notebookId}
                 contextText={pageText}
                 onAddStudyPairs={
                   onAddStudy
