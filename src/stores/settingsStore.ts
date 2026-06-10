@@ -21,6 +21,7 @@ function readLegacySyncInterval(): SyncInterval {
 }
 
 interface SettingsState extends AppSettings {
+  sidebarCollapsed: boolean
   setTheme: (t: ThemeMode) => void
   setPalmRejection: (v: boolean) => void
   setFingerScroll: (v: boolean) => void
@@ -38,6 +39,7 @@ interface SettingsState extends AppSettings {
   setPaperTone: (v: PaperTone) => void
   setDefaultPaperTemplate: (v: PaperTemplate) => void
   setDefaultCoverColor: (v: string) => void
+  setSidebarCollapsed: (v: boolean) => void
   applyTheme: () => void
   applyPaperTone: () => void
 }
@@ -62,6 +64,7 @@ export const useSettingsStore = create<SettingsState>()(
       paperTone: 'cream',
       defaultPaperTemplate: 'lined',
       defaultCoverColor: COVER_COLORS[4],
+      sidebarCollapsed: false,
       setTheme: (theme) => {
         set({ theme })
         get().applyTheme()
@@ -89,6 +92,7 @@ export const useSettingsStore = create<SettingsState>()(
       },
       setDefaultPaperTemplate: (defaultPaperTemplate) => set({ defaultPaperTemplate }),
       setDefaultCoverColor: (defaultCoverColor) => set({ defaultCoverColor }),
+      setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
       applyPaperTone: () => {
         document.documentElement.style.setProperty(
           '--color-forma-paper',

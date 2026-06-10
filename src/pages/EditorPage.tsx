@@ -143,9 +143,8 @@ export function EditorPage() {
   const [presenterLaser, setPresenterLaser] = useState(true)
   const [searchHit, setSearchHit] = useState<DocumentSearchHit | null>(null)
   const [sideOpenPanel, setSideOpenPanel] = useState<SidePanelId>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    () => localStorage.getItem('forma-sidebar-collapsed') === '1',
-  )
+  const sidebarCollapsed = useSettingsStore((s) => s.sidebarCollapsed)
+  const setSidebarCollapsed = useSettingsStore((s) => s.setSidebarCollapsed)
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved')
   const [locked, setLocked] = useState<boolean | null>(null)
   const [unlocked, setUnlocked] = useState(false)
@@ -570,11 +569,7 @@ export function EditorPage() {
           void goPage(1)
           break
         case 'toggle-sidebar':
-          setSidebarCollapsed((v) => {
-            const next = !v
-            localStorage.setItem('forma-sidebar-collapsed', next ? '1' : '0')
-            return next
-          })
+          setSidebarCollapsed(!sidebarCollapsed)
           break
         case 'focus-mode':
           setFocusMode((v) => !v)
@@ -1019,13 +1014,7 @@ export function EditorPage() {
             type="button"
             className="print-hide absolute left-0 top-1/2 -translate-y-1/2 z-10 w-5 h-12 bg-forma-surface border border-forma-border rounded-r text-xs text-forma-muted hover:text-forma-text"
             title={sidebarCollapsed ? 'Afficher les pages' : 'Masquer les pages'}
-            onClick={() => {
-              setSidebarCollapsed((v) => {
-                const next = !v
-                localStorage.setItem('forma-sidebar-collapsed', next ? '1' : '0')
-                return next
-              })
-            }}
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
             {sidebarCollapsed ? '›' : '‹'}
           </button>
