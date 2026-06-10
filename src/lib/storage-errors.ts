@@ -81,7 +81,7 @@ export function classifyStorageError(err: unknown): StorageErrorKind {
 export function storageErrorMessage(kind: StorageErrorKind): string {
   switch (kind) {
     case 'quota':
-      return 'Espace de stockage saturé. Exportez une sauvegarde, supprimez des carnets ou videz la corbeille, puis réessayez.'
+      return 'Espace de stockage saturé. Allez dans Paramètres > Stockage pour lancer un nettoyage automatique, exportez une sauvegarde ou videz la corbeille, puis réessayez.'
     case 'unavailable':
       return 'Stockage local indisponible (navigation privée, accès bloqué ou navigateur incompatible). Utilisez une fenêtre normale et un seul onglet Forma.'
     default:

@@ -14,6 +14,9 @@ type Job = {
   waiters: Array<{ resolve: (url: string) => void; reject: (reason: unknown) => void }>
 }
 
+/** Max miniatures conservées en mémoire par file (LRU insertion-order Map). */
+const THUMB_QUEUE_CACHE_MAX = 200
+
 export class ThumbQueue {
   private readonly maxConcurrent: number
   private queue: Job[] = []
@@ -27,9 +30,21 @@ export class ThumbQueue {
     this.maxConcurrent = maxConcurrent
   }
 
+  private touchCache(id: string, url: string): void {
+    this.cache.delete(id)
+    this.cache.set(id, url)
+    while (this.cache.size > THUMB_QUEUE_CACHE_MAX) {
+      const first = this.cache.keys().next().value
+      if (first === undefined) break
+      this.cache.delete(first)
+    }
+  }
+
   peek(id: string): string | undefined {
     if (this.stale.has(id)) return undefined
-    return this.cache.get(id)
+    const hit = this.cache.get(id)
+    if (hit !== undefined) this.touchCache(id, hit)
+    return hit
   }
 
   invalidate(id: string): void {
@@ -180,7 +195,7 @@ export class ThumbQueue {
             this.rejectJob(job, new Error('thumb_stale'))
             return
           }
-          this.cache.set(job.id, url)
+          this.touchCache(job.id, url)
           this.resolveJob(job, url)
           if (job.notebookId) {
             void setCachedThumb(job.id, job.notebookId, url).catch(() => {})

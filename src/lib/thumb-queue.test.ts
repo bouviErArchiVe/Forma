@@ -79,4 +79,16 @@ describe('ThumbQueue', () => {
     q.invalidate('s')
     expect(q.peek('s')).toBeUndefined()
   })
+
+  it('caps in-memory cache size for large documents (LRU eviction)', async () => {
+    const q = new ThumbQueue(4)
+    // Simulate a 1000-page document: enqueue + resolve far more than the cache cap.
+    for (let i = 0; i < 250; i++) {
+      await q.enqueue(`p${i}`, 1, async () => `data:image/jpeg;base64,${i}`)
+    }
+    expect(q.cacheSize).toBeLessThanOrEqual(200)
+    // Oldest entries should have been evicted, most recent should remain.
+    expect(q.peek('p0')).toBeUndefined()
+    expect(q.peek('p249')).toBe('data:image/jpeg;base64,249')
+  })
 })

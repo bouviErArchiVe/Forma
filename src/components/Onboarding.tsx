@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useSettingsStore } from '../stores/settingsStore'
 
 const STEPS = [
@@ -25,10 +26,20 @@ const STEPS = [
 ]
 
 export function Onboarding() {
-  const { onboardingDone, setOnboardingDone } = useSettingsStore()
+  const { onboardingDone, setOnboardingDone, exampleNotebookId } = useSettingsStore()
   const [step, setStep] = useState(0)
+  const navigate = useNavigate()
 
   if (onboardingDone) return null
+
+  const isLastStep = step === STEPS.length - 1
+
+  const openExampleNotebook = () => {
+    setOnboardingDone(true)
+    if (exampleNotebookId) {
+      navigate(`/document/${exampleNotebookId}`)
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
@@ -51,7 +62,7 @@ export function Onboarding() {
           >
             Passer
           </button>
-          {step < STEPS.length - 1 ? (
+          {!isLastStep ? (
             <button
               type="button"
               className="flex-1 py-2 bg-forma-accent text-white rounded-lg"
@@ -69,6 +80,15 @@ export function Onboarding() {
             </button>
           )}
         </div>
+        {isLastStep && exampleNotebookId && (
+          <button
+            type="button"
+            className="w-full mt-2 py-2 border border-forma-accent text-forma-accent rounded-lg hover:bg-forma-accent/10 dark:hover:bg-forma-accent/20"
+            onClick={openExampleNotebook}
+          >
+            Ouvrir le carnet d’exemple
+          </button>
+        )}
       </div>
     </div>
   )

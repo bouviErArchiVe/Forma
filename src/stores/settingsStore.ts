@@ -22,6 +22,9 @@ function readLegacySyncInterval(): SyncInterval {
 
 interface SettingsState extends AppSettings {
   sidebarCollapsed: boolean
+  /** Id du carnet d'exemple créé au premier lancement (onboarding). */
+  exampleNotebookId?: string
+  setExampleNotebookId: (v: string | undefined) => void
   setTheme: (t: ThemeMode) => void
   setPalmRejection: (v: boolean) => void
   setFingerScroll: (v: boolean) => void
@@ -65,6 +68,8 @@ export const useSettingsStore = create<SettingsState>()(
       defaultPaperTemplate: 'lined',
       defaultCoverColor: COVER_COLORS[4],
       sidebarCollapsed: false,
+      exampleNotebookId: undefined,
+      setExampleNotebookId: (exampleNotebookId) => set({ exampleNotebookId }),
       setTheme: (theme) => {
         set({ theme })
         get().applyTheme()

@@ -14,6 +14,7 @@ import { getDbHealthReport, type DbHealthReport } from '../lib/db-health'
 import { formatBytes, type LibraryStats } from '../lib/storage-stats'
 import {
   formatStorageEstimate,
+  getBrowserStorageEstimate,
   isStorageNearlyFull,
   type BrowserStorageEstimate,
 } from '../lib/storage-quota'
@@ -25,6 +26,7 @@ import {
   saveBackupToCloudSlot,
 } from '../services/sync'
 import { useSettingsStore } from '../stores/settingsStore'
+import { useToastStore } from '../stores/toastStore'
 import { TEMPLATE_LABELS } from '../lib/templates'
 import { COVER_COLORS, type PaperTemplate, type PaperTone, type ThemeMode } from '../types'
 import { usePwaUpdate } from '../hooks/usePwaUpdate'
@@ -131,6 +133,22 @@ export function SettingsPage() {
               {isStorageNearlyFull((browserStorage ?? dbHealth?.browserStorage)?.percent ?? null) &&
                 ' — espace faible, exportez ou supprimez des carnets'}
             </p>
+          )}
+          {(browserStorage ?? dbHealth?.browserStorage)?.percent != null && (
+            <div className="mt-1 h-1.5 w-full rounded-full bg-forma-border/60 overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  isStorageNearlyFull((browserStorage ?? dbHealth?.browserStorage)?.percent ?? null, 95)
+                    ? 'bg-red-500'
+                    : isStorageNearlyFull((browserStorage ?? dbHealth?.browserStorage)?.percent ?? null)
+                      ? 'bg-amber-500'
+                      : 'bg-forma-accent'
+                }`}
+                style={{
+                  width: `${Math.min(100, (browserStorage ?? dbHealth?.browserStorage)?.percent ?? 0)}%`,
+                }}
+              />
+            </div>
           )}
           {dbHealth && dbHealth.pagesWithInlineDataUrl > 0 && (
             <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
@@ -473,9 +491,36 @@ export function SettingsPage() {
             setImportMsg(
               n > 0 ? `${n} asset(s) orphelin(s) supprimé(s).` : 'Aucun asset orphelin.',
             )
+            refreshStats()
           }}
         >
           Nettoyer assets orphelins (IndexedDB)
+        </button>
+        <button
+          type="button"
+          className="w-full py-2 border rounded-lg dark:border-gray-600 text-sm"
+          onClick={async () => {
+            const before = await getBrowserStorageEstimate()
+            const { runAutoCleanup } = await import('../lib/storage-cleanup')
+            const result = await runAutoCleanup(20)
+            const after = await getBrowserStorageEstimate()
+            const freed =
+              before.usage != null && after.usage != null
+                ? Math.max(0, before.usage - after.usage)
+                : null
+            const parts = [
+              `${result.orphanAssets} asset(s) orphelin(s)`,
+              `${result.prunedSnapshots} instantané(s) ancien(s)`,
+              `${result.orphanThumbnails} miniature(s) orpheline(s)`,
+            ]
+            const freedLabel = freed != null && freed > 0 ? ` · ${formatBytes(freed)} libéré(s)` : ''
+            useToastStore
+              .getState()
+              .show(`Nettoyage automatique : ${parts.join(', ')} supprimé(s)${freedLabel}.`, 6000)
+            refreshStats()
+          }}
+        >
+          Nettoyage automatique (assets, instantanés, miniatures)
         </button>
         <button
           type="button"

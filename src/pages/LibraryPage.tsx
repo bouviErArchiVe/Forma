@@ -681,6 +681,10 @@ export function LibraryPage() {
               className="text-xs px-2.5 py-1 border border-forma-border rounded-lg text-forma-muted hover:text-forma-accent hover:border-forma-accent transition-colors">
               .forma
             </button>
+            <button type="button" onClick={() => useSettingsStore.getState().setOnboardingDone(false)}
+              className="text-xs text-forma-muted hover:text-forma-accent transition-colors px-1" title="Revoir l'introduction">
+              ?
+            </button>
             <button type="button" onClick={() => navigate('/settings')}
               className="text-xs text-forma-muted hover:text-forma-accent transition-colors px-1" title="Paramètres">
               ⚙

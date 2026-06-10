@@ -5,7 +5,9 @@ import { ConfirmDialog } from './components/ConfirmDialog'
 import { MultiTabBanner, OfflineBanner } from './components/OfflineBanner'
 import { Onboarding } from './components/Onboarding'
 import { PwaInstallBanner } from './components/PwaInstallBanner'
+import { StorageStatusBanner } from './components/StorageStatusBanner'
 import { Toast } from './components/Toast'
+import { seedExampleNotebookIfEmpty } from './lib/onboarding-seed'
 import { useSettingsStore } from './stores/settingsStore'
 
 interface ErrorBoundaryState { error: Error | null }
@@ -58,6 +60,8 @@ function PageFallback() {
 
 export default function App() {
   const applyTheme = useSettingsStore((s) => s.applyTheme)
+  const onboardingDone = useSettingsStore((s) => s.onboardingDone)
+  const setExampleNotebookId = useSettingsStore((s) => s.setExampleNotebookId)
 
   useEffect(() => {
     applyTheme()
@@ -67,12 +71,31 @@ export default function App() {
     return () => mq.removeEventListener('change', fn)
   }, [applyTheme])
 
+  // Crée un carnet d'exemple au tout premier lancement (bibliothèque vide + onboarding non vu).
+  useEffect(() => {
+    if (onboardingDone) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const id = await seedExampleNotebookIfEmpty()
+        if (!cancelled && id) setExampleNotebookId(id)
+      } catch (err) {
+        console.error('[Forma] Échec de la création du carnet d’exemple:', err)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <AppErrorBoundary>
     <BrowserRouter>
       <div className="h-full min-h-screen flex flex-col bg-forma-bg text-forma-text">
         <OfflineBanner />
         <MultiTabBanner />
+        <StorageStatusBanner />
         <Suspense fallback={<PageFallback />}>
           <Routes>
             <Route path="/" element={<LibraryPage />} />
