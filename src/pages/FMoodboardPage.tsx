@@ -5,9 +5,11 @@
  * - Canvas infini via div overflow-auto + positionnement absolu des items
  * - Drag-to-move via mousedown/mousemove/mouseup sur les items
  * - Resize via handles aux coins et bords
+ * - Rotation via handle au-dessus de l'item sélectionné
  * - Multi-sélection : Shift+click, sélection par rectangle (drag sur fond)
  * - Groupes : Ctrl+G / Ctrl+Maj+G
  * - Layers : avant / arrière
+ * - Undo/Redo : Ctrl+Z / Ctrl+Y (ou Ctrl+Shift+Z)
  * - Sauvegarde : débounce 800 ms → schedulePageSave
  * - Export : PNG download + impression
  */
@@ -49,6 +51,7 @@ import {
   ungroupItems,
   updateItem,
 } from '../lib/fmoodboard'
+import { BoardHistory } from '../lib/board-history'
 
 // ─── Resize handle directions ─────────────────────────────────────────────────
 
@@ -70,6 +73,7 @@ export function FMoodboardPage() {
   const canvasRef = useRef<HTMLDivElement>(null)
   /** Map assetId → blob URL (created once, revoked on unmount). */
   const blobUrlsRef = useRef<Map<string, string>>(new Map())
+  const historyRef = useRef(new BoardHistory())
 
   const [notebook, setNotebook] = useState<Notebook | null>(null)
   const [page, setPage] = useState<Page | null>(null)
@@ -88,11 +92,20 @@ export function FMoodboardPage() {
     type: 'move'
     startX: number; startY: number
     items: { id: string; x: number; y: number }[]
+    boardBefore: MoodBoard
   } | {
     type: 'resize'
     id: string; dir: HandleDir
     startX: number; startY: number
     origX: number; origY: number; origW: number; origH: number
+    boardBefore: MoodBoard
+  } | {
+    type: 'rotate'
+    id: string
+    cx: number; cy: number
+    startAngle: number
+    originalRotation: number
+    boardBefore: MoodBoard
   } | {
     type: 'marquee'
     startX: number; startY: number
@@ -127,9 +140,9 @@ export function FMoodboardPage() {
       const p = pages[0]
       if (!p) { navigate('/'); return }
       setPage(p)
-      const board = deserializeBoard(p.moodboardData)
+      const loadedBoard = deserializeBoard(p.moodboardData)
       // Pre-resolve assetIds to blob URLs
-      for (const item of board.items) {
+      for (const item of loadedBoard.items) {
         if (item.kind === 'image' && item.assetId && !item.dataUrl) {
           if (!blobUrlsRef.current.has(item.assetId)) {
             const asset = await db.assets.get(item.assetId)
@@ -139,7 +152,8 @@ export function FMoodboardPage() {
           }
         }
       }
-      setBoard(board)
+      setBoard(loadedBoard)
+      historyRef.current.clear()
       setLoaded(true)
     })()
   }, [id, navigate])
@@ -174,6 +188,31 @@ export function FMoodboardPage() {
       scheduleSave(next)
       return next
     })
+  }, [scheduleSave])
+
+  // ── Undo / Redo ───────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        setBoard((prev) => {
+          const restored = historyRef.current.undo(prev)
+          if (restored) { scheduleSave(restored); return restored }
+          return prev
+        })
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault()
+        setBoard((prev) => {
+          const restored = historyRef.current.redo(prev)
+          if (restored) { scheduleSave(restored); return restored }
+          return prev
+        })
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [scheduleSave])
 
   // ── Image import ──────────────────────────────────────────────────────────
@@ -217,16 +256,19 @@ export function FMoodboardPage() {
           })
           const cx = x; const cy = y
           x += 20; y += 20
-          mutate((b) => {
-            const item = createImageItem('', cx, cy, dims.w, dims.h, nextZIndex(b), assetId)
-            return addItem(b, item)
+          setBoard((prev) => {
+            historyRef.current.snapshot(prev)
+            const item = createImageItem('', cx, cy, dims.w, dims.h, nextZIndex(prev), assetId)
+            const next = addItem(prev, item)
+            scheduleSave(next)
+            return next
           })
         } catch {
           useToastStore.getState().show("Impossible de stocker l'image", 4000)
         }
       })()
     })
-  }, [mutate, notebook])
+  }, [notebook, scheduleSave])
 
   const handlePasteImage = useCallback((e: ClipboardEvent) => {
     const items = e.clipboardData?.items
@@ -253,30 +295,41 @@ export function FMoodboardPage() {
   // ── Add items ─────────────────────────────────────────────────────────────
 
   const addText = useCallback(() => {
-    mutate((b) => {
-      const item = createTextItem(100, 100, nextZIndex(b))
+    setBoard((prev) => {
+      historyRef.current.snapshot(prev)
+      const item = createTextItem(100, 100, nextZIndex(prev))
       setSelectedIds(new Set([item.id]))
       setEditingTextId(item.id)
       setEditingTextValue(item.text ?? '')
-      return addItem(b, item)
+      const next = addItem(prev, item)
+      scheduleSave(next)
+      return next
     })
-  }, [mutate])
+  }, [scheduleSave])
 
   const addShape = useCallback((shapeKind: MBShapeKind) => {
-    mutate((b) => {
-      const item = createShapeItem(shapeKind, 120, 120, nextZIndex(b))
+    setBoard((prev) => {
+      historyRef.current.snapshot(prev)
+      const item = createShapeItem(shapeKind, 120, 120, nextZIndex(prev))
       setSelectedIds(new Set([item.id]))
-      return addItem(b, item)
+      const next = addItem(prev, item)
+      scheduleSave(next)
+      return next
     })
-  }, [mutate])
+  }, [scheduleSave])
 
   // ── Delete ────────────────────────────────────────────────────────────────
 
   const deleteSelected = useCallback(() => {
     if (!selectedIds.size) return
-    mutate((b) => removeItems(b, selectedIds))
+    setBoard((prev) => {
+      historyRef.current.snapshot(prev)
+      const next = removeItems(prev, selectedIds)
+      scheduleSave(next)
+      return next
+    })
     setSelectedIds(new Set())
-  }, [selectedIds, mutate])
+  }, [selectedIds, scheduleSave])
 
   // ── Keyboard ──────────────────────────────────────────────────────────────
 
@@ -293,9 +346,19 @@ export function FMoodboardPage() {
       if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
         e.preventDefault()
         if (e.shiftKey) {
-          mutate((b) => ungroupItems(b, selectedIds))
+          setBoard((prev) => {
+            historyRef.current.snapshot(prev)
+            const next = ungroupItems(prev, selectedIds)
+            scheduleSave(next)
+            return next
+          })
         } else {
-          mutate((b) => groupItems(b, selectedIds))
+          setBoard((prev) => {
+            historyRef.current.snapshot(prev)
+            const next = groupItems(prev, selectedIds)
+            scheduleSave(next)
+            return next
+          })
         }
       }
       if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
@@ -309,7 +372,7 @@ export function FMoodboardPage() {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [editingTextId, selectedIds, board, deleteSelected, mutate])
+  }, [editingTextId, selectedIds, board, deleteSelected, scheduleSave])
 
   // ── Drag helpers ──────────────────────────────────────────────────────────
 
@@ -361,7 +424,7 @@ export function FMoodboardPage() {
       const it = board.items.find((i) => i.id === sid)!
       return { id: sid, x: it.x, y: it.y }
     })
-    dragRef.current = { type: 'move', startX: x, startY: y, items: dragItems }
+    dragRef.current = { type: 'move', startX: x, startY: y, items: dragItems, boardBefore: board }
 
     const onMove = (me: MouseEvent) => {
       if (!dragRef.current || dragRef.current.type !== 'move') return
@@ -386,7 +449,8 @@ export function FMoodboardPage() {
     }
     const onUp = () => {
       if (dragRef.current?.type === 'move') {
-        // Flush final state to save
+        const boardBefore = dragRef.current.boardBefore
+        historyRef.current.snapshot(boardBefore)
         setBoard((prev) => {
           scheduleSave(prev)
           return prev
@@ -415,6 +479,7 @@ export function FMoodboardPage() {
       startX: x, startY: y,
       origX: item.x, origY: item.y,
       origW: item.width, origH: item.height,
+      boardBefore: board,
     }
 
     const onMove = (me: MouseEvent) => {
@@ -439,6 +504,8 @@ export function FMoodboardPage() {
     }
     const onUp = () => {
       if (dragRef.current?.type === 'resize') {
+        const boardBefore = dragRef.current.boardBefore
+        historyRef.current.snapshot(boardBefore)
         setBoard((prev) => { scheduleSave(prev); return prev })
       }
       dragRef.current = null
@@ -447,7 +514,57 @@ export function FMoodboardPage() {
     }
     window.addEventListener('mousemove', onMove)
     window.addEventListener('mouseup', onUp)
-  }, [canvasCoords, snapEnabled, scheduleSave])
+  }, [canvasCoords, snapEnabled, scheduleSave, board])
+
+  // ── Rotation handle mousedown ──────────────────────────────────────────────
+
+  const handleRotateMouseDown = useCallback((
+    e: React.MouseEvent,
+    item: MBItem,
+  ) => {
+    e.stopPropagation()
+    e.preventDefault()
+    const cx = item.x + item.width / 2
+    const cy = item.y + item.height / 2
+    // Convert client coords to canvas coords for angle calculation
+    const rect = canvasRef.current?.getBoundingClientRect()
+    const clientCX = rect ? (cx * zoom + rect.left) : e.clientX
+    const clientCY = rect ? (cy * zoom + rect.top) : e.clientY
+    const startAngle = Math.atan2(e.clientY - clientCY, e.clientX - clientCX)
+
+    dragRef.current = {
+      type: 'rotate',
+      id: item.id,
+      cx: clientCX, cy: clientCY,
+      startAngle,
+      originalRotation: item.rotation ?? 0,
+      boardBefore: board,
+    }
+
+    const onMove = (me: MouseEvent) => {
+      if (!dragRef.current || dragRef.current.type !== 'rotate') return
+      const d = dragRef.current
+      const angle = Math.atan2(me.clientY - d.cy, me.clientX - d.cx)
+      const delta = (angle - d.startAngle) * (180 / Math.PI)
+      const newRotation = d.originalRotation + delta
+      setBoard((prev) => ({
+        ...prev,
+        items: prev.items.map((it) => it.id === d.id ? { ...it, rotation: newRotation } : it),
+      }))
+    }
+    const onUp = () => {
+      if (dragRef.current?.type === 'rotate') {
+        const boardBefore = dragRef.current.boardBefore
+        historyRef.current.snapshot(boardBefore)
+        setBoard((prev) => { scheduleSave(prev); return prev })
+      }
+      dragRef.current = null
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }, [board, zoom, scheduleSave])
 
   // ── Canvas mousedown → marquee selection ──────────────────────────────────
 
@@ -673,12 +790,44 @@ export function FMoodboardPage() {
           {tbBtn(false, () => addShape('ellipse'), 'Ajouter une ellipse', '○ Ellipse')}
         </div>
 
+        {/* Undo / Redo */}
+        <div className="flex gap-0.5 border-r border-forma-border pr-2 mr-1">
+          {tbBtn(false, () => {
+            setBoard((prev) => {
+              const restored = historyRef.current.undo(prev)
+              if (restored) { scheduleSave(restored); return restored }
+              return prev
+            })
+          }, 'Annuler (Ctrl+Z)', '↩')}
+          {tbBtn(false, () => {
+            setBoard((prev) => {
+              const restored = historyRef.current.redo(prev)
+              if (restored) { scheduleSave(restored); return restored }
+              return prev
+            })
+          }, 'Rétablir (Ctrl+Y)', '↪')}
+        </div>
+
         {/* Selection actions */}
         {selectedIds.size > 0 && (
           <div className="flex gap-0.5 border-r border-forma-border pr-2 mr-1">
             {tbBtn(false, deleteSelected, 'Supprimer la sélection (Suppr)', '🗑')}
-            {selectedIds.size > 1 && tbBtn(false, () => mutate((b) => groupItems(b, selectedIds)), 'Grouper (Ctrl+G)', '⊞ Groupe')}
-            {selectedIds.size >= 1 && firstSelected?.groupId && tbBtn(false, () => mutate((b) => ungroupItems(b, selectedIds)), 'Dégrouper (Ctrl+Maj+G)', '⊟ Dégrouper')}
+            {selectedIds.size > 1 && tbBtn(false, () => {
+              setBoard((prev) => {
+                historyRef.current.snapshot(prev)
+                const next = groupItems(prev, selectedIds)
+                scheduleSave(next)
+                return next
+              })
+            }, 'Grouper (Ctrl+G)', '⊞ Groupe')}
+            {selectedIds.size >= 1 && firstSelected?.groupId && tbBtn(false, () => {
+              setBoard((prev) => {
+                historyRef.current.snapshot(prev)
+                const next = ungroupItems(prev, selectedIds)
+                scheduleSave(next)
+                return next
+              })
+            }, 'Dégrouper (Ctrl+Maj+G)', '⊟ Dégrouper')}
           </div>
         )}
 
@@ -839,6 +988,7 @@ export function FMoodboardPage() {
                 blobUrls={blobUrlsRef.current}
                 onMouseDown={(e) => handleItemMouseDown(e, item)}
                 onResizeMouseDown={(e, dir) => handleResizeMouseDown(e, item, dir)}
+                onRotateMouseDown={(e) => handleRotateMouseDown(e, item)}
                 onDoubleClick={() => {
                   if (item.kind === 'text') startTextEdit(item)
                 }}
@@ -863,6 +1013,7 @@ interface BoardItemProps {
   blobUrls: Map<string, string>
   onMouseDown: (e: React.MouseEvent) => void
   onResizeMouseDown: (e: React.MouseEvent, dir: HandleDir) => void
+  onRotateMouseDown: (e: React.MouseEvent) => void
   onDoubleClick: () => void
   onTextChange: (v: string) => void
   onTextBlur: () => void
@@ -870,7 +1021,7 @@ interface BoardItemProps {
 
 function BoardItem({
   item, selected, editingText, editingTextValue, blobUrls,
-  onMouseDown, onResizeMouseDown, onDoubleClick,
+  onMouseDown, onResizeMouseDown, onRotateMouseDown, onDoubleClick,
   onTextChange, onTextBlur,
 }: BoardItemProps) {
   // Resolve image URL: prefer assetId blob URL, fall back to inline dataUrl (legacy)
@@ -887,6 +1038,8 @@ function BoardItem({
     opacity: item.opacity ?? 1,
     cursor: 'move',
     userSelect: 'none',
+    transform: `rotate(${item.rotation ?? 0}deg)`,
+    transformOrigin: 'center center',
   }
 
   return (
@@ -957,9 +1110,12 @@ function BoardItem({
         )
       )}
 
-      {/* Resize handles */}
+      {/* Resize + rotate handles */}
       {selected && !editingText && (
-        <ResizeHandles item={item} onResizeMouseDown={onResizeMouseDown} />
+        <>
+          <ResizeHandles item={item} onResizeMouseDown={onResizeMouseDown} />
+          <RotateHandle onMouseDown={onRotateMouseDown} />
+        </>
       )}
     </div>
   )
@@ -1002,5 +1158,36 @@ function ResizeHandles({ onResizeMouseDown }: {
         />
       ))}
     </>
+  )
+}
+
+// ─── RotateHandle ─────────────────────────────────────────────────────────────
+
+function RotateHandle({ onMouseDown }: { onMouseDown: (e: React.MouseEvent) => void }) {
+  return (
+    <div
+      title="Faire pivoter"
+      style={{
+        position: 'absolute',
+        top: -28,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: 18,
+        height: 18,
+        background: '#fff',
+        border: '2px solid #6366f1',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'grab',
+        zIndex: 9999,
+        fontSize: 12,
+        userSelect: 'none',
+      }}
+      onMouseDown={onMouseDown}
+    >
+      ↻
+    </div>
   )
 }

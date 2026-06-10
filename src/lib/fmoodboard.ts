@@ -48,6 +48,7 @@ export interface MBItem {
   // shared style
   borderRadius?: number
   opacity?: number
+  rotation?: number  // degrés, 0 par défaut
 }
 
 export interface MBGroup {
@@ -104,6 +105,7 @@ export function createImageItem(
     objectFit: 'cover',
     borderRadius: 6,
     opacity: 1,
+    rotation: 0,
   }
 }
 
@@ -126,6 +128,7 @@ export function createTextItem(
     fontWeight: 'normal',
     italic: false,
     opacity: 1,
+    rotation: 0,
   }
 }
 
@@ -148,6 +151,7 @@ export function createShapeItem(
     strokeWidth: 2,
     borderRadius: shapeKind === 'rect' ? 8 : undefined,
     opacity: 1,
+    rotation: 0,
   }
 }
 
@@ -308,6 +312,15 @@ export async function boardToPngDataUrl(board: MoodBoard, assetUrls?: Map<string
   for (const item of sorted) {
     ctx.save()
     ctx.globalAlpha = item.opacity ?? 1
+
+    // Apply rotation around item center
+    if (item.rotation) {
+      const cx = item.x + item.width / 2
+      const cy = item.y + item.height / 2
+      ctx.translate(cx, cy)
+      ctx.rotate(item.rotation * Math.PI / 180)
+      ctx.translate(-cx, -cy)
+    }
 
     const resolvedUrl = item.kind === 'image'
       ? (item.dataUrl || (item.assetId ? (assetUrls?.get(item.assetId) ?? '') : ''))
