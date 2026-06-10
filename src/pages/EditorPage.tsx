@@ -32,10 +32,12 @@ import { pushRecent } from '../lib/recent'
 import { downloadNotebookMarkdown, downloadPageMarkdown } from '../lib/notebook-markdown'
 import { downloadStudyCardsCsv } from '../lib/study-export'
 import { pushRecentPage } from '../lib/recent-pages'
-import { hasNotebookPin } from '../services/lock'
 import { getNotebook, renameNotebook } from '../services/library'
 import { createPageSnapshot } from '../services/page-snapshots'
 import { indexNotebookInk, indexPageInk } from '../lib/handwriting-index'
+import { useEditorLock } from '../hooks/useEditorLock'
+import { useEditorSnapshots } from '../hooks/useEditorSnapshots'
+import { useEditorOCR } from '../hooks/useEditorOCR'
 import {
   flushAllPending,
   flushPage,
@@ -146,8 +148,7 @@ export function EditorPage() {
   const sidebarCollapsed = useSettingsStore((s) => s.sidebarCollapsed)
   const setSidebarCollapsed = useSettingsStore((s) => s.setSidebarCollapsed)
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved')
-  const [locked, setLocked] = useState<boolean | null>(null)
-  const [unlocked, setUnlocked] = useState(false)
+  const { locked, unlocked, initLock, onUnlock } = useEditorLock({ notebookId: id })
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
   const canvasRef = useRef<PageCanvasHandle>(null)
@@ -157,7 +158,6 @@ export function EditorPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const pageBlockRefs = useRef<Map<string, HTMLDivElement>>(new Map())
-  const snapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lockTabIdRef = useRef(getDocumentLockTabId())
   const [docLockBlocked, setDocLockBlocked] = useState(false)
   const pageViewMode = useSettingsStore((s) => s.pageViewMode)
@@ -167,6 +167,13 @@ export function EditorPage() {
   const showPerfHud = useSettingsStore((s) => s.showPerfHud)
   const setShowRuler = useSettingsStore((s) => s.setShowRuler)
   const continuous = pageViewMode === 'continuous' && !presentation
+  const { scheduleAutoSnapshot } = useEditorSnapshots({ enabled: autoSnapshot && !readMode })
+  const { maybeIndexPage } = useEditorOCR({
+    enabled: !readMode,
+    onInkTextReady: (pageId, inkText) => {
+      setPages((prev) => prev.map((p) => (p.id === pageId ? { ...p, inkText } : p)))
+    },
+  })
   const { pan, cursor } = useCanvasPanZoom(scrollRef, !continuous)
   usePinchZoom(scrollRef, (d) => setZoom((z) => Math.min(1.6, Math.max(0.35, z + d))))
 
@@ -232,12 +239,10 @@ export function EditorPage() {
         }
         if (fresh) setActivePage(fresh)
       }
-      const pin = await hasNotebookPin(id)
-      setLocked(pin)
-      if (!pin) setUnlocked(true)
+      await initLock()
       setPageSyncKey((k) => k + 1)
     },
-    [id, navigate],
+    [id, navigate, initLock],
   )
 
   const defaultPenWidth = useSettingsStore((s) => s.defaultPenWidth)
@@ -412,17 +417,6 @@ export function EditorPage() {
     setCanRedo(r)
   }, [])
 
-  const scheduleAutoSnapshot = useCallback(
-    (page: Page) => {
-      if (!autoSnapshot) return
-      if (snapshotTimerRef.current) clearTimeout(snapshotTimerRef.current)
-      snapshotTimerRef.current = setTimeout(() => {
-        void createPageSnapshot(page, 'Auto')
-      }, 90_000)
-    },
-    [autoSnapshot],
-  )
-
   const handlePageChange = useCallback(
     (page: Page) => {
       setPages((prev) => prev.map((p) => (p.id === page.id ? page : p)))
@@ -430,19 +424,9 @@ export function EditorPage() {
       schedulePageSave(page)
       setThumbRefresh((v) => v + 1)
       scheduleAutoSnapshot(page)
-      if (page.strokes.length >= 8 && !page.inkText?.trim()) {
-        void indexPageInk(page).then((text) => {
-          if (text.trim()) {
-            const patched = { ...page, inkText: text }
-            setPages((prev) =>
-              prev.map((p) => (p.id === page.id ? { ...p, inkText: text } : p)),
-            )
-            schedulePageSave(patched)
-          }
-        })
-      }
+      maybeIndexPage(page)
     },
-    [activePage?.id, scheduleAutoSnapshot],
+    [activePage?.id, scheduleAutoSnapshot, maybeIndexPage],
   )
 
   const restoreStickyTool = useEditorStore((s) => s.restoreStickyTool)
@@ -701,7 +685,7 @@ export function EditorPage() {
   }
 
   if (locked && !unlocked) {
-    return <PinGate notebookId={notebook.id} onUnlock={() => setUnlocked(true)} />
+    return <PinGate notebookId={notebook.id} onUnlock={onUnlock} />
   }
 
   if (!activePage) {
