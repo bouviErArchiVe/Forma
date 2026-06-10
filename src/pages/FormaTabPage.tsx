@@ -10,6 +10,7 @@
  * - Export : CSV download + impression
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { TabHistory } from '../lib/tab-history'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getNotebook, renameNotebook } from '../services/library'
 import { getPages } from '../services/pages'
@@ -93,6 +94,9 @@ export function FormaTabPage() {
 
   const editInputRef = useRef<HTMLInputElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+  const historyRef = useRef(new TabHistory())
+  // historyVersion forces re-render so disabled states on undo/redo buttons update
+  const [, setHistoryVersion] = useState(0)
 
   // ── Load ────────────────────────────────────────────────────────────────────
 
@@ -140,10 +144,42 @@ export function FormaTabPage() {
 
   useEffect(() => () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current) }, [])
 
+  // ── Undo/Redo keyboard shortcuts ──────────────────────────────────────────────
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        const prev = historyRef.current.undo(table)
+        if (prev) {
+          setTable(prev)
+          scheduleSave(prev)
+          setHistoryVersion((v) => v + 1)
+        }
+      }
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === 'y' || (e.key === 'z' && e.shiftKey))
+      ) {
+        e.preventDefault()
+        const next = historyRef.current.redo(table)
+        if (next) {
+          setTable(next)
+          scheduleSave(next)
+          setHistoryVersion((v) => v + 1)
+        }
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [table, scheduleSave])
+
   // ── Table mutations ───────────────────────────────────────────────────────────
 
   const updateCell = useCallback((col: number, row: number, value: string) => {
     setTable((prev) => {
+      historyRef.current.snapshot(prev)
+      setHistoryVersion((v) => v + 1)
       const addr = cellAddress(col, row)
       const existing = prev.cells[addr]
       const next: TabTable = {
@@ -160,6 +196,8 @@ export function FormaTabPage() {
 
   const updateStyle = useCallback((col: number, row: number, style: Partial<TabCellStyle>) => {
     setTable((prev) => {
+      historyRef.current.snapshot(prev)
+      setHistoryVersion((v) => v + 1)
       const addr = cellAddress(col, row)
       const existing = prev.cells[addr]
       const next: TabTable = {
@@ -280,6 +318,8 @@ export function FormaTabPage() {
   const addRow = useCallback(() => {
     if (table.rows >= TAB_MAX_ROWS) { useToastStore.getState().show(`Max ${TAB_MAX_ROWS} lignes`); return }
     setTable((prev) => {
+      historyRef.current.snapshot(prev)
+      setHistoryVersion((v) => v + 1)
       const next = { ...prev, rows: prev.rows + 1 }
       scheduleSave(next)
       return next
@@ -289,6 +329,8 @@ export function FormaTabPage() {
   const removeLastRow = useCallback(() => {
     if (table.rows <= 1) return
     setTable((prev) => {
+      historyRef.current.snapshot(prev)
+      setHistoryVersion((v) => v + 1)
       const next = { ...prev, rows: prev.rows - 1 }
       scheduleSave(next)
       return next
@@ -299,6 +341,8 @@ export function FormaTabPage() {
   const addCol = useCallback(() => {
     if (table.cols >= TAB_MAX_COLS) { useToastStore.getState().show(`Max ${TAB_MAX_COLS} colonnes`); return }
     setTable((prev) => {
+      historyRef.current.snapshot(prev)
+      setHistoryVersion((v) => v + 1)
       const next = { ...prev, cols: prev.cols + 1 }
       scheduleSave(next)
       return next
@@ -308,6 +352,8 @@ export function FormaTabPage() {
   const removeLastCol = useCallback(() => {
     if (table.cols <= 1) return
     setTable((prev) => {
+      historyRef.current.snapshot(prev)
+      setHistoryVersion((v) => v + 1)
       const next = { ...prev, cols: prev.cols - 1 }
       scheduleSave(next)
       return next
@@ -471,6 +517,36 @@ export function FormaTabPage() {
 
       {/* ── Format toolbar ───────────────────────────────────────────────────── */}
       <div className="sticky top-[48px] z-10 bg-forma-surface border-b border-forma-border px-3 py-1.5 flex flex-wrap gap-1 items-center">
+        {/* Undo/Redo */}
+        <div className="flex gap-0.5 border-r border-forma-border pr-2 mr-1">
+          <button
+            type="button"
+            title="Annuler (Ctrl+Z)"
+            disabled={!historyRef.current.canUndo}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              const prev = historyRef.current.undo(table)
+              if (prev) { setTable(prev); scheduleSave(prev); setHistoryVersion((v) => v + 1) }
+            }}
+            className="px-2 h-7 rounded text-xs font-medium transition-all duration-100 hover:bg-gray-100 dark:hover:bg-gray-700 text-forma-text disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            ↩
+          </button>
+          <button
+            type="button"
+            title="Rétablir (Ctrl+Y)"
+            disabled={!historyRef.current.canRedo}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              const next = historyRef.current.redo(table)
+              if (next) { setTable(next); scheduleSave(next); setHistoryVersion((v) => v + 1) }
+            }}
+            className="px-2 h-7 rounded text-xs font-medium transition-all duration-100 hover:bg-gray-100 dark:hover:bg-gray-700 text-forma-text disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            ↪
+          </button>
+        </div>
+
         {/* Style buttons */}
         <div className="flex gap-0.5 border-r border-forma-border pr-2 mr-1">
           {tbBtn(!!selectedStyle.bold, () => applyStyleToSelected({ bold: !selectedStyle.bold }), 'Gras', 'B')}
