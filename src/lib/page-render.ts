@@ -1,7 +1,8 @@
 import { hydratePageForRender } from './assets'
 import { renderPdfPageDataUrl } from './pdf-page-render'
 import { drawTemplate } from './templates'
-import { drawStroke, drawStrokes, getStrokeBounds } from './stroke-render'
+import { drawStroke, drawStrokes } from './stroke-render'
+import { getStrokeBBox } from '../engine/spatialIndex'
 import { getSticker } from './stickers'
 import type {
   ImageElement,
@@ -144,7 +145,7 @@ export function renderPageContent(
 
     const strokes = clip
       ? page.strokes.filter((s) => {
-          const b = getStrokeBounds(s)
+          const b = getStrokeBBox(s)
           return intersectsClip(b.minX, b.minY, b.maxX - b.minX, b.maxY - b.minY, clip)
         })
       : page.strokes
@@ -153,7 +154,7 @@ export function renderPageContent(
       const ex = opts.extraStroke
       if (!clip) drawStroke(ctx, ex)
       else {
-        const b = getStrokeBounds(ex)
+        const b = getStrokeBBox(ex)
         if (intersectsClip(b.minX, b.minY, b.maxX - b.minX, b.maxY - b.minY, clip)) {
           drawStroke(ctx, ex)
         }

@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useReducer, useRef, useState } from 'react'
 import { createId } from '../lib/id'
 import { PageHistory } from '../lib/page-history'
 import { snapToGrid } from '../lib/grid-snap'
@@ -41,6 +41,7 @@ import {
 import { detectCircleStroke } from '../lib/circle-lasso'
 import { detectShapeFromPoints, snapLineToAxis } from '../lib/shape-detect'
 import { appendStrokes } from '../lib/stroke-finalize'
+import { simplifyPolyline } from '../lib/path-simplify'
 import {
   createPoint,
   pointNearStroke,
@@ -129,7 +130,9 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   useEffect(() => {
     localRef.current = local
   }, [local])
-  const [currentStroke, setCurrentStroke] = useState<Stroke | null>(null)
+  const currentStrokeRef = useRef<Stroke | null>(null)
+  // Increment only when a stroke is finalized so React re-renders once per stroke, not per point
+  const [, incStrokeVersion] = useReducer((n: number) => n + 1, 0)
   const [shapePoints, setShapePoints] = useState<Point[]>([])
   const [lasso, setLasso] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
   const [selection, setSelection] = useState<SelectionItem[]>([])
@@ -391,7 +394,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
         const ch = Math.min(PAGE_HEIGHT - cy, clip.h + pad * 2)
         dCtx.clearRect(cx, cy, cw, ch)
         renderPageContent(dCtx, page, PAGE_WIDTH, PAGE_HEIGHT, {
-          extraStroke: currentStroke,
+          extraStroke: currentStrokeRef.current,
           laserTrail,
           inkOnly: true,
           clip: { x: cx, y: cy, w: cw, h: ch },
@@ -399,7 +402,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       } else {
         dCtx.clearRect(0, 0, PAGE_WIDTH, PAGE_HEIGHT)
         renderPageContent(dCtx, page, PAGE_WIDTH, PAGE_HEIGHT, {
-          extraStroke: currentStroke,
+          extraStroke: currentStrokeRef.current,
           laserTrail,
         })
       }
@@ -414,7 +417,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
         if (preview) drawShape(dCtx, preview)
       }
     },
-    [currentStroke, laserTrail, shapePoints, store.activeTool, store.shapeType, store.penColor, store.penWidth, dragOffset, selection, PAGE_WIDTH, PAGE_HEIGHT],
+    [laserTrail, shapePoints, store.activeTool, store.shapeType, store.penColor, store.penWidth, dragOffset, selection, PAGE_WIDTH, PAGE_HEIGHT],
   )
 
   paintInkLayerRef.current = paintInkLayer
@@ -504,17 +507,8 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     }
   }, [shapePoints, scheduleInkRedraw])
 
-  useEffect(() => {
-    if (!currentStroke || currentStroke.points.length < 2) return
-    // Use cached bbox from spatial index to avoid recomputing on every point
-    const b = getStrokeBBox(currentStroke)
-    scheduleInkRedraw({
-      x: b.minX,
-      y: b.minY,
-      w: b.maxX - b.minX,
-      h: b.maxY - b.minY,
-    })
-  }, [currentStroke, scheduleInkRedraw])
+  // Note: ink redraws during drawing are triggered imperatively from handlePointerMove
+  // via scheduleInkRedraw — no reactive effect needed for currentStrokeRef.
 
   useEffect(() => {
     return () => {
@@ -713,7 +707,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       pageId: local.id,
     }
     penStartTime.current = Date.now()
-    setCurrentStroke(stroke)
+    currentStrokeRef.current = stroke
   }
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -787,14 +781,20 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       return
     }
 
-    if (currentStroke) {
-      setCurrentStroke({
-        ...currentStroke,
-        points: [...currentStroke.points, pt],
-        width:
-          currentStroke.tool === 'pen'
-            ? store.penWidth + pt.pressure * 2
-            : currentStroke.width,
+    if (currentStrokeRef.current) {
+      const s = currentStrokeRef.current
+      currentStrokeRef.current = {
+        ...s,
+        points: [...s.points, pt],
+        width: s.tool === 'pen' ? store.penWidth + pt.pressure * 2 : s.width,
+      }
+      // Schedule ink redraw imperatively — avoids React re-render per point
+      const b = getStrokeBBox(currentStrokeRef.current)
+      scheduleInkRedraw({
+        x: b.minX,
+        y: b.minY,
+        w: b.maxX - b.minX,
+        h: b.maxY - b.minY,
       })
     }
   }
@@ -882,8 +882,9 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       return
     }
 
-    if (currentStroke && currentStroke.points.length > 1) {
-      const circle = detectCircleStroke(currentStroke.points)
+    const cs = currentStrokeRef.current
+    if (cs && cs.points.length > 1) {
+      const circle = detectCircleStroke(cs.points)
       if (
         circle &&
         (store.activeTool === 'pen' || store.activeTool === 'pencil')
@@ -892,40 +893,51 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
           commit(eraseStrokesInCircle(local, circle))
           finishGestureHistory(true)
         } else {
-          const sel = collectSelectionFromStrokeCircle(local, currentStroke.points)
+          const sel = collectSelectionFromStrokeCircle(local, cs.points)
           if (sel?.length) setSelection(sel)
           finishGestureHistory(false)
         }
-        setCurrentStroke(null)
+        currentStrokeRef.current = null
+        incStrokeVersion()
         return
+      }
+
+      // RDP simplification before commit — reduces stored point count without visual change
+      let finalStroke = cs
+      if (cs.points.length > 5) {
+        const simplified = simplifyPolyline(cs.points, 0.5)
+        if (simplified.length >= 2) {
+          finalStroke = { ...cs, points: simplified as typeof cs.points }
+        }
       }
 
       const held = Date.now() - penStartTime.current >= shapeHoldMs
       const canShape =
         held &&
         (store.activeTool === 'pen' || store.activeTool === 'pencil') &&
-        currentStroke.points.length > 8
+        finalStroke.points.length > 8
       if (canShape) {
         const shape = detectShapeFromPoints(
-          currentStroke.points,
+          finalStroke.points,
           store.shapeType,
-          currentStroke.color,
-          currentStroke.width,
+          finalStroke.color,
+          finalStroke.width,
           local.id,
         )
         if (shape) {
           commit({ ...local, shapes: [...local.shapes, shape] })
         } else {
-          commit({ ...local, strokes: appendStrokes(local.strokes, currentStroke) })
+          commit({ ...local, strokes: appendStrokes(local.strokes, finalStroke) })
         }
       } else {
-        commit({ ...local, strokes: appendStrokes(local.strokes, currentStroke) })
+        commit({ ...local, strokes: appendStrokes(local.strokes, finalStroke) })
       }
       finishGestureHistory(true)
     } else {
       finishGestureHistory(false)
     }
-    setCurrentStroke(null)
+    currentStrokeRef.current = null
+    incStrokeVersion()
   }
 
   const deleteSelection = () => {
