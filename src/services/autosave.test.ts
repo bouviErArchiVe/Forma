@@ -62,7 +62,7 @@ describe('autosave', () => {
     vi.advanceTimersByTime(1)
     await flushPage(pg.id)
     expect(updatePage).toHaveBeenCalledTimes(1)
-    expect(updatePage).toHaveBeenCalledWith(pg)
+    expect(updatePage).toHaveBeenCalledWith(expect.objectContaining({ id: pg.id, notebookId: pg.notebookId }))
   })
 
   it('flushPage persists the latest page snapshot after rapid edits', async () => {

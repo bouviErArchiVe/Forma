@@ -93,12 +93,14 @@ export function createImageItem(
   width: number,
   height: number,
   zIndex: number,
+  assetId?: string,
 ): MBItem {
   return {
     id: createId(),
     kind: 'image',
     x, y, width, height, zIndex,
-    dataUrl,
+    dataUrl: assetId ? '' : dataUrl,
+    assetId,
     objectFit: 'cover',
     borderRadius: 6,
     opacity: 1,
@@ -287,8 +289,9 @@ export function deserializeBoard(json: string | undefined): MoodBoard {
  * Render the board to a PNG data URL using an offscreen canvas.
  * Only image and shape items are rendered (text is omitted for simplicity
  * since Canvas 2D text metrics are complex — use print for full fidelity).
+ * @param assetUrls Optional map from assetId → blob URL / data URL for items using assetId.
  */
-export async function boardToPngDataUrl(board: MoodBoard): Promise<string> {
+export async function boardToPngDataUrl(board: MoodBoard, assetUrls?: Map<string, string>): Promise<string> {
   const canvas = document.createElement('canvas')
   canvas.width = board.canvasWidth
   canvas.height = board.canvasHeight
@@ -306,7 +309,11 @@ export async function boardToPngDataUrl(board: MoodBoard): Promise<string> {
     ctx.save()
     ctx.globalAlpha = item.opacity ?? 1
 
-    if (item.kind === 'image' && item.dataUrl) {
+    const resolvedUrl = item.kind === 'image'
+      ? (item.dataUrl || (item.assetId ? (assetUrls?.get(item.assetId) ?? '') : ''))
+      : ''
+
+    if (item.kind === 'image' && resolvedUrl) {
       await new Promise<void>((resolve) => {
         const img = new Image()
         img.onload = () => {
@@ -332,7 +339,7 @@ export async function boardToPngDataUrl(board: MoodBoard): Promise<string> {
           resolve()
         }
         img.onerror = () => resolve()
-        img.src = item.dataUrl!
+        img.src = resolvedUrl
       })
     } else if (item.kind === 'shape') {
       ctx.fillStyle = item.fillColor ?? 'transparent'
@@ -387,8 +394,8 @@ export async function boardToPngDataUrl(board: MoodBoard): Promise<string> {
   return dataUrl
 }
 
-export function downloadBoardPng(board: MoodBoard, title: string): void {
-  void boardToPngDataUrl(board).then((dataUrl) => {
+export function downloadBoardPng(board: MoodBoard, title: string, assetUrls?: Map<string, string>): void {
+  void boardToPngDataUrl(board, assetUrls).then((dataUrl) => {
     const a = document.createElement('a')
     a.href = dataUrl
     a.download = `${title.replace(/[<>:"/\\|?*]/g, '_') || 'moodboard'}.png`
@@ -396,8 +403,8 @@ export function downloadBoardPng(board: MoodBoard, title: string): void {
   })
 }
 
-export function printBoard(board: MoodBoard, title: string): void {
-  void boardToPngDataUrl(board).then((dataUrl) => {
+export function printBoard(board: MoodBoard, title: string, assetUrls?: Map<string, string>): void {
+  void boardToPngDataUrl(board, assetUrls).then((dataUrl) => {
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
 <style>body{margin:0;padding:0}img{max-width:100%;height:auto}@media print{body{margin:0}}</style>
 </head><body><img src="${dataUrl}" alt="${title}" /></body></html>`

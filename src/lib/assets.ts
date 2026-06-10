@@ -240,6 +240,18 @@ export async function collectReferencedAssetIds(): Promise<Set<string>> {
     for (const img of page.images) {
       if (img.assetId) refs.add(img.assetId)
     }
+    // Moodboard items may reference assets
+    if (page.moodboardData) {
+      try {
+        const { deserializeBoard } = await import('./fmoodboard')
+        const board = deserializeBoard(page.moodboardData)
+        for (const item of board.items) {
+          if (item.assetId) refs.add(item.assetId)
+        }
+      } catch {
+        // ignore parse errors
+      }
+    }
   }
   const audio = await db.audio.toArray()
   for (const a of audio) {

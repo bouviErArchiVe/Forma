@@ -151,6 +151,8 @@ export interface Page {
   tableData?: string
   /** Données moodboard JSON pour FMoodboard (type fmoodboard uniquement). */
   moodboardData?: string
+  /** Timestamp ms de dernière modification de la page. */
+  updatedAt?: number
 }
 
 export interface Notebook {

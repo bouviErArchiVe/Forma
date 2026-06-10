@@ -19,6 +19,8 @@ import { schedulePageSave, subscribeAutosaveStatus } from '../services/autosave'
 import { normalizePage } from '../types'
 import { useToastStore } from '../stores/toastStore'
 import { pushRecent } from '../lib/recent'
+import { db } from '../db'
+import { createId } from '../lib/id'
 import type { Notebook, Page } from '../types'
 import {
   type MBItem,
@@ -66,6 +68,8 @@ export function FMoodboardPage() {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
+  /** Map assetId → blob URL (created once, revoked on unmount). */
+  const blobUrlsRef = useRef<Map<string, string>>(new Map())
 
   const [notebook, setNotebook] = useState<Notebook | null>(null)
   const [page, setPage] = useState<Page | null>(null)
@@ -102,6 +106,15 @@ export function FMoodboardPage() {
 
   // ── Load ──────────────────────────────────────────────────────────────────
 
+  // Revoke all blob URLs on unmount
+  useEffect(() => {
+    const map = blobUrlsRef.current
+    return () => {
+      map.forEach((url) => URL.revokeObjectURL(url))
+      map.clear()
+    }
+  }, [])
+
   useEffect(() => {
     if (!id) return
     void (async () => {
@@ -114,7 +127,19 @@ export function FMoodboardPage() {
       const p = pages[0]
       if (!p) { navigate('/'); return }
       setPage(p)
-      setBoard(deserializeBoard(p.moodboardData))
+      const board = deserializeBoard(p.moodboardData)
+      // Pre-resolve assetIds to blob URLs
+      for (const item of board.items) {
+        if (item.kind === 'image' && item.assetId && !item.dataUrl) {
+          if (!blobUrlsRef.current.has(item.assetId)) {
+            const asset = await db.assets.get(item.assetId)
+            if (asset) {
+              blobUrlsRef.current.set(item.assetId, URL.createObjectURL(asset.blob))
+            }
+          }
+        }
+      }
+      setBoard(board)
       setLoaded(true)
     })()
   }, [id, navigate])
@@ -154,7 +179,8 @@ export function FMoodboardPage() {
   // ── Image import ──────────────────────────────────────────────────────────
 
   const handleImageFiles = useCallback((files: FileList | null) => {
-    if (!files) return
+    if (!files || !notebook) return
+    const notebookId = notebook.id
     let x = 80; let y = 80
     Array.from(files).forEach((file) => {
       if (!MB_ACCEPTED_IMAGE_TYPES.includes(file.type)) {
@@ -166,33 +192,41 @@ export function FMoodboardPage() {
         useToastStore.getState().show(`Image trop volumineuse (${mb} Mo, max 10 Mo)`, 4000)
         return
       }
-      const reader = new FileReader()
-      reader.onload = () => {
-        const dataUrl = reader.result as string
-        const img = new Image()
-        img.onload = () => {
-          const MAX = 400
-          const ratio = Math.min(1, MAX / img.naturalWidth, MAX / img.naturalHeight)
-          const w = Math.round(img.naturalWidth * ratio)
-          const h = Math.round(img.naturalHeight * ratio)
+      void (async () => {
+        try {
+          // Store blob in assets table
+          const assetId = createId()
+          const blob = file.slice(0, file.size, file.type)
+          await db.assets.put({ id: assetId, notebookId, blob, mimeType: file.type, createdAt: Date.now() })
+          // Create blob URL for display
+          const blobUrl = URL.createObjectURL(blob)
+          blobUrlsRef.current.set(assetId, blobUrl)
+          // Get image dimensions
+          const dims = await new Promise<{ w: number; h: number }>((resolve) => {
+            const img = new Image()
+            img.onload = () => {
+              const MAX = 400
+              const ratio = Math.min(1, MAX / img.naturalWidth, MAX / img.naturalHeight)
+              resolve({
+                w: Math.round(img.naturalWidth * ratio),
+                h: Math.round(img.naturalHeight * ratio),
+              })
+            }
+            img.onerror = () => resolve({ w: 200, h: 200 })
+            img.src = blobUrl
+          })
+          const cx = x; const cy = y
+          x += 20; y += 20
           mutate((b) => {
-            const item = createImageItem(dataUrl, x, y, w, h, nextZIndex(b))
-            x += 20; y += 20
+            const item = createImageItem('', cx, cy, dims.w, dims.h, nextZIndex(b), assetId)
             return addItem(b, item)
           })
+        } catch {
+          useToastStore.getState().show("Impossible de stocker l'image", 4000)
         }
-        img.onerror = () => {
-          mutate((b) => {
-            const item = createImageItem(dataUrl, x, y, 200, 200, nextZIndex(b))
-            return addItem(b, item)
-          })
-        }
-        img.src = dataUrl
-      }
-      reader.onerror = () => useToastStore.getState().show("Impossible de lire l'image", 4000)
-      reader.readAsDataURL(file)
+      })()
     })
-  }, [mutate])
+  }, [mutate, notebook])
 
   const handlePasteImage = useCallback((e: ClipboardEvent) => {
     const items = e.clipboardData?.items
@@ -506,11 +540,11 @@ export function FMoodboardPage() {
   // ── Export ────────────────────────────────────────────────────────────────
 
   const handleExportPng = () => {
-    downloadBoardPng(board, title)
+    downloadBoardPng(board, title, blobUrlsRef.current)
     useToastStore.getState().show('PNG exporté')
   }
 
-  const handlePrint = () => printBoard(board, title)
+  const handlePrint = () => printBoard(board, title, blobUrlsRef.current)
 
   // ── Selected item(s) properties ───────────────────────────────────────────
 
@@ -802,6 +836,7 @@ export function FMoodboardPage() {
                 selected={selectedIds.has(item.id)}
                 editingText={editingTextId === item.id}
                 editingTextValue={editingTextValue}
+                blobUrls={blobUrlsRef.current}
                 onMouseDown={(e) => handleItemMouseDown(e, item)}
                 onResizeMouseDown={(e, dir) => handleResizeMouseDown(e, item, dir)}
                 onDoubleClick={() => {
@@ -825,6 +860,7 @@ interface BoardItemProps {
   selected: boolean
   editingText: boolean
   editingTextValue: string
+  blobUrls: Map<string, string>
   onMouseDown: (e: React.MouseEvent) => void
   onResizeMouseDown: (e: React.MouseEvent, dir: HandleDir) => void
   onDoubleClick: () => void
@@ -833,10 +869,14 @@ interface BoardItemProps {
 }
 
 function BoardItem({
-  item, selected, editingText, editingTextValue,
+  item, selected, editingText, editingTextValue, blobUrls,
   onMouseDown, onResizeMouseDown, onDoubleClick,
   onTextChange, onTextBlur,
 }: BoardItemProps) {
+  // Resolve image URL: prefer assetId blob URL, fall back to inline dataUrl (legacy)
+  const resolvedImageUrl = item.kind === 'image'
+    ? (item.assetId ? (blobUrls.get(item.assetId) ?? item.dataUrl ?? '') : (item.dataUrl ?? ''))
+    : ''
   const style: React.CSSProperties = {
     position: 'absolute',
     left: item.x,
@@ -857,9 +897,9 @@ function BoardItem({
       className={selected ? 'outline outline-2 outline-forma-accent outline-offset-1' : ''}
     >
       {/* Content */}
-      {item.kind === 'image' && item.dataUrl && (
+      {item.kind === 'image' && resolvedImageUrl && (
         <img
-          src={item.dataUrl}
+          src={resolvedImageUrl}
           alt=""
           draggable={false}
           className="w-full h-full select-none pointer-events-none"

@@ -149,11 +149,30 @@ export class FormaDatabase extends Dexie {
       settings: 'key',
       thumbnails: 'pageId, notebookId, updatedAt',
     })
+    // v9 : FormaDoc inline base64 images → assets table (lazy migration at load time)
+    // No schema change needed — migration happens on-the-fly in FormaDocPage via
+    // extractInlineImagesToAssets + resolveAssetImages. No batch upgrade here.
+    this.version(9).upgrade(async (_tx) => {
+      // Intentionally empty — lazy migration strategy
+    })
+    // v10 : Add updatedAt index on pages for recency queries
+    this.version(10).stores({
+      folders: 'id, parentId, name, updatedAt',
+      notebooks: 'id, folderId, name, updatedAt, favorite, deletedAt, pdfSourceAssetId',
+      pages: 'id, notebookId, order, pdfAssetId, updatedAt',
+      audio: 'id, notebookId, createdAt',
+      studyCards: 'id, notebookId, nextReview',
+      shareLinks: 'id, notebookId, token',
+      pageSnapshots: 'id, pageId, createdAt',
+      assets: 'id, notebookId, createdAt',
+      settings: 'key',
+      thumbnails: 'pageId, notebookId, updatedAt',
+    })
   }
 }
 
 /** Version Dexie courante (tests / diagnostics). */
-export const FORMA_DB_VERSION = 8
+export const FORMA_DB_VERSION = 10
 
 export const db = new FormaDatabase()
 

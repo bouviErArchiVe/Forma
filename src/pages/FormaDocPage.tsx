@@ -16,6 +16,9 @@ import { getPages } from '../services/pages'
 import { schedulePageSave, subscribeAutosaveStatus } from '../services/autosave'
 import { normalizePage } from '../types'
 import { countWordsInHtml, downloadFormaDocMarkdown, printFormaDoc } from '../lib/formadoc-export'
+import { extractInlineImagesToAssets, resolveAssetImages } from '../lib/formadoc-assets'
+import { db } from '../db'
+import { createId } from '../lib/id'
 import { useToastStore } from '../stores/toastStore'
 import { pushRecent } from '../lib/recent'
 import type { Notebook, Page } from '../types'
@@ -63,6 +66,7 @@ export function FormaDocPage() {
   const editorRef = useRef<HTMLDivElement>(null)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
+  const blobUrlsRef = useRef<string[]>([])
   const [notebook, setNotebook] = useState<Notebook | null>(null)
   const [page, setPage] = useState<Page | null>(null)
   const [title, setTitle] = useState('')
@@ -87,8 +91,10 @@ export function FormaDocPage() {
       if (!p) { navigate('/'); return }
       setPage(p)
 
-      // Inject HTML content into editor
-      const html = p.content ?? '<p></p>'
+      // Inject HTML content into editor (resolve asset images from IndexedDB)
+      const rawHtml = p.content ?? '<p></p>'
+      const { html, blobUrls } = await resolveAssetImages(rawHtml)
+      blobUrlsRef.current.push(...blobUrls)
       if (editorRef.current) {
         editorRef.current.innerHTML = html
         // Place cursor at end
@@ -100,7 +106,7 @@ export function FormaDocPage() {
         sel?.addRange(range)
         editorRef.current.focus()
       }
-      setWordCount(countWordsInHtml(html))
+      setWordCount(countWordsInHtml(rawHtml))
       setLoaded(true)
     })()
   }, [id, navigate])
@@ -123,18 +129,22 @@ export function FormaDocPage() {
     setSaveStatus('saving')
     saveTimerRef.current = setTimeout(() => {
       if (!editorRef.current || !page) return
-      const html = editorRef.current.innerHTML
-      const updated = normalizePage({ ...page, content: html })
-      setPage(updated)
-      schedulePageSave(updated)
-      setWordCount(countWordsInHtml(html))
+      const rawHtml = editorRef.current.innerHTML
+      setWordCount(countWordsInHtml(rawHtml))
+      void extractInlineImagesToAssets(rawHtml, page.notebookId).then(({ html: cleanHtml }) => {
+        const updated = normalizePage({ ...page, content: cleanHtml })
+        setPage(updated)
+        schedulePageSave(updated)
+      })
     }, 800)
   }, [page])
 
-  // Flush on unmount
+  // Flush on unmount + revoke blob URLs
   useEffect(() => {
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+      for (const url of blobUrlsRef.current) URL.revokeObjectURL(url)
+      blobUrlsRef.current = []
     }
   }, [])
 
@@ -165,18 +175,24 @@ export function FormaDocPage() {
       useToastStore.getState().show(`Image trop volumineuse (${mb} Mo, max 10 Mo)`, 4000)
       return
     }
-    const reader = new FileReader()
-    reader.onload = () => {
-      const dataUrl = reader.result as string
-      editorRef.current?.focus()
-      document.execCommand('insertHTML', false,
-        `<img src="${dataUrl}" alt="" style="max-width:100%;height:auto;border-radius:6px;margin:8px 0;" />`
-      )
-      scheduleSave()
-    }
-    reader.onerror = () => useToastStore.getState().show("Impossible de lire l'image", 4000)
-    reader.readAsDataURL(file)
-  }, [scheduleSave])
+    void (async () => {
+      if (!page) return
+      try {
+        const assetId = createId()
+        const mimeType = file.type || 'image/png'
+        await db.assets.put({ id: assetId, notebookId: page.notebookId, blob: file, mimeType, createdAt: Date.now() })
+        const blobUrl = URL.createObjectURL(file)
+        blobUrlsRef.current.push(blobUrl)
+        editorRef.current?.focus()
+        document.execCommand('insertHTML', false,
+          `<img src="${blobUrl}" data-asset-id="${assetId}" alt="" style="max-width:100%;height:auto;border-radius:6px;margin:8px 0;" />`
+        )
+        scheduleSave()
+      } catch {
+        useToastStore.getState().show("Impossible d'insérer l'image", 4000)
+      }
+    })()
+  }, [page, scheduleSave])
 
   // ── Keyboard shortcuts ────────────────────────────────────────────────────
 

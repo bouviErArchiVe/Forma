@@ -60,10 +60,11 @@ function maybeToastSaveError(kind: StorageErrorKind): void {
 
 async function persistOnce(page: Page): Promise<void> {
   notify('saving')
-  stashPageRecovery(page)
+  const pageWithTimestamp: Page = { ...page, updatedAt: Date.now() }
+  stashPageRecovery(pageWithTimestamp)
   appendSaveJournalEvent({ type: 'recovery_stash', pageId: page.id, at: Date.now() })
   try {
-    await updatePage(page)
+    await updatePage(pageWithTimestamp)
     clearPageRecovery(page.id)
     lastErrorKind = null
     appendSaveJournalEvent({ type: 'autosave_ok', pageId: page.id, at: Date.now() })
