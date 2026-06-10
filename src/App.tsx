@@ -72,20 +72,18 @@ export default function App() {
   }, [applyTheme])
 
   // Crée un carnet d'exemple au tout premier lancement (bibliothèque vide + onboarding non vu).
+  // Pas de drapeau "cancelled" : `setExampleNotebookId` est une action zustand (sûre après
+  // démontage), et en StrictMode c'est la première invocation — nettoyée — qui crée le carnet.
   useEffect(() => {
     if (onboardingDone) return
-    let cancelled = false
     void (async () => {
       try {
         const id = await seedExampleNotebookIfEmpty()
-        if (!cancelled && id) setExampleNotebookId(id)
+        if (id) setExampleNotebookId(id)
       } catch (err) {
         console.error('[Forma] Échec de la création du carnet d’exemple:', err)
       }
     })()
-    return () => {
-      cancelled = true
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

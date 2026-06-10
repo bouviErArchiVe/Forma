@@ -33,7 +33,6 @@ const SHORTCUTS = [
   ['Ctrl+N (bibliothèque)', 'Nouveau carnet'],
   ['Ctrl+A (bibliothèque)', 'Tout sélectionner'],
   ['Ctrl+K → Study CSV', 'Exporter / importer cartes Study'],
-  ['Shift+R', 'Mode lecture'],
   ['Ctrl+K → Favori page', 'Marquer la page ★'],
   ['Suppr (bibliothèque)', 'Corbeille — carte focusée'],
   ['Ctrl+D (bibliothèque)', 'Dupliquer — carte focusée'],

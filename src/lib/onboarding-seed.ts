@@ -153,9 +153,15 @@ export async function seedExampleNotebook(): Promise<string> {
 /**
  * Crée le carnet d'exemple uniquement si la bibliothèque est vide.
  * Retourne l'id du notebook créé, ou `null` si rien n'a été créé.
+ *
+ * Le test "bibliothèque vide" et la création sont effectués dans une même
+ * transaction IndexedDB : deux appels concurrents (ex. double montage d'effet
+ * en React StrictMode) ne peuvent donc pas créer le carnet deux fois.
  */
 export async function seedExampleNotebookIfEmpty(): Promise<string | null> {
-  const count = await db.notebooks.count()
-  if (count > 0) return null
-  return seedExampleNotebook()
+  return db.transaction('rw', db.notebooks, db.pages, async () => {
+    const count = await db.notebooks.count()
+    if (count > 0) return null
+    return seedExampleNotebook()
+  })
 }

@@ -79,4 +79,17 @@ describe('seedExampleNotebookIfEmpty', () => {
     expect(id).toBeNull()
     expect(await db.notebooks.count()).toBe(1)
   })
+
+  it('seeds only once when called concurrently (StrictMode double effect)', async () => {
+    const [a, b] = await Promise.all([
+      seedExampleNotebookIfEmpty(),
+      seedExampleNotebookIfEmpty(),
+    ])
+
+    // Exactly one call must have created the notebook.
+    expect([a, b].filter((id) => id !== null)).toHaveLength(1)
+    expect(await db.notebooks.count()).toBe(1)
+    const pages = await db.pages.count()
+    expect(pages).toBe(3)
+  })
 })

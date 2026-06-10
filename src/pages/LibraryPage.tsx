@@ -1364,6 +1364,7 @@ export function LibraryPage() {
                     </button>
                     <button
                       type="button"
+                      title={nb.favorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
                       className="flex items-center bg-white/90 dark:bg-gray-800 px-1.5 py-0.5 rounded border border-forma-border"
                       onClick={async (e) => {
                         e.stopPropagation()
