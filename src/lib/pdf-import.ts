@@ -1,11 +1,7 @@
 import * as pdfjs from 'pdfjs-dist'
 import { PAGE_HEIGHT_PORTRAIT, PAGE_WIDTH_PORTRAIT } from './page-dimensions'
 import type { PaperTemplate, PdfLink } from '../types'
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString()
+import { ensurePdfWorker } from './pdf-worker-setup'
 
 export interface ImportedPdfPage {
   order: number
@@ -106,6 +102,7 @@ export async function importPdfFile(
   file: File,
   options: PdfImportOptions = { lazy: true },
 ): Promise<PdfImportResult> {
+  ensurePdfWorker()
   const { onProgress, signal } = options
   const lazy = options.lazy !== false
 

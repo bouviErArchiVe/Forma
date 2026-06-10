@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { PageCanvas, type PageCanvasHandle } from '../../canvas/PageCanvas'
 import { usePageCanvasMount } from '../../canvas/page-canvas-pool'
 import { PagePlaceholder } from '../../canvas/PagePlaceholder'
@@ -33,7 +33,7 @@ interface ContinuousPageBlockProps {
 }
 
 /** Monte le canvas près du viewport ; démontage différé hors écran (Phase 2). */
-export function ContinuousPageBlock({
+export const ContinuousPageBlock = React.memo(function ContinuousPageBlock({
   page,
   pageIndex,
   notebook,
@@ -157,4 +157,4 @@ export function ContinuousPageBlock({
       )}
     </div>
   )
-}
+})

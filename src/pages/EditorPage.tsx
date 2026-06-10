@@ -408,6 +408,11 @@ export function EditorPage() {
     onFocusMode: () => setFocusMode((v) => !v),
   })
 
+  const handleUndoRedoChange = useCallback((u: boolean, r: boolean) => {
+    setCanUndo(u)
+    setCanRedo(r)
+  }, [])
+
   const scheduleAutoSnapshot = useCallback(
     (page: Page) => {
       if (!autoSnapshot) return
@@ -463,26 +468,29 @@ export function EditorPage() {
     setStudySnippet(front.trim())
   }
 
-  const handleOcrText = async (text: string) => {
-    if (!activePage || !text.trim()) return
-    setOcrAppend(text)
-    const block = {
-      id: createId(),
-      x: 48,
-      y: 48,
-      width: 400,
-      height: 200,
-      content: text,
-      fontSize: 14,
-      color: '#1a1a1a',
-      align: 'left' as const,
-      pageId: activePage.id,
-    }
-    handlePageChange({
-      ...normalizePage(activePage),
-      texts: [...activePage.texts, block],
-    })
-  }
+  const handleOcrText = useCallback(
+    async (text: string) => {
+      if (!activePage || !text.trim()) return
+      setOcrAppend(text)
+      const block = {
+        id: createId(),
+        x: 48,
+        y: 48,
+        width: 400,
+        height: 200,
+        content: text,
+        fontSize: 14,
+        color: '#1a1a1a',
+        align: 'left' as const,
+        pageId: activePage.id,
+      }
+      handlePageChange({
+        ...normalizePage(activePage),
+        texts: [...activePage.texts, block],
+      })
+    },
+    [activePage, handlePageChange],
+  )
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) containerRef.current?.requestFullscreen()
@@ -1044,10 +1052,7 @@ export function EditorPage() {
                   scrollRoot={scrollRef.current}
                   onPageChange={handlePageChange}
                   onActivate={() => void getPage(p.id).then((fp) => fp && setActivePage(fp))}
-                  onUndoRedoChange={(u, r) => {
-                    setCanUndo(u)
-                    setCanRedo(r)
-                  }}
+                  onUndoRedoChange={handleUndoRedoChange}
                   onWheelZoom={(d) => setZoom((z) => Math.min(1.6, Math.max(0.35, z + d)))}
                   onOcrSelection={handleOcrText}
                   onAddToStudy={(t) => {

@@ -2,8 +2,11 @@
  * File d'attente miniatures — concurrence limitée, priorité, cache mémoire.
  */
 
+import { getCachedThumb, setCachedThumb } from './thumb-cache'
+
 type Job = {
   id: string
+  notebookId: string | undefined
   priority: number
   run: () => Promise<string>
   resolve: (url: string) => void
@@ -52,7 +55,12 @@ export class ThumbQueue {
 
   private scheduled = false
 
-  enqueue(id: string, priority: number, run: () => Promise<string>): Promise<string> {
+  enqueue(
+    id: string,
+    priority: number,
+    run: () => Promise<string>,
+    notebookId?: string,
+  ): Promise<string> {
     const hit = this.peek(id)
     if (hit) return Promise.resolve(hit)
 
@@ -75,8 +83,35 @@ export class ThumbQueue {
       })
     }
 
+    if (notebookId) {
+      // Check IndexedDB cache asynchronously before scheduling
+      const promise = new Promise<string>((resolve, reject) => {
+        void getCachedThumb(id)
+          .then((cached) => {
+            if (cached) {
+              this.cache.set(id, cached)
+              resolve(cached)
+              return
+            }
+            if (this.inflight.get(id) !== promise) return
+            this.insertByPriority({ id, notebookId, priority, run, resolve, reject, waiters: [] })
+            this.schedulePump()
+          })
+          .catch(() => {
+            if (this.inflight.get(id) !== promise) return
+            this.insertByPriority({ id, notebookId, priority, run, resolve, reject, waiters: [] })
+            this.schedulePump()
+          })
+      })
+      this.inflight.set(id, promise)
+      void promise.finally(() => {
+        if (this.inflight.get(id) === promise) this.inflight.delete(id)
+      })
+      return promise
+    }
+
     const promise = new Promise<string>((resolve, reject) => {
-      this.insertByPriority({ id, priority, run, resolve, reject, waiters: [] })
+      this.insertByPriority({ id, notebookId: undefined, priority, run, resolve, reject, waiters: [] })
       this.schedulePump()
     })
     this.inflight.set(id, promise)
@@ -147,6 +182,9 @@ export class ThumbQueue {
           }
           this.cache.set(job.id, url)
           this.resolveJob(job, url)
+          if (job.notebookId) {
+            void setCachedThumb(job.id, job.notebookId, url).catch(() => {})
+          }
         })
         .catch((err) => this.rejectJob(job, err))
         .finally(() => {

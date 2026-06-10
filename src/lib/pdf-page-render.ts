@@ -1,5 +1,6 @@
 import * as pdfjs from 'pdfjs-dist'
 import { PAGE_HEIGHT_PORTRAIT, PAGE_WIDTH_PORTRAIT } from './page-dimensions'
+import { ensurePdfWorker } from './pdf-worker-setup'
 import {
   buildPdfBenchPageIndices,
   clampPdfPageNumber,
@@ -26,11 +27,6 @@ export {
   pdfDocCacheKey,
   pdfPageCacheKey,
 } from './pdf-page-render-helpers'
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString()
 
 const docCache = new Map<string, Promise<pdfjs.PDFDocumentProxy>>()
 const pageCache = new Map<string, string>()
@@ -86,6 +82,7 @@ export async function renderPdfPageDataUrl(
   dpr = defaultPdfDpr(false),
   cacheScope = 'default',
 ): Promise<string> {
+  ensurePdfWorker()
   const key = pdfPageCacheKey(cacheScope, pageIndex, dpr)
   const hit = pageCache.get(key)
   if (hit) return touchPageCache(key, hit)

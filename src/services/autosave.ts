@@ -67,6 +67,7 @@ async function persistOnce(page: Page): Promise<void> {
     clearPageRecovery(page.id)
     lastErrorKind = null
     appendSaveJournalEvent({ type: 'autosave_ok', pageId: page.id, at: Date.now() })
+    void import('../lib/thumb-cache').then(({ invalidateThumb }) => void invalidateThumb(page.id))
     notify('saved')
   } catch (err) {
     lastErrorKind = classifyStorageError(err)
