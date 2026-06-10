@@ -9,6 +9,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Icon } from '../../ui/Icon'
 import { useToastStore } from '../../../stores/toastStore'
 import { useAIStore } from '../../../stores/aiStore'
 import { aiChat, PRESET_PROMPTS, SYSTEM_PROMPTS, type AIMessage, type AIMode } from '../../../lib/ai-service'
@@ -134,12 +135,14 @@ export function AIPanel({
   // ─── UI ─────────────────────────────────────────────────────────────────────
 
   const cloudBadge = isCloudReady ? (
-    <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
-      ☁ {config.provider}
+    <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">
+      <Icon name="cloud" className="w-3 h-3" />
+      {config.provider}
     </span>
   ) : (
-    <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-      💻 local
+    <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+      <Icon name="monitor" className="w-3 h-3" />
+      local
     </span>
   )
 
@@ -153,19 +156,19 @@ export function AIPanel({
           <button
             type="button"
             onClick={() => navigate('/settings#ai')}
-            className="text-xs text-forma-muted hover:text-forma-accent"
+            className="text-forma-muted hover:text-forma-accent"
             title="Configurer l'IA"
           >
-            ⚙
+            <Icon name="settings" className="w-3.5 h-3.5" />
           </button>
           {messages.length > 0 && (
             <button
               type="button"
               onClick={clear}
-              className="text-xs text-forma-muted hover:text-red-500"
+              className="text-forma-muted hover:text-red-500"
               title="Effacer la conversation"
             >
-              ✕
+              <Icon name="close" className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
@@ -178,8 +181,9 @@ export function AIPanel({
 
       {/* ── Cloud warning ───────────────────────────────────────────────────── */}
       {isCloudReady && (
-        <div className="shrink-0 mb-2 px-2 py-1.5 rounded bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-[10px] text-blue-700 dark:text-blue-300">
-          ☁ Les messages sont envoyés à {config.provider}. Ne partagez pas de données confidentielles.
+        <div className="shrink-0 mb-2 px-2 py-1.5 rounded bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-[10px] text-blue-700 dark:text-blue-300 flex items-start gap-1">
+          <Icon name="cloud" className="w-3 h-3 mt-0.5 shrink-0" />
+          <span>Les messages sont envoyés à {config.provider}. Ne partagez pas de données confidentielles.</span>
         </div>
       )}
 
@@ -236,10 +240,10 @@ export function AIPanel({
           type="button"
           disabled={loading || !input.trim()}
           onClick={() => send(input)}
-          className="shrink-0 px-2.5 py-1.5 rounded-lg bg-forma-accent text-white text-xs font-medium hover:bg-forma-accent/90 disabled:opacity-40 transition-colors"
+          className="shrink-0 px-2.5 py-1.5 rounded-lg bg-forma-accent text-white text-xs font-medium hover:bg-forma-accent/90 disabled:opacity-40 transition-colors flex items-center justify-center"
           title="Envoyer (Entrée)"
         >
-          ↑
+          <Icon name="chevron-up" className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>
@@ -265,12 +269,14 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
       {/* Error / source indicator */}
       <div className="flex items-center gap-1.5 mt-0.5 px-1">
         {msg.error && (
-          <span className="text-[10px] text-amber-500">⚠ {msg.error}</span>
+          <span className="text-[10px] text-amber-500 inline-flex items-center gap-1">
+            <Icon name="alert" className="w-3 h-3" />
+            {msg.error}
+          </span>
         )}
         {!isUser && (
           <span className="text-[10px] text-forma-muted">
-            {msg.fromCloud ? '☁' : '💻'}
-            {/* Copy button */}
+            <Icon name={msg.fromCloud ? 'cloud' : 'monitor'} className="w-3 h-3" />
           </span>
         )}
         {!isUser && (
@@ -280,10 +286,10 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
               await navigator.clipboard.writeText(msg.content)
               useToastStore.getState().show('Copié')
             }}
-            className="text-[10px] text-forma-muted hover:text-forma-accent"
+            className="text-forma-muted hover:text-forma-accent"
             title="Copier"
           >
-            ⎘
+            <Icon name="copy" className="w-3 h-3" />
           </button>
         )}
       </div>

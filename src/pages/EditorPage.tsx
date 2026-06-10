@@ -11,6 +11,7 @@ import { ScannerModal } from '../components/editor/ScannerModal'
 import { ExportMenu } from '../components/editor/ExportMenu'
 import { ShortcutsHelp } from '../components/editor/ShortcutsHelp'
 import { PerfHud } from '../components/editor/PerfHud'
+import { Icon } from '../components/ui/Icon'
 import { markPageSwitch } from '../lib/perf-monitor'
 import { SidePanel, type SidePanelId } from '../components/editor/SidePanel'
 import { ContinuousPageBlock } from '../components/editor/ContinuousPageBlock'
@@ -723,8 +724,9 @@ export function EditorPage() {
       )}
       {!presentation && !focusMode && (
         <header className="flex items-center gap-2 px-4 py-2 bg-forma-surface border-b border-forma-border shrink-0 flex-wrap print-hide">
-          <Link to="/" className="text-sm text-forma-muted hover:text-forma-accent shrink-0">
-            ← Bibliothèque
+          <Link to="/" className="text-sm text-forma-muted hover:text-forma-accent shrink-0 inline-flex items-center gap-1">
+            <Icon name="chevron-left" className="w-3.5 h-3.5" />
+            Bibliothèque
           </Link>
           {editingTitle ? (
             <input
@@ -758,21 +760,21 @@ export function EditorPage() {
           )}
           {activePage.favorite && (
             <span className="text-xs text-amber-400" title="Page favorite">
-              ★
+              <Icon name="star" className="w-3.5 h-3.5" />
             </span>
           )}
           {readMode && (
             <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-medium">
-              📖 Lecture
+              Lecture
             </span>
           )}
           <button
             type="button"
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-xs text-forma-muted hover:text-forma-accent hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-forma-muted hover:text-forma-accent hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             onClick={() => setShowOptions(true)}
             title="Options du carnet"
           >
-            ⚙
+            <Icon name="settings" className="w-4 h-4" />
           </button>
           <div className="flex-1" />
           {saveStatus === 'error' ? (
@@ -797,8 +799,15 @@ export function EditorPage() {
               {autosaveErrorButtonLabel(getAutosaveErrorKind())}
             </button>
           ) : (
-            <span className={`text-xs hidden sm:inline transition-colors ${saveStatus === 'saving' ? 'text-forma-accent' : 'text-forma-muted'}`}>
-              {saveStatus === 'saving' ? '● Enregistrement…' : '✓ Enregistré'}
+            <span className={`text-xs hidden sm:inline-flex items-center gap-1 transition-colors ${saveStatus === 'saving' ? 'text-forma-accent' : 'text-forma-muted'}`}>
+              {saveStatus === 'saving' ? (
+                'Enregistrement…'
+              ) : (
+                <>
+                  <Icon name="check" className="w-3 h-3" />
+                  Enregistré
+                </>
+              )}
             </span>
           )}
           <PageNavigator
@@ -874,17 +883,19 @@ export function EditorPage() {
           >
             ◻
           </button>
-          <button type="button" onClick={() => setShowShortcuts(true)} className="text-sm px-2 py-1 border rounded-lg" title="Aide ?">
-            ?
+          <button type="button" onClick={() => setShowShortcuts(true)} className="text-sm px-2 py-1 border rounded-lg" title="Aide">
+            <Icon name="help" className="w-4 h-4" />
           </button>
           <div className="relative">
             <button
               type="button"
               onClick={() => setShowAIMenu((v) => !v)}
-              className="text-sm px-2 py-1 border rounded-lg bg-forma-surface"
+              className="text-sm px-2 py-1 border rounded-lg bg-forma-surface inline-flex items-center gap-1"
               title="Assistant IA"
             >
-              ✦ IA ▾
+              <Icon name="sparkles" className="w-3.5 h-3.5" />
+              IA
+              <Icon name="chevron-down" className="w-3 h-3" />
             </button>
             {showAIMenu && (
               <>

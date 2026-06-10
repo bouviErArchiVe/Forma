@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Icon } from '../components/ui/Icon'
 import { DropZone } from '../components/library/DropZone'
 import { DocumentCard } from '../components/library/DocumentCard'
 import { RecentStrip } from '../components/library/RecentStrip'
@@ -593,7 +594,8 @@ export function LibraryPage() {
               className="text-xs text-red-700 dark:text-red-400 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/50 font-medium hover:bg-red-200 dark:hover:bg-red-950 transition-colors"
               title="Espace de stockage presque plein — libérez de l'espace"
             >
-              ⚠ Stockage presque plein
+              <Icon name="alert" className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
+              Stockage presque plein
             </button>
           )}
           {!storageWarning && (() => {
@@ -638,7 +640,9 @@ export function LibraryPage() {
 
           {/* Search */}
           <div className="relative flex items-center gap-1.5">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-forma-muted text-xs pointer-events-none">🔍</span>
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-forma-muted pointer-events-none">
+              <Icon name="search" className="w-3.5 h-3.5" />
+            </span>
             <input
               type="search"
               placeholder="Rechercher…"
@@ -710,7 +714,23 @@ export function LibraryPage() {
                 }`}
                 title={m === 'grid' ? 'Grille' : 'Liste'}
               >
-                {m === 'grid' ? '▦' : '☰'}
+                {m === 'grid' ? (
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 inline" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 inline" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M8 6h13" />
+                    <path d="M8 12h13" />
+                    <path d="M8 18h13" />
+                    <path d="M3 6h.01" />
+                    <path d="M3 12h.01" />
+                    <path d="M3 18h.01" />
+                  </svg>
+                )}
               </button>
             ))}
           </div>
@@ -731,7 +751,16 @@ export function LibraryPage() {
                     : 'text-forma-muted hover:text-forma-text'
                 }`}
               >
-                {t === 'all' ? 'Tous' : t === 'favorites' ? '★ Favoris' : 'Récents'}
+                {t === 'all' ? (
+                  'Tous'
+                ) : t === 'favorites' ? (
+                  <span className="inline-flex items-center gap-1">
+                    <Icon name="star" className="w-3 h-3" />
+                    Favoris
+                  </span>
+                ) : (
+                  'Récents'
+                )}
               </button>
             ))}
           </div>
@@ -747,11 +776,19 @@ export function LibraryPage() {
             </button>
             <button type="button" onClick={() => setSelectionMode(!selectionMode)}
               className={`text-xs px-2.5 py-1 border rounded-lg transition-colors ${selectionMode ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted hover:border-forma-accent hover:text-forma-accent'}`}>
-              {selectionMode ? '✕ Annuler' : 'Sélection'}
+              {selectionMode ? (
+                <span className="inline-flex items-center gap-1">
+                  <Icon name="close" className="w-3 h-3" />
+                  Annuler
+                </span>
+              ) : (
+                'Sélection'
+              )}
             </button>
             <button type="button" onClick={() => setShowNewNotebook(true)}
-              className="text-xs px-2.5 py-1 bg-forma-accent hover:bg-forma-accent-hover text-white rounded-lg font-medium transition-colors shadow-sm">
-              + Carnet
+              className="text-xs px-2.5 py-1 bg-forma-accent hover:bg-forma-accent-hover text-white rounded-lg font-medium transition-colors shadow-sm inline-flex items-center gap-1">
+              <Icon name="plus" className="w-3 h-3" />
+              Carnet
             </button>
             <button type="button" onClick={() => fileRef.current?.click()}
               className="text-xs px-2.5 py-1 border border-forma-border rounded-lg text-forma-muted hover:text-forma-accent hover:border-forma-accent transition-colors">
@@ -762,16 +799,16 @@ export function LibraryPage() {
               .forma
             </button>
             <button type="button" onClick={() => useSettingsStore.getState().setOnboardingDone(false)}
-              className="text-xs text-forma-muted hover:text-forma-accent transition-colors px-1" title="Revoir l'introduction">
-              ?
+              className="text-forma-muted hover:text-forma-accent transition-colors px-1" title="Revoir l'introduction">
+              <Icon name="help" className="w-4 h-4" />
             </button>
             <button type="button" onClick={() => navigate('/settings')}
-              className="text-xs text-forma-muted hover:text-forma-accent transition-colors px-1" title="Paramètres">
-              ⚙
+              className="text-forma-muted hover:text-forma-accent transition-colors px-1" title="Paramètres">
+              <Icon name="settings" className="w-4 h-4" />
             </button>
             <button type="button" onClick={() => navigate('/trash')}
-              className="text-xs text-forma-muted hover:text-red-500 transition-colors px-1" title="Corbeille">
-              🗑
+              className="text-forma-muted hover:text-red-500 transition-colors px-1" title="Corbeille">
+              <Icon name="trash" className="w-4 h-4" />
             </button>
           </div>
           <input ref={fileRef} type="file" accept="application/pdf" multiple className="hidden" onChange={(e) => {
@@ -1021,7 +1058,7 @@ export function LibraryPage() {
                       : 'bg-amber-50/80 dark:bg-amber-950/30 border-forma-border'
                   }`}
                 >
-                  <span className="text-2xl">📁</span>
+                  <Icon name="folder" className="w-6 h-6 text-amber-500" />
                   <span className="block font-medium mt-1">{folder.name}</span>
                   <span className="text-xs text-forma-muted">
                     {folderCounts[folder.id] ?? 0} carnet{(folderCounts[folder.id] ?? 0) !== 1 ? 's' : ''}
@@ -1038,7 +1075,7 @@ export function LibraryPage() {
                       setRenameFolderName(folder.name)
                     }}
                   >
-                    ✎
+                    <Icon name="edit" className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
@@ -1050,7 +1087,7 @@ export function LibraryPage() {
                       load()
                     }}
                   >
-                    ⧉
+                    <Icon name="copy" className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
@@ -1074,7 +1111,7 @@ export function LibraryPage() {
                       load()
                     }}
                   >
-                    🗑
+                    <Icon name="trash" className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -1084,8 +1121,9 @@ export function LibraryPage() {
 
         {notebooks.length === 0 ? (
           <div className="text-center py-16 text-forma-muted">
-            <p className="text-4xl mb-3">📓</p>
-            <p>Aucun document ici</p>
+            <Icon name="folder" className="w-10 h-10 mx-auto mb-3 opacity-50" />
+            <p className="font-medium text-forma-text">Aucun document ici</p>
+            <p className="text-xs mt-1">Créez un carnet ou importez un fichier pour commencer.</p>
             <div className="mt-4 flex flex-wrap gap-2 justify-center">
               <button
                 type="button"
@@ -1154,18 +1192,21 @@ export function LibraryPage() {
                         }
                       }}
                     >
-                      ⧉
+                      <Icon name="copy" className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
-                      className="text-lg leading-none"
+                      className="flex items-center bg-white/90 dark:bg-gray-800 px-1.5 py-0.5 rounded border border-forma-border"
                       onClick={async (e) => {
                         e.stopPropagation()
                         await toggleFavorite(nb.id)
                         load()
                       }}
                     >
-                      {nb.favorite ? '★' : '☆'}
+                      <Icon
+                        name={nb.favorite ? 'star' : 'star-outline'}
+                        className={`w-3.5 h-3.5 ${nb.favorite ? 'text-amber-400' : ''}`}
+                      />
                     </button>
                   </div>
                 )}

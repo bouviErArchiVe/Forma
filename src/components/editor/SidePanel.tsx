@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Icon } from '../ui/Icon'
 import { AIPanel } from './panels/AIPanel'
 import { AudioPanel } from './panels/AudioPanel'
 import { SearchPanel } from './panels/SearchPanel'
@@ -112,7 +113,13 @@ export function SidePanel({
                 : 'text-forma-muted hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-forma-text'
             }`}
           >
-            <span className={id === 'ai' ? 'text-sm font-bold' : ''}>{PANEL_ICONS[id]}</span>
+            {id === 'ai' ? (
+              <Icon name="sparkles" className="w-4 h-4" />
+            ) : id === 'search' ? (
+              <Icon name="search" className="w-4 h-4" />
+            ) : (
+              <span>{PANEL_ICONS[id]}</span>
+            )}
           </button>
         ))}
       </div>
@@ -129,10 +136,10 @@ export function SidePanel({
             <button
               type="button"
               onClick={() => setOpen(null)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-forma-muted hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-forma-text transition-colors text-base"
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-forma-muted hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-forma-text transition-colors"
               title="Fermer"
             >
-              ×
+              <Icon name="close" className="w-4 h-4" />
             </button>
           </div>
 
