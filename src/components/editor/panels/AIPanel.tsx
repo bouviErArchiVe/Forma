@@ -36,11 +36,14 @@ export function AIPanel({
   notebookName = 'Document',
   contextText,        // legacy prop still accepted (fallback if no page)
   onAddStudyPairs: _onAddStudyPairs,
+  initialPreset,
 }: {
   page?: Page
   notebookName?: string
   contextText?: string
   onAddStudyPairs?: (pairs: { front: string; back: string }[]) => void
+  /** Preset id to run automatically once when the panel mounts (ex: 'summarize', 'explain'). */
+  initialPreset?: string
 }) {
   const navigate = useNavigate()
   const config = useAIStore()
@@ -113,6 +116,16 @@ export function AIPanel({
     )
     await send(userPrompt, preset.mode, preset.systemKey ?? 'default')
   }, [pageCtx, send])
+
+  // ── Run an initial preset once on mount (ex: triggered from toolbar) ────────
+  const initialPresetRef = useRef(initialPreset)
+  useEffect(() => {
+    const preset = initialPresetRef.current
+    if (!preset) return
+    initialPresetRef.current = undefined
+    void runPreset(preset)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ── Clear ───────────────────────────────────────────────────────────────────
 

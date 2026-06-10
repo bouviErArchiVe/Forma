@@ -31,6 +31,8 @@ export type AIMode =
   | 'formal'
   | 'keywords'
   | 'outline'
+  | 'explain'
+  | 'reformulate'
   | 'question'
   | 'cnb'      // Code national du bâtiment
   | 'ccq'      // Code de construction du Québec
@@ -63,6 +65,11 @@ Adapte le niveau de détail au contexte fourni. Réponds en français.`,
   reformulation: `Tu es un assistant de reformulation de texte professionnel.
 Reformule le texte fourni selon la consigne (plus court, plus formel, etc.).
 Conserve le sens exact. Ne rajoute pas d'informations. Réponds uniquement avec le texte reformulé.`,
+
+  explain: `Tu es Forma IA, un assistant pédagogique intégré à l'application Forma.
+Explique le contenu fourni de façon claire et accessible, comme à quelqu'un qui découvre le sujet.
+Détaille les concepts clés, donne des exemples si utile, et structure ta réponse.
+Réponds en français.`,
 
   cnb: `Tu es un assistant spécialisé dans le Code national du bâtiment du Canada (CNB).
 Aide à localiser et interpréter des exigences réglementaires.
@@ -131,6 +138,22 @@ export const PRESET_PROMPTS: PresetPrompt[] = [
     buildUserPrompt: (ctx) => `Transforme ce texte en plan structuré à puces :\n\n${ctx}`,
   },
   {
+    id: 'explain',
+    label: 'Expliquer',
+    icon: '💡',
+    mode: 'explain',
+    systemKey: 'explain',
+    buildUserPrompt: (ctx) => `Explique le contenu de cette page de façon claire et structurée :\n\n${ctx}`,
+  },
+  {
+    id: 'reformulate',
+    label: 'Reformuler',
+    icon: '🔄',
+    mode: 'reformulate',
+    systemKey: 'reformulation',
+    buildUserPrompt: (ctx) => `Reformule ce texte en gardant le même sens, avec des mots différents :\n\n${ctx}`,
+  },
+  {
     id: 'cnb',
     label: 'CNB',
     icon: '🏛️',
@@ -181,6 +204,13 @@ function localFallback(messages: AIMessage[], mode: AIMode, context: string): AI
       const bullets = sentences.slice(0, 8).map((s) => `• ${s}`).join('\n')
       return { text: bullets || '• (aucun contenu)', fromCloud: false }
     }
+    case 'reformulate':
+      return { text: reformulate(context, 'formal'), fromCloud: false }
+    case 'explain':
+      return {
+        text: `[Mode local] Résumé du contenu :\n${summarizeText(context, 4)}\n\nPour une explication détaillée, configurez un fournisseur cloud dans Paramètres › IA.`,
+        fromCloud: false,
+      }
     case 'question':
     case 'chat':
       return { text: answerQuestion(context, lastUser), fromCloud: false }

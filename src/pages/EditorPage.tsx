@@ -145,6 +145,8 @@ export function EditorPage() {
   const [presenterLaser, setPresenterLaser] = useState(true)
   const [searchHit, setSearchHit] = useState<DocumentSearchHit | null>(null)
   const [sideOpenPanel, setSideOpenPanel] = useState<SidePanelId>(null)
+  const [aiInitialPreset, setAiInitialPreset] = useState<string | undefined>(undefined)
+  const [showAIMenu, setShowAIMenu] = useState(false)
   const sidebarCollapsed = useSettingsStore((s) => s.sidebarCollapsed)
   const setSidebarCollapsed = useSettingsStore((s) => s.setSidebarCollapsed)
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved')
@@ -590,6 +592,14 @@ export function EditorPage() {
         case 'panel-ai':
           setSideOpenPanel('ai')
           break
+        case 'ai-summarize-page':
+          setAiInitialPreset('summarize')
+          setSideOpenPanel('ai')
+          break
+        case 'ai-explain-page':
+          setAiInitialPreset('explain')
+          setSideOpenPanel('ai')
+          break
         case 'panel-study':
           setSideOpenPanel('study')
           break
@@ -867,6 +877,45 @@ export function EditorPage() {
           <button type="button" onClick={() => setShowShortcuts(true)} className="text-sm px-2 py-1 border rounded-lg" title="Aide ?">
             ?
           </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowAIMenu((v) => !v)}
+              className="text-sm px-2 py-1 border rounded-lg bg-forma-surface"
+              title="Assistant IA"
+            >
+              ✦ IA ▾
+            </button>
+            {showAIMenu && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setShowAIMenu(false)} />
+                <div className="absolute right-0 top-full z-40 mt-1 min-w-[200px] bg-forma-surface border border-forma-border rounded-lg shadow-lg py-1 text-sm">
+                  <button
+                    type="button"
+                    className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    onClick={() => {
+                      setShowAIMenu(false)
+                      setAiInitialPreset('summarize')
+                      setSideOpenPanel('ai')
+                    }}
+                  >
+                    📋 Résumer cette page
+                  </button>
+                  <button
+                    type="button"
+                    className="block w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    onClick={() => {
+                      setShowAIMenu(false)
+                      setAiInitialPreset('explain')
+                      setSideOpenPanel('ai')
+                    }}
+                  >
+                    💡 Expliquer cette page
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
           <ExportMenu
             notebook={notebook}
             activePage={activePage}
@@ -1121,6 +1170,7 @@ export function EditorPage() {
                 }
               }}
               openPanel={sideOpenPanel}
+              aiInitialPreset={aiInitialPreset}
             />
           </div>
         )}

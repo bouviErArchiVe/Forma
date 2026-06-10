@@ -13,6 +13,7 @@ import { exportNotebooksMarkdownZip } from '../lib/bulk-markdown'
 import { createNotebookFromMarkdown } from '../lib/markdown-import'
 import { getPinnedNotebookIds } from '../lib/pinned-notebooks'
 import { buildFolderPath } from '../lib/folder-path'
+import { filterByType, sortNotebooksBy } from '../lib/library-helpers'
 import { basePageDimensions } from '../lib/page-dimensions'
 import { renderFullPage } from '../lib/page-render'
 import { libraryThumbQueue, THUMB_PRIORITY } from '../lib/thumb-queue'
@@ -45,7 +46,6 @@ import {
   getNotebooksByIds,
   searchNotebooks,
   softDeleteNotebook,
-  sortNotebooks,
   toggleFavorite,
   updateNotebookMetadata,
 } from '../services/library'
@@ -104,6 +104,7 @@ export function LibraryPage() {
   const [storageWarning, setStorageWarning] = useState(false)
   const [importBusy, setImportBusy] = useState(false)
   const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null)
+  const [batchImport, setBatchImport] = useState<{ current: number; total: number; name: string } | null>(null)
   const importAbortRef = useRef<AbortController | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
@@ -244,8 +245,12 @@ export function LibraryPage() {
     )
     setFolderCounts(counts)
     setPinnedIds(await getPinnedNotebookIds())
-    let sorted = sortNotebooks(n, sortBy, sortOrder)
-    if (typeFilter !== 'all') sorted = sorted.filter((nb) => nb.type === typeFilter)
+    // L'onglet "Récents" préserve l'ordre de consultation (déjà fourni par
+    // getNotebooksByIds + getRecentIds) — seul le filtre type s'applique.
+    const sorted =
+      filterTab === 'recent'
+        ? filterByType(n, typeFilter)
+        : sortNotebooksBy(filterByType(n, typeFilter), sortBy, sortOrder)
     setNotebooks(sorted)
     if (sorted.length) setPageCounts(await getPageCounts(sorted.map((nb) => nb.id)))
     else setPageCounts({})
@@ -424,6 +429,58 @@ export function LibraryPage() {
     }
   }
 
+  /** Importe plusieurs fichiers PDF séquentiellement, avec une progression "Import N/total". */
+  const handleImportPdfs = async (files: File[]) => {
+    setBatchImport({ current: 0, total: files.length, name: '' })
+    let lastId: string | null = null
+    let okCount = 0
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      setBatchImport({ current: i + 1, total: files.length, name: file.name })
+      try {
+        const { pages, pdfSourceDataUrl } = await importPdfFile(file, { lazy: true })
+        const name = file.name.replace(/\.pdf$/i, '')
+        const nb = await createNotebookFromPdf(name, currentFolderId, pages, pdfSourceDataUrl)
+        lastId = nb.id
+        okCount++
+      } catch (err) {
+        useToastStore.getState().show(
+          err instanceof Error ? `${file.name} : ${err.message}` : `Échec de l'import de ${file.name}`,
+          5000,
+        )
+      }
+    }
+    setBatchImport(null)
+    await load()
+    useToastStore.getState().show(`${okCount}/${files.length} PDF importé(s)`)
+    if (okCount === 1 && lastId) navigate(`/document/${lastId}`)
+  }
+
+  /** Importe plusieurs carnets .forma.zip séquentiellement, avec une progression "Import N/total". */
+  const handleImportFormaZips = async (files: File[]) => {
+    setBatchImport({ current: 0, total: files.length, name: '' })
+    let lastId: string | null = null
+    let okCount = 0
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      setBatchImport({ current: i + 1, total: files.length, name: file.name })
+      try {
+        const nbId = await importNotebookZip(file, currentFolderId)
+        lastId = nbId
+        okCount++
+      } catch (err) {
+        useToastStore.getState().show(
+          err instanceof Error ? `${file.name} : ${err.message}` : `Échec de l'import de ${file.name}`,
+          5000,
+        )
+      }
+    }
+    setBatchImport(null)
+    await load()
+    useToastStore.getState().show(`${okCount}/${files.length} carnet(s) importé(s)`)
+    if (okCount === 1 && lastId) navigate(`/document/${lastId}`)
+  }
+
   const handleDeleteSelected = async () => {
     for (const id of selectedIds) await softDeleteNotebook(id)
     clearSelection()
@@ -465,6 +522,8 @@ export function LibraryPage() {
           )
         }
       }}
+      onDropPdfs={handleImportPdfs}
+      onDropFormaZips={handleImportFormaZips}
     >
     {/* PDF Import progress overlay */}
     {importBusy && (
@@ -494,6 +553,27 @@ export function LibraryPage() {
           >
             Annuler
           </button>
+        </div>
+      </div>
+    )}
+
+    {/* Multi-file batch import progress overlay */}
+    {batchImport && (
+      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="bg-forma-surface rounded-2xl shadow-xl p-6 max-w-xs w-full mx-4 text-center" style={{ animation: 'zoom-in 150ms cubic-bezier(0.16,1,0.3,1)' }}>
+          <div className="text-3xl mb-3">📥</div>
+          <h3 className="font-semibold text-sm mb-1">
+            Import {batchImport.current}/{batchImport.total}…
+          </h3>
+          <p className="text-xs text-forma-muted mb-3 truncate" title={batchImport.name}>
+            {batchImport.name}
+          </p>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+            <div
+              className="bg-forma-accent h-full rounded-full transition-all duration-200"
+              style={{ width: `${Math.round((batchImport.current / batchImport.total) * 100)}%` }}
+            />
+          </div>
         </div>
       </div>
     )}
@@ -694,21 +774,25 @@ export function LibraryPage() {
               🗑
             </button>
           </div>
-          <input ref={fileRef} type="file" accept="application/pdf" className="hidden" onChange={(e) => {
-            const f = e.target.files?.[0]
-            if (f) handleImportPdf(f)
+          <input ref={fileRef} type="file" accept="application/pdf" multiple className="hidden" onChange={(e) => {
+            const files = Array.from(e.target.files ?? [])
+            if (files.length > 1) void handleImportPdfs(files)
+            else if (files.length === 1) handleImportPdf(files[0])
             e.target.value = ''
           }} />
           <input
             ref={formaRef}
             type="file"
             accept=".zip,application/zip"
+            multiple
             className="hidden"
             onChange={async (e) => {
-              const f = e.target.files?.[0]
-              if (f) {
+              const files = Array.from(e.target.files ?? [])
+              if (files.length > 1) {
+                void handleImportFormaZips(files)
+              } else if (files.length === 1) {
                 try {
-                  const nbId = await importNotebookZip(f, currentFolderId)
+                  const nbId = await importNotebookZip(files[0], currentFolderId)
                   navigate(`/document/${nbId}`)
                 } catch (err) {
                   useToastStore.getState().show(

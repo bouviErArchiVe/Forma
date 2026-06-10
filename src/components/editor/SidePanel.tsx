@@ -38,6 +38,8 @@ interface SidePanelProps {
   onSearchHighlight?: (hit: DocumentSearchHit | null) => void
   /** Ouvre un panneau (ex. Ctrl+F → search) */
   openPanel?: SidePanelId
+  /** Preset IA à exécuter automatiquement à l'ouverture du panneau IA. */
+  aiInitialPreset?: string
 }
 
 const PANEL_ICONS: Record<NonNullable<SidePanelId>, string> = {
@@ -74,13 +76,19 @@ export function SidePanel({
   onPageRestored,
   onSearchHighlight,
   openPanel,
+  aiInitialPreset,
 }: SidePanelProps) {
   const pageId = page.id
   const [open, setOpen] = useState<Panel>(null)
+  const [aiPresetKey, setAiPresetKey] = useState(0)
 
   useEffect(() => {
     if (openPanel) setOpen(openPanel)
   }, [openPanel])
+
+  useEffect(() => {
+    if (aiInitialPreset) setAiPresetKey((k) => k + 1)
+  }, [aiInitialPreset])
 
   useEffect(() => {
     if (open) localStorage.setItem(LAST_PANEL_KEY, open)
@@ -146,9 +154,11 @@ export function SidePanel({
             )}
             {open === 'ai' && (
               <AIPanel
+                key={aiPresetKey}
                 page={page}
                 notebookName={notebookId}
                 contextText={pageText}
+                initialPreset={aiInitialPreset}
                 onAddStudyPairs={
                   onAddStudy
                     ? async (pairs) => {

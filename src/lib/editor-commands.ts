@@ -15,6 +15,8 @@ export type EditorCommand =
   | 'duplicate-page'
   | 'print'
   | 'panel-ai'
+  | 'ai-summarize-page'
+  | 'ai-explain-page'
   | 'panel-study'
   | 'panel-ocr'
   | 'panel-share'
