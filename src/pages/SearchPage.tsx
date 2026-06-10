@@ -12,6 +12,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Icon } from '../components/ui/Icon'
 import {
   globalHitSourceLabel,
   searchGlobalPages,
@@ -121,7 +122,7 @@ export function SearchPage() {
           className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 text-forma-muted hover:text-forma-text transition-colors shrink-0"
           title="Retour à la bibliothèque"
         >
-          ←
+          <Icon name="chevron-left" className="w-4 h-4" />
         </button>
         <span className="text-forma-muted shrink-0 text-sm">🔍</span>
         <input

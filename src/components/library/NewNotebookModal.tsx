@@ -15,6 +15,14 @@ const KIND_META: Record<NewDocKind, { icon: string; label: string }> = {
   fmoodboard: { icon: '🎨', label: 'Moodboard' },
 }
 
+const DEFAULT_NAMES: Record<NewDocKind, string> = {
+  notebook: 'Nouveau carnet',
+  whiteboard: 'Tableau blanc',
+  formadoc: 'Nouveau document',
+  'formataб': 'Nouveau tableau',
+  fmoodboard: 'Nouveau moodboard',
+}
+
 interface NewNotebookModalProps {
   onClose: () => void
   onCreate: (
@@ -26,16 +34,23 @@ interface NewNotebookModalProps {
       orientation: Orientation
     },
   ) => void
+  /** Type présélectionné à l'ouverture (depuis le menu "+ Nouveau"). */
+  initialKind?: NewDocKind
 }
 
-export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
+export function NewNotebookModal({ onClose, onCreate, initialKind }: NewNotebookModalProps) {
   const defaultTemplate = useSettingsStore((s) => s.defaultPaperTemplate)
   const defaultCover = useSettingsStore((s) => s.defaultCoverColor)
-  const [kind, setKind] = useState<NewDocKind>('notebook')
-  const [name, setName] = useState('Nouveau carnet')
+  const startKind = initialKind ?? 'notebook'
+  const [kind, setKind] = useState<NewDocKind>(startKind)
+  const [name, setName] = useState(DEFAULT_NAMES[startKind])
   const [coverColor, setCoverColor] = useState<string>(defaultCover)
-  const [paperTemplate, setPaperTemplate] = useState<PaperTemplate>(defaultTemplate)
-  const [orientation, setOrientation] = useState<Orientation>('portrait')
+  const [paperTemplate, setPaperTemplate] = useState<PaperTemplate>(
+    startKind === 'whiteboard' ? 'grid' : defaultTemplate,
+  )
+  const [orientation, setOrientation] = useState<Orientation>(
+    startKind === 'whiteboard' ? 'landscape' : 'portrait',
+  )
 
   const isFormadoc = kind === 'formadoc'
   const isFormataб = kind === 'formataб'
@@ -55,11 +70,8 @@ export function NewNotebookModal({ onClose, onCreate }: NewNotebookModalProps) {
               type="button"
               onClick={() => {
                 setKind(k)
-                if (k === 'whiteboard') { setName('Tableau blanc'); setPaperTemplate('grid'); setOrientation('landscape') }
-                else if (k === 'notebook') { setName('Nouveau carnet') }
-                else if (k === 'formadoc') { setName('Nouveau document') }
-                else if (k === 'formataб') { setName('Nouveau tableau') }
-                else if (k === 'fmoodboard') { setName('Nouveau moodboard') }
+                setName(DEFAULT_NAMES[k])
+                if (k === 'whiteboard') { setPaperTemplate('grid'); setOrientation('landscape') }
               }}
               className={`flex-1 py-1.5 rounded-lg border text-sm font-medium transition-all duration-150 ${
                 kind === k

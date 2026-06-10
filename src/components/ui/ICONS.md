@@ -32,6 +32,16 @@ import { Icon } from '../components/ui/Icon'
 | `alert` | avertissement, erreur |
 | `cloud` / `monitor` | IA cloud / IA locale |
 | `help` | aide, "?" |
+| `edit` | renommer, modifier |
+| `more-horizontal` | menu overflow "···" |
+| `book` | carnet manuscrit |
+| `layout` | whiteboard, modèles de page |
+| `file-text` | document texte (FormaDoc) |
+| `table` | tableau (FormaTab) |
+| `image` | moodboard, images |
+| `zap` | note rapide |
+| `upload` | import de fichier (PDF, .forma) |
+| `keyboard` | raccourcis clavier |
 
 ## Dette résiduelle
 

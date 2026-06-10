@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { AISettingsSection } from '../components/settings/AISettingsSection'
+import { Icon } from '../components/ui/Icon'
 import { Link, useNavigate } from 'react-router-dom'
 import { importBackupFile } from '../lib/backup'
 import { restoreFromCloudSlot } from '../lib/cloud-restore'
@@ -97,7 +98,8 @@ export function SettingsPage() {
   return (
     <div className="min-h-full p-6 max-w-lg mx-auto">
       <Link to="/" className="inline-flex items-center gap-1 text-sm text-forma-muted hover:text-forma-accent transition-colors mb-6">
-        ← Bibliothèque
+        <Icon name="chevron-left" className="w-4 h-4" />
+        Bibliothèque
       </Link>
       <h1 className="text-2xl font-bold mb-6 text-forma-text">Paramètres</h1>
 

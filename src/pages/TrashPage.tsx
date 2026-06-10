@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Icon } from '../components/ui/Icon'
 import { formatRelativeTime } from '../lib/format-relative'
 import { confirm } from '../stores/confirmStore'
 import { useToastStore } from '../stores/toastStore'
@@ -28,7 +29,8 @@ export function TrashPage() {
   return (
     <div className="min-h-full p-6 max-w-4xl mx-auto">
       <Link to="/" className="inline-flex items-center gap-1 text-sm text-forma-muted hover:text-forma-accent transition-colors mb-6">
-        ← Bibliothèque
+        <Icon name="chevron-left" className="w-4 h-4" />
+        Bibliothèque
       </Link>
       <div className="flex items-center justify-between mt-4 mb-4 gap-3 flex-wrap">
         <h1 className="text-xl font-semibold">

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Icon } from '../components/ui/Icon'
 
 const PLANS = [
   {
@@ -22,8 +23,9 @@ const PLANS = [
 export function PlansPage() {
   return (
     <div className="min-h-full p-6 max-w-4xl mx-auto">
-      <Link to="/" className="text-sm text-forma-accent">
-        ← Bibliothèque
+      <Link to="/" className="inline-flex items-center gap-1 text-sm text-forma-accent hover:underline">
+        <Icon name="chevron-left" className="w-4 h-4" />
+        Bibliothèque
       </Link>
       <h1 className="text-2xl font-bold mt-4 mb-2">Forma — Offres</h1>
       <p className="text-sm text-forma-muted mb-4">

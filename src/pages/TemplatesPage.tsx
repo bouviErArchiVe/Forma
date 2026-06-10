@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { Icon } from '../components/ui/Icon'
 import { TemplatePreview } from '../components/library/TemplatePreview'
 import { TEMPLATE_PACKS } from '../lib/template-gallery'
 import { createNotebook } from '../services/library'
@@ -18,8 +19,9 @@ export function TemplatesPage() {
 
   return (
     <div className="min-h-full p-4 max-w-4xl mx-auto">
-      <button type="button" onClick={() => navigate('/')} className="text-sm text-forma-accent">
-        ← Bibliothèque
+      <button type="button" onClick={() => navigate('/')} className="inline-flex items-center gap-1 text-sm text-forma-accent hover:underline">
+        <Icon name="chevron-left" className="w-4 h-4" />
+        Bibliothèque
       </button>
       <h1 className="text-2xl font-bold mt-4 mb-2">Galerie de modèles</h1>
       <p className="text-sm text-forma-muted mb-6">

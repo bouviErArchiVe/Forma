@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Icon } from '../components/ui/Icon'
+import { Icon, type IconName } from '../components/ui/Icon'
 import { DropZone } from '../components/library/DropZone'
 import { DocumentCard } from '../components/library/DocumentCard'
 import { RecentStrip } from '../components/library/RecentStrip'
 import { ShortcutsHelp } from '../components/editor/ShortcutsHelp'
 import { MoveFolderModal } from '../components/library/MoveFolderModal'
-import { NewNotebookModal } from '../components/library/NewNotebookModal'
+import { NewNotebookModal, type NewDocKind } from '../components/library/NewNotebookModal'
 import { db } from '../db'
 import { downloadSelectedNotebooks, importNotebookZip } from '../lib/backup'
 import { exportNotebooksToPdf } from '../lib/bulk-export'
@@ -65,6 +65,15 @@ type FilterTab = 'all' | 'favorites' | 'recent'
 
 const FILTER_TAB_KEY = 'forma-library-tab'
 
+/** Types de documents proposés dans le menu "+ Nouveau" (icône + libellé + courte description). */
+const CREATE_TYPES: { kind: NewDocKind; icon: IconName; label: string; desc: string }[] = [
+  { kind: 'notebook', icon: 'book', label: 'Carnet', desc: 'Notes manuscrites par pages' },
+  { kind: 'whiteboard', icon: 'layout', label: 'Whiteboard', desc: 'Toile libre en paysage' },
+  { kind: 'formadoc', icon: 'file-text', label: 'Document', desc: 'Texte riche, export PDF / Markdown' },
+  { kind: 'formataб', icon: 'table', label: 'Tableau', desc: 'Tableur simple avec formules' },
+  { kind: 'fmoodboard', icon: 'image', label: 'Moodboard', desc: 'Images, textes et formes libres' },
+]
+
 function readFilterTab(): FilterTab {
   try {
     const v = localStorage.getItem(FILTER_TAB_KEY)
@@ -109,6 +118,12 @@ export function LibraryPage() {
   const importAbortRef = useRef<AbortController | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  // Menus déroulants du header : "+ Nouveau" (création/import) et "···" (accès secondaires)
+  const [showCreateMenu, setShowCreateMenu] = useState(false)
+  const [showMoreMenu, setShowMoreMenu] = useState(false)
+  const [createKind, setCreateKind] = useState<NewDocKind | undefined>(undefined)
+  const createMenuRef = useRef<HTMLDivElement>(null)
+  const moreMenuRef = useRef<HTMLDivElement>(null)
 
   const {
     currentFolderId,
@@ -139,6 +154,37 @@ export function LibraryPage() {
       setStorageWarning(isStorageNearlyFull(est.percent, 85))
     })
   }, [])
+
+  /** Ouvre le modal de création, avec un type éventuellement présélectionné. */
+  const openCreateModal = useCallback((kind?: NewDocKind) => {
+    setCreateKind(kind)
+    setShowCreateMenu(false)
+    setShowMoreMenu(false)
+    setShowNewNotebook(true)
+  }, [])
+
+  // Fermeture des menus déroulants : clic à l'extérieur ou Échap
+  useEffect(() => {
+    if (!showCreateMenu && !showMoreMenu) return
+    const closeAll = () => {
+      setShowCreateMenu(false)
+      setShowMoreMenu(false)
+    }
+    const onPointerDown = (e: MouseEvent) => {
+      const t = e.target as Node
+      if (createMenuRef.current?.contains(t) || moreMenuRef.current?.contains(t)) return
+      closeAll()
+    }
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeAll()
+    }
+    window.addEventListener('mousedown', onPointerDown)
+    window.addEventListener('keydown', onEsc)
+    return () => {
+      window.removeEventListener('mousedown', onPointerDown)
+      window.removeEventListener('keydown', onEsc)
+    }
+  }, [showCreateMenu, showMoreMenu])
 
   useEffect(() => {
     setFocusIdx(-1)
@@ -267,6 +313,7 @@ export function LibraryPage() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (showNewNotebook || showMove || showNewFolder) return
+      if (showCreateMenu || showMoreMenu) return // les menus gèrent leur propre Échap
       const tag = (e.target as HTMLElement)?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
 
@@ -285,7 +332,7 @@ export function LibraryPage() {
         setFocusIdx((i) => (i <= 0 ? navCount - 1 : i - 1))
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
         e.preventDefault()
-        setShowNewNotebook(true)
+        openCreateModal()
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
         e.preventDefault()
         if (!selectionMode) setSelectionMode(true)
@@ -339,6 +386,9 @@ export function LibraryPage() {
     showNewNotebook,
     showMove,
     showNewFolder,
+    showCreateMenu,
+    showMoreMenu,
+    openCreateModal,
     navCount,
     focusIdx,
     filterTab,
@@ -769,11 +819,6 @@ export function LibraryPage() {
 
           {/* Secondary nav */}
           <div className="flex items-center gap-1 flex-wrap">
-            <button type="button" onClick={async () => navigate(`/document/${await openQuickNote(currentFolderId)}`)}
-              className="text-xs px-2.5 py-1 bg-amber-400 hover:bg-amber-500 text-amber-950 rounded-lg font-medium transition-colors"
-              title="Ouvre toujours le même carnet rapide">
-              ⚡
-            </button>
             <button type="button" onClick={() => setSelectionMode(!selectionMode)}
               className={`text-xs px-2.5 py-1 border rounded-lg transition-colors ${selectionMode ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted hover:border-forma-accent hover:text-forma-accent'}`}>
               {selectionMode ? (
@@ -785,23 +830,146 @@ export function LibraryPage() {
                 'Sélection'
               )}
             </button>
-            <button type="button" onClick={() => setShowNewNotebook(true)}
-              className="text-xs px-2.5 py-1 bg-forma-accent hover:bg-forma-accent-hover text-white rounded-lg font-medium transition-colors shadow-sm inline-flex items-center gap-1">
-              <Icon name="plus" className="w-3 h-3" />
-              Carnet
-            </button>
-            <button type="button" onClick={() => fileRef.current?.click()}
-              className="text-xs px-2.5 py-1 border border-forma-border rounded-lg text-forma-muted hover:text-forma-accent hover:border-forma-accent transition-colors">
-              PDF
-            </button>
-            <button type="button" onClick={() => formaRef.current?.click()}
-              className="text-xs px-2.5 py-1 border border-forma-border rounded-lg text-forma-muted hover:text-forma-accent hover:border-forma-accent transition-colors">
-              .forma
-            </button>
-            <button type="button" onClick={() => useSettingsStore.getState().setOnboardingDone(false)}
-              className="text-forma-muted hover:text-forma-accent transition-colors px-1" title="Revoir l'introduction">
-              <Icon name="help" className="w-4 h-4" />
-            </button>
+
+            {/* + Nouveau — menu de création unifié */}
+            <div className="relative" ref={createMenuRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMoreMenu(false)
+                  setShowCreateMenu((v) => !v)
+                }}
+                aria-haspopup="menu"
+                aria-expanded={showCreateMenu}
+                className="text-xs px-2.5 py-1 bg-forma-accent hover:bg-forma-accent-hover text-white rounded-lg font-medium transition-colors shadow-sm inline-flex items-center gap-1"
+              >
+                <Icon name="plus" className="w-3 h-3" />
+                Nouveau
+                <Icon name="chevron-down" className="w-3 h-3" />
+              </button>
+              {showCreateMenu && (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full mt-1.5 w-64 bg-forma-surface border border-forma-border rounded-xl shadow-lg p-1.5 z-30"
+                  style={{ boxShadow: 'var(--shadow-forma-md, 0 8px 24px rgba(0,0,0,0.12))' }}
+                >
+                  {CREATE_TYPES.map((it) => (
+                    <button
+                      key={it.kind}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => openCreateModal(it.kind)}
+                      className="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-left transition-colors"
+                    >
+                      <Icon name={it.icon} className="w-4 h-4 mt-0.5 text-forma-accent shrink-0" />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-medium text-forma-text">{it.label}</span>
+                        <span className="block text-xs text-forma-muted">{it.desc}</span>
+                      </span>
+                    </button>
+                  ))}
+                  <div className="my-1 border-t border-forma-border" />
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={async () => {
+                      setShowCreateMenu(false)
+                      navigate(`/document/${await openQuickNote(currentFolderId)}`)
+                    }}
+                    className="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-left transition-colors"
+                  >
+                    <Icon name="zap" className="w-4 h-4 mt-0.5 text-amber-500 shrink-0" />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium text-forma-text">Note rapide</span>
+                      <span className="block text-xs text-forma-muted">Reprend toujours le même carnet</span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setShowCreateMenu(false)
+                      fileRef.current?.click()
+                    }}
+                    className="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-left transition-colors"
+                  >
+                    <Icon name="upload" className="w-4 h-4 mt-0.5 text-forma-muted shrink-0" />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium text-forma-text">Importer PDF</span>
+                      <span className="block text-xs text-forma-muted">Un carnet annotable par fichier</span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setShowCreateMenu(false)
+                      formaRef.current?.click()
+                    }}
+                    className="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-left transition-colors"
+                  >
+                    <Icon name="upload" className="w-4 h-4 mt-0.5 text-forma-muted shrink-0" />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium text-forma-text">Importer .forma</span>
+                      <span className="block text-xs text-forma-muted">Carnet exporté (.forma.zip)</span>
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* ··· — accès secondaires */}
+            <div className="relative" ref={moreMenuRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCreateMenu(false)
+                  setShowMoreMenu((v) => !v)
+                }}
+                aria-haspopup="menu"
+                aria-expanded={showMoreMenu}
+                className="text-forma-muted hover:text-forma-accent transition-colors px-1.5 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                title="Plus d'options"
+              >
+                <Icon name="more-horizontal" className="w-4 h-4" />
+              </button>
+              {showMoreMenu && (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full mt-1.5 w-56 bg-forma-surface border border-forma-border rounded-xl shadow-lg p-1.5 z-30"
+                  style={{ boxShadow: 'var(--shadow-forma-md, 0 8px 24px rgba(0,0,0,0.12))' }}
+                >
+                  {(
+                    [
+                      { icon: 'layout', label: 'Modèles de page', action: () => navigate('/templates') },
+                      { icon: 'search', label: 'Recherche globale', action: () => navigate('/search') },
+                      { icon: 'sparkles', label: 'Offres Forma', action: () => navigate('/plans') },
+                      { icon: 'keyboard', label: 'Raccourcis clavier', action: () => setShowShortcuts(true) },
+                      {
+                        icon: 'help',
+                        label: "Revoir l'introduction",
+                        action: () => useSettingsStore.getState().setOnboardingDone(false),
+                      },
+                    ] as { icon: IconName; label: string; action: () => void }[]
+                  ).map((it) => (
+                    <button
+                      key={it.label}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setShowMoreMenu(false)
+                        it.action()
+                      }}
+                      className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-left text-sm text-forma-text transition-colors"
+                    >
+                      <Icon name={it.icon} className="w-4 h-4 text-forma-muted shrink-0" />
+                      {it.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button type="button" onClick={() => navigate('/settings')}
               className="text-forma-muted hover:text-forma-accent transition-colors px-1" title="Paramètres">
               <Icon name="settings" className="w-4 h-4" />
@@ -1127,7 +1295,7 @@ export function LibraryPage() {
             <div className="mt-4 flex flex-wrap gap-2 justify-center">
               <button
                 type="button"
-                onClick={() => setShowNewNotebook(true)}
+                onClick={() => openCreateModal()}
                 className="px-4 py-2 bg-forma-accent text-white rounded-lg"
               >
                 Créer un carnet
@@ -1218,6 +1386,7 @@ export function LibraryPage() {
 
       {showNewNotebook && (
         <NewNotebookModal
+          initialKind={createKind}
           onClose={() => setShowNewNotebook(false)}
           onCreate={async (kind, opts) => {
             const nb =
