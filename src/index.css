@@ -251,6 +251,18 @@ html.dark .hover\:bg-white\/80:hover {
   background-color: color-mix(in srgb, var(--color-forma-surface) 80%, transparent);
 }
 
+/* ─── Dark mode overrides complets ─────────────────────────────── */
+html.dark .border-gray-300 { border-color: rgb(75 85 99); }
+html.dark .text-gray-900 { color: rgb(243 244 246); }
+html.dark .text-gray-800 { color: rgb(229 231 235); }
+html.dark .text-gray-700 { color: rgb(209 213 219); }
+html.dark .text-gray-600 { color: rgb(156 163 175); }
+html.dark .text-gray-500 { color: rgb(156 163 175); }
+html.dark .divide-gray-200 > * + * { border-color: var(--color-forma-border); }
+html.dark .divide-gray-300 > * + * { border-color: rgb(75 85 99); }
+html.dark .ring-gray-200 { --tw-ring-color: var(--color-forma-border); }
+html.dark .ring-gray-300 { --tw-ring-color: rgb(75 85 99); }
+
 /* Panel slide animation */
 @keyframes panel-in {
   from { opacity: 0; transform: translateX(12px); }
