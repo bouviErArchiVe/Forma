@@ -49,6 +49,7 @@ const ShareViewPage = lazy(() => import('./pages/ShareViewPage').then((m) => ({ 
 const TemplatesPage = lazy(() => import('./pages/TemplatesPage').then((m) => ({ default: m.TemplatesPage })))
 const TrashPage = lazy(() => import('./pages/TrashPage').then((m) => ({ default: m.TrashPage })))
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })))
+const FormAIPage = lazy(() => import('./modules/formai/FormAIPage').then((m) => ({ default: m.FormAIPage })))
 
 function PageFallback() {
   return (
@@ -104,6 +105,8 @@ export default function App() {
             <Route path="/plans" element={<PlansPage />} />
             <Route path="/trash" element={<TrashPage />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/formai" element={<FormAIPage />} />
+            <Route path="/formai/:conversationId" element={<FormAIPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

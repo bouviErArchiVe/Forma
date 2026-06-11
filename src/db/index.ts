@@ -1,6 +1,8 @@
 import Dexie, { type Table } from 'dexie'
 import type { StoredAsset } from '../lib/assets'
 import { runDexieDataUrlMigrationTx, runDexiePdfSourceMigrationTx } from '../lib/dataurl-migration'
+import type { AIConversation, AIMemoryEntry } from '../services/ai/types'
+import type { KnowledgeChunk, KnowledgeDocument } from '../lib/rag/types'
 import type {
   AudioRecording,
   Folder,
@@ -47,6 +49,10 @@ export class FormaDatabase extends Dexie {
   assets!: Table<StoredAsset>
   settings!: Table<{ key: string; value: string }>
   thumbnails!: Table<ThumbnailEntry, string>
+  aiConversations!: Table<AIConversation, string>
+  aiMemory!: Table<AIMemoryEntry, string>
+  aiKnowledgeDocs!: Table<KnowledgeDocument, string>
+  aiKnowledgeChunks!: Table<KnowledgeChunk, string>
 
   constructor() {
     super('forma')
@@ -168,11 +174,30 @@ export class FormaDatabase extends Dexie {
       settings: 'key',
       thumbnails: 'pageId, notebookId, updatedAt',
     })
+    // v11 : FormAI — conversations IA, mémoire locale, base documentaire (RAG)
+    // favorite/archived ne sont pas indexés (IndexedDB n'indexe pas les booléens) ;
+    // les volumes restent faibles, le filtrage se fait en mémoire.
+    this.version(11).stores({
+      folders: 'id, parentId, name, updatedAt',
+      notebooks: 'id, folderId, name, updatedAt, favorite, deletedAt, pdfSourceAssetId',
+      pages: 'id, notebookId, order, pdfAssetId, updatedAt',
+      audio: 'id, notebookId, createdAt',
+      studyCards: 'id, notebookId, nextReview',
+      shareLinks: 'id, notebookId, token',
+      pageSnapshots: 'id, pageId, createdAt',
+      assets: 'id, notebookId, createdAt',
+      settings: 'key',
+      thumbnails: 'pageId, notebookId, updatedAt',
+      aiConversations: 'id, updatedAt, agentId',
+      aiMemory: 'id, createdAt',
+      aiKnowledgeDocs: 'id, addedAt',
+      aiKnowledgeChunks: 'id, docId',
+    })
   }
 }
 
 /** Version Dexie courante (tests / diagnostics). */
-export const FORMA_DB_VERSION = 10
+export const FORMA_DB_VERSION = 11
 
 export const db = new FormaDatabase()
 

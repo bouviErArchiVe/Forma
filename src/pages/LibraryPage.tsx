@@ -831,6 +831,17 @@ export function LibraryPage() {
               )}
             </button>
 
+            {/* FormAI — assistant IA */}
+            <button
+              type="button"
+              onClick={() => navigate('/formai')}
+              title="FormAI — assistant IA"
+              className="text-xs px-2.5 py-1 border border-forma-border rounded-lg text-forma-muted hover:border-forma-accent hover:text-forma-accent transition-colors inline-flex items-center gap-1"
+            >
+              <Icon name="sparkles" className="w-3 h-3" />
+              FormAI
+            </button>
+
             {/* + Nouveau — menu de création unifié */}
             <div className="relative" ref={createMenuRef}>
               <button

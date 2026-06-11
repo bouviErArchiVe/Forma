@@ -117,6 +117,10 @@ describe('Dexie schema', () => {
     expect(db.verno).toBe(FORMA_DB_VERSION)
     expect(db.tables.map((t) => t.name).sort()).toEqual(
       [
+        'aiConversations',
+        'aiKnowledgeChunks',
+        'aiKnowledgeDocs',
+        'aiMemory',
         'assets',
         'audio',
         'folders',

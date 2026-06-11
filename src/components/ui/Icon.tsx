@@ -227,6 +227,9 @@ const PATHS: Record<IconName, ReactNode> = {
   ),
 }
 
+/** Liste des noms d'icônes disponibles (validation / tests). */
+export const ICON_NAMES = Object.keys(PATHS) as IconName[]
+
 export function Icon({ name, className = 'w-4 h-4' }: IconProps) {
   const isFilled = name === 'star' || name === 'moon'
   return (
