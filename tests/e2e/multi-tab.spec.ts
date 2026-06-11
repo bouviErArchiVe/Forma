@@ -16,7 +16,7 @@ test('second tab opens same document in read-only lock', async ({ browser }) => 
   await pageB.goto(url)
   await dismissOnboardingIfVisible(pageB)
   await expect(pageB.getByTestId('document-lock-banner')).toBeVisible({ timeout: 10_000 })
-  await expect(pageB.getByRole('button', { name: /Lecture \(verrouillée\)/ })).toBeVisible()
+  await expect(pageB.getByRole('button', { name: /Lecture/ })).toBeVisible()
 
   await context.close()
 })

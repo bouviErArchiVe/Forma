@@ -4,6 +4,7 @@ import {
   FIXTURES_DIR,
   getIndexedDbNotebookCount,
   getIndexedDbPageCount,
+  openCreateMenu,
   prepareE2EPage,
 } from './helpers'
 
@@ -15,7 +16,8 @@ test('imports a minimal PDF from the library', async ({ page }) => {
   await page.goto('/')
   const pdfPath = path.join(FIXTURES_DIR, 'minimal.pdf')
 
-  await page.getByRole('button', { name: 'PDF', exact: true }).click()
+  await openCreateMenu(page)
+  await page.getByRole('menuitem', { name: /Importer PDF/ }).click()
   await page.locator('input[accept="application/pdf"]').setInputFiles(pdfPath)
 
   await expect(page).toHaveURL(/\/document\/[0-9a-f-]+/, { timeout: 60_000 })

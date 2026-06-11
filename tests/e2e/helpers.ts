@@ -69,12 +69,19 @@ export async function acceptConfirm(page: Page, label = 'OK'): Promise<void> {
   await btn.click()
 }
 
+/** Open the "+ Nouveau" creation menu in the library header. */
+export async function openCreateMenu(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Nouveau', exact: true }).click()
+  await page.getByRole('menu').waitFor({ state: 'visible', timeout: 5000 })
+}
+
 /** Create a notebook from the library and return the editor URL. */
 export async function createNotebook(page: Page, name?: string): Promise<string> {
   const notebookName = name ?? `E2E ${Date.now()}`
   await page.goto('/')
   await dismissOnboardingIfVisible(page)
-  await page.getByRole('button', { name: '+ Carnet' }).click()
+  await openCreateMenu(page)
+  await page.getByRole('menuitem', { name: /^Carnet/ }).click()
   await page.getByRole('textbox').fill(notebookName)
   await page.getByRole('button', { name: 'Créer', exact: true }).click()
   await page.waitForURL(/\/document\/[0-9a-f-]+/)
@@ -221,14 +228,19 @@ export async function mergeImportBackup(page: Page, filePath: string): Promise<v
 /** Replace-import a `.forma` backup (with confirm + pre-replace backup download). */
 export async function replaceImportBackup(page: Page, filePath: string): Promise<void> {
   await page.goto('/settings')
-  const downloads: string[] = []
-  page.on('download', async (d) => {
-    const p = path.join(FIXTURES_DIR, `.e2e-pre-replace-${Date.now()}.forma.zip`)
-    await d.saveAs(p)
-    downloads.push(p)
-  })
+  // Attendre explicitement le téléchargement de sauvegarde pré-remplacement
+  // (un listener `page.on('download')` asynchrone se fait annuler par la fin
+  // du test — course observée en CI locale).
+  const downloadPromise = page
+    .waitForEvent('download', { timeout: 30_000 })
+    .catch(() => null)
   await page.getByTestId('import-replace-input').setInputFiles(filePath)
   await acceptConfirm(page, 'Sauvegarder et remplacer')
+  const preReplaceBackup = await downloadPromise
+  if (preReplaceBackup) {
+    const p = path.join(FIXTURES_DIR, `.e2e-pre-replace-${Date.now()}.forma.zip`)
+    await preReplaceBackup.saveAs(p).catch(() => undefined)
+  }
   await page.getByText(/Remplacé\s*:/).waitFor({ timeout: 30_000 })
 }
 
