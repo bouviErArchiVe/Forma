@@ -1,73 +1,22 @@
-import pluginReact from 'eslint-plugin-react'
-import pluginReactHooks from 'eslint-plugin-react-hooks'
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import { defineConfig, globalIgnores } from 'eslint/config'
 
-/** ESLint 9 — config plate pour Forma (React JSX, src/ uniquement) */
-export default [
+export default defineConfig([
+  globalIgnores(['dist']),
   {
-    files: ['src/**/*.{js,jsx}'],
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      parserOptions: { ecmaFeatures: { jsx: true } },
-      globals: {
-        window: 'readonly',
-        document: 'readonly',
-        navigator: 'readonly',
-        console: 'readonly',
-        localStorage: 'readonly',
-        sessionStorage: 'readonly',
-        fetch: 'readonly',
-        setTimeout: 'readonly',
-        clearTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearInterval: 'readonly',
-        requestAnimationFrame: 'readonly',
-        cancelAnimationFrame: 'readonly',
-        URL: 'readonly',
-        URLSearchParams: 'readonly',
-        Blob: 'readonly',
-        File: 'readonly',
-        FileReader: 'readonly',
-        FormData: 'readonly',
-        HTMLElement: 'readonly',
-        HTMLCanvasElement: 'readonly',
-        Image: 'readonly',
-        Event: 'readonly',
-        CustomEvent: 'readonly',
-        PointerEvent: 'readonly',
-        DragEvent: 'readonly',
-        AbortController: 'readonly',
-        structuredClone: 'readonly',
-        crypto: 'readonly',
-        indexedDB: 'readonly',
-        confirm: 'readonly',
-        alert: 'readonly',
-        performance: 'readonly',
-        ResizeObserver: 'readonly',
-        IntersectionObserver: 'readonly',
-        MutationObserver: 'readonly',
-        queueMicrotask: 'readonly',
-        atob: 'readonly',
-        btoa: 'readonly',
-        self: 'readonly',
-        caches: 'readonly',
-      },
-    },
-    plugins: {
-      react: pluginReact,
-      'react-hooks': pluginReactHooks,
-    },
-    settings: { react: { version: '18.3' } },
-    rules: {
-      ...pluginReact.configs.recommended.rules,
-      ...pluginReactHooks.configs.recommended.rules,
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      'react/no-unescaped-entities': 'off',
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      globals: globals.browser,
     },
   },
-  {
-    ignores: ['dist/**', 'node_modules/**', '_archive/**'],
-  },
-]
+])

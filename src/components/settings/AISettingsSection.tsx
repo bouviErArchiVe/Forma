@@ -1,0 +1,224 @@
+/**
+ * AISettingsSection — configuration du fournisseur IA dans les Paramètres.
+ *
+ * Sécurité :
+ * - La clé API est masquée (type="password")
+ * - Elle est stockée uniquement dans localStorage via aiStore (Zustand persist)
+ * - Un indicateur "cloud actif" prévient l'utilisateur
+ * - Le test de connexion ne transmet que "Réponds uniquement ok"
+ */
+import { useState } from 'react'
+import {
+  useAIStore,
+  PROVIDER_LABELS,
+  DEFAULT_MODELS,
+  DEFAULT_ENDPOINTS,
+  type AIProvider,
+} from '../../stores/aiStore'
+import { testAIConnection } from '../../lib/ai-service'
+
+const PROVIDERS: AIProvider[] = ['local', 'openai', 'anthropic', 'ollama']
+
+export function AISettingsSection() {
+  const {
+    provider, apiKey, model, endpoint, cloudEnabled,
+    maxTokens, temperature,
+    setApiKey, setModel, setEndpoint,
+    setCloudEnabled, setMaxTokens, setTemperature,
+    applyProviderDefaults, isCloudReady,
+  } = useAIStore()
+
+  const [testing, setTesting] = useState(false)
+  const [testResult, setTestResult] = useState<{ ok: boolean; latencyMs: number; error?: string } | null>(null)
+  const [showKey, setShowKey] = useState(false)
+
+  const handleProviderChange = (p: AIProvider) => {
+    applyProviderDefaults(p)
+    setTestResult(null)
+  }
+
+  const handleTest = async () => {
+    setTesting(true)
+    setTestResult(null)
+    const config = useAIStore.getState()
+    const result = await testAIConnection(config)
+    setTestResult(result)
+    setTesting(false)
+  }
+
+  const needsKey = provider === 'openai' || provider === 'anthropic'
+  const needsEndpoint = provider === 'ollama'
+  const ready = isCloudReady()
+
+  return (
+    <section id="ai" className="mb-8 space-y-3">
+      <h2 className="panel-section-title">IA & Assistant</h2>
+      <p className="text-xs text-forma-muted">
+        L'IA locale fonctionne sans réseau. Activez un fournisseur cloud pour des réponses plus riches.{' '}
+        <strong>Aucune donnée n'est envoyée sans action explicite de votre part.</strong>
+      </p>
+
+      {/* Cloud toggle */}
+      <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={cloudEnabled}
+          onChange={(e) => setCloudEnabled(e.target.checked)}
+          className="w-4 h-4 accent-forma-accent"
+        />
+        Activer le fournisseur cloud
+        {ready && (
+          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+            ☁ actif
+          </span>
+        )}
+      </label>
+
+      {/* Provider selector */}
+      <label className="block text-sm">
+        Fournisseur
+        <select
+          value={provider}
+          onChange={(e) => handleProviderChange(e.target.value as AIProvider)}
+          className="forma-input w-full mt-1"
+        >
+          {PROVIDERS.map((p) => (
+            <option key={p} value={p}>{PROVIDER_LABELS[p]}</option>
+          ))}
+        </select>
+      </label>
+
+      {/* API Key */}
+      {cloudEnabled && needsKey && (
+        <label className="block text-sm">
+          Clé API
+          <div className="relative mt-1">
+            <input
+              type={showKey ? 'text' : 'password'}
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder={`Clé ${PROVIDER_LABELS[provider]}…`}
+              className="forma-input w-full pr-10"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+            />
+            <button
+              type="button"
+              onClick={() => setShowKey((v) => !v)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-forma-muted hover:text-forma-text"
+              title={showKey ? 'Masquer' : 'Afficher'}
+            >
+              {showKey ? '🙈' : '👁'}
+            </button>
+          </div>
+          <p className="text-[10px] text-forma-muted mt-1">
+            Stockée uniquement dans votre navigateur (localStorage). Jamais envoyée à nos serveurs.
+          </p>
+        </label>
+      )}
+
+      {/* Endpoint (Ollama / custom) */}
+      {cloudEnabled && (needsEndpoint || provider === 'openai') && (
+        <label className="block text-sm">
+          URL de l'API
+          <input
+            type="url"
+            value={endpoint}
+            onChange={(e) => setEndpoint(e.target.value)}
+            placeholder={DEFAULT_ENDPOINTS[provider]}
+            className="forma-input w-full mt-1"
+          />
+        </label>
+      )}
+
+      {/* Model */}
+      {cloudEnabled && provider !== 'local' && (
+        <label className="block text-sm">
+          Modèle
+          <input
+            type="text"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            placeholder={DEFAULT_MODELS[provider]}
+            className="forma-input w-full mt-1"
+          />
+        </label>
+      )}
+
+      {/* Advanced */}
+      {cloudEnabled && provider !== 'local' && (
+        <details className="text-sm">
+          <summary className="cursor-pointer text-forma-muted hover:text-forma-text text-xs">Paramètres avancés</summary>
+          <div className="mt-2 space-y-2 pl-2 border-l border-forma-border">
+            <label className="block text-xs">
+              Tokens max ({maxTokens})
+              <input
+                type="range"
+                min={64}
+                max={4096}
+                step={64}
+                value={maxTokens}
+                onChange={(e) => setMaxTokens(Number(e.target.value))}
+                className="w-full mt-0.5"
+              />
+            </label>
+            <label className="block text-xs">
+              Température ({temperature.toFixed(1)})
+              <input
+                type="range"
+                min={0}
+                max={2}
+                step={0.1}
+                value={temperature}
+                onChange={(e) => setTemperature(Number(e.target.value))}
+                className="w-full mt-0.5"
+              />
+            </label>
+          </div>
+        </details>
+      )}
+
+      {/* Test connection */}
+      {cloudEnabled && provider !== 'local' && (
+        <div className="space-y-1">
+          <button
+            type="button"
+            disabled={testing}
+            onClick={handleTest}
+            className="w-full py-1.5 border border-forma-border rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 transition-colors"
+          >
+            {testing ? 'Test en cours…' : 'Tester la connexion'}
+          </button>
+          {testResult && (
+            <p className={`text-xs ${testResult.ok ? 'text-green-600' : 'text-red-500'}`}>
+              {testResult.ok
+                ? `✓ Connexion OK (${testResult.latencyMs} ms)`
+                : `✗ Erreur : ${testResult.error ?? 'Inconnu'}`}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Info local mode */}
+      {provider === 'local' && (
+        <p className="text-xs text-forma-muted">
+          💻 Mode local : résumé, mots-clés, reformulation et Q&R sur vos notes — sans réseau, sans cloud.
+        </p>
+      )}
+
+      {/* Prompts référence */}
+      <div className="pt-2 border-t border-forma-border">
+        <p className="text-xs text-forma-muted font-medium mb-1">Sources de référence disponibles</p>
+        <ul className="text-xs text-forma-muted space-y-0.5">
+          <li>🏛️ <strong>CNB</strong> — Code national du bâtiment du Canada</li>
+          <li>⚖️ <strong>CCQ</strong> — Code de construction du Québec</li>
+          <li>🗺️ <strong>Urbanisme</strong> — Réglementation municipale (Québec)</li>
+        </ul>
+        <p className="text-[10px] text-forma-muted mt-1">
+          Ces modes utilisent des prompts spécialisés. Les codes officiels ne sont pas inclus — l'IA guide l'interprétation de vos notes.
+        </p>
+      </div>
+    </section>
+  )
+}

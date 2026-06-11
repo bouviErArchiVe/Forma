@@ -1,38 +1,32 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Forma" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#d4714a" />
-    <meta name="description" content="Forma par ArchNote — le carnet de conception pour architectes & designers" />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="Forma par ArchNote" />
-    <meta property="og:description" content="Le carnet de conception pour architectes & designers" />
-    <meta property="og:type" content="website" />
-
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=Nunito:wght@400;600;700&family=Architects+Daughter&family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam&family=Gloria+Hallelujah&family=Indie+Flower&family=Nothing+You+Could+Do&family=Reenie+Beanie&display=swap" rel="stylesheet" />
-
-    <title>Forma | ArchNote</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Forma — prise de notes manuscrites, carnets et PDF" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Forma" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>Forma</title>
+    <!-- Prevent theme flash: apply stored theme before first paint -->
+    <script>
+      (function(){
+        try {
+          var s = JSON.parse(localStorage.getItem('forma-settings') || '{}');
+          var t = (s.state && s.state.theme) || 'dark';
+          var dark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch(e) {}
+      })();
+    </script>
   </head>
   <body>
-    <div id="root">
-      <div id="forma-boot-fallback" style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Nunito,sans-serif;background:#faf4ee;color:#1c1c24;">
-        <div style="text-align:center">
-          <div style="font-family:Syne,sans-serif;font-weight:800;font-size:28px;margin-bottom:4px;letter-spacing:.5px;">Forma</div>
-          <div style="color:#888;font-size:11px;margin-bottom:6px;">par ArchNote</div>
-          <div style="color:#888;font-size:13px;">Chargement…</div>
-        </div>
-      </div>
-    </div>
-    <script type="module" src="/src/main.jsx"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
