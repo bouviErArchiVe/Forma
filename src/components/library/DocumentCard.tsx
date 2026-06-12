@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { formatRelativeTime } from '../../lib/format-relative'
 import { COVER_COLORS, type Notebook } from '../../types'
 import { getKindMeta } from '../../lib/document-kinds'
@@ -34,8 +34,13 @@ export function DocumentCard({
 }: DocumentCardProps) {
   const [renaming, setRenaming] = useState(false)
   const [name, setName] = useState(notebook.name)
-
-  useEffect(() => setName(notebook.name), [notebook.name])
+  // Resynchronise le champ si le nom change ailleurs (pattern « adjust
+  // state during render » — pas d'effet, pas de rendu en cascade).
+  const [prevNotebookName, setPrevNotebookName] = useState(notebook.name)
+  if (notebook.name !== prevNotebookName) {
+    setPrevNotebookName(notebook.name)
+    setName(notebook.name)
+  }
 
   const commitRename = () => {
     const trimmed = name.trim()
