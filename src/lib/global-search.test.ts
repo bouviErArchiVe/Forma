@@ -7,6 +7,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import {
   boardDataToPlainText,
   htmlToPlainText,
+  moduleDataToPlainText,
   tabDataToPlainText,
   searchGlobalPages,
 } from './global-search'
@@ -128,6 +129,57 @@ describe('boardDataToPlainText', () => {
 
   it('handles missing items array', () => {
     expect(boardDataToPlainText(JSON.stringify({ groups: [], canvasWidth: 800 }))).toBe('')
+  })
+})
+
+// ─── moduleDataToPlainText ────────────────────────────────────────────────────
+
+describe('moduleDataToPlainText', () => {
+  it('extrait les textes utiles d’un état calendrier', () => {
+    const json = JSON.stringify({
+      v: 1,
+      events: [
+        {
+          id: 'e1', title: 'Examen structure', date: '2026-06-15',
+          startTime: '09:00', description: 'Chapitres 1 à 4', color: '#f97316',
+          subjectId: 's1',
+        },
+      ],
+    })
+    const result = moduleDataToPlainText(json)
+    expect(result).toContain('Examen structure')
+    expect(result).toContain('Chapitres 1 à 4')
+    expect(result).not.toContain('#f97316') // couleur exclue
+    expect(result).not.toContain('2026-06-15') // date ISO exclue
+    expect(result).not.toContain('09:00') // heure exclue
+    expect(result).not.toContain('s1') // id exclu
+  })
+
+  it('extrait l’historique de traduction et les notes de présence', () => {
+    const translator = moduleDataToPlainText(
+      JSON.stringify({
+        v: 1,
+        history: [{ id: 'h1', src: 'pare-vapeur continu', dst: 'continuous vapour barrier', from: 'fr', mode: 'technique', ts: 1 }],
+      }),
+    )
+    expect(translator).toContain('pare-vapeur continu')
+    expect(translator).toContain('continuous vapour barrier')
+    expect(translator).not.toContain('technique') // mode exclu
+
+    const presence = moduleDataToPlainText(
+      JSON.stringify({
+        v: 1,
+        sessions: [{ id: 's1', subjectLabel: 'Dessin technique', date: '2026-06-01', status: 'absent', note: 'rendez-vous médical' }],
+      }),
+    )
+    expect(presence).toContain('Dessin technique')
+    expect(presence).toContain('rendez-vous médical')
+    expect(presence).not.toContain('absent') // statut exclu
+  })
+
+  it('JSON invalide → chaîne vide', () => {
+    expect(moduleDataToPlainText('pas du json')).toBe('')
+    expect(moduleDataToPlainText('')).toBe('')
   })
 })
 

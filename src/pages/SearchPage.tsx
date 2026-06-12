@@ -27,6 +27,7 @@ const SOURCE_ICONS: Record<GlobalPageHit['source'], string> = {
   content: '📝',
   table: '📊',
   board: '🎨',
+  module: '🧩',
 }
 
 const SOURCE_COLORS: Record<GlobalPageHit['source'], string> = {
@@ -37,9 +38,10 @@ const SOURCE_COLORS: Record<GlobalPageHit['source'], string> = {
   content: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
   table: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300',
   board: 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300',
+  module: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
 }
 
-const ALL_SOURCES: GlobalPageHit['source'][] = ['title', 'content', 'text', 'table', 'board', 'pdf', 'ink']
+const ALL_SOURCES: GlobalPageHit['source'][] = ['title', 'content', 'text', 'table', 'board', 'module', 'pdf', 'ink']
 
 function highlight(text: string, query: string): React.ReactNode {
   if (!query) return text
@@ -85,9 +87,9 @@ export function SearchPage() {
     }
   }, [])
 
-  // Run search from URL param on mount
+  // Run search from URL param on mount (setState après microtâche — jamais synchrone)
   useEffect(() => {
-    if (initialQ.trim().length >= 2) void runSearch(initialQ)
+    if (initialQ.trim().length >= 2) void Promise.resolve().then(() => runSearch(initialQ))
     inputRef.current?.focus()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

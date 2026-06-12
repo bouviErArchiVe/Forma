@@ -9,7 +9,7 @@ export interface GlobalPageHit {
   pageId: string
   pageIndex: number
   snippet: string
-  source: 'text' | 'ink' | 'pdf' | 'title' | 'content' | 'table' | 'board'
+  source: 'text' | 'ink' | 'pdf' | 'title' | 'content' | 'table' | 'board' | 'module'
 }
 
 const SOURCE_LABEL: Record<GlobalPageHit['source'], string> = {
@@ -20,6 +20,7 @@ const SOURCE_LABEL: Record<GlobalPageHit['source'], string> = {
   content: 'Document',
   table: 'Tableau',
   board: 'Moodboard',
+  module: 'Module',
 }
 
 export function globalHitSourceLabel(source: GlobalPageHit['source']): string {
@@ -70,6 +71,53 @@ export function boardDataToPlainText(moodboardDataJson: string): string {
       .join(' ')
       .replace(/\s{2,}/g, ' ')
       .trim()
+  } catch {
+    return ''
+  }
+}
+
+/** Clés de moduleData ignorées à l'indexation (ids, couleurs, technique). */
+const MODULE_SKIP_KEYS = new Set([
+  'id', 'v', 'assetId', 'subjectId', 'linkedDocId', 'color', 'icon', 'kind',
+  'status', 'formulaId', 'from', 'mode',
+])
+
+/** Valeurs non textuelles (couleurs, dates ISO, heures) exclues de l'index. */
+function isOpaqueValue(value: string): boolean {
+  return (
+    value.length < 3
+    || /^#[0-9a-f]{3,8}$/i.test(value)
+    || /^\d{4}-\d{2}-\d{2}$/.test(value)
+    || /^\d{2}:\d{2}$/.test(value)
+  )
+}
+
+/**
+ * Extrait le texte cherchable d'un moduleData V2 (événements de calendrier,
+ * séances de présence, historique de traduction, items Combine, notes…).
+ * Parcours récursif des valeurs string, clés techniques exclues.
+ */
+export function moduleDataToPlainText(moduleDataJson: string): string {
+  try {
+    const out: string[] = []
+    const visit = (node: unknown): void => {
+      if (typeof node === 'string') {
+        if (!isOpaqueValue(node)) out.push(node)
+        return
+      }
+      if (Array.isArray(node)) {
+        for (const item of node) visit(item)
+        return
+      }
+      if (node && typeof node === 'object') {
+        for (const [key, value] of Object.entries(node)) {
+          if (MODULE_SKIP_KEYS.has(key)) continue
+          visit(value)
+        }
+      }
+    }
+    visit(JSON.parse(moduleDataJson))
+    return out.join(' ').replace(/\s{2,}/g, ' ').trim()
   } catch {
     return ''
   }
@@ -207,6 +255,23 @@ export async function searchGlobalPages(query: string, limit = 20): Promise<Glob
             pageIndex: pi + 1,
             snippet: makeSnippet(plain, q),
             source: 'board',
+          }, seen, limit)) break
+        }
+      }
+      if (hits.length >= limit) break
+
+      // ── Modules V2 (calendar, presence, translator, combine…) ──────────
+      if (page.moduleData) {
+        const plain = moduleDataToPlainText(page.moduleData)
+        if (plain.toLowerCase().includes(q)) {
+          if (pushHit(hits, {
+            notebookId: nb.id,
+            notebookName: nb.name,
+            notebookType: nb.type,
+            pageId: page.id,
+            pageIndex: pi + 1,
+            snippet: makeSnippet(plain, q),
+            source: 'module',
           }, seen, limit)) break
         }
       }

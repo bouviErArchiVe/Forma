@@ -240,3 +240,22 @@ export function creatableKindsByGroup(): { group: DocumentKindGroup; label: stri
 export function isModuleKind(id: DocumentType | string | undefined): boolean {
   return BY_ID.get(id as DocumentType)?.usesModuleData ?? false
 }
+
+/** Nom par défaut d'un nouveau document selon son type. */
+export function defaultNameForKind(kind: Exclude<DocumentType, 'pdf'>): string {
+  switch (kind) {
+    case 'notebook': return 'Nouveau carnet'
+    case 'whiteboard': return 'Tableau blanc'
+    case 'formadoc': return 'Nouveau document'
+    case 'formataб': return 'Nouveau tableau'
+    case 'fmoodboard': return 'Nouveau moodboard'
+    case 'subject': return 'Nouvelle matière'
+    case 'formula': return 'Mes formules'
+    case 'translator': return 'Traduction'
+    case 'dictionary': return 'Dictionnaire'
+    case 'calendar': return 'Mon calendrier'
+    case 'presence': return 'Suivi de présence'
+    case 'combine': return 'Projet Combine'
+    case 'pause': return 'Pause'
+  }
+}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { creatableKindsByGroup, getKindMeta } from '../../lib/document-kinds'
+import { creatableKindsByGroup, defaultNameForKind, getKindMeta } from '../../lib/document-kinds'
 import { TEMPLATE_LABELS } from '../../lib/templates'
 import { useSettingsStore } from '../../stores/settingsStore'
 import { COVER_COLORS, type DocumentType, type Orientation, type PaperTemplate } from '../../types'
@@ -9,25 +9,6 @@ import { Button } from '../ui/Button'
 
 /** Types proposés à la création (tous sauf 'pdf', créé via import). */
 export type NewDocKind = Exclude<DocumentType, 'pdf'>
-
-/** Nom par défaut d'un nouveau document selon son type. */
-export function defaultNameForKind(kind: NewDocKind): string {
-  switch (kind) {
-    case 'notebook': return 'Nouveau carnet'
-    case 'whiteboard': return 'Tableau blanc'
-    case 'formadoc': return 'Nouveau document'
-    case 'formataб': return 'Nouveau tableau'
-    case 'fmoodboard': return 'Nouveau moodboard'
-    case 'subject': return 'Nouvelle matière'
-    case 'formula': return 'Mes formules'
-    case 'translator': return 'Traduction'
-    case 'dictionary': return 'Dictionnaire'
-    case 'calendar': return 'Mon calendrier'
-    case 'presence': return 'Suivi de présence'
-    case 'combine': return 'Projet Combine'
-    case 'pause': return 'Pause'
-  }
-}
 
 /** Le type utilise les options page (papier/orientation) du canvas. */
 function usesCanvasOptions(kind: NewDocKind): boolean {
