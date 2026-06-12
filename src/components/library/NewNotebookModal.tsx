@@ -1,26 +1,37 @@
 import { useState } from 'react'
+import { creatableKindsByGroup, getKindMeta } from '../../lib/document-kinds'
 import { TEMPLATE_LABELS } from '../../lib/templates'
 import { useSettingsStore } from '../../stores/settingsStore'
-import { COVER_COLORS, type Orientation, type PaperTemplate } from '../../types'
+import { COVER_COLORS, type DocumentType, type Orientation, type PaperTemplate } from '../../types'
+import { Icon } from '../ui/Icon'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 
-export type NewDocKind = 'notebook' | 'whiteboard' | 'formadoc' | 'formataб' | 'fmoodboard'
+/** Types proposés à la création (tous sauf 'pdf', créé via import). */
+export type NewDocKind = Exclude<DocumentType, 'pdf'>
 
-const KIND_META: Record<NewDocKind, { icon: string; label: string }> = {
-  notebook: { icon: '📓', label: 'Carnet' },
-  whiteboard: { icon: '🖼', label: 'Whiteboard' },
-  formadoc: { icon: '📝', label: 'Document' },
-  'formataб': { icon: '📊', label: 'Tableau' },
-  fmoodboard: { icon: '🎨', label: 'Moodboard' },
+/** Nom par défaut d'un nouveau document selon son type. */
+export function defaultNameForKind(kind: NewDocKind): string {
+  switch (kind) {
+    case 'notebook': return 'Nouveau carnet'
+    case 'whiteboard': return 'Tableau blanc'
+    case 'formadoc': return 'Nouveau document'
+    case 'formataб': return 'Nouveau tableau'
+    case 'fmoodboard': return 'Nouveau moodboard'
+    case 'subject': return 'Nouvelle matière'
+    case 'formula': return 'Mes formules'
+    case 'translator': return 'Traduction'
+    case 'dictionary': return 'Dictionnaire'
+    case 'calendar': return 'Mon calendrier'
+    case 'presence': return 'Suivi de présence'
+    case 'combine': return 'Projet Combine'
+    case 'pause': return 'Pause'
+  }
 }
 
-const DEFAULT_NAMES: Record<NewDocKind, string> = {
-  notebook: 'Nouveau carnet',
-  whiteboard: 'Tableau blanc',
-  formadoc: 'Nouveau document',
-  'formataб': 'Nouveau tableau',
-  fmoodboard: 'Nouveau moodboard',
+/** Le type utilise les options page (papier/orientation) du canvas. */
+function usesCanvasOptions(kind: NewDocKind): boolean {
+  return kind === 'notebook' || kind === 'whiteboard'
 }
 
 interface NewNotebookModalProps {
@@ -43,7 +54,7 @@ export function NewNotebookModal({ onClose, onCreate, initialKind }: NewNotebook
   const defaultCover = useSettingsStore((s) => s.defaultCoverColor)
   const startKind = initialKind ?? 'notebook'
   const [kind, setKind] = useState<NewDocKind>(startKind)
-  const [name, setName] = useState(DEFAULT_NAMES[startKind])
+  const [name, setName] = useState(defaultNameForKind(startKind))
   const [coverColor, setCoverColor] = useState<string>(defaultCover)
   const [paperTemplate, setPaperTemplate] = useState<PaperTemplate>(
     startKind === 'whiteboard' ? 'grid' : defaultTemplate,
@@ -52,36 +63,48 @@ export function NewNotebookModal({ onClose, onCreate, initialKind }: NewNotebook
     startKind === 'whiteboard' ? 'landscape' : 'portrait',
   )
 
-  const isFormadoc = kind === 'formadoc'
-  const isFormataб = kind === 'formataб'
-  const isFMoodboard = kind === 'fmoodboard'
-  const hidePageOptions = isFormadoc || isFormataб || isFMoodboard
+  const meta = getKindMeta(kind)
+  const hidePageOptions = !usesCanvasOptions(kind)
+
+  const selectKind = (k: NewDocKind) => {
+    setKind(k)
+    setName(defaultNameForKind(k))
+    if (k === 'whiteboard') {
+      setPaperTemplate('grid')
+      setOrientation('landscape')
+    }
+  }
 
   return (
     <Modal open onClose={onClose} maxWidth="max-w-md">
       <div className="p-6 space-y-4">
         <h2 className="text-lg font-semibold text-forma-text">Nouveau document</h2>
 
-        {/* Kind selector */}
-        <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl">
-          {(Object.keys(KIND_META) as NewDocKind[]).map((k) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => {
-                setKind(k)
-                setName(DEFAULT_NAMES[k])
-                if (k === 'whiteboard') { setPaperTemplate('grid'); setOrientation('landscape') }
-              }}
-              className={`flex-1 py-1.5 rounded-lg border text-sm font-medium transition-all duration-150 ${
-                kind === k
-                  ? 'bg-forma-surface shadow-sm border-forma-border text-forma-accent'
-                  : 'border-transparent text-forma-muted hover:text-forma-text'
-              }`}
+        {/* Type — select groupé (Créer / Étudier / Organiser / Outils) */}
+        <div>
+          <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Type</label>
+          <div className="flex items-center gap-2">
+            <span
+              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+              style={{ backgroundColor: `${meta.color}1a`, color: meta.color }}
             >
-              {KIND_META[k].icon} {KIND_META[k].label}
-            </button>
-          ))}
+              <Icon name={meta.icon} className="w-4 h-4" />
+            </span>
+            <select
+              value={kind}
+              onChange={(e) => selectKind(e.target.value as NewDocKind)}
+              className="forma-input w-full"
+            >
+              {creatableKindsByGroup().map((g) => (
+                <optgroup key={g.group} label={g.label}>
+                  {g.kinds.map((k) => (
+                    <option key={k.id} value={k.id}>{k.name}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+          <p className="text-xs text-forma-muted mt-1.5">{meta.description}</p>
         </div>
 
         {/* Name */}
@@ -114,7 +137,7 @@ export function NewNotebookModal({ onClose, onCreate, initialKind }: NewNotebook
           </div>
         </div>
 
-        {/* Paper template — hidden for FormaDoc/FormaTab */}
+        {/* Paper template — carnets/whiteboards uniquement */}
         {!hidePageOptions && (
           <div>
             <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Papier</label>
@@ -130,7 +153,7 @@ export function NewNotebookModal({ onClose, onCreate, initialKind }: NewNotebook
           </div>
         )}
 
-        {/* Orientation — hidden for FormaDoc/FormaTab */}
+        {/* Orientation — carnets/whiteboards uniquement */}
         {!hidePageOptions && (
           <div>
             <label className="block text-xs font-medium text-forma-muted uppercase tracking-wide mb-1.5">Orientation</label>
@@ -151,21 +174,6 @@ export function NewNotebookModal({ onClose, onCreate, initialKind }: NewNotebook
               ))}
             </div>
           </div>
-        )}
-        {isFormadoc && (
-          <p className="text-xs text-forma-muted">
-            📝 Un document texte riche — titres, paragraphes, listes, images, export PDF et Markdown.
-          </p>
-        )}
-        {isFormataб && (
-          <p className="text-xs text-forma-muted">
-            📊 Un tableur simple — cellules, formules (=SUM, =AVG…), styles, export CSV.
-          </p>
-        )}
-        {isFMoodboard && (
-          <p className="text-xs text-forma-muted">
-            🎨 Un tableau de vision libre — images, textes, formes, groupes, export PNG.
-          </p>
         )}
 
         <div className="flex gap-2 pt-1">

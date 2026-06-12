@@ -27,7 +27,27 @@ export type ToolType =
   | 'laser'
 
 export type ShapeType = 'line' | 'arrow' | 'rectangle' | 'ellipse'
-export type DocumentType = 'notebook' | 'pdf' | 'whiteboard' | 'formadoc' | 'formataб' | 'fmoodboard'
+/**
+ * Types de documents Forma.
+ * Les six premiers sont historiques (chaînes de stockage à NE PAS renommer —
+ * compatibilité des données Dexie existantes). Les suivants sont les modules
+ * Forma V2 ; le registre central vit dans src/lib/document-kinds.ts.
+ */
+export type DocumentType =
+  | 'notebook'
+  | 'pdf'
+  | 'whiteboard'
+  | 'formadoc'
+  | 'formataб'
+  | 'fmoodboard'
+  | 'calendar'
+  | 'combine'
+  | 'formula'
+  | 'translator'
+  | 'dictionary'
+  | 'presence'
+  | 'pause'
+  | 'subject'
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type Orientation = 'portrait' | 'landscape'
 export type StrokeTool = 'pen' | 'highlighter' | 'pencil'
@@ -151,6 +171,9 @@ export interface Page {
   tableData?: string
   /** Données moodboard JSON pour FMoodboard (type fmoodboard uniquement). */
   moodboardData?: string
+  /** Données JSON des modules V2 (calendar, formula, presence, etc.) —
+   *  schéma propre à chaque module, voir src/modules/<module>/. */
+  moduleData?: string
   /** Timestamp ms de dernière modification de la page. */
   updatedAt?: number
 }
@@ -170,6 +193,8 @@ export interface Notebook {
   /** PDF source original pour réindexation texte */
   pdfSourceDataUrl?: string
   pdfSourceAssetId?: string
+  /** Matière associée (id d'un document de type 'subject') — V2 */
+  subjectId?: string
 }
 
 export interface Folder {

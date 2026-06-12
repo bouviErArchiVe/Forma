@@ -48,6 +48,8 @@ export type IconName =
 interface IconProps {
   name: IconName
   className?: string
+  /** Style inline (ex. couleur d'accent d'un type de document). */
+  style?: React.CSSProperties
 }
 
 const PATHS: Record<IconName, ReactNode> = {
@@ -230,12 +232,13 @@ const PATHS: Record<IconName, ReactNode> = {
 /** Liste des noms d'icônes disponibles (validation / tests). */
 export const ICON_NAMES = Object.keys(PATHS) as IconName[]
 
-export function Icon({ name, className = 'w-4 h-4' }: IconProps) {
+export function Icon({ name, className = 'w-4 h-4', style }: IconProps) {
   const isFilled = name === 'star' || name === 'moon'
   return (
     <svg
       viewBox="0 0 24 24"
       className={className}
+      style={style}
       fill={isFilled ? 'currentColor' : 'none'}
       stroke="currentColor"
       strokeWidth={1.75}

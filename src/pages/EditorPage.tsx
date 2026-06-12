@@ -13,6 +13,7 @@ import { ShortcutsHelp } from '../components/editor/ShortcutsHelp'
 import { PerfHud } from '../components/editor/PerfHud'
 import { Icon } from '../components/ui/Icon'
 import { markPageSwitch } from '../lib/perf-monitor'
+import { isModuleKind } from '../lib/document-kinds'
 import { SidePanel, type SidePanelId } from '../components/editor/SidePanel'
 import { ContinuousPageBlock } from '../components/editor/ContinuousPageBlock'
 import { resolveNotebookPdfSource } from '../lib/assets'
@@ -85,6 +86,18 @@ const LazyFormaTabPage = React.lazy(() =>
 const LazyFMoodboardPage = React.lazy(() =>
   import('./FMoodboardPage').then((m) => ({ default: m.FMoodboardPage }))
 )
+
+const LazyModuleHost = React.lazy(() =>
+  import('../modules/ModuleHost').then((m) => ({ default: m.ModuleHost }))
+)
+
+function ModuleHostInline() {
+  return (
+    <React.Suspense fallback={<div className="flex items-center justify-center h-full text-forma-muted">Chargement…</div>}>
+      <LazyModuleHost />
+    </React.Suspense>
+  )
+}
 
 function FormaDocPageInline() {
   return (
@@ -685,6 +698,9 @@ export function EditorPage() {
   }
   if (docType === 'fmoodboard') {
     return <FMoodboardPageInline />
+  }
+  if (isModuleKind(docType)) {
+    return <ModuleHostInline />
   }
 
   if (locked === null || !notebook) {

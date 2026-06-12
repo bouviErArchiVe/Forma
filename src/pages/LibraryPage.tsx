@@ -49,7 +49,9 @@ import {
   softDeleteNotebook,
   toggleFavorite,
   updateNotebookMetadata,
+  createModuleDocument,
 } from '../services/library'
+import { creatableKindsByGroup, DOCUMENT_KINDS } from '../lib/document-kinds'
 import { useLibraryStore } from '../stores/libraryStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import { getPages } from '../services/pages'
@@ -65,14 +67,8 @@ type FilterTab = 'all' | 'favorites' | 'recent'
 
 const FILTER_TAB_KEY = 'forma-library-tab'
 
-/** Types de documents proposés dans le menu "+ Nouveau" (icône + libellé + courte description). */
-const CREATE_TYPES: { kind: NewDocKind; icon: IconName; label: string; desc: string }[] = [
-  { kind: 'notebook', icon: 'book', label: 'Carnet', desc: 'Notes manuscrites par pages' },
-  { kind: 'whiteboard', icon: 'layout', label: 'Whiteboard', desc: 'Toile libre en paysage' },
-  { kind: 'formadoc', icon: 'file-text', label: 'Document', desc: 'Texte riche, export PDF / Markdown' },
-  { kind: 'formataб', icon: 'table', label: 'Tableau', desc: 'Tableur simple avec formules' },
-  { kind: 'fmoodboard', icon: 'image', label: 'Moodboard', desc: 'Images, textes et formes libres' },
-]
+/** Menu "+ Nouveau" : groupes et types issus du registre central (document-kinds). */
+const CREATE_GROUPS = creatableKindsByGroup()
 
 function readFilterTab(): FilterTab {
   try {
@@ -742,12 +738,9 @@ export function LibraryPage() {
             title="Filtrer par type"
           >
             <option value="all">Tous types</option>
-            <option value="notebook">Carnets</option>
-            <option value="pdf">PDF</option>
-            <option value="whiteboard">Whiteboards</option>
-            <option value="formadoc">Documents</option>
-            <option value="formataб">Tableaux</option>
-            <option value="fmoodboard">Moodboards</option>
+            {DOCUMENT_KINDS.map((k) => (
+              <option key={k.id} value={k.id}>{k.name}</option>
+            ))}
           </select>
 
           {/* View mode */}
@@ -861,23 +854,30 @@ export function LibraryPage() {
               {showCreateMenu && (
                 <div
                   role="menu"
-                  className="absolute right-0 top-full mt-1.5 w-64 bg-forma-surface border border-forma-border rounded-xl shadow-lg p-1.5 z-30"
+                  className="absolute right-0 top-full mt-1.5 w-72 max-h-[70vh] overflow-y-auto bg-forma-surface border border-forma-border rounded-xl shadow-lg p-1.5 z-30"
                   style={{ boxShadow: 'var(--shadow-forma-md, 0 8px 24px rgba(0,0,0,0.12))' }}
                 >
-                  {CREATE_TYPES.map((it) => (
-                    <button
-                      key={it.kind}
-                      type="button"
-                      role="menuitem"
-                      onClick={() => openCreateModal(it.kind)}
-                      className="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-left transition-colors"
-                    >
-                      <Icon name={it.icon} className="w-4 h-4 mt-0.5 text-forma-accent shrink-0" />
-                      <span className="min-w-0">
-                        <span className="block text-sm font-medium text-forma-text">{it.label}</span>
-                        <span className="block text-xs text-forma-muted">{it.desc}</span>
-                      </span>
-                    </button>
+                  {CREATE_GROUPS.map((group) => (
+                    <div key={group.group}>
+                      <p className="px-2.5 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-forma-muted">
+                        {group.label}
+                      </p>
+                      {group.kinds.map((it) => (
+                        <button
+                          key={it.id}
+                          type="button"
+                          role="menuitem"
+                          onClick={() => openCreateModal(it.id as NewDocKind)}
+                          className="w-full flex items-start gap-2.5 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-left transition-colors"
+                        >
+                          <Icon name={it.icon} className="w-4 h-4 mt-0.5 shrink-0" style={{ color: it.color }} />
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium text-forma-text">{it.name}</span>
+                            <span className="block text-xs text-forma-muted">{it.description}</span>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   ))}
                   <div className="my-1 border-t border-forma-border" />
                   <button
@@ -1410,7 +1410,11 @@ export function LibraryPage() {
                     ? await createFormaTab(opts.name, currentFolderId)
                     : kind === 'fmoodboard'
                       ? await createFMoodboard(opts.name, currentFolderId)
-                      : await createNotebook({ ...opts, folderId: currentFolderId })
+                      : kind === 'notebook'
+                        ? await createNotebook({ ...opts, folderId: currentFolderId })
+                        : await createModuleDocument(kind, opts.name, currentFolderId, {
+                            coverColor: opts.coverColor,
+                          })
             setShowNewNotebook(false)
             navigate(`/document/${nb.id}`)
           }}

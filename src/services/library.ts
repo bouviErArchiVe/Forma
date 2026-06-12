@@ -3,6 +3,7 @@ import { createEmptyPage } from '../db'
 import { createId } from '../lib/id'
 import { pruneRecentPagesForNotebook } from '../lib/recent-pages'
 import type {
+  DocumentType,
   Folder,
   Notebook,
   Orientation,
@@ -145,6 +146,32 @@ export async function createFormaTab(
   })
   await db.notebooks.update(nb.id, { type: 'formataб' })
   return { ...nb, type: 'formataб' as const }
+}
+
+/**
+ * Crée un document module V2 (calendar, formula, presence, etc.).
+ * Le document est un Notebook du type demandé avec une page unique dont
+ * `moduleData` portera l'état JSON du module (initialisé par le module
+ * lui-même au premier rendu si vide).
+ */
+export async function createModuleDocument(
+  type: DocumentType,
+  name: string,
+  folderId: string | null = null,
+  opts: { coverColor?: string; subjectId?: string } = {},
+): Promise<Notebook> {
+  const nb = await createNotebook({
+    name: name || 'Nouveau document',
+    folderId,
+    coverColor: opts.coverColor ?? '#64748b',
+    paperTemplate: 'blank',
+    orientation: 'portrait',
+  })
+  await db.notebooks.update(nb.id, {
+    type,
+    ...(opts.subjectId !== undefined ? { subjectId: opts.subjectId } : {}),
+  })
+  return { ...nb, type, ...(opts.subjectId !== undefined ? { subjectId: opts.subjectId } : {}) }
 }
 
 function fileToDataUrl(file: File): Promise<string> {

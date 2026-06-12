@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { formatRelativeTime } from '../../lib/format-relative'
 import { COVER_COLORS, type Notebook } from '../../types'
+import { getKindMeta } from '../../lib/document-kinds'
 
 interface DocumentCardProps {
   notebook: Notebook
@@ -42,6 +43,7 @@ export function DocumentCard({
     setRenaming(false)
   }
   const relative = formatRelativeTime(notebook.updatedAt)
+  const kindMeta = getKindMeta(notebook.type)
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -104,7 +106,12 @@ export function DocumentCard({
             </p>
           )}
           <p className="text-xs text-forma-muted">
-            {notebook.type === 'pdf' ? 'PDF' : notebook.type === 'whiteboard' ? 'Whiteboard' : notebook.type === 'formadoc' ? 'Document' : notebook.type === 'formataб' ? 'Tableau' : notebook.type === 'fmoodboard' ? 'Moodboard' : 'Carnet'}
+            <span
+            className="inline-block px-1 py-px rounded font-medium"
+            style={{ backgroundColor: `${kindMeta.color}1a`, color: kindMeta.color }}
+          >
+            {kindMeta.badge}
+          </span>
             {pageCount != null ? ` · ${pageCount} p.` : ''} · {relative}
           </p>
         </div>
@@ -215,7 +222,12 @@ export function DocumentCard({
       </div>
       <div className="px-3 py-2 text-left">
         <p className="text-xs text-forma-muted">
-          {notebook.type === 'pdf' ? 'PDF' : notebook.type === 'whiteboard' ? 'Whiteboard' : notebook.type === 'formadoc' ? 'Document' : notebook.type === 'formataб' ? 'Tableau' : notebook.type === 'fmoodboard' ? 'Moodboard' : 'Carnet'}
+          <span
+            className="inline-block px-1 py-px rounded font-medium"
+            style={{ backgroundColor: `${kindMeta.color}1a`, color: kindMeta.color }}
+          >
+            {kindMeta.badge}
+          </span>
           {pageCount != null ? ` · ${pageCount} p.` : ''} · {relative}
         </p>
       </div>
