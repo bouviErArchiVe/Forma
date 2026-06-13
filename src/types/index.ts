@@ -122,6 +122,15 @@ export interface ImageElement {
   /** Rotation en radians autour du centre. */
   rotation?: number
   pageId: string
+  /**
+   * Métadonnées de bloc technique (bibliothèque de blocs de dessin).
+   * Présentes uniquement quand l'image provient d'un bloc inséré : le visuel
+   * est un raster du SVG du bloc, ces champs en conservent l'identité pour la
+   * recherche/réinsertion. N'affectent pas le rendu (réutilise le pipeline image).
+   */
+  blockId?: string
+  blockCategory?: string
+  blockUnit?: 'metric' | 'imperial'
 }
 
 export interface TapeElement {

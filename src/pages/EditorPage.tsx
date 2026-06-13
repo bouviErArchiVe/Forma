@@ -1028,6 +1028,7 @@ export function EditorPage() {
           onInsertImage={handleInsertImage}
           onScanner={() => setShowScanner(true)}
           onElements={() => canvasRef.current?.openStickerPicker()}
+          onBlocks={() => canvasRef.current?.openBlockLibrary()}
           onCustomize={() => setShowToolbarCustom(true)}
           onRevealAllTapes={
             notebook

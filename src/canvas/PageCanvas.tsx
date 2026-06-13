@@ -47,6 +47,9 @@ import {
   pointNearStroke,
 } from '../lib/stroke-render'
 import { StickerPicker } from '../components/editor/StickerPicker'
+import { BlockLibraryPanel } from '../components/editor/BlockLibraryPanel'
+import { addBlockToPage } from '../lib/blocks/insert'
+import { useBlockLibraryStore } from '../stores/blockLibraryStore'
 import { useEditorStore } from '../stores/editorStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import type {
@@ -91,6 +94,8 @@ export type PageCanvasHandle = {
   undo: () => void
   redo: () => void
   openStickerPicker: () => void
+  /** Ouvre la bibliothèque de blocs de dessin (insertion sur le canvas). */
+  openBlockLibrary: () => void
   /** Recharge l’état affiché (ex. restauration d’une version) */
   reload: (page: Page) => void
 }
@@ -143,6 +148,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
   const [tapeEnd, setTapeEnd] = useState<Point | null>(null)
   const [pendingSticker, setPendingSticker] = useState<string | null>(null)
   const [showStickerPicker, setShowStickerPicker] = useState(false)
+  const [showBlockLibrary, setShowBlockLibrary] = useState(false)
 
   const isDrawing = useRef(false)
   const lassoStart = useRef<Point | null>(null)
@@ -249,6 +255,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       undo: performUndo,
       redo: performRedo,
       openStickerPicker: () => setShowStickerPicker(true),
+      openBlockLibrary: () => setShowBlockLibrary(true),
       reload: reloadPage,
     }),
     [performUndo, performRedo, reloadPage],
@@ -1124,6 +1131,26 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
         <div className="absolute top-2 left-2 text-xs bg-amber-100 px-2 py-1 rounded">
           Cliquez sur la page pour placer l’élément
         </div>
+      )}
+
+      {showBlockLibrary && (
+        <BlockLibraryPanel
+          onPick={(block) => {
+            // Insertion au centre de la page (toujours visible, déterministe).
+            void addBlockToPage(
+              localRef.current,
+              localRef.current.notebookId,
+              block,
+              PAGE_WIDTH / 2,
+              PAGE_HEIGHT / 2,
+            ).then((next) => {
+              commit(next)
+              useBlockLibraryStore.getState().pushRecent(block.id)
+            })
+            setShowBlockLibrary(false)
+          }}
+          onClose={() => setShowBlockLibrary(false)}
+        />
       )}
       {selection.length > 0 && (
         <div className="absolute top-2 right-2 flex flex-wrap gap-1 bg-white rounded-lg shadow-md p-1 border border-forma-border max-w-[240px]">

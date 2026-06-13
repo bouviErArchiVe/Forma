@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { useEditorStore } from '../../stores/editorStore'
 import { useToastStore } from '../../stores/toastStore'
 import { DEFAULT_TOOL_PRESETS, PEN_COLORS, type ShapeType, type ToolType } from '../../types'
+import { Icon } from '../ui/Icon'
 
 /** Max image file size accepted for insertion (10 MB). */
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024
@@ -30,6 +31,7 @@ interface ToolbarProps {
   onInsertImage?: (dataUrl: string) => void
   onScanner?: () => void
   onElements?: () => void
+  onBlocks?: () => void
   onCustomize?: () => void
   onRevealAllTapes?: () => void
   onHideAllTapes?: () => void
@@ -45,6 +47,7 @@ export function Toolbar({
   onInsertImage,
   onScanner,
   onElements,
+  onBlocks,
   onCustomize,
   onRevealAllTapes,
   onHideAllTapes,
@@ -353,6 +356,17 @@ export function Toolbar({
 
       {/* Scanner & Personnaliser */}
       <div className="ml-auto flex items-center gap-1.5">
+        {onBlocks && (
+          <button
+            type="button"
+            onClick={onBlocks}
+            disabled={readMode}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-forma-border hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40"
+            title="Bibliothèque de blocs"
+          >
+            <Icon name="layout" className="w-4 h-4" />
+          </button>
+        )}
         {onScanner && (
           <button
             type="button"
