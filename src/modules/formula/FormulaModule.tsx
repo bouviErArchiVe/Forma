@@ -8,6 +8,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '../../components/ui/Icon'
+import { getProvider, resolveProviderSettings } from '../../services/ai/providers'
 import type { ModuleProps } from '../ModuleHost'
 import { CalcError, evaluate } from './calc-engine'
 import { FORMULAS, FORMULA_CATEGORIES, getFormula, searchFormulas, type FormulaDef } from './formulas-data'
@@ -402,7 +403,17 @@ function FormulaPanel({
     return init
   })
   const [copied, setCopied] = useState(false)
+  const [explanation, setExplanation] = useState<string | null>(null)
+  const [explaining, setExplaining] = useState(false)
   const historyTimerRef = useRef<number | null>(null)
+
+  // Réinitialise l'explication au changement de formule (pattern React :
+  // ajustement d'état pendant le rendu, pas dans un effet).
+  const [prevFormulaId, setPrevFormulaId] = useState(formula.id)
+  if (formula.id !== prevFormulaId) {
+    setPrevFormulaId(formula.id)
+    setExplanation(null)
+  }
 
   const parsedValues = useMemo(() => {
     const out: Record<string, number> = {}
@@ -446,6 +457,42 @@ function FormulaPanel({
     await navigator.clipboard.writeText(`${formatResult(computed.value)} ${formula.resultUnit}`.trim())
     setCopied(true)
     window.setTimeout(() => setCopied(false), 1500)
+  }
+
+  // ── « Expliquer ce calcul avec FormAI » ─────────────────────────────────────
+  // Transmet nom, variables (valeur + unité), résultat et note. Mode local
+  // honnête : le provider local explique la démarche sans inventer de normes.
+  const explainWithAI = async () => {
+    if (!computed || invalidResult) return
+    setExplaining(true)
+    setExplanation(null)
+    try {
+      const settings = resolveProviderSettings()
+      const provider = getProvider(settings.providerId)
+      const varLines = formula.variables
+        .map((v) => `- ${v.label} : ${inputs[v.id]} ${v.unit}`)
+        .join('\n')
+      const userPrompt =
+        `Explique ce calcul de façon pédagogique et concise (sans inventer de normes ni de références de code du bâtiment).\n\n`
+        + `Formule : ${formula.name}\n${formula.description}\n\n`
+        + `Données :\n${varLines}\n\n`
+        + `Résultat : ${formatResult(computed.value)} ${formula.resultUnit}`
+        + (computed.note ? `\nNote : ${computed.note}` : '')
+      const res = await provider.chat({
+        messages: [
+          {
+            role: 'system',
+            content:
+              'Tu es l’agent Calculs de FormAI (architecture/construction). Explique les calculs étape par étape, en français, unités SI. N’invente JAMAIS de normes ou d’articles de code.',
+          },
+          { role: 'user', content: userPrompt },
+        ],
+        settings,
+      })
+      setExplanation(res.text.trim() !== '' ? res.text : (res.error ?? 'Aucune explication disponible.'))
+    } finally {
+      setExplaining(false)
+    }
   }
 
   return (
@@ -508,6 +555,22 @@ function FormulaPanel({
               </button>
             </div>
             {computed.note && <p className="text-xs text-forma-muted mt-2">{computed.note}</p>}
+            <div className="mt-3 pt-3 border-t border-forma-border">
+              <button
+                type="button"
+                onClick={() => void explainWithAI()}
+                disabled={explaining}
+                className="inline-flex items-center gap-1.5 text-xs text-forma-muted hover:text-forma-accent transition-colors disabled:opacity-50"
+              >
+                <Icon name="sparkles" className="w-3.5 h-3.5" />
+                {explaining ? 'Explication…' : 'Expliquer ce calcul avec FormAI'}
+              </button>
+              {explanation && (
+                <p className="text-xs text-forma-text whitespace-pre-wrap leading-relaxed mt-2 p-2.5 rounded-lg bg-forma-bg border border-forma-border">
+                  {explanation}
+                </p>
+              )}
+            </div>
           </>
         ) : invalidResult ? (
           <p className="text-sm text-red-500 inline-flex items-center gap-1.5">

@@ -15,6 +15,7 @@ import { confirm } from '../../stores/confirmStore'
 import { useToastStore } from '../../stores/toastStore'
 import type { ModuleProps } from '../ModuleHost'
 import { mergeToPdf, type MergeInputItem } from './merge-pdf'
+import { thumbUrlForAsset } from './thumbnails'
 
 interface CombineItem {
   id: string
@@ -53,6 +54,42 @@ async function countPdfPages(blob: Blob): Promise<number | undefined> {
   } catch {
     return undefined
   }
+}
+
+/** Vignette 40×52 d'un item (image ou première page de PDF), fallback icône. */
+function ItemThumb({ assetId, kind }: { assetId: string; kind: CombineItem['kind'] }) {
+  const [url, setUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    void thumbUrlForAsset(assetId, kind).then((u) => {
+      if (!cancelled) setUrl(u)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [assetId, kind])
+
+  if (url === null) {
+    return (
+      <div className="w-10 h-[52px] shrink-0 rounded border border-forma-border bg-forma-bg flex items-center justify-center">
+        <Icon
+          name={kind === 'pdf' ? 'file-text' : 'image'}
+          className="w-4 h-4"
+          style={{ color: kind === 'pdf' ? '#ef4444' : '#ec4899' }}
+        />
+      </div>
+    )
+  }
+  return (
+    <img
+      src={url}
+      alt=""
+      draggable={false}
+      onError={() => setUrl(null)}
+      className="w-10 h-[52px] shrink-0 rounded border border-forma-border object-cover bg-forma-bg"
+    />
+  )
 }
 
 export function CombineModule({ notebook, data, onDataChange }: ModuleProps) {
@@ -253,11 +290,7 @@ export function CombineModule({ notebook, data, onDataChange }: ModuleProps) {
                   className="flex items-center gap-2 px-3 py-2 rounded-xl border border-forma-border bg-forma-surface"
                 >
                   <span className="text-[10px] text-forma-muted w-5 text-right shrink-0">{index + 1}.</span>
-                  <Icon
-                    name={item.kind === 'pdf' ? 'file-text' : 'image'}
-                    className="w-4 h-4 shrink-0"
-                    style={{ color: item.kind === 'pdf' ? '#ef4444' : '#ec4899' }}
-                  />
+                  <ItemThumb assetId={item.assetId} kind={item.kind} />
                   {renamingId === item.id ? (
                     <input
                       type="text"

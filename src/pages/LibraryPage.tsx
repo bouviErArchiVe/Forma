@@ -14,7 +14,7 @@ import { exportNotebooksMarkdownZip } from '../lib/bulk-markdown'
 import { createNotebookFromMarkdown } from '../lib/markdown-import'
 import { getPinnedNotebookIds } from '../lib/pinned-notebooks'
 import { buildFolderPath } from '../lib/folder-path'
-import { filterByType, sortNotebooksBy } from '../lib/library-helpers'
+import { filterBySubject, filterByType, sortNotebooksBy, type LibrarySubjectFilter } from '../lib/library-helpers'
 import { basePageDimensions } from '../lib/page-dimensions'
 import { renderFullPage } from '../lib/page-render'
 import { libraryThumbQueue, THUMB_PRIORITY } from '../lib/thumb-queue'
@@ -139,7 +139,10 @@ export function LibraryPage() {
     selectAll,
     typeFilter,
     setTypeFilter,
+    subjectFilter,
+    setSubjectFilter,
   } = useLibraryStore()
+  const [subjects, setSubjects] = useState<Notebook[]>([])
 
   const navCount =
     (filterTab === 'all' ? folders.length : 0) + notebooks.length
@@ -288,18 +291,23 @@ export function LibraryPage() {
     )
     setFolderCounts(counts)
     setPinnedIds(await getPinnedNotebookIds())
+    // Matières disponibles (pour le filtre et les badges des cartes)
+    const subjectDocs = await db.notebooks
+      .filter((nb) => nb.type === 'subject' && !nb.deletedAt)
+      .toArray()
+    subjectDocs.sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+    setSubjects(subjectDocs)
     // L'onglet "Récents" préserve l'ordre de consultation (déjà fourni par
-    // getNotebooksByIds + getRecentIds) — seul le filtre type s'applique.
+    // getNotebooksByIds + getRecentIds) — seuls les filtres type/matière s'appliquent.
+    const filtered = filterBySubject(filterByType(n, typeFilter), subjectFilter)
     const sorted =
-      filterTab === 'recent'
-        ? filterByType(n, typeFilter)
-        : sortNotebooksBy(filterByType(n, typeFilter), sortBy, sortOrder)
+      filterTab === 'recent' ? filtered : sortNotebooksBy(filtered, sortBy, sortOrder)
     setNotebooks(sorted)
     if (sorted.length) setPageCounts(await getPageCounts(sorted.map((nb) => nb.id)))
     else setPageCounts({})
     if (!searchQuery.trim()) setGlobalHits([])
     setListRefresh((k) => k + 1)
-  }, [currentFolderId, searchQuery, sortBy, sortOrder, filterTab, typeFilter])
+  }, [currentFolderId, searchQuery, sortBy, sortOrder, filterTab, typeFilter, subjectFilter])
 
   useEffect(() => {
     const t = setTimeout(() => load(), 280)
@@ -742,6 +750,22 @@ export function LibraryPage() {
               <option key={k.id} value={k.id}>{k.name}</option>
             ))}
           </select>
+
+          {/* Filtre matière — visible seulement si des matières existent */}
+          {subjects.length > 0 && (
+            <select
+              value={subjectFilter}
+              onChange={(e) => setSubjectFilter(e.target.value as LibrarySubjectFilter)}
+              className="text-xs border border-forma-border rounded-lg px-2 py-1.5 bg-forma-surface hidden sm:block max-w-36"
+              title="Filtrer par matière"
+            >
+              <option value="all">Toutes les matières</option>
+              <option value="none">Sans matière</option>
+              {subjects.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          )}
 
           {/* View mode */}
           <div className="flex border border-forma-border rounded-lg overflow-hidden">

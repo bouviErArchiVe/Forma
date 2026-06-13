@@ -21,16 +21,20 @@ import {
   addMonths,
   EVENT_COLORS,
   eventsOnDay,
+  eventsToMarkdown,
   monthGrid,
   parseCalendarState,
   parseISODate,
+  RECURRENCE_LABELS,
   serializeCalendarState,
   startOfWeek,
   todayISO,
   weekDays,
   type CalendarEvent,
   type CalendarState,
+  type EventRecurrence,
 } from './calendar-data'
+import { parseEventSuggestion } from './event-suggest'
 
 type ViewMode = 'day' | 'week' | 'month'
 
@@ -54,6 +58,7 @@ interface EventDraft {
   color: string
   subjectId: string
   linkedDocId: string
+  recurrence: '' | EventRecurrence
 }
 
 function emptyDraft(date: string): EventDraft {
@@ -67,6 +72,7 @@ function emptyDraft(date: string): EventDraft {
     color: EVENT_COLORS[0],
     subjectId: '',
     linkedDocId: '',
+    recurrence: '',
   }
 }
 
@@ -81,6 +87,7 @@ function draftFromEvent(e: CalendarEvent): EventDraft {
     color: e.color,
     subjectId: e.subjectId ?? '',
     linkedDocId: e.linkedDocId ?? '',
+    recurrence: e.recurrence ?? '',
   }
 }
 
@@ -282,6 +289,21 @@ function EventModal({
               </select>
             </div>
           </div>
+
+          <div>
+            <label className={label} htmlFor="cal-ev-rec">Récurrence</label>
+            <select
+              id="cal-ev-rec"
+              value={draft.recurrence}
+              onChange={(e) => onChange({ ...draft, recurrence: e.target.value as '' | EventRecurrence })}
+              className={field}
+            >
+              <option value="">Aucune</option>
+              {(Object.keys(RECURRENCE_LABELS) as EventRecurrence[]).map((r) => (
+                <option key={r} value={r}>{RECURRENCE_LABELS[r]}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 mt-4">
@@ -327,6 +349,8 @@ export function CalendarModule({ data, onDataChange }: ModuleProps) {
   const [draft, setDraft] = useState<EventDraft | null>(null)
   const [subjects, setSubjects] = useState<Notebook[]>([])
   const [documents, setDocuments] = useState<Notebook[]>([])
+  const [showSuggest, setShowSuggest] = useState(false)
+  const [suggestText, setSuggestText] = useState('')
 
   const today = todayISO()
 
@@ -376,12 +400,48 @@ export function CalendarModule({ data, onDataChange }: ModuleProps) {
       ...(draft.description.trim() ? { description: draft.description.trim() } : {}),
       ...(draft.subjectId ? { subjectId: draft.subjectId } : {}),
       ...(draft.linkedDocId ? { linkedDocId: draft.linkedDocId } : {}),
+      ...(draft.recurrence ? { recurrence: draft.recurrence } : {}),
     }
     const events = draft.id
       ? state.events.map((e) => (e.id === draft.id ? event : e))
       : [...state.events, event]
     update(events)
     setDraft(null)
+  }
+
+  // ── « Créer avec FormAI » : analyse une phrase → pré-remplit le modal ───────
+  // Parsing local déterministe (event-suggest) : honnête en mode local et
+  // fiable hors ligne. L'utilisateur confirme TOUJOURS via le modal Événement.
+  const runSuggest = () => {
+    const text = suggestText.trim()
+    if (text === '') return
+    const suggestion = parseEventSuggestion(text, today)
+    if (!suggestion) {
+      useToastStore.getState().show('Aucune date/heure détectée — précisez (« vendredi 9h »…)', 5000)
+      return
+    }
+    setShowSuggest(false)
+    setSuggestText('')
+    // Si une matière est nommée dans le texte, on tente de la rattacher.
+    const matchedSubject = subjects.find((s) => text.toLowerCase().includes(s.name.toLowerCase()))
+    setDraft({
+      ...emptyDraft(suggestion.date ?? today),
+      title: suggestion.title ?? 'Nouvel événement',
+      startTime: suggestion.startTime ?? '',
+      recurrence: suggestion.recurrence ?? '',
+      ...(matchedSubject ? { subjectId: matchedSubject.id, color: matchedSubject.coverColor } : {}),
+    })
+  }
+
+  // ── Export markdown (copie presse-papiers) ──────────────────────────────────
+  const exportMarkdown = async () => {
+    const md = eventsToMarkdown(state)
+    try {
+      await navigator.clipboard.writeText(md)
+      useToastStore.getState().show('Liste des événements copiée (Markdown)')
+    } catch {
+      useToastStore.getState().show('Copie impossible')
+    }
   }
 
   const deleteDraft = async () => {
@@ -512,6 +572,25 @@ export function CalendarModule({ data, onDataChange }: ModuleProps) {
 
         <div className="flex-1" />
 
+        <button
+          type="button"
+          onClick={exportMarkdown}
+          disabled={state.events.length === 0}
+          title="Copier la liste des événements (Markdown)"
+          className="text-xs px-2.5 py-1.5 rounded-lg border border-forma-border text-forma-muted hover:text-forma-accent hover:border-forma-accent/60 disabled:opacity-40 transition-colors inline-flex items-center gap-1.5"
+        >
+          <Icon name="copy" className="w-3.5 h-3.5" />
+          Exporter
+        </button>
+        <button
+          type="button"
+          onClick={() => { setSuggestText(''); setShowSuggest(true) }}
+          title="Décrire un événement en langage naturel"
+          className="text-xs px-2.5 py-1.5 rounded-lg border border-forma-border text-forma-muted hover:text-forma-accent hover:border-forma-accent/60 transition-colors inline-flex items-center gap-1.5"
+        >
+          <Icon name="sparkles" className="w-3.5 h-3.5" />
+          Créer avec FormAI
+        </button>
         <button
           type="button"
           onClick={() => setDraft(emptyDraft(anchor))}
@@ -662,6 +741,62 @@ export function CalendarModule({ data, onDataChange }: ModuleProps) {
           onDelete={() => void deleteDraft()}
           onClose={() => setDraft(null)}
         />
+      )}
+
+      {showSuggest && (
+        <Modal open onClose={() => setShowSuggest(false)} maxWidth="max-w-md">
+          <div className="p-4">
+            <h2 className="text-sm font-semibold text-forma-text mb-1 inline-flex items-center gap-1.5">
+              <Icon name="sparkles" className="w-4 h-4 text-forma-accent" />
+              Créer avec FormAI
+            </h2>
+            <p className="text-xs text-forma-muted mb-3">
+              Décrivez l’événement en une phrase. Date, heure et récurrence sont détectées —
+              vous confirmez avant la création.
+            </p>
+            <textarea
+              value={suggestText}
+              autoFocus
+              onChange={(e) => setSuggestText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runSuggest() }
+              }}
+              rows={2}
+              placeholder="Ex. : examen structure vendredi 9h · cours construction chaque mercredi 13h"
+              className="w-full text-sm border border-forma-border rounded-lg px-2.5 py-1.5 bg-forma-bg resize-none focus:outline-none focus:border-forma-accent"
+            />
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {['examen structure vendredi 9h', 'remise projet lundi prochain', 'cours construction chaque mercredi 13h'].map((ex) => (
+                <button
+                  key={ex}
+                  type="button"
+                  onClick={() => setSuggestText(ex)}
+                  className="text-[10px] px-2 py-0.5 rounded-full border border-forma-border text-forma-muted hover:border-forma-accent/60 hover:text-forma-accent transition-colors"
+                >
+                  {ex}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 mt-4">
+              <div className="flex-1" />
+              <button
+                type="button"
+                onClick={() => setShowSuggest(false)}
+                className="text-xs px-3 py-1.5 rounded-lg border border-forma-border text-forma-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={runSuggest}
+                disabled={suggestText.trim() === ''}
+                className="text-xs px-3 py-1.5 rounded-lg bg-forma-accent text-white hover:bg-forma-accent-hover disabled:opacity-40 transition-colors"
+              >
+                Analyser
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   )

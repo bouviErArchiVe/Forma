@@ -188,17 +188,44 @@ export function DictionaryModule({ data, onDataChange }: ModuleProps) {
           <div className="max-w-2xl">
             <div className="flex items-start justify-between gap-2 mb-1">
               <h2 className="text-xl font-semibold text-forma-text capitalize">{selected.term}</h2>
-              <button
-                type="button"
-                title={state.favorites.includes(selected.term) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-                onClick={() => toggleFavorite(selected.term)}
-                className="p-1 text-forma-muted hover:text-amber-400"
-              >
-                <Icon
-                  name={state.favorites.includes(selected.term) ? 'star' : 'star-outline'}
-                  className={`w-4 h-4 ${state.favorites.includes(selected.term) ? 'text-amber-400' : ''}`}
-                />
-              </button>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  title="Copier la fiche (Markdown)"
+                  onClick={async () => {
+                    const e = selected
+                    const md = [
+                      `## ${e.term}`,
+                      '',
+                      e.definition,
+                      e.synonyms.length > 0 ? `\n**Synonymes :** ${e.synonyms.join(', ')}` : '',
+                      e.antonyms && e.antonyms.length > 0 ? `**Antonymes :** ${e.antonyms.join(', ')}` : '',
+                      e.example ? `\n*${e.example}*` : '',
+                      state.notes[e.term]?.trim() ? `\n**Mes notes :** ${state.notes[e.term].trim()}` : '',
+                    ].filter(Boolean).join('\n')
+                    try {
+                      await navigator.clipboard.writeText(md)
+                      useToastStore.getState().show('Fiche copiée (Markdown)')
+                    } catch {
+                      useToastStore.getState().show('Copie impossible')
+                    }
+                  }}
+                  className="p-1 text-forma-muted hover:text-forma-accent"
+                >
+                  <Icon name="copy" className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  title={state.favorites.includes(selected.term) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                  onClick={() => toggleFavorite(selected.term)}
+                  className="p-1 text-forma-muted hover:text-amber-400"
+                >
+                  <Icon
+                    name={state.favorites.includes(selected.term) ? 'star' : 'star-outline'}
+                    className={`w-4 h-4 ${state.favorites.includes(selected.term) ? 'text-amber-400' : ''}`}
+                  />
+                </button>
+              </div>
             </div>
             <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-3">{selected.category}</p>
             <p className="text-sm text-forma-text leading-relaxed mb-4">{selected.definition}</p>

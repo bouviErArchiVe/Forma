@@ -7,11 +7,14 @@ import {
   compareByTime,
   eventsInWeek,
   eventsOnDay,
+  eventsToMarkdown,
   monthGrid,
+  occursOn,
   startOfWeek,
   type CalendarEvent,
   type CalendarState,
 } from './calendar-data'
+import { parseEventSuggestion } from './event-suggest'
 
 function ev(partial: Partial<CalendarEvent> & { id: string; date: string }): CalendarEvent {
   return { title: partial.id, color: '#3b82f6', ...partial }
@@ -84,5 +87,103 @@ describe('compareByTime', () => {
     const noon = ev({ id: 'z', date: '2026-06-08', startTime: '12:00' })
     expect(compareByTime(allDay, nine)).toBeLessThan(0)
     expect(compareByTime(nine, noon)).toBeLessThan(0)
+  })
+})
+
+// ─── Récurrence ─────────────────────────────────────────────────────────────
+
+describe('occursOn (récurrence)', () => {
+  it('événement non récurrent : seulement sa date', () => {
+    const e = ev({ id: 'a', date: '2026-06-10' })
+    expect(occursOn(e, '2026-06-10')).toBe(true)
+    expect(occursOn(e, '2026-06-17')).toBe(false)
+  })
+
+  it('hebdomadaire : tous les 7 jours, jamais avant la source', () => {
+    const e = ev({ id: 'w', date: '2026-06-10', recurrence: 'weekly' }) // mercredi
+    expect(occursOn(e, '2026-06-10')).toBe(true)
+    expect(occursOn(e, '2026-06-17')).toBe(true)
+    expect(occursOn(e, '2026-06-24')).toBe(true)
+    expect(occursOn(e, '2026-06-16')).toBe(false) // mardi
+    expect(occursOn(e, '2026-06-03')).toBe(false) // avant la source
+  })
+
+  it('quotidienne et mensuelle', () => {
+    const daily = ev({ id: 'd', date: '2026-06-10', recurrence: 'daily' })
+    expect(occursOn(daily, '2026-06-11')).toBe(true)
+    const monthly = ev({ id: 'm', date: '2026-06-10', recurrence: 'monthly' })
+    expect(occursOn(monthly, '2026-07-10')).toBe(true)
+    expect(occursOn(monthly, '2026-07-11')).toBe(false)
+  })
+
+  it('horizon limité à ~1 an', () => {
+    const e = ev({ id: 'w', date: '2026-06-10', recurrence: 'weekly' })
+    expect(occursOn(e, '2028-06-10')).toBe(false)
+  })
+
+  it('eventsInWeek déplie les occurrences hebdomadaires', () => {
+    const s = state([ev({ id: 'w', date: '2026-06-03', recurrence: 'weekly' })]) // mercredi
+    const week = eventsInWeek(s, '2026-06-10') // semaine du 8 au 14 juin
+    const wed = week.filter((e) => e.id === 'w')
+    expect(wed).toHaveLength(1)
+    expect(wed[0].occurrenceDate).toBe('2026-06-10')
+  })
+})
+
+// ─── Export markdown ──────────────────────────────────────────────────────────
+
+describe('eventsToMarkdown', () => {
+  it('liste vide → message', () => {
+    expect(eventsToMarkdown(state([]))).toBe('Aucun événement.')
+  })
+
+  it('groupe par mois et mentionne la récurrence', () => {
+    const md = eventsToMarkdown(state([
+      ev({ id: 'a', title: 'Examen', date: '2026-06-15', startTime: '09:00' }),
+      ev({ id: 'b', title: 'Cours', date: '2026-06-17', recurrence: 'weekly' }),
+    ]))
+    expect(md).toContain('## Juin 2026')
+    expect(md).toContain('**Examen**')
+    expect(md).toContain('09:00')
+    expect(md).toContain('chaque semaine')
+  })
+})
+
+// ─── parseEventSuggestion ──────────────────────────────────────────────────────
+
+describe('parseEventSuggestion', () => {
+  const TODAY = '2026-06-10' // mercredi
+
+  it('« examen structure vendredi 9h »', () => {
+    const s = parseEventSuggestion('examen structure vendredi 9h', TODAY)
+    expect(s).not.toBeNull()
+    expect(s!.title).toBe('Examen structure')
+    expect(s!.date).toBe('2026-06-12') // vendredi suivant
+    expect(s!.startTime).toBe('09:00')
+    expect(s!.recurrence).toBeUndefined()
+  })
+
+  it('« remise projet demain »', () => {
+    const s = parseEventSuggestion('remise projet demain', TODAY)
+    expect(s!.title).toBe('Remise projet')
+    expect(s!.date).toBe('2026-06-11')
+  })
+
+  it('« cours construction chaque mercredi 13h » → hebdomadaire', () => {
+    const s = parseEventSuggestion('cours construction chaque mercredi 13h', TODAY)
+    expect(s!.title).toBe('Cours construction')
+    expect(s!.recurrence).toBe('weekly')
+    expect(s!.startTime).toBe('13:00')
+    expect(s!.date).toBe('2026-06-10') // mercredi = aujourd'hui
+  })
+
+  it('heure avec minutes « 13h30 »', () => {
+    const s = parseEventSuggestion('réunion demain 13h30', TODAY)
+    expect(s!.startTime).toBe('13:30')
+  })
+
+  it('phrase sans date/heure → null', () => {
+    expect(parseEventSuggestion('faire quelque chose', TODAY)).toBeNull()
+    expect(parseEventSuggestion('', TODAY)).toBeNull()
   })
 })

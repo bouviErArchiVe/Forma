@@ -34,6 +34,24 @@ export function filterFavorites(notebooks: Notebook[]): Notebook[] {
 }
 
 /**
+ * Filtre par matière : `'all'` = pas de filtre, `'none'` = documents sans
+ * matière (hors documents matière eux-mêmes), sinon id du document matière
+ * (notebook.subjectId).
+ */
+export type LibrarySubjectFilter = 'all' | 'none' | string
+
+export function filterBySubject(
+  notebooks: Notebook[],
+  subjectFilter: LibrarySubjectFilter,
+): Notebook[] {
+  if (subjectFilter === 'all') return notebooks
+  if (subjectFilter === 'none') {
+    return notebooks.filter((nb) => !nb.subjectId && nb.type !== 'subject')
+  }
+  return notebooks.filter((nb) => nb.subjectId === subjectFilter)
+}
+
+/**
  * Construit la liste "Récents" : carnets correspondant aux `ids` fournis
  * (déjà ordonnés par récence par l'appelant), tronquée à `limit` éléments.
  */
@@ -65,23 +83,33 @@ export function applyLibraryFilters(
   opts: {
     tab: LibraryFilterTab
     typeFilter?: LibraryTypeFilter
+    subjectFilter?: LibrarySubjectFilter
     sortBy?: SortBy
     sortOrder?: SortOrder
     recentIds?: string[]
     recentLimit?: number
   },
 ): Notebook[] {
-  const { tab, typeFilter = 'all', sortBy = 'modified', sortOrder = 'desc', recentIds = [], recentLimit = 20 } = opts
+  const {
+    tab,
+    typeFilter = 'all',
+    subjectFilter = 'all',
+    sortBy = 'modified',
+    sortOrder = 'desc',
+    recentIds = [],
+    recentLimit = 20,
+  } = opts
+  const bySubject = (list: Notebook[]) => filterBySubject(list, subjectFilter)
 
   if (tab === 'favorites') {
-    return sortNotebooksBy(filterByType(filterFavorites(notebooks), typeFilter), sortBy, sortOrder)
+    return sortNotebooksBy(bySubject(filterByType(filterFavorites(notebooks), typeFilter)), sortBy, sortOrder)
   }
 
   if (tab === 'recent') {
     const byId = new Map(notebooks.map((nb) => [nb.id, nb] as const))
     const recent = buildRecentList(byId, recentIds, recentLimit)
-    return filterByType(recent, typeFilter)
+    return bySubject(filterByType(recent, typeFilter))
   }
 
-  return sortNotebooksBy(filterByType(notebooks, typeFilter), sortBy, sortOrder)
+  return sortNotebooksBy(bySubject(filterByType(notebooks, typeFilter)), sortBy, sortOrder)
 }

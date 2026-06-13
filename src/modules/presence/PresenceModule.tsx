@@ -164,9 +164,43 @@ export function PresenceModule({ data, onDataChange }: ModuleProps) {
 
   const field = 'text-sm border border-forma-border rounded-lg px-2.5 py-1.5 bg-forma-bg focus:outline-none focus:border-forma-accent focus:ring-1 focus:ring-forma-accent/30'
 
+  const exportSummary = async () => {
+    const lines: string[] = ['# Résumé de présence', '']
+    lines.push(
+      `**Global :** ${stats.global.presentPct} % de présence — ${stats.global.total} séance(s), `
+      + `${stats.global.absent} absence(s), ${stats.global.late} retard(s)`,
+    )
+    if (stats.bySubject.length > 0) {
+      lines.push('', '## Par matière')
+      for (const s of stats.bySubject) {
+        lines.push(`- **${s.label}** : ${s.presentPct} % (${s.total} séance(s), ${s.absent} abs., ${s.late} ret.)`)
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(lines.join('\n'))
+      useToastStore.getState().show('Résumé de présence copié (Markdown)')
+    } catch {
+      useToastStore.getState().show('Copie impossible')
+    }
+  }
+
   return (
     <div className="h-full overflow-y-auto">
       <div className="max-w-3xl mx-auto p-4 space-y-4">
+        {/* ── En-tête : export ───────────────────────────────────────────────── */}
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => void exportSummary()}
+            disabled={stats.global.total === 0}
+            title="Copier le résumé (Markdown)"
+            className="text-xs px-2.5 py-1.5 rounded-lg border border-forma-border text-forma-muted hover:text-forma-accent hover:border-forma-accent/60 disabled:opacity-40 transition-colors inline-flex items-center gap-1.5"
+          >
+            <Icon name="copy" className="w-3.5 h-3.5" />
+            Exporter le résumé
+          </button>
+        </div>
+
         {/* ── Cartes de stats globales ───────────────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <StatCard

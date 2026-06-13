@@ -16,6 +16,9 @@ interface DocumentCardProps {
   onRename?: (name: string) => void
   onCoverColor?: (color: string) => void
   locked?: boolean
+  /** Matière liée (badge) : nom + couleur de couverture de la matière. */
+  subjectName?: string
+  subjectColor?: string
 }
 
 export function DocumentCard({
@@ -31,6 +34,8 @@ export function DocumentCard({
   onRename,
   onCoverColor,
   locked,
+  subjectName,
+  subjectColor,
 }: DocumentCardProps) {
   const [renaming, setRenaming] = useState(false)
   const [name, setName] = useState(notebook.name)
@@ -233,6 +238,15 @@ export function DocumentCard({
           >
             {kindMeta.badge}
           </span>
+          {subjectName && subjectColor && (
+            <span
+              className="inline-block px-1 py-px rounded font-medium ml-1"
+              style={{ backgroundColor: `${subjectColor}1a`, color: subjectColor }}
+              title={`Matière : ${subjectName}`}
+            >
+              {subjectName}
+            </span>
+          )}
           {pageCount != null ? ` · ${pageCount} p.` : ''} · {relative}
         </p>
       </div>

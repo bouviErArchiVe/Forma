@@ -9,6 +9,15 @@
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+/** Récurrence simple — absent = événement unique. */
+export type EventRecurrence = 'daily' | 'weekly' | 'monthly'
+
+export const RECURRENCE_LABELS: Record<EventRecurrence, string> = {
+  daily: 'Chaque jour',
+  weekly: 'Chaque semaine',
+  monthly: 'Chaque mois',
+}
+
 export interface CalendarEvent {
   id: string
   title: string
@@ -24,6 +33,8 @@ export interface CalendarEvent {
   subjectId?: string
   /** Document lié (id d'un notebook) — navigation /document/:id. */
   linkedDocId?: string
+  /** Récurrence simple (les occurrences sont générées à la volée). */
+  recurrence?: EventRecurrence
 }
 
 export interface CalendarState {
@@ -157,19 +168,100 @@ export function compareByTime(a: CalendarEvent, b: CalendarEvent): number {
   return a.title.localeCompare(b.title)
 }
 
-/** Événements d'un jour donné, triés par heure. */
+// ─── Récurrence ───────────────────────────────────────────────────────────────
+
+/** Horizon des occurrences générées : 1 an après la date source. */
+const RECURRENCE_HORIZON_DAYS = 366
+
+/**
+ * L'événement (récurrent ou non) a-t-il une occurrence le jour donné ?
+ * - quotidien : tous les jours ≥ date source ;
+ * - hebdo : même jour de semaine, ≥ date source ;
+ * - mensuel : même quantième, ≥ date source (pas d'occurrence si le mois
+ *   n'a pas ce jour — un « 31 » ne tombe pas en février).
+ * Horizon : 1 an après la date source (pas de génération infinie).
+ */
+export function occursOn(event: CalendarEvent, isoDate: string): boolean {
+  if (event.date === isoDate) return true
+  if (!event.recurrence) return false
+  if (isoDate < event.date) return false
+  const source = parseISODate(event.date)
+  const day = parseISODate(isoDate)
+  const diffDays = Math.round((day.getTime() - source.getTime()) / 86_400_000)
+  if (diffDays > RECURRENCE_HORIZON_DAYS) return false
+  switch (event.recurrence) {
+    case 'daily':
+      return true
+    case 'weekly':
+      return diffDays % 7 === 0
+    case 'monthly':
+      return day.getDate() === source.getDate()
+  }
+}
+
+/** Événements d'un jour donné (occurrences récurrentes incluses), triés par heure. */
 export function eventsOnDay(state: CalendarState, isoDate: string): CalendarEvent[] {
-  return state.events.filter((e) => e.date === isoDate).sort(compareByTime)
+  return state.events.filter((e) => occursOn(e, isoDate)).sort(compareByTime)
 }
 
 /**
  * Événements de la semaine (lundi → dimanche) contenant `anyDateInWeek`,
- * triés par date puis par heure. Bornes incluses.
+ * occurrences récurrentes incluses, triés par date puis par heure.
+ * Chaque occurrence est retournée avec sa `date` d'occurrence (l'id reste
+ * celui de l'événement source — l'édition agit sur la source).
  */
-export function eventsInWeek(state: CalendarState, anyDateInWeek: string): CalendarEvent[] {
-  const monday = startOfWeek(anyDateInWeek)
-  const sunday = addDays(monday, 6)
-  return state.events
-    .filter((e) => e.date >= monday && e.date <= sunday)
+export function eventsInWeek(
+  state: CalendarState,
+  anyDateInWeek: string,
+): (CalendarEvent & { occurrenceDate: string })[] {
+  const days = weekDays(anyDateInWeek)
+  const out: (CalendarEvent & { occurrenceDate: string })[] = []
+  for (const day of days) {
+    for (const e of state.events) {
+      if (occursOn(e, day)) out.push({ ...e, occurrenceDate: day })
+    }
+  }
+  return out.sort((a, b) =>
+    a.occurrenceDate !== b.occurrenceDate
+      ? a.occurrenceDate.localeCompare(b.occurrenceDate)
+      : compareByTime(a, b),
+  )
+}
+
+// ─── Export markdown ──────────────────────────────────────────────────────────
+
+const MONTH_NAMES = [
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+]
+
+/**
+ * Liste markdown des événements triés par date, groupés par mois (## Mois
+ * Année). Les événements récurrents apparaissent UNE fois (leur source)
+ * avec la mention de récurrence — pas de dépliage des occurrences.
+ */
+export function eventsToMarkdown(
+  state: CalendarState,
+  opts: { from?: string; to?: string } = {},
+): string {
+  const events = state.events
+    .filter((e) => (!opts.from || e.date >= opts.from) && (!opts.to || e.date <= opts.to))
     .sort((a, b) => (a.date !== b.date ? a.date.localeCompare(b.date) : compareByTime(a, b)))
+  if (events.length === 0) return 'Aucun événement.'
+
+  const lines: string[] = []
+  let currentMonth = ''
+  for (const e of events) {
+    const [y, m, d] = e.date.split('-')
+    const monthKey = `${MONTH_NAMES[Number(m) - 1]} ${y}`
+    if (monthKey !== currentMonth) {
+      currentMonth = monthKey
+      lines.push(`\n## ${monthKey}\n`)
+    }
+    const time = e.startTime ? ` ${e.startTime}` : ''
+    const rec = e.recurrence ? ` (${RECURRENCE_LABELS[e.recurrence].toLowerCase()})` : ''
+    const desc = e.description?.trim() ? ` — ${e.description.trim()}` : ''
+    lines.push(`- ${d}/${m}${time} **${e.title}**${rec}${desc}`)
+  }
+  return lines.join('\n').trim()
 }

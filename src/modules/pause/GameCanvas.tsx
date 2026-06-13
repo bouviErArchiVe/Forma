@@ -175,6 +175,9 @@ export function GameCanvas({
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 text-center">
             <p className="text-sm font-semibold text-white mb-0.5">Partie terminée</p>
             <p className="text-xs text-white/80">Score : {score}</p>
+            {score > bestScore && score > 0 && (
+              <p className="text-xs font-semibold text-amber-300 mt-1">★ Nouveau record !</p>
+            )}
           </div>
         )}
         {paused && running && !over && (

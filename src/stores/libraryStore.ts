@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware'
 import type { DocumentType, SortBy, SortOrder, ViewMode } from '../types'
 
 export type LibraryTypeFilter = 'all' | DocumentType
+/** 'all' | 'none' (sans matière) | id d'un document matière. */
+export type LibrarySubjectFilterValue = 'all' | 'none' | string
 
 interface LibraryState {
   currentFolderId: string | null
@@ -13,6 +15,7 @@ interface LibraryState {
   selectionMode: boolean
   selectedIds: Set<string>
   typeFilter: LibraryTypeFilter
+  subjectFilter: LibrarySubjectFilterValue
   setFolder: (id: string | null) => void
   setViewMode: (mode: ViewMode) => void
   setSort: (by: SortBy, order?: SortOrder) => void
@@ -22,6 +25,7 @@ interface LibraryState {
   setSelectionMode: (on: boolean) => void
   selectAll: (ids: string[]) => void
   setTypeFilter: (filter: LibraryTypeFilter) => void
+  setSubjectFilter: (filter: LibrarySubjectFilterValue) => void
 }
 
 export const useLibraryStore = create<LibraryState>()(
@@ -35,6 +39,7 @@ export const useLibraryStore = create<LibraryState>()(
       selectionMode: false,
       selectedIds: new Set(),
       typeFilter: 'all',
+      subjectFilter: 'all',
       setFolder: (currentFolderId) => set({ currentFolderId }),
       setViewMode: (viewMode) => set({ viewMode }),
       setSort: (sortBy, sortOrder) =>
@@ -55,6 +60,7 @@ export const useLibraryStore = create<LibraryState>()(
         set({ selectionMode, selectedIds: selectionMode ? new Set() : new Set() }),
       selectAll: (ids) => set({ selectedIds: new Set(ids) }),
       setTypeFilter: (typeFilter) => set({ typeFilter }),
+      setSubjectFilter: (subjectFilter) => set({ subjectFilter }),
     }),
     {
       name: 'forma-library-prefs',
@@ -64,6 +70,7 @@ export const useLibraryStore = create<LibraryState>()(
         sortBy: s.sortBy,
         sortOrder: s.sortOrder,
         typeFilter: s.typeFilter,
+        subjectFilter: s.subjectFilter,
         searchQuery: s.searchQuery,
       }),
     },
