@@ -6,6 +6,7 @@
 import { db } from '../db'
 import { searchNormative } from './resources/normative'
 import { searchDetails } from './resources/details'
+import { searchMaterials } from './resources/materials'
 import { sessionLabel, TERM_LABELS } from '../services/academic'
 
 export type EcosystemHitKind =
@@ -13,6 +14,7 @@ export type EcosystemHitKind =
   | 'project'
   | 'norme'
   | 'detail'
+  | 'material'
   | 'quiz'
   | 'checklist'
   | 'session'
@@ -105,6 +107,11 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
   // Détails constructifs (catalogue statique)
   for (const d of searchDetails(query)) {
     hits.push({ kind: 'detail', id: d.id, title: d.name, subtitle: 'Détail constructif', to: '/resources' })
+  }
+
+  // Matériaux (catalogue statique)
+  for (const m of searchMaterials(query)) {
+    hits.push({ kind: 'material', id: m.id, title: m.name, subtitle: 'Matériau', to: '/resources' })
   }
 
   return hits.slice(0, limit)

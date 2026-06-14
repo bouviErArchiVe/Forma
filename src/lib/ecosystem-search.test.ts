@@ -42,6 +42,13 @@ describe('searchEcosystem', () => {
     expect(projet.some((h) => h.kind === 'project' && h.title === 'Maison Lévis')).toBe(true)
   })
 
+  it('trouve des matériaux (catalogue statique)', async () => {
+    const acier = await searchEcosystem('acier')
+    expect(acier.some((h) => h.kind === 'material')).toBe(true)
+    const hit = acier.find((h) => h.kind === 'material')
+    expect(hit?.to).toBe('/resources')
+  })
+
   it('les routes de navigation sont correctes', async () => {
     const p = await createProject({ name: 'Cuisine' })
     const hits = await searchEcosystem('cuisine')

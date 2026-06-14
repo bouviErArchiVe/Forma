@@ -29,8 +29,17 @@ import {
   type ConstructionDetail,
   type DetailCategory,
 } from '../lib/resources/details'
+import {
+  MATERIAL_CATEGORY_LABELS,
+  MATERIAL_DISCLAIMER,
+  materialCategories,
+  searchMaterials,
+  type Material,
+  type MaterialCategory,
+} from '../lib/resources/materials'
+import { useResourceFavoritesStore } from '../stores/resourceFavoritesStore'
 
-type MainTab = 'normes' | 'details'
+type MainTab = 'normes' | 'details' | 'materiaux'
 
 export function ResourcesPage() {
   const [tab, setTab] = useState<MainTab>('normes')
@@ -51,6 +60,7 @@ export function ResourcesPage() {
       <div className="flex gap-1 mb-5">
         {([
           { id: 'normes' as MainTab, label: 'Bibliothèque normative' },
+          { id: 'materiaux' as MainTab, label: 'Matériaux' },
           { id: 'details' as MainTab, label: 'Détails constructifs' },
         ]).map((t) => (
           <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${tab === t.id ? 'bg-forma-accent text-white' : 'text-forma-muted hover:text-forma-text border border-forma-border'}`}>
@@ -59,7 +69,7 @@ export function ResourcesPage() {
         ))}
       </div>
 
-      {tab === 'normes' ? <NormativeTab /> : <DetailsTab />}
+      {tab === 'normes' ? <NormativeTab /> : tab === 'materiaux' ? <MaterialsTab /> : <DetailsTab />}
     </div>
   )
 }
@@ -216,7 +226,177 @@ function DetailsTab() {
               <Icon name="alert" className="w-3.5 h-3.5 shrink-0 mt-px" />
               {DETAIL_DISCLAIMER}
             </div>
-            <p className="text-[11px] text-forma-muted mt-3">Astuce : pour insérer un détail dans un dessin, ouvrez un carnet puis la bibliothèque de blocs (les détails y seront ajoutés dans une prochaine itération).</p>
+            <p className="text-[11px] text-forma-muted mt-3">Astuce : pour insérer un détail dans un dessin, ouvrez un carnet puis la bibliothèque de blocs (onglet « Détails constructifs »).</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Matériaux ────────────────────────────────────────────────────────────────
+
+function MaterialsTab() {
+  const [category, setCategory] = useState<MaterialCategory | 'all' | 'favorites'>('all')
+  const [search, setSearch] = useState('')
+  const [selected, setSelected] = useState<Material | null>(null)
+  const [explanation, setExplanation] = useState<string | null>(null)
+  const [explaining, setExplaining] = useState(false)
+
+  const favorites = useResourceFavoritesStore((s) => s.favorites)
+  const toggleFav = useResourceFavoritesStore((s) => s.toggle)
+  const isFav = (id: string) => favorites.includes(`material:${id}`)
+
+  const materials = useMemo(() => {
+    if (category === 'favorites') return searchMaterials(search).filter((m) => favorites.includes(`material:${m.id}`))
+    return searchMaterials(search, category)
+  }, [search, category, favorites])
+
+  const settings = resolveProviderSettings()
+  const cloudReady = settings.providerId !== 'local' && settings.providerId !== 'mock'
+
+  const explain = async (m: Material) => {
+    setExplaining(true)
+    setExplanation(null)
+    try {
+      const provider = getProvider(settings.providerId)
+      const res = await provider.chat({
+        messages: [
+          {
+            role: 'system',
+            content:
+              'Tu es l’agent Matériaux de FormAI. Explique un matériau de construction de façon synthétique et honnête (usages, atouts, limites, points de vigilance). N’invente pas de valeurs chiffrées précises ; rappelle de vérifier la fiche technique du fabricant et la norme applicable.',
+          },
+          { role: 'user', content: `Explique ce matériau : « ${m.name} » — ${m.description} Applications : ${m.applications.join(', ')}.` },
+        ],
+        settings,
+      })
+      setExplanation(res.text.trim() !== '' ? res.text : (res.error ?? 'Aucune explication.'))
+    } finally {
+      setExplaining(false)
+    }
+  }
+
+  const copyMaterial = async (m: Material) => {
+    const md = [
+      `## ${m.name}`,
+      '',
+      m.description,
+      '',
+      `**Propriétés :** ${m.properties.map((p) => `${p.label} : ${p.value}`).join(' · ')}`,
+      `**Avantages :** ${m.advantages.join(', ')}`,
+      `**Inconvénients :** ${m.disadvantages.join(', ')}`,
+      `**Applications :** ${m.applications.join(', ')}`,
+      `**Notes :** ${m.notes}`,
+      '',
+      `*${MATERIAL_DISCLAIMER}*`,
+    ].join('\n')
+    try { await navigator.clipboard.writeText(md); useToastStore.getState().show('Matériau copié (Markdown)') }
+    catch { useToastStore.getState().show('Copie impossible') }
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[18rem_1fr] gap-4">
+      {/* Liste */}
+      <div>
+        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher un matériau…" className="w-full text-xs border border-forma-border rounded-lg px-2.5 py-1.5 bg-forma-bg focus:outline-none focus:border-forma-accent mb-2" />
+        <div className="flex flex-wrap gap-1 mb-2">
+          <button type="button" onClick={() => setCategory('all')} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === 'all' ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>Tous</button>
+          <button type="button" onClick={() => setCategory('favorites')} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === 'favorites' ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>★ Favoris</button>
+          {materialCategories().map((c) => (
+            <button key={c} type="button" onClick={() => setCategory(c)} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === c ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>{MATERIAL_CATEGORY_LABELS[c]}</button>
+          ))}
+        </div>
+        <div className="space-y-1 max-h-[60vh] overflow-y-auto">
+          {materials.map((m) => (
+            <button key={m.id} type="button" onClick={() => { setSelected(m); setExplanation(null) }} className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${selected?.id === m.id ? 'bg-forma-accent/10 text-forma-accent' : 'text-forma-text hover:bg-forma-bg'}`}>
+              {isFav(m.id) && <span className="text-amber-400 shrink-0">★</span>}
+              <span className="min-w-0 flex-1">
+                <span className="block font-medium truncate">{m.name}</span>
+                <span className="block text-[10px] text-forma-muted">{MATERIAL_CATEGORY_LABELS[m.category]}</span>
+              </span>
+            </button>
+          ))}
+          {materials.length === 0 && <p className="text-[11px] text-forma-muted text-center py-4">{category === 'favorites' ? 'Aucun favori — touchez l’étoile sur un matériau.' : 'Aucun matériau'}</p>}
+        </div>
+      </div>
+
+      {/* Fiche */}
+      <div>
+        {!selected ? (
+          <div className="h-full flex flex-col items-center justify-center text-center py-12">
+            <Icon name="layout" className="w-8 h-8 text-forma-muted mb-2" />
+            <p className="text-sm text-forma-muted max-w-sm">Sélectionnez un matériau. Propriétés indicatives — à vérifier selon le produit et la norme.</p>
+          </div>
+        ) : (
+          <div className="max-w-2xl">
+            <div className="flex items-start justify-between gap-2">
+              <h2 className="text-lg font-semibold text-forma-text">{selected.name}</h2>
+              <div className="flex items-center gap-1 shrink-0">
+                <button type="button" onClick={() => toggleFav('material', selected.id)} title={isFav(selected.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'} className={`p-1 ${isFav(selected.id) ? 'text-amber-400' : 'text-forma-muted hover:text-amber-400'}`}>
+                  <Icon name={isFav(selected.id) ? 'star' : 'star-outline'} className="w-4 h-4" />
+                </button>
+                <button type="button" onClick={() => void copyMaterial(selected)} title="Copier (Markdown)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="copy" className="w-4 h-4" /></button>
+              </div>
+            </div>
+            <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-3">{MATERIAL_CATEGORY_LABELS[selected.category]}</p>
+            <p className="text-sm text-forma-text leading-relaxed mb-3">{selected.description}</p>
+
+            {selected.properties.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+                {selected.properties.map((p) => (
+                  <div key={p.label} className="p-2 rounded-lg border border-forma-border bg-forma-surface">
+                    <p className="text-[10px] uppercase tracking-wide text-forma-muted">{p.label}</p>
+                    <p className="text-xs text-forma-text font-medium">{p.value}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-green-600 dark:text-green-400 mb-1">Avantages</p>
+                <ul className="space-y-0.5">
+                  {selected.advantages.map((a) => <li key={a} className="text-xs text-forma-text flex gap-1.5"><span className="text-green-500 shrink-0">+</span><span>{a}</span></li>)}
+                </ul>
+              </div>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-red-500 mb-1">Inconvénients</p>
+                <ul className="space-y-0.5">
+                  {selected.disadvantages.map((d) => <li key={d} className="text-xs text-forma-text flex gap-1.5"><span className="text-red-500 shrink-0">−</span><span>{d}</span></li>)}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1">Applications</p>
+              <div className="flex flex-wrap gap-1">
+                {selected.applications.map((a) => <span key={a} className="text-[10px] px-1.5 py-0.5 rounded bg-forma-bg text-forma-muted">{a}</span>)}
+              </div>
+            </div>
+
+            <p className="text-xs text-forma-muted leading-relaxed mb-3"><span className="font-medium text-forma-text">Notes :</span> {selected.notes}</p>
+
+            <div className="flex flex-wrap gap-1 mb-3">
+              {selected.keywords.map((k) => <span key={k} className="text-[10px] px-1.5 py-0.5 rounded bg-forma-bg text-forma-muted">{k}</span>)}
+            </div>
+
+            <div className="p-2.5 rounded-lg border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 text-[11px] text-amber-700 dark:text-amber-300 inline-flex items-start gap-1.5 mb-3">
+              <Icon name="alert" className="w-3.5 h-3.5 shrink-0 mt-px" />
+              {MATERIAL_DISCLAIMER}
+            </div>
+
+            {cloudReady && (
+              <div>
+                <button type="button" disabled={explaining} onClick={() => void explain(selected)} className="text-xs px-3 py-1.5 rounded-lg border border-forma-border hover:border-forma-accent/60 text-forma-muted hover:text-forma-accent transition-colors inline-flex items-center gap-1.5 disabled:opacity-50">
+                  <Icon name="sparkles" className="w-3.5 h-3.5" />
+                  {explaining ? 'Explication…' : 'Expliquer avec FormAI'}
+                </button>
+                {explanation && (
+                  <p className="text-xs text-forma-text whitespace-pre-wrap leading-relaxed mt-2 p-2.5 rounded-lg bg-forma-bg border border-forma-border">{explanation}</p>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
