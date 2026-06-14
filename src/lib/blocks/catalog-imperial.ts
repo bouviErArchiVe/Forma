@@ -315,4 +315,77 @@ export const IMPERIAL_BLOCKS: DrawingBlock[] = [
     defaultWidth: 56, defaultHeight: 56, description: 'Shrub / planting (plan).',
     svgBody: '<path d="M28 8 a10 10 0 0 1 14 10 a10 10 0 0 1 6 18 a10 10 0 0 1 -16 10 a10 10 0 0 1 -16 -10 a10 10 0 0 1 6 -18 a10 10 0 0 1 12 -10 Z"/>',
   },
+
+  // ═══ V2 — enrichissement ═══════════════════════════════════════════════════
+  // ── Bois dimensionnel (suite) ────────────────────────────────────────────────
+  {
+    id: 'i-wood-2x12', name: 'Joist 2×12', category: 'wood', unitSystem: 'imperial',
+    tags: ['wood', 'joist', '2x12', 'lumber'], scaleLabel: '2×12',
+    defaultWidth: 28, defaultHeight: 134, description: 'Dimensional lumber 2×12 (1½″×11¼″).',
+    svgBody: '<rect x="8" y="6" width="14" height="122"/>',
+  },
+  {
+    id: 'i-wood-6x6', name: 'Post 6×6', category: 'wood', unitSystem: 'imperial',
+    tags: ['wood', 'post', '6x6', 'lumber'], scaleLabel: '6×6',
+    defaultWidth: 90, defaultHeight: 90, description: 'Timber post 6×6 (5½″×5½″).',
+    svgBody: '<rect x="10" y="10" width="70" height="70"/><path d="M10 10 L80 80 M80 10 L10 80" stroke-width="1"/>',
+  },
+  {
+    id: 'i-wood-osb', name: 'OSB 4×8', category: 'wood', unitSystem: 'imperial',
+    tags: ['wood', 'osb', 'sheet'], scaleLabel: "4'×8'",
+    defaultWidth: 120, defaultHeight: 60, description: 'OSB sheathing 4′×8′.',
+    svgBody: '<rect x="8" y="8" width="104" height="44"/><path d="M16 18 l10 8 m20 -2 l14 10 m6 -20 l12 6 m-60 26 l16 6 m22 -2 l14 8" stroke-width="1"/>',
+  },
+
+  // ── Acier (suite) ──────────────────────────────────────────────────────────
+  {
+    id: 'i-steel-w6', name: 'W6', category: 'steel', unitSystem: 'imperial',
+    tags: ['steel', 'beam', 'w6', 'wide flange'], scaleLabel: 'W6',
+    defaultWidth: 56, defaultHeight: 64, description: 'Wide-flange W6 (symbol).',
+    svgBody: '<path d="M12 10 H44 M12 54 H44 M28 10 V54" stroke-width="3"/>',
+  },
+  {
+    id: 'i-steel-w8', name: 'W8', category: 'steel', unitSystem: 'imperial',
+    tags: ['steel', 'beam', 'w8', 'wide flange'], scaleLabel: 'W8',
+    defaultWidth: 70, defaultHeight: 84, description: 'Wide-flange W8 (symbol).',
+    svgBody: '<path d="M14 10 H56 M14 74 H56 M35 10 V74" stroke-width="3"/>',
+  },
+  {
+    id: 'i-steel-w10', name: 'W10', category: 'steel', unitSystem: 'imperial',
+    tags: ['steel', 'beam', 'w10', 'wide flange'], scaleLabel: 'W10',
+    defaultWidth: 80, defaultHeight: 100, description: 'Wide-flange W10 (symbol).',
+    svgBody: '<path d="M14 10 H66 M14 90 H66 M40 10 V90" stroke-width="3"/>',
+  },
+  {
+    id: 'i-steel-hss6', name: 'HSS 6×6', category: 'steel', unitSystem: 'imperial',
+    tags: ['steel', 'hss', 'tube', '6x6'], scaleLabel: 'HSS 6×6',
+    defaultWidth: 80, defaultHeight: 80, description: 'HSS square tube 6×6.',
+    svgBody: '<rect x="8" y="8" width="64" height="64" rx="3"/><rect x="16" y="16" width="48" height="48" rx="2"/>',
+  },
+
+  // ── Architecture (suite) ─────────────────────────────────────────────────────
+  {
+    id: 'i-door-28', name: "Door 2'-8\"", category: 'doors-windows', unitSystem: 'imperial',
+    tags: ['door', 'single', "2'-8"], scaleLabel: "2'-8\"",
+    defaultWidth: 80, defaultHeight: 80, description: "Single swing door 2'-8\" (plan).",
+    svgBody: '<path d="M12 72 V12" stroke-width="3"/><path d="M12 12 H68"/><path d="M68 12 A56 56 0 0 1 12 68" stroke-dasharray="4 4"/>',
+  },
+  {
+    id: 'i-window-30', name: "Window 3'-0\"", category: 'doors-windows', unitSystem: 'imperial',
+    tags: ['window', "3'-0"], scaleLabel: "3'-0\"",
+    defaultWidth: 90, defaultHeight: 30, description: "Window 3'-0\" (plan).",
+    svgBody: '<rect x="6" y="6" width="78" height="18"/><path d="M6 15 H84 M45 6 V24"/>',
+  },
+  {
+    id: 'i-window-40', name: "Window 4'-0\"", category: 'doors-windows', unitSystem: 'imperial',
+    tags: ['window', "4'-0"], scaleLabel: "4'-0\"",
+    defaultWidth: 110, defaultHeight: 30, description: "Window 4'-0\" (plan).",
+    svgBody: '<rect x="6" y="6" width="98" height="18"/><path d="M6 15 H104 M40 6 V24 M70 6 V24"/>',
+  },
+  {
+    id: 'i-wall-type', name: 'Wall type', category: 'doors-windows', unitSystem: 'imperial',
+    tags: ['wall', 'partition', 'assembly'], scaleLabel: '2×6 wall',
+    defaultWidth: 40, defaultHeight: 120, description: 'Wall type assembly (section).',
+    svgBody: '<rect x="10" y="8" width="20" height="104"/><path d="M16 8 V112 M24 8 V112" stroke-width="1"/>',
+  },
 ]

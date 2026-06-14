@@ -61,10 +61,20 @@ export interface DrawingBlock {
   /**
    * Corps SVG du bloc (sans la balise <svg> englobante) dessiné dans un
    * viewBox `0 0 defaultWidth defaultHeight`. Vectoriel = net à tout zoom.
+   * Vide pour les blocs personnalisés image (voir `assetId`).
    */
   svgBody: string
   /** Libellé d'échelle/dimension indicatif (ex. « 2x4 », « Ø 100 »). */
   scaleLabel?: string
+  /** Bloc personnalisé importé : asset Dexie source (image ou SVG). */
+  assetId?: string
+  /** true pour un bloc personnalisé (importé par l'utilisateur). */
+  custom?: boolean
+}
+
+/** Un bloc personnalisé est-il à insérer depuis son asset (et non un SVG inline) ? */
+export function isAssetBacked(block: DrawingBlock): boolean {
+  return block.custom === true && !!block.assetId && block.svgBody === ''
 }
 
 /** Construit le document SVG complet d'un bloc (thumbnail + rasterisation). */

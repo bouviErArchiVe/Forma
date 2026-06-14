@@ -5,10 +5,11 @@
  * Le visuel est un raster net (rendu à RASTER_SCALE×) ; les métadonnées de
  * bloc (id/catégorie/unité) sont conservées sur l'ImageElement pour l'identité.
  */
+import { db } from '../../db'
 import { putAsset } from '../assets'
 import { createId } from '../id'
 import type { ImageElement, Page } from '../../types'
-import { blockToSvg, type DrawingBlock } from './types'
+import { blockToSvg, isAssetBacked, type DrawingBlock } from './types'
 
 /** Facteur de suréchantillonnage du raster (netteté à l'export/zoom). */
 const RASTER_SCALE = 4
@@ -82,9 +83,17 @@ export async function addBlockToPage(
   cx: number,
   cy: number,
 ): Promise<Page> {
-  const blob = await rasterizeBlock(block)
   const assetId = createId()
-  await putAsset(assetId, notebookId, blob, 'image/png')
+  if (isAssetBacked(block)) {
+    // Bloc personnalisé image : copie l'asset source vers un asset propre à la
+    // page (l'instance est indépendante de l'entrée de bibliothèque).
+    const source = block.assetId ? await db.assets.get(block.assetId) : undefined
+    if (!source) throw new Error('Image du bloc personnalisé introuvable')
+    await putAsset(assetId, notebookId, source.blob, source.mimeType)
+  } else {
+    const blob = await rasterizeBlock(block)
+    await putAsset(assetId, notebookId, blob, 'image/png')
+  }
   const img = buildBlockImageElement(page, block, assetId, cx, cy)
   return { ...page, images: [...page.images, img] }
 }

@@ -391,4 +391,183 @@ export const METRIC_BLOCKS: DrawingBlock[] = [
     defaultWidth: 80, defaultHeight: 40, description: 'Zone engazonnée (symbole).',
     svgBody: '<path d="M14 32 V20 M20 32 V16 M26 32 V20 M40 32 V16 M46 32 V22 M52 32 V16 M64 32 V20 M70 32 V16" stroke-width="1.5"/>',
   },
+
+  // ═══ V2 — enrichissement ═══════════════════════════════════════════════════
+  // ── Acier (suite) ──────────────────────────────────────────────────────────
+  {
+    id: 'm-steel-w150', name: 'Profilé W150', category: 'steel', unitSystem: 'metric',
+    tags: ['acier', 'poutre', 'colonne', 'w', 'w150'], scaleLabel: 'W150',
+    defaultWidth: 60, defaultHeight: 70, description: 'Profilé W150 (symbole).',
+    svgBody: '<path d="M12 10 H48 M12 60 H48 M30 10 V60" stroke-width="3"/>',
+  },
+  {
+    id: 'm-steel-w200', name: 'Profilé W200', category: 'steel', unitSystem: 'metric',
+    tags: ['acier', 'poutre', 'colonne', 'w', 'w200'], scaleLabel: 'W200',
+    defaultWidth: 74, defaultHeight: 90, description: 'Profilé W200 (symbole).',
+    svgBody: '<path d="M14 10 H60 M14 80 H60 M37 10 V80" stroke-width="3"/>',
+  },
+  {
+    id: 'm-steel-w250', name: 'Profilé W250', category: 'steel', unitSystem: 'metric',
+    tags: ['acier', 'poutre', 'colonne', 'w', 'w250'], scaleLabel: 'W250',
+    defaultWidth: 84, defaultHeight: 108, description: 'Profilé W250 (symbole).',
+    svgBody: '<path d="M14 10 H70 M14 98 H70 M42 10 V98" stroke-width="3"/>',
+  },
+  {
+    id: 'm-steel-hss102', name: 'HSS 102×102', category: 'steel', unitSystem: 'metric',
+    tags: ['acier', 'hss', 'tube', 'carré', '102'], scaleLabel: 'HSS 102',
+    defaultWidth: 64, defaultHeight: 64, description: 'Tube HSS carré 102×102.',
+    svgBody: '<rect x="8" y="8" width="48" height="48" rx="3"/><rect x="15" y="15" width="34" height="34" rx="2"/>',
+  },
+  {
+    id: 'm-steel-hss152', name: 'HSS 152×152', category: 'steel', unitSystem: 'metric',
+    tags: ['acier', 'hss', 'tube', 'carré', '152'], scaleLabel: 'HSS 152',
+    defaultWidth: 80, defaultHeight: 80, description: 'Tube HSS carré 152×152.',
+    svgBody: '<rect x="8" y="8" width="64" height="64" rx="3"/><rect x="16" y="16" width="48" height="48" rx="2"/>',
+  },
+  {
+    id: 'm-steel-anchor', name: 'Plaque d’ancrage', category: 'steel', unitSystem: 'metric',
+    tags: ['acier', 'ancrage', 'plaque', 'boulon'], scaleLabel: '',
+    defaultWidth: 70, defaultHeight: 70, description: 'Plaque d’ancrage avec boulons.',
+    svgBody: '<rect x="10" y="10" width="50" height="50"/><circle cx="20" cy="20" r="3"/><circle cx="50" cy="20" r="3"/><circle cx="20" cy="50" r="3"/><circle cx="50" cy="50" r="3"/><rect x="28" y="28" width="14" height="14"/>',
+  },
+  {
+    id: 'm-steel-connector', name: 'Connecteur', category: 'steel', unitSystem: 'metric',
+    tags: ['acier', 'connecteur', 'assemblage', 'gousset'], scaleLabel: '',
+    defaultWidth: 60, defaultHeight: 60, description: 'Gousset / connecteur simple.',
+    svgBody: '<path d="M10 50 H50 V10 Z"/><circle cx="22" cy="42" r="2.5"/><circle cx="34" cy="42" r="2.5"/><circle cx="34" cy="30" r="2.5"/>',
+  },
+  {
+    id: 'm-steel-bar-joist', name: 'Poutrelle acier', category: 'steel', unitSystem: 'metric',
+    tags: ['acier', 'poutrelle', 'ajourée', 'treillis'], scaleLabel: '',
+    defaultWidth: 130, defaultHeight: 44, description: 'Poutrelle ajourée (treillis).',
+    svgBody: '<path d="M6 10 H124 M6 38 H124" stroke-width="2.5"/><path d="M6 38 L24 10 L42 38 L60 10 L78 38 L96 10 L114 38 L124 18"/>',
+  },
+
+  // ── Bois (suite) ────────────────────────────────────────────────────────────
+  {
+    id: 'm-wood-38x140', name: 'Montant 38×140', category: 'wood', unitSystem: 'metric',
+    tags: ['bois', 'montant', '38x140'], scaleLabel: '38×140',
+    defaultWidth: 38, defaultHeight: 110, description: 'Bois dimensionnel 38×140.',
+    svgBody: '<rect x="8" y="8" width="22" height="94"/><path d="M8 8 L30 102 M30 8 L8 102" stroke-width="1"/>',
+  },
+  {
+    id: 'm-wood-38x184', name: 'Solive 38×184', category: 'wood', unitSystem: 'metric',
+    tags: ['bois', 'solive', '38x184'], scaleLabel: '38×184',
+    defaultWidth: 34, defaultHeight: 124, description: 'Bois dimensionnel 38×184.',
+    svgBody: '<rect x="8" y="6" width="18" height="112"/>',
+  },
+  {
+    id: 'm-wood-open-joist', name: 'Solive ajourée', category: 'wood', unitSystem: 'metric',
+    tags: ['bois', 'solive', 'ajourée', 'i-joist'], scaleLabel: '',
+    defaultWidth: 130, defaultHeight: 44, description: 'Solive ajourée / poutrelle en I.',
+    svgBody: '<path d="M6 8 H124 M6 36 H124" stroke-width="2.5"/><path d="M58 8 V36 M62 8 V36" /><circle cx="26" cy="22" r="8"/><circle cx="96" cy="22" r="8"/>',
+  },
+  {
+    id: 'm-wood-osb', name: 'Panneau OSB', category: 'wood', unitSystem: 'metric',
+    tags: ['bois', 'osb', 'panneau'], scaleLabel: '1220×2440',
+    defaultWidth: 110, defaultHeight: 70, description: 'Panneau OSB.',
+    svgBody: '<rect x="8" y="8" width="94" height="54"/><path d="M16 18 l10 8 m20 -2 l14 10 m6 -20 l12 6 m-60 26 l16 6 m22 -2 l14 8" stroke-width="1"/>',
+  },
+  {
+    id: 'm-wood-truss', name: 'Ferme de toit', category: 'wood', unitSystem: 'metric',
+    tags: ['bois', 'ferme', 'toit', 'comble'], scaleLabel: '',
+    defaultWidth: 140, defaultHeight: 70, description: 'Ferme de toit (symbole).',
+    svgBody: '<path d="M8 60 H132 M8 60 L70 10 L132 60 M70 10 V60 M39 35 L70 60 M101 35 L70 60"/>',
+  },
+
+  // ── Béton (suite) ────────────────────────────────────────────────────────────
+  {
+    id: 'm-concrete-pad', name: 'Semelle isolée', category: 'concrete', unitSystem: 'metric',
+    tags: ['béton', 'semelle', 'isolée', 'plot'], scaleLabel: '1200×1200',
+    defaultWidth: 90, defaultHeight: 70, description: 'Semelle isolée (coupe).',
+    svgBody: '<path d="M36 8 H54 V40 H82 V62 H8 V40 H36 Z"/>',
+  },
+  {
+    id: 'm-concrete-round-col', name: 'Colonne ronde', category: 'concrete', unitSystem: 'metric',
+    tags: ['béton', 'colonne', 'ronde', 'poteau'], scaleLabel: 'Ø 400',
+    defaultWidth: 70, defaultHeight: 70, description: 'Colonne béton circulaire (coupe).',
+    svgBody: '<circle cx="35" cy="35" r="28"/><circle cx="35" cy="18" r="2.5"/><circle cx="52" cy="35" r="2.5"/><circle cx="35" cy="52" r="2.5"/><circle cx="18" cy="35" r="2.5"/>',
+  },
+  {
+    id: 'm-concrete-slab-grade', name: 'Dalle sur sol', category: 'concrete', unitSystem: 'metric',
+    tags: ['béton', 'dalle', 'sur sol', 'radier'], scaleLabel: 'ép. 150',
+    defaultWidth: 130, defaultHeight: 40, description: 'Dalle sur sol avec hérisson.',
+    svgBody: '<rect x="6" y="8" width="118" height="16"/><path d="M6 24 H124" stroke-width="2"/><path d="M12 30 l4 4 m8 -4 l4 4 m8 -4 l4 4 m8 -4 l4 4 m8 -4 l4 4 m8 -4 l4 4 m8 -4 l4 4 m8 -4 l4 4 m8 -4 l4 4" stroke-width="1"/>',
+  },
+  {
+    id: 'm-concrete-slab-struct', name: 'Dalle structurale', category: 'concrete', unitSystem: 'metric',
+    tags: ['béton', 'dalle', 'structurale', 'suspendue'], scaleLabel: 'ép. 250',
+    defaultWidth: 130, defaultHeight: 40, description: 'Dalle structurale (coupe armée).',
+    svgBody: '<rect x="6" y="8" width="118" height="24"/><path d="M14 14 H116 M14 26 H116" stroke-width="1.5"/>',
+  },
+  {
+    id: 'm-rebar-mesh', name: 'Treillis métallique', category: 'concrete', unitSystem: 'metric',
+    tags: ['béton', 'treillis', 'armature', 'mesh'], scaleLabel: '',
+    defaultWidth: 90, defaultHeight: 60, description: 'Treillis soudé (symbole).',
+    svgBody: '<path d="M14 8 V52 M34 8 V52 M54 8 V52 M74 8 V52 M8 16 H82 M8 30 H82 M8 44 H82" stroke-width="1.5"/>',
+  },
+
+  // ── Portes / fenêtres (suite) ────────────────────────────────────────────────
+  {
+    id: 'm-door-800', name: 'Porte 800', category: 'doors-windows', unitSystem: 'metric',
+    tags: ['porte', '800', 'battant'], scaleLabel: '800',
+    defaultWidth: 80, defaultHeight: 80, description: 'Porte battante 800 mm (plan).',
+    svgBody: '<path d="M12 72 V12" stroke-width="3"/><path d="M12 12 H68"/><path d="M68 12 A56 56 0 0 1 12 68" stroke-dasharray="4 4"/>',
+  },
+  {
+    id: 'm-window-1200', name: 'Fenêtre 1200', category: 'doors-windows', unitSystem: 'metric',
+    tags: ['fenêtre', '1200'], scaleLabel: '1200',
+    defaultWidth: 100, defaultHeight: 30, description: 'Fenêtre 1200 mm (plan).',
+    svgBody: '<rect x="6" y="6" width="88" height="18"/><path d="M6 15 H94 M50 6 V24"/>',
+  },
+  {
+    id: 'm-window-1500', name: 'Fenêtre 1500', category: 'doors-windows', unitSystem: 'metric',
+    tags: ['fenêtre', '1500'], scaleLabel: '1500',
+    defaultWidth: 120, defaultHeight: 30, description: 'Fenêtre 1500 mm (plan).',
+    svgBody: '<rect x="6" y="6" width="108" height="18"/><path d="M6 15 H114 M42 6 V24 M78 6 V24"/>',
+  },
+  {
+    id: 'm-wall-type', name: 'Mur type', category: 'doors-windows', unitSystem: 'metric',
+    tags: ['mur', 'cloison', 'type', 'composition'], scaleLabel: 'ép. 240',
+    defaultWidth: 40, defaultHeight: 120, description: 'Mur type (coupe multicouche).',
+    svgBody: '<rect x="10" y="8" width="20" height="104"/><path d="M16 8 V112 M24 8 V112" stroke-width="1"/>',
+  },
+  {
+    id: 'm-partition', name: 'Cloison type', category: 'doors-windows', unitSystem: 'metric',
+    tags: ['cloison', 'partition', 'gypse'], scaleLabel: 'ép. 92',
+    defaultWidth: 30, defaultHeight: 120, description: 'Cloison légère (coupe).',
+    svgBody: '<rect x="12" y="8" width="10" height="104"/>',
+  },
+
+  // ── Sanitaire / mobilier (suite) ─────────────────────────────────────────────
+  {
+    id: 'm-wc-accessible', name: 'WC accessible', category: 'sanitary', unitSystem: 'metric',
+    tags: ['sanitaire', 'wc', 'accessible', 'pmr', 'ua'], scaleLabel: '',
+    defaultWidth: 90, defaultHeight: 90, description: 'WC accessible avec dégagement et barre d’appui.',
+    svgBody: '<rect x="34" y="6" width="22" height="14" rx="2"/><ellipse cx="45" cy="44" rx="17" ry="22"/><circle cx="45" cy="45" r="42" stroke-dasharray="5 5"/><path d="M70 30 V60" stroke-width="3"/>',
+  },
+  {
+    id: 'm-shower-accessible', name: 'Douche accessible', category: 'sanitary', unitSystem: 'metric',
+    tags: ['sanitaire', 'douche', 'accessible', 'pmr'], scaleLabel: '1500×1500',
+    defaultWidth: 90, defaultHeight: 90, description: 'Douche accessible (siège + barre).',
+    svgBody: '<rect x="8" y="8" width="74" height="74"/><circle cx="24" cy="22" r="3"/><rect x="58" y="14" width="18" height="10"/><path d="M14 70 H40" stroke-width="3"/>',
+  },
+  {
+    id: 'm-double-lav', name: 'Lavabo double', category: 'sanitary', unitSystem: 'metric',
+    tags: ['sanitaire', 'lavabo', 'double', 'vasque'], scaleLabel: '',
+    defaultWidth: 120, defaultHeight: 50, description: 'Meuble double vasque (plan).',
+    svgBody: '<rect x="6" y="8" width="108" height="36" rx="3"/><ellipse cx="34" cy="26" rx="14" ry="9"/><ellipse cx="86" cy="26" rx="14" ry="9"/><circle cx="34" cy="13" r="2"/><circle cx="86" cy="13" r="2"/>',
+  },
+  {
+    id: 'm-counter', name: 'Comptoir', category: 'furniture', unitSystem: 'metric',
+    tags: ['mobilier', 'comptoir', 'plan de travail'], scaleLabel: '',
+    defaultWidth: 130, defaultHeight: 40, description: 'Comptoir / plan de travail (plan).',
+    svgBody: '<rect x="6" y="10" width="118" height="24"/><path d="M6 28 H124" stroke-width="1"/>',
+  },
+  {
+    id: 'm-round-table', name: 'Table ronde', category: 'furniture', unitSystem: 'metric',
+    tags: ['mobilier', 'table', 'ronde'], scaleLabel: 'Ø 1200',
+    defaultWidth: 80, defaultHeight: 80, description: 'Table ronde (plan).',
+    svgBody: '<circle cx="40" cy="40" r="32"/><circle cx="40" cy="40" r="3"/>',
+  },
 ]

@@ -49,9 +49,11 @@ import {
 import { StickerPicker } from '../components/editor/StickerPicker'
 import { BlockLibraryPanel } from '../components/editor/BlockLibraryPanel'
 import { addBlockToPage } from '../lib/blocks/insert'
+import { resolveBlock, type DrawingBlock } from '../lib/blocks'
 import { useBlockLibraryStore } from '../stores/blockLibraryStore'
 import { useEditorStore } from '../stores/editorStore'
 import { useSettingsStore } from '../stores/settingsStore'
+import { useToastStore } from '../stores/toastStore'
 import type {
   Notebook,
   Page,
@@ -260,6 +262,54 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
     }),
     [performUndo, performRedo, reloadPage],
   )
+
+  // ── Bibliothèque de blocs : conversion écran→canvas + point d'insertion ──────
+  /** Point canvas (coords page) à partir d'un point écran (clientX/Y). */
+  const screenToCanvasPt = useCallback((clientX: number, clientY: number): { x: number; y: number } => {
+    const canvas = drawRef.current
+    if (!canvas) return { x: PAGE_WIDTH / 2, y: PAGE_HEIGHT / 2 }
+    const rect = canvas.getBoundingClientRect()
+    return unrotatePoint(
+      ((clientX - rect.left) / rect.width) * PAGE_WIDTH,
+      ((clientY - rect.top) / rect.height) * PAGE_HEIGHT,
+      local.rotation ?? 0,
+      PAGE_WIDTH,
+      PAGE_HEIGHT,
+    )
+  }, [PAGE_WIDTH, PAGE_HEIGHT, local.rotation])
+
+  /** Centre de la portion visible du canvas (coords page) ; fallback centre page. */
+  const viewportCenterPt = useCallback((): { x: number; y: number } => {
+    const canvas = drawRef.current
+    if (!canvas) return { x: PAGE_WIDTH / 2, y: PAGE_HEIGHT / 2 }
+    const rect = canvas.getBoundingClientRect()
+    const vw = window.innerWidth || rect.width
+    const vh = window.innerHeight || rect.height
+    // Intersection canvas ↔ fenêtre, puis centre de la zone visible.
+    const left = Math.max(rect.left, 0)
+    const top = Math.max(rect.top, 0)
+    const right = Math.min(rect.right, vw)
+    const bottom = Math.min(rect.bottom, vh)
+    if (right <= left || bottom <= top) {
+      return { x: PAGE_WIDTH / 2, y: PAGE_HEIGHT / 2 } // canvas hors écran
+    }
+    return screenToCanvasPt((left + right) / 2, (top + bottom) / 2)
+  }, [PAGE_WIDTH, PAGE_HEIGHT, screenToCanvasPt])
+
+  /** Insère un bloc au point canvas donné (rasterise/copie asset + commit). */
+  const insertBlockAt = useCallback((block: DrawingBlock, pt: { x: number; y: number }) => {
+    void addBlockToPage(localRef.current, localRef.current.notebookId, block, pt.x, pt.y)
+      .then((next) => {
+        commit(next)
+        useBlockLibraryStore.getState().pushRecent(block.id)
+      })
+      .catch((err) => {
+        useToastStore.getState().show(
+          err instanceof Error ? `Insertion échouée : ${err.message}` : 'Insertion du bloc échouée',
+          5000,
+        )
+      })
+  }, [commit])
 
   const bgDirtyRef = useRef(true)
   const hydratedPageRef = useRef<Page>(local)
@@ -1042,6 +1092,20 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
           onWheelZoom?.(e.deltaY > 0 ? -0.05 : 0.05)
         }
       }}
+      onDragOver={(e) => {
+        // Autorise le drop d'un bloc depuis la bibliothèque.
+        if (e.dataTransfer.types.includes('application/x-forma-block')) {
+          e.preventDefault()
+          e.dataTransfer.dropEffect = 'copy'
+        }
+      }}
+      onDrop={(e) => {
+        const blockId = e.dataTransfer.getData('application/x-forma-block')
+        if (!blockId || !interactive || store.readMode) return
+        e.preventDefault()
+        const block = resolveBlock(blockId, useBlockLibraryStore.getState().customBlocks)
+        if (block) insertBlockAt(block, screenToCanvasPt(e.clientX, e.clientY))
+      }}
     >
       <canvas ref={bgRef} width={PAGE_WIDTH} height={PAGE_HEIGHT} className="absolute inset-0 w-full h-full rounded-sm" />
       <canvas
@@ -1135,18 +1199,10 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
 
       {showBlockLibrary && (
         <BlockLibraryPanel
+          notebookId={local.notebookId}
           onPick={(block) => {
-            // Insertion au centre de la page (toujours visible, déterministe).
-            void addBlockToPage(
-              localRef.current,
-              localRef.current.notebookId,
-              block,
-              PAGE_WIDTH / 2,
-              PAGE_HEIGHT / 2,
-            ).then((next) => {
-              commit(next)
-              useBlockLibraryStore.getState().pushRecent(block.id)
-            })
+            // Clic = insertion au centre visible du viewport (fallback centre page).
+            insertBlockAt(block, viewportCenterPt())
             setShowBlockLibrary(false)
           }}
           onClose={() => setShowBlockLibrary(false)}

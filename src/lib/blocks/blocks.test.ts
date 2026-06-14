@@ -7,12 +7,16 @@ import {
   blockToSvg,
   blocksForUnit,
   categoriesForUnit,
+  expandQueryTerms,
   getBlock,
   IMPERIAL_BLOCKS,
   METRIC_BLOCKS,
   queryBlocks,
+  resolveBlock,
 } from './index'
 import { buildBlockImageElement } from './insert'
+import { buildParametricBlock, PARAMETRIC_DEFS } from './parametric'
+import type { DrawingBlock } from './types'
 
 // ─── Catalogues ────────────────────────────────────────────────────────────────
 
@@ -110,5 +114,118 @@ describe('buildBlockImageElement', () => {
     const img = buildBlockImageElement(page, getBlock('i-wood-2x4')!, 'a2', 0, 0)
     expect(img.blockUnit).toBe('imperial')
     expect(img.blockId).toBe('i-wood-2x4')
+  })
+})
+
+// ─── V2 : catalogue enrichi ────────────────────────────────────────────────────
+
+describe('catalogue enrichi (V2)', () => {
+  it('métrique ≥ 65 blocs, impérial ≥ 45 blocs', () => {
+    expect(METRIC_BLOCKS.length).toBeGreaterThanOrEqual(65)
+    expect(IMPERIAL_BLOCKS.length).toBeGreaterThanOrEqual(45)
+  })
+
+  it('nouveaux blocs présents (W250, 2x12, WC accessible, ferme)', () => {
+    expect(getBlock('m-steel-w250')).toBeDefined()
+    expect(getBlock('i-wood-2x12')).toBeDefined()
+    expect(getBlock('m-wc-accessible')).toBeDefined()
+    expect(getBlock('m-wood-truss')).toBeDefined()
+  })
+})
+
+// ─── V2 : recherche par synonymes FR/EN ────────────────────────────────────────
+
+describe('expandQueryTerms (synonymes)', () => {
+  it('toilet ↔ wc, beam ↔ poutre, steel ↔ acier (bidirectionnel)', () => {
+    expect(expandQueryTerms('toilet')).toContain('wc')
+    expect(expandQueryTerms('wc')).toContain('toilet')
+    expect(expandQueryTerms('beam')).toContain('poutre')
+    expect(expandQueryTerms('poutre')).toContain('beam')
+    expect(expandQueryTerms('steel')).toContain('acier')
+    expect(expandQueryTerms('wood')).toContain('bois')
+    expect(expandQueryTerms('door')).toContain('porte')
+  })
+})
+
+describe('queryBlocks avec synonymes', () => {
+  it('« toilet » trouve le WC métrique', () => {
+    expect(queryBlocks({ unit: 'metric', search: 'toilet' }).some((b) => b.id === 'm-wc')).toBe(true)
+  })
+  it('« poutre » trouve une W-beam impériale', () => {
+    expect(queryBlocks({ unit: 'imperial', search: 'poutre' }).some((b) => b.category === 'steel')).toBe(true)
+  })
+  it('« door » trouve une porte métrique', () => {
+    expect(queryBlocks({ unit: 'metric', search: 'door' }).some((b) => b.category === 'doors-windows')).toBe(true)
+  })
+})
+
+// ─── V2 : blocs personnalisés (resolveBlock) ───────────────────────────────────
+
+describe('resolveBlock avec blocs personnalisés', () => {
+  const custom: DrawingBlock = {
+    id: 'custom-1', name: 'Mon bloc', category: 'symbols', unitSystem: 'metric',
+    tags: ['personnalisé'], defaultWidth: 60, defaultHeight: 60, svgBody: '',
+    custom: true, assetId: 'asset-x',
+  }
+
+  it('résout un bloc du catalogue et un bloc custom', () => {
+    expect(resolveBlock('m-wc')?.id).toBe('m-wc')
+    expect(resolveBlock('custom-1', [custom])?.name).toBe('Mon bloc')
+    expect(resolveBlock('inexistant', [custom])).toBeUndefined()
+  })
+
+  it('queryBlocks inclut les customs du bon système et filtre par recherche', () => {
+    const res = queryBlocks({ unit: 'metric', search: 'mon bloc', customBlocks: [custom] })
+    expect(res.some((b) => b.id === 'custom-1')).toBe(true)
+    // pas affiché en impérial
+    expect(queryBlocks({ unit: 'imperial', customBlocks: [custom] }).some((b) => b.id === 'custom-1')).toBe(false)
+  })
+})
+
+// ─── V2 : blocs paramétriques ──────────────────────────────────────────────────
+
+describe('buildParametricBlock', () => {
+  it('rectangle : dimensions reflétées dans le nom et le SVG', () => {
+    const def = PARAMETRIC_DEFS.find((d) => d.kind === 'rectangle')!
+    const block = buildParametricBlock(def, 'metric', { w: 1000, h: 600 })
+    expect(block.name).toContain('1000')
+    expect(block.name).toContain('600')
+    expect(block.svgBody).toContain('<rect')
+    expect(block.defaultWidth).toBeGreaterThan(0)
+    expect(block.scaleLabel).toContain('mm')
+  })
+
+  it('porte : génère un SVG d’ouverture, label impérial en pouces', () => {
+    const def = PARAMETRIC_DEFS.find((d) => d.kind === 'door')!
+    const block = buildParametricBlock(def, 'imperial', { w: 36 })
+    expect(block.svgBody).toContain('path')
+    expect(block.scaleLabel).toContain('″')
+    expect(block.category).toBe('doors-windows')
+  })
+
+  it('valeurs hors bornes ramenées dans l’intervalle', () => {
+    const def = PARAMETRIC_DEFS.find((d) => d.kind === 'rectangle')!
+    const block = buildParametricBlock(def, 'metric', { w: 999999, h: -50 })
+    // pas de NaN, dimensions positives et bornées
+    expect(block.defaultWidth).toBeGreaterThan(0)
+    expect(block.defaultHeight).toBeGreaterThan(0)
+    expect(Number.isFinite(block.defaultWidth)).toBe(true)
+  })
+
+  it('axe : label injecté et échappé', () => {
+    const def = PARAMETRIC_DEFS.find((d) => d.kind === 'grid')!
+    const block = buildParametricBlock(def, 'metric', {}, 'B')
+    expect(block.svgBody).toContain('>B<')
+    const xss = buildParametricBlock(def, 'metric', {}, '<x')
+    expect(xss.svgBody).not.toContain('<x<')
+  })
+
+  it('chaque définition produit un SVG valide', () => {
+    for (const def of PARAMETRIC_DEFS) {
+      const block = buildParametricBlock(def, 'metric', {})
+      const svg = blockToSvg(block)
+      expect(svg.startsWith('<svg'), def.kind).toBe(true)
+      expect(svg).toContain('</svg>')
+    }
   })
 })
