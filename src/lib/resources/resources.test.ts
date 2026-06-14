@@ -10,6 +10,7 @@ import {
 } from './normative'
 import {
   CONSTRUCTION_DETAILS,
+  detailCategories,
   detailToBlock,
   getDetail,
   searchDetails,
@@ -40,20 +41,32 @@ describe('bibliothèque normative', () => {
 })
 
 describe('détails constructifs', () => {
-  it('charge ≥ 10 détails avec SVG et notes', () => {
-    expect(CONSTRUCTION_DETAILS.length).toBeGreaterThanOrEqual(10)
+  it('charge le catalogue V2 étendu avec SVG, tags et notes', () => {
+    expect(CONSTRUCTION_DETAILS.length).toBeGreaterThanOrEqual(50)
     const ids = CONSTRUCTION_DETAILS.map((d) => d.id)
     expect(new Set(ids).size).toBe(ids.length)
     for (const d of CONSTRUCTION_DETAILS) {
+      expect(d.name).toBeTruthy()
+      expect(d.description.length).toBeGreaterThan(10)
       expect(d.svgBody).toBeTruthy()
+      expect(d.tags.length).toBeGreaterThan(0)
       expect(d.notes.length).toBeGreaterThan(20)
       expect(d.width).toBeGreaterThan(0)
+      expect(d.height).toBeGreaterThan(0)
     }
+  })
+
+  it('couvre toutes les catégories de détails (dont coupes types)', () => {
+    const cats = new Set(detailCategories())
+    expect(cats.size).toBeGreaterThanOrEqual(13)
+    expect(cats.has('coupe-type')).toBe(true)
   })
 
   it('recherche par tag / catégorie', () => {
     expect(searchDetails('mur').some((d) => d.category === 'murs')).toBe(true)
     expect(searchDetails('pare-vapeur').length).toBeGreaterThan(0)
+    expect(searchDetails('rainscreen').some((d) => d.id === 'd-wall-rainscreen')).toBe(true)
+    expect(searchDetails('', 'coupe-type').length).toBeGreaterThanOrEqual(3)
   })
 
   it('detailToBlock produit un DrawingBlock insérable', () => {
