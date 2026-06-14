@@ -19,6 +19,7 @@ import {
 } from '../../lib/blocks'
 import { importCustomBlock } from '../../lib/blocks/custom-import'
 import { buildParametricBlock, PARAMETRIC_DEFS, type ParametricDef } from '../../lib/blocks/parametric'
+import { CONSTRUCTION_DETAILS, detailToBlock } from '../../lib/resources/details'
 import { resolveAssetUrl } from '../../lib/assets'
 import { useBlockLibraryStore } from '../../stores/blockLibraryStore'
 import { useToastStore } from '../../stores/toastStore'
@@ -59,6 +60,9 @@ function BlockThumb({ block }: { block: DrawingBlock }) {
 
 type CatTab = DrawingBlockCategory | 'all' | 'favorites' | 'recents'
 
+/** Détails constructifs convertis en blocs insérables (métrique). */
+const DETAIL_BLOCKS: DrawingBlock[] = CONSTRUCTION_DETAILS.map(detailToBlock)
+
 export function BlockLibraryPanel({
   notebookId,
   onPick,
@@ -77,19 +81,22 @@ export function BlockLibraryPanel({
 
   const categories = useMemo(() => categoriesForUnit(unit), [unit])
 
+  // Customs du store + détails constructifs (insérables, métrique).
+  const extraBlocks = useMemo(() => [...customBlocks, ...DETAIL_BLOCKS], [customBlocks])
+
   const blocks = useMemo<DrawingBlock[]>(() => {
     if (category === 'favorites') {
       return favorites
-        .map((id) => resolveBlock(id, customBlocks))
+        .map((id) => resolveBlock(id, extraBlocks))
         .filter((b): b is DrawingBlock => b !== undefined && b.unitSystem === unit)
     }
     if (category === 'recents') {
       return recents
-        .map((id) => resolveBlock(id, customBlocks))
+        .map((id) => resolveBlock(id, extraBlocks))
         .filter((b): b is DrawingBlock => b !== undefined && b.unitSystem === unit)
     }
-    return queryBlocks({ unit, category, search, customBlocks })
-  }, [unit, category, search, favorites, recents, customBlocks])
+    return queryBlocks({ unit, category, search, customBlocks: extraBlocks })
+  }, [unit, category, search, favorites, recents, extraBlocks])
 
   return (
     <>

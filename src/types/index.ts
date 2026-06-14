@@ -204,6 +204,44 @@ export interface Notebook {
   pdfSourceAssetId?: string
   /** Matière associée (id d'un document de type 'subject') — V2 */
   subjectId?: string
+  /** Projet associé (id d'un Project) — écosystème workspace */
+  projectId?: string
+}
+
+// ─── Écosystème workspace : tâches & projets ──────────────────────────────────
+
+export type TaskStatus = 'todo' | 'doing' | 'done'
+export type TaskPriority = 'low' | 'medium' | 'high'
+
+export interface Task {
+  id: string
+  title: string
+  description?: string
+  status: TaskStatus
+  priority: TaskPriority
+  /** Échéance locale `YYYY-MM-DD`. */
+  dueDate?: string
+  /** Matière liée (notebook 'subject'). */
+  subjectId?: string
+  /** Projet lié. */
+  projectId?: string
+  /** Document lié (notebook id). */
+  documentId?: string
+  important?: boolean
+  createdAt: number
+  updatedAt: number
+  deletedAt?: number
+}
+
+export interface Project {
+  id: string
+  name: string
+  color: string
+  description?: string
+  createdAt: number
+  updatedAt: number
+  favorite?: boolean
+  deletedAt?: number
 }
 
 export interface Folder {

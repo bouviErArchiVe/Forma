@@ -976,6 +976,10 @@ export function LibraryPage() {
                 >
                   {(
                     [
+                      { icon: 'layout', label: 'Tableau de bord', action: () => navigate('/dashboard') },
+                      { icon: 'check', label: 'Tâches', action: () => navigate('/tasks') },
+                      { icon: 'folder', label: 'Projets', action: () => navigate('/projects') },
+                      { icon: 'book', label: 'Ressources architecture', action: () => navigate('/resources') },
                       { icon: 'layout', label: 'Modèles de page', action: () => navigate('/templates') },
                       { icon: 'search', label: 'Recherche globale', action: () => navigate('/search') },
                       { icon: 'sparkles', label: 'Offres Forma', action: () => navigate('/plans') },

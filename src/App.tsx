@@ -50,6 +50,12 @@ const TemplatesPage = lazy(() => import('./pages/TemplatesPage').then((m) => ({ 
 const TrashPage = lazy(() => import('./pages/TrashPage').then((m) => ({ default: m.TrashPage })))
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })))
 const FormAIPage = lazy(() => import('./modules/formai/FormAIPage').then((m) => ({ default: m.FormAIPage })))
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })))
+const TasksPage = lazy(() => import('./pages/TasksPage').then((m) => ({ default: m.TasksPage })))
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage').then((m) => ({ default: m.ProjectsPage })))
+const ProjectWorkspacePage = lazy(() => import('./pages/ProjectWorkspacePage').then((m) => ({ default: m.ProjectWorkspacePage })))
+const SubjectWorkspacePage = lazy(() => import('./pages/SubjectWorkspacePage').then((m) => ({ default: m.SubjectWorkspacePage })))
+const ResourcesPage = lazy(() => import('./pages/ResourcesPage').then((m) => ({ default: m.ResourcesPage })))
 
 function PageFallback() {
   return (
@@ -107,6 +113,12 @@ export default function App() {
             <Route path="/search" element={<SearchPage />} />
             <Route path="/formai" element={<FormAIPage />} />
             <Route path="/formai/:conversationId" element={<FormAIPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/projects/:id" element={<ProjectWorkspacePage />} />
+            <Route path="/subjects/:id" element={<SubjectWorkspacePage />} />
+            <Route path="/resources" element={<ResourcesPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

@@ -9,8 +9,10 @@ import type {
   Notebook,
   Page,
   PageSnapshot,
+  Project,
   ShareLink,
   StudyCard,
+  Task,
 } from '../types'
 import { emptyPageFields, normalizePage } from '../types'
 
@@ -53,6 +55,8 @@ export class FormaDatabase extends Dexie {
   aiMemory!: Table<AIMemoryEntry, string>
   aiKnowledgeDocs!: Table<KnowledgeDocument, string>
   aiKnowledgeChunks!: Table<KnowledgeChunk, string>
+  tasks!: Table<Task, string>
+  projects!: Table<Project, string>
 
   constructor() {
     super('forma')
@@ -193,11 +197,31 @@ export class FormaDatabase extends Dexie {
       aiKnowledgeDocs: 'id, addedAt',
       aiKnowledgeChunks: 'id, docId',
     })
+    // v12 : écosystème workspace — tâches et projets (additif, non destructif).
+    // notebooks.projectId est un champ optionnel non indexé (filtrage en mémoire).
+    this.version(12).stores({
+      folders: 'id, parentId, name, updatedAt',
+      notebooks: 'id, folderId, name, updatedAt, favorite, deletedAt, pdfSourceAssetId',
+      pages: 'id, notebookId, order, pdfAssetId, updatedAt',
+      audio: 'id, notebookId, createdAt',
+      studyCards: 'id, notebookId, nextReview',
+      shareLinks: 'id, notebookId, token',
+      pageSnapshots: 'id, pageId, createdAt',
+      assets: 'id, notebookId, createdAt',
+      settings: 'key',
+      thumbnails: 'pageId, notebookId, updatedAt',
+      aiConversations: 'id, updatedAt, agentId',
+      aiMemory: 'id, createdAt',
+      aiKnowledgeDocs: 'id, addedAt',
+      aiKnowledgeChunks: 'id, docId',
+      tasks: 'id, status, dueDate, subjectId, projectId, documentId, updatedAt',
+      projects: 'id, name, updatedAt',
+    })
   }
 }
 
 /** Version Dexie courante (tests / diagnostics). */
-export const FORMA_DB_VERSION = 11
+export const FORMA_DB_VERSION = 12
 
 export const db = new FormaDatabase()
 

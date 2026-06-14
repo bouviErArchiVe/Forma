@@ -131,6 +131,8 @@ describe('Dexie schema', () => {
         'shareLinks',
         'studyCards',
         'thumbnails',
+        'tasks',
+        'projects',
       ].sort(),
     )
   })

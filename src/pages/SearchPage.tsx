@@ -18,6 +18,7 @@ import {
   searchGlobalPages,
   type GlobalPageHit,
 } from '../lib/global-search'
+import { searchEcosystem, type EcosystemHit } from '../lib/ecosystem-search'
 
 const SOURCE_ICONS: Record<GlobalPageHit['source'], string> = {
   title: '📓',
@@ -64,6 +65,7 @@ export function SearchPage() {
 
   const [query, setQuery] = useState(initialQ)
   const [results, setResults] = useState<GlobalPageHit[]>([])
+  const [ecoHits, setEcoHits] = useState<EcosystemHit[]>([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
   const [filterSource, setFilterSource] = useState<GlobalPageHit['source'] | 'all'>('all')
@@ -73,14 +75,16 @@ export function SearchPage() {
   const runSearch = useCallback(async (q: string) => {
     if (q.trim().length < 2) {
       setResults([])
+      setEcoHits([])
       setSearched(false)
       setLoading(false)
       return
     }
     setLoading(true)
     try {
-      const hits = await searchGlobalPages(q, 50)
+      const [hits, eco] = await Promise.all([searchGlobalPages(q, 50), searchEcosystem(q, 20)])
       setResults(hits)
+      setEcoHits(eco)
       setSearched(true)
     } finally {
       setLoading(false)
@@ -197,7 +201,7 @@ export function SearchPage() {
           </div>
         )}
 
-        {searched && !loading && filtered.length === 0 && (
+        {searched && !loading && filtered.length === 0 && ecoHits.length === 0 && (
           <div className="text-center text-forma-muted mt-20">
             <div className="text-4xl mb-4">😶</div>
             <p className="text-sm">Aucun résultat pour <strong>«{query}»</strong></p>
@@ -210,6 +214,32 @@ export function SearchPage() {
                 Voir tous les types de résultats
               </button>
             )}
+          </div>
+        )}
+
+        {/* ── Écosystème : tâches, projets, normes, détails ─────────────────── */}
+        {searched && !loading && ecoHits.length > 0 && filterSource === 'all' && (
+          <div className="mb-5">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1.5">
+              Écosystème ({ecoHits.length})
+            </p>
+            <ul className="space-y-1.5">
+              {ecoHits.map((h) => (
+                <li key={`${h.kind}-${h.id}`}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(h.to)}
+                    className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl border border-forma-border bg-forma-surface hover:border-forma-accent/50 transition-colors"
+                  >
+                    <span className="text-base shrink-0">
+                      {h.kind === 'task' ? '✅' : h.kind === 'project' ? '📁' : h.kind === 'norme' ? '📋' : '📐'}
+                    </span>
+                    <span className="text-sm text-forma-text truncate flex-1">{h.title}</span>
+                    <span className="text-[10px] text-forma-muted shrink-0">{h.subtitle}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 

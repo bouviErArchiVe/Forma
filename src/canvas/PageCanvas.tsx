@@ -50,6 +50,7 @@ import { StickerPicker } from '../components/editor/StickerPicker'
 import { BlockLibraryPanel } from '../components/editor/BlockLibraryPanel'
 import { addBlockToPage } from '../lib/blocks/insert'
 import { resolveBlock, type DrawingBlock } from '../lib/blocks'
+import { resolveDetailBlock } from '../lib/resources/details'
 import { useBlockLibraryStore } from '../stores/blockLibraryStore'
 import { useEditorStore } from '../stores/editorStore'
 import { useSettingsStore } from '../stores/settingsStore'
@@ -1103,7 +1104,8 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
         const blockId = e.dataTransfer.getData('application/x-forma-block')
         if (!blockId || !interactive || store.readMode) return
         e.preventDefault()
-        const block = resolveBlock(blockId, useBlockLibraryStore.getState().customBlocks)
+        const block =
+          resolveBlock(blockId, useBlockLibraryStore.getState().customBlocks) ?? resolveDetailBlock(blockId)
         if (block) insertBlockAt(block, screenToCanvasPt(e.clientX, e.clientY))
       }}
     >
