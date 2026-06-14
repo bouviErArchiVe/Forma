@@ -38,6 +38,7 @@ import {
   type MaterialCategory,
 } from '../lib/resources/materials'
 import { useResourceFavoritesStore } from '../stores/resourceFavoritesStore'
+import { useResourceNotesStore } from '../stores/resourceNotesStore'
 
 type MainTab = 'normes' | 'details' | 'materiaux'
 
@@ -76,39 +77,76 @@ export function ResourcesPage() {
 
 // ─── Normative ────────────────────────────────────────────────────────────────
 
+type NormeAction = 'expliquer' | 'resumer' | 'checklist' | 'comparer'
+
+const NORME_ACTION_LABELS: Record<NormeAction, string> = {
+  expliquer: 'Expliquer',
+  resumer: 'Résumer',
+  checklist: 'Checklist conformité',
+  comparer: 'Comparer',
+}
+
+const NORME_SYSTEM_PROMPT =
+  'Tu es l’agent Normes de FormAI. Tu aides à comprendre des concepts réglementaires du bâtiment SANS JAMAIS inventer de numéro d’article, de valeur chiffrée précise ni d’édition. Reste au niveau du concept et de la démarche. Termine toujours en rappelant de vérifier le texte officiel applicable (juridiction et édition en vigueur).'
+
+function buildNormePrompt(action: NormeAction, sheet: NormativeSheet, other: NormativeSheet | null): string {
+  const base = `« ${sheet.title} » — ${sheet.summary}`
+  switch (action) {
+    case 'expliquer':
+      return `Explique ce concept de façon pédagogique : ${base}`
+    case 'resumer':
+      return `Résume en 3 à 5 points clés (puces) : ${base}`
+    case 'checklist':
+      return `Propose une checklist de conformité INDICATIVE (points à vérifier, sans valeurs chiffrées inventées) pour ce sujet : ${base}`
+    case 'comparer':
+      return other
+        ? `Compare ces deux sujets réglementaires en soulignant les distinctions de principe (sans inventer de chiffres) :\nA) « ${sheet.title} » — ${sheet.summary}\nB) « ${other.title} » — ${other.summary}`
+        : `Explique ce sujet : ${base}`
+  }
+}
+
 function NormativeTab() {
-  const [category, setCategory] = useState<NormativeCategory | 'all'>('all')
+  const [category, setCategory] = useState<NormativeCategory | 'all' | 'favorites'>('all')
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<NormativeSheet | null>(null)
-  const [explanation, setExplanation] = useState<string | null>(null)
-  const [explaining, setExplaining] = useState(false)
+  const [result, setResult] = useState<string | null>(null)
+  const [runningAction, setRunningAction] = useState<NormeAction | null>(null)
+  const [compareWith, setCompareWith] = useState('')
 
-  const sheets = useMemo(() => searchNormative(search, category), [search, category])
+  const favorites = useResourceFavoritesStore((s) => s.favorites)
+  const toggleFav = useResourceFavoritesStore((s) => s.toggle)
+  const isFav = (id: string) => favorites.includes(`norme:${id}`)
+  const notes = useResourceNotesStore((s) => s.notes)
+  const setNote = useResourceNotesStore((s) => s.set)
+
+  const sheets = useMemo(() => {
+    if (category === 'favorites') return searchNormative(search).filter((s) => favorites.includes(`norme:${s.id}`))
+    return searchNormative(search, category)
+  }, [search, category, favorites])
+
   const settings = resolveProviderSettings()
+  const cloudReady = settings.providerId !== 'local' && settings.providerId !== 'mock'
 
-  const explain = async (sheet: NormativeSheet) => {
-    setExplaining(true)
-    setExplanation(null)
+  const runAction = async (action: NormeAction, sheet: NormativeSheet) => {
+    setRunningAction(action)
+    setResult(null)
     try {
+      const other = action === 'comparer' ? (searchNormative('').find((s) => s.id === compareWith) ?? null) : null
       const provider = getProvider(settings.providerId)
       const res = await provider.chat({
         messages: [
-          {
-            role: 'system',
-            content:
-              'Tu es l’agent Normes de FormAI. Explique le CONCEPT d’une fiche réglementaire sans JAMAIS inventer de numéro d’article. Termine toujours en rappelant de vérifier le texte officiel applicable (juridiction et édition).',
-          },
-          { role: 'user', content: `Explique cette fiche : « ${sheet.title} » — ${sheet.summary}` },
+          { role: 'system', content: NORME_SYSTEM_PROMPT },
+          { role: 'user', content: buildNormePrompt(action, sheet, other) },
         ],
         settings,
       })
-      setExplanation(res.text.trim() !== '' ? res.text : (res.error ?? 'Aucune explication.'))
+      setResult(res.text.trim() !== '' ? res.text : (res.error ?? 'Aucun résultat.'))
     } finally {
-      setExplaining(false)
+      setRunningAction(null)
     }
   }
 
-  const cloudReady = settings.providerId !== 'local' && settings.providerId !== 'mock'
+  const selectSheet = (s: NormativeSheet) => { setSelected(s); setResult(null); setCompareWith('') }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[18rem_1fr] gap-4">
@@ -117,18 +155,22 @@ function NormativeTab() {
         <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher une fiche…" className="w-full text-xs border border-forma-border rounded-lg px-2.5 py-1.5 bg-forma-bg focus:outline-none focus:border-forma-accent mb-2" />
         <div className="flex flex-wrap gap-1 mb-2">
           <button type="button" onClick={() => setCategory('all')} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === 'all' ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>Toutes</button>
+          <button type="button" onClick={() => setCategory('favorites')} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === 'favorites' ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>★ Favoris</button>
           {normativeCategories().map((c) => (
             <button key={c} type="button" onClick={() => setCategory(c)} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === c ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>{NORMATIVE_CATEGORY_LABELS[c]}</button>
           ))}
         </div>
         <div className="space-y-1 max-h-[60vh] overflow-y-auto">
           {sheets.map((s) => (
-            <button key={s.id} type="button" onClick={() => { setSelected(s); setExplanation(null) }} className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors ${selected?.id === s.id ? 'bg-forma-accent/10 text-forma-accent' : 'text-forma-text hover:bg-forma-bg'}`}>
-              <span className="block font-medium truncate">{s.title}</span>
-              <span className="block text-[10px] text-forma-muted">{NORMATIVE_CATEGORY_LABELS[s.category]}</span>
+            <button key={s.id} type="button" onClick={() => selectSheet(s)} className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${selected?.id === s.id ? 'bg-forma-accent/10 text-forma-accent' : 'text-forma-text hover:bg-forma-bg'}`}>
+              {isFav(s.id) && <span className="text-amber-400 shrink-0">★</span>}
+              <span className="min-w-0 flex-1">
+                <span className="block font-medium truncate">{s.title}</span>
+                <span className="block text-[10px] text-forma-muted">{NORMATIVE_CATEGORY_LABELS[s.category]}</span>
+              </span>
             </button>
           ))}
-          {sheets.length === 0 && <p className="text-[11px] text-forma-muted text-center py-4">Aucune fiche</p>}
+          {sheets.length === 0 && <p className="text-[11px] text-forma-muted text-center py-4">{category === 'favorites' ? 'Aucun favori — touchez l’étoile sur une fiche.' : 'Aucune fiche'}</p>}
         </div>
       </div>
 
@@ -141,8 +183,13 @@ function NormativeTab() {
           </div>
         ) : (
           <div className="max-w-2xl">
-            <h2 className="text-lg font-semibold text-forma-text">{selected.title}</h2>
-            <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-2">{NORMATIVE_CATEGORY_LABELS[selected.category]}{selected.jurisdiction ? ` · ${selected.jurisdiction}` : ''}{selected.edition ? ` · ${selected.edition}` : ''}</p>
+            <div className="flex items-start justify-between gap-2">
+              <h2 className="text-lg font-semibold text-forma-text">{selected.title}</h2>
+              <button type="button" onClick={() => toggleFav('norme', selected.id)} title={isFav(selected.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'} className={`p-1 shrink-0 ${isFav(selected.id) ? 'text-amber-400' : 'text-forma-muted hover:text-amber-400'}`}>
+                <Icon name={isFav(selected.id) ? 'star' : 'star-outline'} className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-2">{NORMATIVE_CATEGORY_LABELS[selected.category]}{selected.jurisdiction ? ` · ${selected.jurisdiction}` : ''}{selected.edition ? ` · ${selected.edition}` : ''}{selected.confidence ? ` · ${selected.confidence}` : ''}</p>
             <p className="text-sm text-forma-text leading-relaxed mb-3">{selected.summary}</p>
             <div className="flex flex-wrap gap-1 mb-3">
               {selected.keywords.map((k) => <span key={k} className="text-[10px] px-1.5 py-0.5 rounded bg-forma-bg text-forma-muted">{k}</span>)}
@@ -151,16 +198,40 @@ function NormativeTab() {
               <Icon name="alert" className="w-3.5 h-3.5 shrink-0 mt-px" />
               {NORMATIVE_DISCLAIMER}
             </div>
-            {cloudReady && (
+
+            {/* Notes utilisateur (persistées) */}
+            <div className="mb-3">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1">Mes notes</p>
+              <textarea
+                value={notes[`norme:${selected.id}`] ?? ''}
+                onChange={(e) => setNote('norme', selected.id, e.target.value)}
+                rows={2}
+                placeholder="Notes personnelles sur cette fiche (vérifications, références projet…)"
+                className="w-full text-xs border border-forma-border rounded-lg px-2.5 py-1.5 bg-forma-surface resize-y focus:outline-none focus:border-forma-accent"
+              />
+            </div>
+
+            {/* FormAI Normes */}
+            {cloudReady ? (
               <div>
-                <button type="button" disabled={explaining} onClick={() => void explain(selected)} className="text-xs px-3 py-1.5 rounded-lg border border-forma-border hover:border-forma-accent/60 text-forma-muted hover:text-forma-accent transition-colors inline-flex items-center gap-1.5 disabled:opacity-50">
-                  <Icon name="sparkles" className="w-3.5 h-3.5" />
-                  {explaining ? 'Explication…' : 'Expliquer avec FormAI'}
-                </button>
-                {explanation && (
-                  <p className="text-xs text-forma-text whitespace-pre-wrap leading-relaxed mt-2 p-2.5 rounded-lg bg-forma-bg border border-forma-border">{explanation}</p>
+                <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                  {(['expliquer', 'resumer', 'checklist', 'comparer'] as NormeAction[]).map((a) => (
+                    <button key={a} type="button" disabled={runningAction !== null || (a === 'comparer' && compareWith === '')} onClick={() => void runAction(a, selected)} className="text-xs px-2.5 py-1.5 rounded-lg border border-forma-border hover:border-forma-accent/60 text-forma-muted hover:text-forma-accent transition-colors inline-flex items-center gap-1 disabled:opacity-40">
+                      <Icon name="sparkles" className="w-3.5 h-3.5" />
+                      {runningAction === a ? '…' : NORME_ACTION_LABELS[a]}
+                    </button>
+                  ))}
+                  <select value={compareWith} onChange={(e) => setCompareWith(e.target.value)} title="Comparer avec…" className="text-xs border border-forma-border rounded-lg px-2 py-1.5 bg-forma-bg max-w-[12rem]">
+                    <option value="">Comparer avec…</option>
+                    {searchNormative('').filter((s) => s.id !== selected.id).map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
+                  </select>
+                </div>
+                {result && (
+                  <p className="text-xs text-forma-text whitespace-pre-wrap leading-relaxed mt-1 p-2.5 rounded-lg bg-forma-bg border border-forma-border">{result}</p>
                 )}
               </div>
+            ) : (
+              <p className="text-[11px] text-forma-muted">Activez un fournisseur FormAI cloud dans les réglages pour expliquer, résumer, comparer ou générer une checklist de conformité.</p>
             )}
           </div>
         )}

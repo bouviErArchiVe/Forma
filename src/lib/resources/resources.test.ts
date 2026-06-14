@@ -16,20 +16,24 @@ import {
   searchDetails,
 } from './details'
 
-describe('bibliothèque normative', () => {
-  it('charge une base de fiches avec champs requis', () => {
-    expect(NORMATIVE_SHEETS.length).toBeGreaterThanOrEqual(12)
+describe('bibliothèque normative (V2)', () => {
+  it('charge un catalogue étendu avec champs requis', () => {
+    expect(NORMATIVE_SHEETS.length).toBeGreaterThanOrEqual(35)
     const ids = NORMATIVE_SHEETS.map((s) => s.id)
     expect(new Set(ids).size).toBe(ids.length)
     for (const s of NORMATIVE_SHEETS) {
       expect(s.title).toBeTruthy()
       expect(s.summary.length).toBeGreaterThan(30)
       expect(s.keywords.length).toBeGreaterThan(0)
+      expect(s.confidence).toBeTruthy()
     }
   })
 
-  it('couvre plusieurs catégories', () => {
-    expect(normativeCategories().length).toBeGreaterThanOrEqual(8)
+  it('couvre les catégories étendues (dont énergie et sécurité chantier)', () => {
+    const cats = new Set(normativeCategories())
+    expect(cats.size).toBeGreaterThanOrEqual(14)
+    expect(cats.has('energie')).toBe(true)
+    expect(cats.has('securite-chantier')).toBe(true)
   })
 
   it('recherche par mot-clé et catégorie', () => {
@@ -37,6 +41,8 @@ describe('bibliothèque normative', () => {
     expect(searchNormative('blondel').length).toBeGreaterThan(0)
     expect(searchNormative('', 'cnb').every((s) => s.category === 'cnb')).toBe(true)
     expect(getNormativeSheet('ccq-base')?.jurisdiction).toBe('Québec')
+    expect(searchNormative('échafaudage').some((s) => s.category === 'securite-chantier')).toBe(true)
+    expect(searchNormative('fenestration').length).toBeGreaterThan(0)
   })
 })
 
