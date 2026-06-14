@@ -133,6 +133,9 @@ describe('Dexie schema', () => {
         'thumbnails',
         'tasks',
         'projects',
+        'academicSessions',
+        'quizzes',
+        'checklists',
       ].sort(),
     )
   })

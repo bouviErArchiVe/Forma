@@ -8,6 +8,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
 import { LinkedDocuments } from '../components/workspace/LinkedDocuments'
 import { TasksPanel } from '../components/tasks/TasksPanel'
+import { ProjectChecklistPanel } from '../components/study/ProjectChecklistPanel'
+import { TaskFromNoteButton } from '../components/study/TaskFromNoteButton'
 import { db } from '../db'
 import { listTasks } from '../services/tasks'
 import {
@@ -22,7 +24,7 @@ import { confirm } from '../stores/confirmStore'
 import { useToastStore } from '../stores/toastStore'
 import type { Notebook, Project } from '../types'
 
-type Tab = 'overview' | 'documents' | 'tasks'
+type Tab = 'overview' | 'documents' | 'tasks' | 'checklist'
 
 export function ProjectWorkspacePage() {
   const { id } = useParams<{ id: string }>()
@@ -61,10 +63,11 @@ export function ProjectWorkspacePage() {
   const loadCandidates = async () =>
     db.notebooks.filter((n) => !n.deletedAt && n.type !== 'subject' && n.projectId !== id).toArray()
 
-  const TABS: { id: Tab; label: string; icon: 'layout' | 'folder' | 'check' }[] = [
+  const TABS: { id: Tab; label: string; icon: 'layout' | 'folder' | 'check' | 'sparkles' }[] = [
     { id: 'overview', label: 'Vue d’ensemble', icon: 'layout' },
     { id: 'documents', label: `Documents (${docs.length})`, icon: 'folder' },
     { id: 'tasks', label: `Tâches (${taskCount})`, icon: 'check' },
+    { id: 'checklist', label: 'Checklist', icon: 'sparkles' },
   ]
 
   return (
@@ -138,8 +141,13 @@ export function ProjectWorkspacePage() {
         )}
 
         {tab === 'tasks' && (
-          <TasksPanel filter={{ projectId: id }} createDefaults={{ projectId: id }} title="Projet" />
+          <div className="space-y-3">
+            <TaskFromNoteButton defaults={{ projectId: id }} />
+            <TasksPanel filter={{ projectId: id }} createDefaults={{ projectId: id }} title="Projet" onChange={() => void reload()} />
+          </div>
         )}
+
+        {tab === 'checklist' && <ProjectChecklistPanel projectId={id} projectName={project.name} />}
       </div>
     </div>
   )

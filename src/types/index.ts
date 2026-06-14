@@ -244,6 +244,62 @@ export interface Project {
   deletedAt?: number
 }
 
+// ─── Académique : sessions, quiz, révisions, checklists ───────────────────────
+
+export type AcademicTerm = 'automne' | 'hiver' | 'ete'
+
+export interface AcademicSession {
+  id: string
+  term: AcademicTerm
+  year: number
+  /** Date locale `YYYY-MM-DD` du début de la session (lundi de la semaine 1). */
+  startDate: string
+  /** Nombre de semaines (typiquement 15). */
+  weeks: number
+  /** Session active affichée par défaut. */
+  current?: boolean
+  createdAt: number
+  updatedAt: number
+}
+
+export type QuizQuestionType = 'mcq' | 'truefalse' | 'short'
+
+export interface QuizQuestion {
+  id: string
+  type: QuizQuestionType
+  question: string
+  /** Choix pour les QCM. */
+  options?: string[]
+  /** Réponse : index (mcq), 'vrai'/'faux' (truefalse), texte (short). */
+  answer: string
+}
+
+export interface Quiz {
+  id: string
+  title: string
+  subjectId?: string
+  questions: QuizQuestion[]
+  /** Source ('local' | provider). */
+  source: string
+  createdAt: number
+}
+
+export interface ChecklistItem {
+  id: string
+  text: string
+  done: boolean
+}
+
+export interface Checklist {
+  id: string
+  title: string
+  projectId?: string
+  items: ChecklistItem[]
+  source: string
+  createdAt: number
+  updatedAt: number
+}
+
 export interface Folder {
   id: string
   parentId: string | null

@@ -232,7 +232,13 @@ export function SearchPage() {
                     className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl border border-forma-border bg-forma-surface hover:border-forma-accent/50 transition-colors"
                   >
                     <span className="text-base shrink-0">
-                      {h.kind === 'task' ? '✅' : h.kind === 'project' ? '📁' : h.kind === 'norme' ? '📋' : '📐'}
+                      {h.kind === 'task' ? '✅'
+                        : h.kind === 'project' ? '📁'
+                        : h.kind === 'norme' ? '📋'
+                        : h.kind === 'quiz' ? '❓'
+                        : h.kind === 'checklist' ? '☑️'
+                        : h.kind === 'session' ? '📅'
+                        : '📐'}
                     </span>
                     <span className="text-sm text-forma-text truncate flex-1">{h.title}</span>
                     <span className="text-[10px] text-forma-muted shrink-0">{h.subtitle}</span>

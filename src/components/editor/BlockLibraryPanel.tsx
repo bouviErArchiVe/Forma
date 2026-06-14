@@ -19,7 +19,7 @@ import {
 } from '../../lib/blocks'
 import { importCustomBlock } from '../../lib/blocks/custom-import'
 import { buildParametricBlock, PARAMETRIC_DEFS, type ParametricDef } from '../../lib/blocks/parametric'
-import { CONSTRUCTION_DETAILS, detailToBlock } from '../../lib/resources/details'
+import { CONSTRUCTION_DETAILS, detailToBlock, searchDetails } from '../../lib/resources/details'
 import { resolveAssetUrl } from '../../lib/assets'
 import { useBlockLibraryStore } from '../../stores/blockLibraryStore'
 import { useToastStore } from '../../stores/toastStore'
@@ -58,7 +58,7 @@ function BlockThumb({ block }: { block: DrawingBlock }) {
   )
 }
 
-type CatTab = DrawingBlockCategory | 'all' | 'favorites' | 'recents'
+type CatTab = DrawingBlockCategory | 'all' | 'favorites' | 'recents' | 'details'
 
 /** Détails constructifs convertis en blocs insérables (métrique). */
 const DETAIL_BLOCKS: DrawingBlock[] = CONSTRUCTION_DETAILS.map(detailToBlock)
@@ -94,6 +94,10 @@ export function BlockLibraryPanel({
       return recents
         .map((id) => resolveBlock(id, extraBlocks))
         .filter((b): b is DrawingBlock => b !== undefined && b.unitSystem === unit)
+    }
+    // Onglet dédié aux détails constructifs (métrique, indépendant de l'unité).
+    if (category === 'details') {
+      return searchDetails(search).map(detailToBlock)
     }
     return queryBlocks({ unit, category, search, customBlocks: extraBlocks })
   }, [unit, category, search, favorites, recents, extraBlocks])
@@ -170,6 +174,7 @@ export function BlockLibraryPanel({
         <div className="shrink-0 flex flex-wrap gap-1 mb-2 overflow-y-auto max-h-16">
           {([
             { id: 'all' as CatTab, label: 'Tous' },
+            { id: 'details' as CatTab, label: 'Détails constructifs' },
             { id: 'favorites' as CatTab, label: '★ Favoris' },
             { id: 'recents' as CatTab, label: 'Récents' },
             ...categories.map((c) => ({ id: c as CatTab, label: BLOCK_CATEGORY_LABELS[c] })),
@@ -203,7 +208,9 @@ export function BlockLibraryPanel({
                 ? 'Aucun favori — touchez l’étoile sur un bloc.'
                 : category === 'recents'
                   ? 'Aucun bloc récent.'
-                  : 'Aucun bloc trouvé.'}
+                  : category === 'details'
+                    ? 'Aucun détail constructif trouvé.'
+                    : 'Aucun bloc trouvé.'}
             </p>
           ) : (
             <div className="grid grid-cols-3 gap-1.5">

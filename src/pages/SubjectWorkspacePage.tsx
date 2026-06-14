@@ -9,13 +9,15 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
 import { LinkedDocuments } from '../components/workspace/LinkedDocuments'
 import { TasksPanel } from '../components/tasks/TasksPanel'
+import { SubjectStudyPanel } from '../components/study/SubjectStudyPanel'
+import { TaskFromNoteButton } from '../components/study/TaskFromNoteButton'
 import { db } from '../db'
 import { upcomingEvents, type UpcomingEvent } from '../lib/dashboard-data'
 import { listTasks } from '../services/tasks'
 import { getNotebook } from '../services/library'
 import type { Notebook } from '../types'
 
-type Tab = 'overview' | 'documents' | 'tasks' | 'calendar'
+type Tab = 'overview' | 'documents' | 'tasks' | 'calendar' | 'study'
 
 export function SubjectWorkspacePage() {
   const { id } = useParams<{ id: string }>()
@@ -47,10 +49,11 @@ export function SubjectWorkspacePage() {
   const loadCandidates = async () =>
     db.notebooks.filter((n) => !n.deletedAt && n.type !== 'subject' && n.subjectId !== id).toArray()
 
-  const TABS: { id: Tab; label: string; icon: 'layout' | 'folder' | 'check' | 'book' }[] = [
+  const TABS: { id: Tab; label: string; icon: 'layout' | 'folder' | 'check' | 'book' | 'sparkles' }[] = [
     { id: 'overview', label: 'Vue d’ensemble', icon: 'layout' },
     { id: 'documents', label: `Documents (${docs.length})`, icon: 'folder' },
     { id: 'tasks', label: `Tâches (${taskCount})`, icon: 'check' },
+    { id: 'study', label: 'Réviser', icon: 'sparkles' },
     { id: 'calendar', label: 'Échéances', icon: 'book' },
   ]
 
@@ -119,8 +122,13 @@ export function SubjectWorkspacePage() {
         )}
 
         {tab === 'tasks' && (
-          <TasksPanel filter={{ subjectId: id }} createDefaults={{ subjectId: id }} title="Matière" />
+          <div className="space-y-3">
+            <TaskFromNoteButton defaults={{ subjectId: id }} />
+            <TasksPanel filter={{ subjectId: id }} createDefaults={{ subjectId: id }} title="Matière" onChange={() => void reload()} />
+          </div>
         )}
+
+        {tab === 'study' && <SubjectStudyPanel subjectId={id} subjectName={subject.name} />}
 
         {tab === 'calendar' && (
           events.length === 0 ? (

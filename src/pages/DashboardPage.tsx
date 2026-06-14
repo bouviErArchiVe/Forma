@@ -3,16 +3,19 @@
  * Documents récents, matières, événements à venir, tâches du jour / en
  * retard, favoris, raccourcis modules, accès FormAI, création rapide.
  */
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { AcademicPanel } from '../components/dashboard/AcademicPanel'
 import { Icon, type IconName } from '../components/ui/Icon'
 import { getKindMeta } from '../lib/document-kinds'
 import { formatRelativeTime } from '../lib/format-relative'
+import { currentSession, weekInfo, weekRange } from '../services/academic'
 import { getAllNotebooks, getFavorites } from '../services/library'
 import { listProjects } from '../services/projects'
+import { listQuizzes } from '../services/study-content'
 import { listTasks, overdueTasks, tasksDueToday, todayISO } from '../services/tasks'
 import { upcomingEvents, type UpcomingEvent } from '../lib/dashboard-data'
-import type { Notebook, Project, Task } from '../types'
+import type { Notebook, Project, Quiz, Task } from '../types'
 
 function Section({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -31,7 +34,7 @@ const MODULE_SHORTCUTS: { label: string; icon: IconName; to: string }[] = [
   { label: 'Tâches', icon: 'check', to: '/tasks' },
   { label: 'Projets', icon: 'folder', to: '/projects' },
   { label: 'Ressources', icon: 'book', to: '/resources' },
-  { label: 'Recherche', icon: 'search', to: '/search' },
+  { label: 'Importer', icon: 'upload', to: '/import' },
   { label: 'FormAI', icon: 'sparkles', to: '/formai' },
 ]
 
@@ -43,19 +46,41 @@ export function DashboardPage() {
   const [projects, setProjects] = useState<Project[]>([])
   const [tasks, setTasks] = useState<Task[]>([])
   const [events, setEvents] = useState<UpcomingEvent[]>([])
+  const [weekEvents, setWeekEvents] = useState<UpcomingEvent[]>([])
+  const [quizzes, setQuizzes] = useState<Quiz[]>([])
+
+  const reload = useCallback(async () => {
+    const all = await getAllNotebooks()
+    const active = all.filter((n) => !n.deletedAt)
+    setRecent([...active].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 6))
+    setSubjects(active.filter((n) => n.type === 'subject').slice(0, 8))
+    setFavorites(await getFavorites())
+    setProjects(await listProjects())
+    setTasks(await listTasks())
+    setEvents(await upcomingEvents(10))
+    setQuizzes(await listQuizzes())
+    // Examens / remises de la semaine de session courante
+    const session = await currentSession()
+    const info = session ? weekInfo(session, todayISO()) : null
+    if (session && info?.week) {
+      const { start, end } = weekRange(session, info.week)
+      setWeekEvents(await upcomingEvents(20, { kinds: ['examen', 'remise'], from: start, to: end }))
+    } else {
+      setWeekEvents(await upcomingEvents(20, { kinds: ['examen', 'remise'] }))
+    }
+  }, [])
 
   useEffect(() => {
-    void Promise.resolve().then(async () => {
-      const all = await getAllNotebooks()
-      const active = all.filter((n) => !n.deletedAt)
-      setRecent([...active].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 6))
-      setSubjects(active.filter((n) => n.type === 'subject').slice(0, 8))
-      setFavorites(await getFavorites())
-      setProjects(await listProjects())
-      setTasks(await listTasks())
-      setEvents(await upcomingEvents(10))
-    })
-  }, [])
+    void Promise.resolve().then(reload)
+    // Compteurs « live » : rafraîchit au retour sur l'onglet/fenêtre.
+    const onFocus = () => void reload()
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onFocus)
+    return () => {
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onFocus)
+    }
+  }, [reload])
 
   const today = todayISO()
   const overdue = useMemo(() => overdueTasks(tasks, today), [tasks, today])
@@ -94,7 +119,57 @@ export function DashboardPage() {
         ))}
       </div>
 
+      {/* Session académique */}
+      <div className="mb-4">
+        <AcademicPanel />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Cette semaine : examens / remises */}
+        <Section title="Cette semaine" action={<Link to="/" className="text-xs text-forma-accent hover:underline">Calendriers</Link>}>
+          {weekEvents.length === 0 ? (
+            <p className="text-xs text-forma-muted py-2">Aucun examen ni remise cette semaine.</p>
+          ) : (
+            <div className="space-y-1.5">
+              {weekEvents.slice(0, 6).map((e) => (
+                <button
+                  key={e.id}
+                  type="button"
+                  onClick={() => navigate(`/document/${e.notebookId}`)}
+                  className="w-full text-left flex items-center gap-2 hover:bg-forma-bg rounded-lg px-1.5 py-1"
+                >
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: e.color }} />
+                  <span className="text-[10px] uppercase font-semibold shrink-0 text-forma-muted">{e.kind === 'examen' ? 'Examen' : 'Remise'}</span>
+                  <span className="text-sm text-forma-text truncate flex-1">{e.title}</span>
+                  <span className="text-[10px] text-forma-muted shrink-0">{e.date.slice(5)}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </Section>
+
+        {/* Révisions : quiz récents */}
+        <Section title="Révisions" action={<Link to="/formai" className="text-xs text-forma-accent hover:underline">FormAI</Link>}>
+          {quizzes.length === 0 ? (
+            <p className="text-xs text-forma-muted py-2">Aucun quiz pour l’instant. Générez-en depuis une matière → « Réviser ».</p>
+          ) : (
+            <div className="space-y-1">
+              {quizzes.slice(0, 6).map((q) => (
+                <button
+                  key={q.id}
+                  type="button"
+                  onClick={() => q.subjectId && navigate(`/subjects/${q.subjectId}`)}
+                  className="w-full text-left flex items-center gap-2 hover:bg-forma-bg rounded-lg px-1.5 py-1"
+                >
+                  <Icon name="sparkles" className="w-4 h-4 shrink-0 text-forma-accent" />
+                  <span className="text-sm text-forma-text truncate flex-1">{q.title}</span>
+                  <span className="text-[10px] text-forma-muted shrink-0">{q.questions.length} q.</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </Section>
+
         {/* Tâches du jour / en retard */}
         <Section title="À faire" action={<Link to="/tasks" className="text-xs text-forma-accent hover:underline">Toutes</Link>}>
           {overdue.length === 0 && dueToday.length === 0 ? (

@@ -35,11 +35,14 @@ export function TasksPanel({
   createDefaults = {},
   title = 'Tâches',
   compact = false,
+  /** Appelé après toute mutation (pour rafraîchir des compteurs parents). */
+  onChange,
 }: {
   filter?: ListTasksOptions
   createDefaults?: { subjectId?: string; projectId?: string; documentId?: string }
   title?: string
   compact?: boolean
+  onChange?: () => void
 }) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTitle, setNewTitle] = useState('')
@@ -49,6 +52,7 @@ export function TasksPanel({
   const filterKey = JSON.stringify(filter)
   const reload = useCallback(async () => {
     setTasks(await listTasks(filter))
+    onChange?.()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterKey])
 

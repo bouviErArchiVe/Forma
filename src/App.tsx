@@ -56,6 +56,7 @@ const ProjectsPage = lazy(() => import('./pages/ProjectsPage').then((m) => ({ de
 const ProjectWorkspacePage = lazy(() => import('./pages/ProjectWorkspacePage').then((m) => ({ default: m.ProjectWorkspacePage })))
 const SubjectWorkspacePage = lazy(() => import('./pages/SubjectWorkspacePage').then((m) => ({ default: m.SubjectWorkspacePage })))
 const ResourcesPage = lazy(() => import('./pages/ResourcesPage').then((m) => ({ default: m.ResourcesPage })))
+const ImportHubPage = lazy(() => import('./pages/ImportHubPage').then((m) => ({ default: m.ImportHubPage })))
 
 function PageFallback() {
   return (
@@ -119,6 +120,7 @@ export default function App() {
             <Route path="/projects/:id" element={<ProjectWorkspacePage />} />
             <Route path="/subjects/:id" element={<SubjectWorkspacePage />} />
             <Route path="/resources" element={<ResourcesPage />} />
+            <Route path="/import" element={<ImportHubPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

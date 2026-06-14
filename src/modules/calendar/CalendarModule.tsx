@@ -20,6 +20,7 @@ import {
   addDays,
   addMonths,
   EVENT_COLORS,
+  EVENT_KIND_LABELS,
   eventsOnDay,
   eventsToMarkdown,
   monthGrid,
@@ -32,9 +33,12 @@ import {
   weekDays,
   type CalendarEvent,
   type CalendarState,
+  type EventKind,
   type EventRecurrence,
 } from './calendar-data'
 import { parseEventSuggestion } from './event-suggest'
+import { listProjects } from '../../services/projects'
+import type { Project } from '../../types'
 
 type ViewMode = 'day' | 'week' | 'month'
 
@@ -57,8 +61,10 @@ interface EventDraft {
   description: string
   color: string
   subjectId: string
+  projectId: string
   linkedDocId: string
   recurrence: '' | EventRecurrence
+  kind: '' | EventKind
 }
 
 function emptyDraft(date: string): EventDraft {
@@ -71,8 +77,10 @@ function emptyDraft(date: string): EventDraft {
     description: '',
     color: EVENT_COLORS[0],
     subjectId: '',
+    projectId: '',
     linkedDocId: '',
     recurrence: '',
+    kind: '',
   }
 }
 
@@ -86,8 +94,10 @@ function draftFromEvent(e: CalendarEvent): EventDraft {
     description: e.description ?? '',
     color: e.color,
     subjectId: e.subjectId ?? '',
+    projectId: e.projectId ?? '',
     linkedDocId: e.linkedDocId ?? '',
     recurrence: e.recurrence ?? '',
+    kind: e.kind ?? '',
   }
 }
 
@@ -140,6 +150,7 @@ function EventPill({ event, onClick }: { event: CalendarEvent; onClick: () => vo
 function EventModal({
   draft,
   subjects,
+  projects,
   documents,
   onChange,
   onSave,
@@ -148,6 +159,7 @@ function EventModal({
 }: {
   draft: EventDraft
   subjects: Notebook[]
+  projects: Project[]
   documents: Notebook[]
   onChange: (d: EventDraft) => void
   onSave: () => void
@@ -261,6 +273,37 @@ function EventModal({
 
           <div className="grid grid-cols-2 gap-2">
             <div>
+              <label className={label} htmlFor="cal-ev-kind">Type</label>
+              <select
+                id="cal-ev-kind"
+                value={draft.kind}
+                onChange={(e) => onChange({ ...draft, kind: e.target.value as '' | EventKind })}
+                className={field}
+              >
+                <option value="">— Aucun —</option>
+                {(Object.keys(EVENT_KIND_LABELS) as EventKind[]).map((k) => (
+                  <option key={k} value={k}>{EVENT_KIND_LABELS[k]}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={label} htmlFor="cal-ev-project">Projet</label>
+              <select
+                id="cal-ev-project"
+                value={draft.projectId}
+                onChange={(e) => onChange({ ...draft, projectId: e.target.value })}
+                className={field}
+              >
+                <option value="">— Aucun —</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div>
               <label className={label} htmlFor="cal-ev-subject">Matière</label>
               <select
                 id="cal-ev-subject"
@@ -349,12 +392,13 @@ export function CalendarModule({ data, onDataChange }: ModuleProps) {
   const [draft, setDraft] = useState<EventDraft | null>(null)
   const [subjects, setSubjects] = useState<Notebook[]>([])
   const [documents, setDocuments] = useState<Notebook[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [showSuggest, setShowSuggest] = useState(false)
   const [suggestText, setSuggestText] = useState('')
 
   const today = todayISO()
 
-  // Matières + documents liables (notebooks non supprimés)
+  // Matières + documents liables (notebooks non supprimés) + projets
   useEffect(() => {
     let cancelled = false
     void db.notebooks
@@ -366,6 +410,7 @@ export function CalendarModule({ data, onDataChange }: ModuleProps) {
         setSubjects(sorted.filter((n) => n.type === 'subject'))
         setDocuments(sorted)
       })
+    void listProjects().then((p) => { if (!cancelled) setProjects(p) })
     return () => {
       cancelled = true
     }
@@ -399,8 +444,10 @@ export function CalendarModule({ data, onDataChange }: ModuleProps) {
       ...(draft.endTime ? { endTime: draft.endTime } : {}),
       ...(draft.description.trim() ? { description: draft.description.trim() } : {}),
       ...(draft.subjectId ? { subjectId: draft.subjectId } : {}),
+      ...(draft.projectId ? { projectId: draft.projectId } : {}),
       ...(draft.linkedDocId ? { linkedDocId: draft.linkedDocId } : {}),
       ...(draft.recurrence ? { recurrence: draft.recurrence } : {}),
+      ...(draft.kind ? { kind: draft.kind } : {}),
     }
     const events = draft.id
       ? state.events.map((e) => (e.id === draft.id ? event : e))
@@ -735,6 +782,7 @@ export function CalendarModule({ data, onDataChange }: ModuleProps) {
         <EventModal
           draft={draft}
           subjects={subjects}
+          projects={projects}
           documents={documents}
           onChange={setDraft}
           onSave={saveDraft}

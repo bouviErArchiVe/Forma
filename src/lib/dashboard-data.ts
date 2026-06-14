@@ -13,6 +13,8 @@ export interface UpcomingEvent {
   startTime?: string
   color: string
   subjectId?: string
+  projectId?: string
+  kind?: string
 }
 
 function todayISO(): string {
@@ -28,6 +30,8 @@ interface RawEvent {
   startTime?: string
   color?: string
   subjectId?: string
+  projectId?: string
+  kind?: string
 }
 
 /**
@@ -36,9 +40,10 @@ interface RawEvent {
  */
 export async function upcomingEvents(
   limit = 10,
-  opts: { subjectId?: string } = {},
+  opts: { subjectId?: string; projectId?: string; kinds?: string[]; from?: string; to?: string } = {},
 ): Promise<UpcomingEvent[]> {
   const today = todayISO()
+  const from = opts.from ?? today
   const calendars = await db.notebooks.filter((n) => n.type === 'calendar' && !n.deletedAt).toArray()
   const out: UpcomingEvent[] = []
 
@@ -53,8 +58,11 @@ export async function upcomingEvents(
       continue
     }
     for (const e of events) {
-      if (!e.date || typeof e.title !== 'string' || e.date < today) continue
+      if (!e.date || typeof e.title !== 'string' || e.date < from) continue
+      if (opts.to && e.date > opts.to) continue
       if (opts.subjectId && e.subjectId !== opts.subjectId) continue
+      if (opts.projectId && e.projectId !== opts.projectId) continue
+      if (opts.kinds && !opts.kinds.includes(e.kind ?? '')) continue
       out.push({
         id: `${nb.id}:${e.id ?? e.title}`,
         notebookId: nb.id,
@@ -63,6 +71,8 @@ export async function upcomingEvents(
         ...(e.startTime ? { startTime: e.startTime } : {}),
         color: typeof e.color === 'string' ? e.color : '#3b82f6',
         ...(e.subjectId ? { subjectId: e.subjectId } : {}),
+        ...(e.projectId ? { projectId: e.projectId } : {}),
+        ...(e.kind ? { kind: e.kind } : {}),
       })
     }
   }

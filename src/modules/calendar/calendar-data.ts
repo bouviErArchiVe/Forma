@@ -18,6 +18,18 @@ export const RECURRENCE_LABELS: Record<EventRecurrence, string> = {
   monthly: 'Chaque mois',
 }
 
+/** Type d'événement académique. */
+export type EventKind = 'cours' | 'remise' | 'examen' | 'presentation' | 'laboratoire' | 'autre'
+
+export const EVENT_KIND_LABELS: Record<EventKind, string> = {
+  cours: 'Cours',
+  remise: 'Remise',
+  examen: 'Examen',
+  presentation: 'Présentation',
+  laboratoire: 'Laboratoire',
+  autre: 'Autre',
+}
+
 export interface CalendarEvent {
   id: string
   title: string
@@ -31,10 +43,14 @@ export interface CalendarEvent {
   color: string
   /** Matière associée (id d'un notebook de type 'subject'). */
   subjectId?: string
+  /** Projet associé (id d'un Project). */
+  projectId?: string
   /** Document lié (id d'un notebook) — navigation /document/:id. */
   linkedDocId?: string
   /** Récurrence simple (les occurrences sont générées à la volée). */
   recurrence?: EventRecurrence
+  /** Type académique (cours, remise, examen…). */
+  kind?: EventKind
 }
 
 export interface CalendarState {

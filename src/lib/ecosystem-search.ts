@@ -1,13 +1,21 @@
 /**
- * Recherche écosystème (Search V2) : tâches, projets, fiches normatives et
- * détails constructifs. Complète la recherche de documents/pages
- * (global-search) avec les entités du workspace. Résultats unifiés et navigables.
+ * Recherche écosystème (Search V3) : tâches, projets, fiches normatives,
+ * détails constructifs, quiz, checklists et sessions académiques. Complète la
+ * recherche de documents/pages (global-search) avec les entités du workspace.
  */
 import { db } from '../db'
 import { searchNormative } from './resources/normative'
 import { searchDetails } from './resources/details'
+import { sessionLabel, TERM_LABELS } from '../services/academic'
 
-export type EcosystemHitKind = 'task' | 'project' | 'norme' | 'detail'
+export type EcosystemHitKind =
+  | 'task'
+  | 'project'
+  | 'norme'
+  | 'detail'
+  | 'quiz'
+  | 'checklist'
+  | 'session'
 
 export interface EcosystemHit {
   kind: EcosystemHitKind
@@ -16,13 +24,6 @@ export interface EcosystemHit {
   subtitle: string
   /** Route de navigation. */
   to: string
-}
-
-const KIND_ROUTE: Record<EcosystemHitKind, (id: string) => string> = {
-  task: () => '/tasks',
-  project: (id) => `/projects/${id}`,
-  norme: () => '/resources',
-  detail: () => '/resources',
 }
 
 function normalize(text: string): string {
@@ -46,7 +47,7 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
       hits.push({
         kind: 'task', id: t.id, title: t.title,
         subtitle: `Tâche · ${t.status === 'done' ? 'terminé' : t.status === 'doing' ? 'en cours' : 'à faire'}${t.dueDate ? ` · ${t.dueDate}` : ''}`,
-        to: KIND_ROUTE.task(t.id),
+        to: '/tasks',
       })
     }
   }
@@ -56,18 +57,54 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
   for (const p of projects) {
     const hay = normalize(`${p.name} ${p.description ?? ''}`)
     if (hay.includes(q)) {
-      hits.push({ kind: 'project', id: p.id, title: p.name, subtitle: 'Projet', to: KIND_ROUTE.project(p.id) })
+      hits.push({ kind: 'project', id: p.id, title: p.name, subtitle: 'Projet', to: `/projects/${p.id}` })
+    }
+  }
+
+  // Quiz (titre + questions) → matière liée si présente
+  const quizzes = await db.quizzes.toArray()
+  for (const quiz of quizzes) {
+    const hay = normalize(`${quiz.title} ${quiz.questions.map((qq) => qq.question).join(' ')}`)
+    if (hay.includes(q)) {
+      hits.push({
+        kind: 'quiz', id: quiz.id, title: quiz.title,
+        subtitle: `Quiz · ${quiz.questions.length} question${quiz.questions.length !== 1 ? 's' : ''}`,
+        to: quiz.subjectId ? `/subjects/${quiz.subjectId}` : '/formai',
+      })
+    }
+  }
+
+  // Checklists (titre + items) → projet lié si présent
+  const checklists = await db.checklists.toArray()
+  for (const c of checklists) {
+    const hay = normalize(`${c.title} ${c.items.map((it) => it.text).join(' ')}`)
+    if (hay.includes(q)) {
+      const done = c.items.filter((it) => it.done).length
+      hits.push({
+        kind: 'checklist', id: c.id, title: c.title,
+        subtitle: `Checklist · ${done}/${c.items.length}`,
+        to: c.projectId ? `/projects/${c.projectId}` : '/projects',
+      })
+    }
+  }
+
+  // Sessions académiques (terme + année)
+  const sessions = await db.academicSessions.toArray()
+  for (const s of sessions) {
+    const hay = normalize(`${sessionLabel(s)} ${TERM_LABELS[s.term]} ${s.year} session academique`)
+    if (hay.includes(q)) {
+      hits.push({ kind: 'session', id: s.id, title: sessionLabel(s), subtitle: `Session · ${s.weeks} semaines`, to: '/dashboard' })
     }
   }
 
   // Fiches normatives (catalogue statique)
   for (const s of searchNormative(query)) {
-    hits.push({ kind: 'norme', id: s.id, title: s.title, subtitle: `Norme · ${s.category.toUpperCase()}`, to: KIND_ROUTE.norme(s.id) })
+    hits.push({ kind: 'norme', id: s.id, title: s.title, subtitle: `Norme · ${s.category.toUpperCase()}`, to: '/resources' })
   }
 
   // Détails constructifs (catalogue statique)
   for (const d of searchDetails(query)) {
-    hits.push({ kind: 'detail', id: d.id, title: d.name, subtitle: 'Détail constructif', to: KIND_ROUTE.detail(d.id) })
+    hits.push({ kind: 'detail', id: d.id, title: d.name, subtitle: 'Détail constructif', to: '/resources' })
   }
 
   return hits.slice(0, limit)
