@@ -49,6 +49,13 @@ describe('searchEcosystem', () => {
     expect(hit?.to).toBe('/resources')
   })
 
+  it('trouve des vérifications de conformité (catalogue statique)', async () => {
+    const gc = await searchEcosystem('garde-corps')
+    const hit = gc.find((h) => h.kind === 'compliance')
+    expect(hit).toBeDefined()
+    expect(hit?.to).toBe('/compliance')
+  })
+
   it('les routes de navigation sont correctes', async () => {
     const p = await createProject({ name: 'Cuisine' })
     const hits = await searchEcosystem('cuisine')

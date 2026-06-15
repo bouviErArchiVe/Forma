@@ -34,6 +34,7 @@ const MODULE_SHORTCUTS: { label: string; icon: IconName; to: string }[] = [
   { label: 'Tâches', icon: 'check', to: '/tasks' },
   { label: 'Projets', icon: 'folder', to: '/projects' },
   { label: 'Ressources', icon: 'book', to: '/resources' },
+  { label: 'Conformité', icon: 'check', to: '/compliance' },
   { label: 'Importer', icon: 'upload', to: '/import' },
   { label: 'FormAI', icon: 'sparkles', to: '/formai' },
 ]
@@ -105,7 +106,7 @@ export function DashboardPage() {
       </div>
 
       {/* Raccourcis modules */}
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
+      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-5">
         {MODULE_SHORTCUTS.map((m) => (
           <button
             key={m.to}

@@ -236,6 +236,7 @@ export function SearchPage() {
                         : h.kind === 'project' ? '📁'
                         : h.kind === 'norme' ? '📋'
                         : h.kind === 'material' ? '🧱'
+                        : h.kind === 'compliance' ? '✔️'
                         : h.kind === 'quiz' ? '❓'
                         : h.kind === 'checklist' ? '☑️'
                         : h.kind === 'session' ? '📅'

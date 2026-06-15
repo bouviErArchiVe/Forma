@@ -138,6 +138,25 @@ Ajouts :
 - build vert ;
 - Playwright vert.
 
+Mergé sur `main` le 2026-06-15 (merge commit `fd14fce9`), en même temps que le système de guides (`docs/forma-guide-system-pro`).
+
+### A6 Compliance Checker
+
+Pack livré sur branche `feat/compliance-checker` (à partir de `main` `fd14fce9`).
+
+Ajouts :
+
+- vérificateur de conformité indicatif `/compliance` ;
+- 7 vérifications V1 : escaliers, garde-corps, rampes/accessibilité, issues, portes, stationnement, occupation ;
+- valeurs de référence paramétrables et persistées (store `forma-compliance-params`) ;
+- évaluations déterministes (conforme / non conforme / à vérifier) avec gardes division par zéro ;
+- avertissement permanent « À vérifier dans le texte officiel. Résultat indicatif. » ;
+- aucun article officiel inventé ;
+- FormAI « Expliquer ce résultat » (cloud, optionnel, honnête) ;
+- intégration Search V3 (kind `compliance`) ;
+- route lazy + entrées de navigation (Library + dashboard) ;
+- tests verts, build vert, Playwright vert.
+
 Avant tout travail futur, confirmer si ce pack est bien mergé sur `main`.
 
 ## Tests et chiffres connus
@@ -152,7 +171,8 @@ Chiffres récents vus dans les rapports :
 - 706 tests après Block Library V2 ;
 - 730 tests après Ecosystem Workspace ;
 - 754 tests après Academic + Import + FormAI Actions ;
-- 782 tests après Architecture Calculators Pro.
+- 782 tests après Architecture Calculators Pro ;
+- 807 tests après Compliance Checker.
 
 Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tests réels du repo.
 
@@ -166,6 +186,12 @@ Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tes
 - `feat/forma-ecosystem-workspace` — commit `212a94a`
 - `feat/academic-import-formai` — commit `e7276bd6`
 - `feat/architecture-calculators-pro` — commit `22eb6dc5`
+- `feat/architecture-material-library` — commit `1b01ae9c` (mergé)
+- `feat/construction-details-v2` — commit `a2ca6aba` (mergé)
+- `feat/normative-library-v2` — commit `2efdf726` (mergé)
+- `docs/forma-guide-system-pro` — commit `a3b57524` (mergé)
+- `main` (après merges) — commit `fd14fce9`
+- `feat/compliance-checker` — A6 Compliance Checker
 
 Toujours vérifier l’historique Git réel avant action.
 
