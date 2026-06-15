@@ -56,6 +56,14 @@ describe('searchEcosystem', () => {
     expect(hit?.to).toBe('/compliance')
   })
 
+  it('trouve des hachures (catalogue statique)', async () => {
+    const res = await searchEcosystem('hachure')
+    const hit = res.find((h) => h.kind === 'hatch')
+    expect(hit).toBeDefined()
+    expect(hit?.to).toBe('/resources')
+    expect((await searchEcosystem('gravier')).some((h) => h.kind === 'hatch')).toBe(true)
+  })
+
   it('les routes de navigation sont correctes', async () => {
     const p = await createProject({ name: 'Cuisine' })
     const hits = await searchEcosystem('cuisine')

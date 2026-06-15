@@ -157,6 +157,21 @@ Ajouts :
 - route lazy + entrées de navigation (Library + dashboard) ;
 - tests verts, build vert, Playwright vert.
 
+Mergé sur `main` le 2026-06-15 (fast-forward `53fd48ce`).
+
+### A5 Hatch Library
+
+Pack livré sur branche `feat/hatch-library` (à partir de `main` `53fd48ce`).
+
+Ajouts :
+
+- bibliothèque de 15 hachures techniques (béton, béton armé, bois, acier, isolation, terre, gravier, brique, pierre, membrane, verre, sable, eau, gypse, maçonnerie) ;
+- swatches SVG 80×80 en géométrie explicite, réutilisant le pipeline bloc (`hatchToBlock` → raster → asset Dexie → ImageElement), sans toucher au canvas ;
+- onglet « Hachures » dans Ressources (recherche, aperçu, catégories, copie SVG) ;
+- onglet « Hachures » dans la bibliothèque de blocs (insertion canvas) ;
+- intégration Search V3 (kind `hatch`) ;
+- tests verts, build vert, Playwright vert.
+
 Avant tout travail futur, confirmer si ce pack est bien mergé sur `main`.
 
 ## Tests et chiffres connus
@@ -172,7 +187,8 @@ Chiffres récents vus dans les rapports :
 - 730 tests après Ecosystem Workspace ;
 - 754 tests après Academic + Import + FormAI Actions ;
 - 782 tests après Architecture Calculators Pro ;
-- 807 tests après Compliance Checker.
+- 807 tests après Compliance Checker ;
+- 819 tests après Hatch Library.
 
 Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tests réels du repo.
 

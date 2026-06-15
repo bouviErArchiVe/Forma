@@ -7,6 +7,7 @@ import { db } from '../db'
 import { searchNormative } from './resources/normative'
 import { searchDetails } from './resources/details'
 import { searchMaterials } from './resources/materials'
+import { searchHatches } from './resources/hatches'
 import { searchChecks, COMPLIANCE_CATEGORY_LABELS } from './compliance/checks'
 import { sessionLabel, TERM_LABELS } from '../services/academic'
 
@@ -16,6 +17,7 @@ export type EcosystemHitKind =
   | 'norme'
   | 'detail'
   | 'material'
+  | 'hatch'
   | 'compliance'
   | 'quiz'
   | 'checklist'
@@ -114,6 +116,11 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
   // Matériaux (catalogue statique)
   for (const m of searchMaterials(query)) {
     hits.push({ kind: 'material', id: m.id, title: m.name, subtitle: 'Matériau', to: '/resources' })
+  }
+
+  // Hachures (catalogue statique)
+  for (const h of searchHatches(query)) {
+    hits.push({ kind: 'hatch', id: h.id, title: h.name, subtitle: 'Hachure', to: '/resources' })
   }
 
   // Vérifications de conformité (catalogue statique)
