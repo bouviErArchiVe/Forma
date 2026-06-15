@@ -60,6 +60,72 @@ describe('FORMULAS (bibliothèque)', () => {
   })
 })
 
+// ─── Calculatrices architecture Pro (A7) ──────────────────────────────────────
+
+describe('calculatrices architecture Pro', () => {
+  const val = (id: string, v: Record<string, number>): number => {
+    const r = getFormula(id)!.compute(v)
+    return typeof r === 'number' ? r : r.value
+  }
+
+  it('catalogue étendu avec les catégories Pro', () => {
+    expect(FORMULAS.length).toBeGreaterThanOrEqual(45)
+    expect(FORMULA_CATEGORIES).toEqual(
+      expect.arrayContaining(['Structure', 'Toitures', 'Garde-corps', 'Accessibilité', 'Stationnement', 'Occupation']),
+    )
+  })
+
+  it('module de section et inertie rectangulaires', () => {
+    expect(val('str-module-section', { b: 100, h: 200 })).toBeCloseTo(666666.67, 0)
+    expect(val('str-inertie-rect', { b: 100, h: 200 })).toBeCloseTo(66666666.67, 0)
+  })
+
+  it('contrainte de flexion σ = M/S (MPa)', () => {
+    expect(val('str-contrainte-flexion', { M: 10, S: 666666.67 })).toBeCloseTo(15, 1)
+    expect(Number.isFinite(val('str-contrainte-flexion', { M: 10, S: 0 }))).toBe(false)
+  })
+
+  it('flèche de poutre simple (5wL⁴/384EI)', () => {
+    // w=5 kN/m, L=4 m, E=200000 MPa, I=1e8 mm⁴ → ≈ 0.833 mm
+    expect(val('str-fleche-repartie', { w: 5, L: 4, E: 200000, I: 1e8 })).toBeCloseTo(0.833, 2)
+  })
+
+  it('élancement KL/r', () => {
+    expect(val('str-elancement', { K: 1, L: 3000, r: 40 })).toBe(75)
+    expect(Number.isFinite(val('str-elancement', { K: 1, L: 3000, r: 0 }))).toBe(false)
+  })
+
+  it('longueur de chevron (Pythagore)', () => {
+    expect(val('toit-chevron', { course: 3000, elevation: 4000 })).toBe(5000)
+  })
+
+  it('surface réelle de toiture en pente ≥ projetée', () => {
+    expect(val('toit-surface-pente', { aire: 50, p: 100 })).toBeGreaterThan(50)
+  })
+
+  it('garde-corps — nombre de barreaux respecte l’espacement', () => {
+    const n = val('gc-nb-barreaux', { W: 1500, gap: 100, d: 20 })
+    const realGap = (1500 - n * 20) / (n + 1)
+    expect(realGap).toBeLessThanOrEqual(100)
+    expect(n).toBeGreaterThan(0)
+  })
+
+  it('rampe — longueur horizontale pour une dénivelée', () => {
+    // 400 mm à 8 % → 5 m
+    expect(val('acc-rampe-longueur', { denivele: 400, p: 8 })).toBeCloseTo(5, 5)
+  })
+
+  it('stationnement — cases requises (arrondi supérieur)', () => {
+    expect(val('stat-cases-surface', { surface: 510, ratio: 25 })).toBe(21)
+    expect(val('stat-cases-accessibles', { total: 100, ratio: 25 })).toBe(4)
+  })
+
+  it('occupation — nombre de personnes (plancher)', () => {
+    expect(val('occ-nb-personnes', { aire: 200, facteur: 1.2 })).toBe(166)
+    expect(val('occ-largeur-evac', { personnes: 150, facteur: 6.1 })).toBeCloseTo(915, 0)
+  })
+})
+
 // ─── Moteur de calcul (sans eval) ─────────────────────────────────────────────
 
 describe('calc-engine evaluate', () => {
