@@ -462,6 +462,289 @@ export const FORMULAS: FormulaDef[] = [
     example: 'Ex. : a=3 m, b=4 m → 5 m (équerre 3-4-5)',
     compute: ({ a, b }) => Math.hypot(a, b),
   },
+
+  // ─── Structure (Pro — A7) ─────────────────────────────────────────────────────
+  {
+    id: 'str-module-section',
+    category: 'Structure',
+    name: 'Module de section rectangulaire (bh²/6)',
+    description: 'Module de section élastique d’une section rectangulaire pleine : S = b·h² / 6 (axe fort, flexion selon h).',
+    variables: [
+      { id: 'b', label: 'Largeur de la section', unit: 'mm' },
+      { id: 'h', label: 'Hauteur de la section', unit: 'mm' },
+    ],
+    resultUnit: 'mm³',
+    example: 'Ex. : b=100 mm, h=200 mm → 666 667 mm³',
+    compute: ({ b, h }) => (b > 0 && h > 0 ? (b * h * h) / 6 : NaN),
+  },
+  {
+    id: 'str-inertie-rect',
+    category: 'Structure',
+    name: 'Moment d’inertie rectangulaire (bh³/12)',
+    description: 'Moment d’inertie d’une section rectangulaire pleine par rapport à son axe fort : I = b·h³ / 12.',
+    variables: [
+      { id: 'b', label: 'Largeur de la section', unit: 'mm' },
+      { id: 'h', label: 'Hauteur de la section', unit: 'mm' },
+    ],
+    resultUnit: 'mm⁴',
+    example: 'Ex. : b=100 mm, h=200 mm → 66 666 667 mm⁴',
+    compute: ({ b, h }) => (b > 0 && h > 0 ? (b * h * h * h) / 12 : NaN),
+  },
+  {
+    id: 'str-contrainte-flexion',
+    category: 'Structure',
+    name: 'Contrainte de flexion (σ = M/S)',
+    description: 'Contrainte de flexion maximale à partir du moment et du module de section : σ = M / S. Indicatif — à comparer à la résistance admissible du matériau.',
+    variables: [
+      { id: 'M', label: 'Moment fléchissant', unit: 'kN·m' },
+      { id: 'S', label: 'Module de section', unit: 'mm³' },
+    ],
+    resultUnit: 'MPa',
+    example: 'Ex. : M=10 kN·m, S=666 667 mm³ → 15 MPa',
+    compute: ({ M, S }) => {
+      if (S <= 0) return NaN
+      const sigma = (M * 1e6) / S // kN·m → N·mm puis / mm³ = MPa
+      return { value: sigma, note: 'Indicatif — comparer à la contrainte admissible du matériau (à vérifier au calcul/code).' }
+    },
+  },
+  {
+    id: 'str-fleche-repartie',
+    category: 'Structure',
+    name: 'Flèche — poutre simple (5wL⁴/384EI)',
+    description: 'Flèche maximale au centre d’une poutre simplement appuyée sous charge répartie : δ = 5·w·L⁴ / (384·E·I). Indicatif.',
+    variables: [
+      { id: 'w', label: 'Charge répartie', unit: 'kN/m' },
+      { id: 'L', label: 'Portée', unit: 'm' },
+      { id: 'E', label: 'Module d’élasticité', unit: 'MPa' },
+      { id: 'I', label: 'Moment d’inertie', unit: 'mm⁴' },
+    ],
+    resultUnit: 'mm',
+    example: 'Ex. : w=5 kN/m, L=4 m, E=200 000 MPa, I=1e8 mm⁴ → 0,8 mm',
+    compute: ({ w, L, E, I }) => {
+      if (E <= 0 || I <= 0) return NaN
+      const Lmm = L * 1000
+      // w en kN/m ≡ N/mm ; E en N/mm² ; I en mm⁴ → δ en mm
+      const delta = (5 * w * Lmm * Lmm * Lmm * Lmm) / (384 * E * I)
+      return { value: delta, note: `Poutre simple, charge répartie. Flèche admissible L/360 ≈ ${round(Lmm / 360, 1)} mm — indicatif.` }
+    },
+  },
+  {
+    id: 'str-elancement',
+    category: 'Structure',
+    name: 'Élancement d’une colonne (KL/r)',
+    description: 'Rapport d’élancement d’un poteau : λ = K·L / r. Plus il est élevé, plus le risque de flambement est grand.',
+    variables: [
+      { id: 'K', label: 'Facteur de longueur effective', unit: '' },
+      { id: 'L', label: 'Longueur non supportée', unit: 'mm' },
+      { id: 'r', label: 'Rayon de giration', unit: 'mm' },
+    ],
+    resultUnit: '',
+    example: 'Ex. : K=1, L=3000 mm, r=40 mm → 75',
+    compute: ({ K, L, r }) => {
+      if (r <= 0) return NaN
+      return { value: (K * L) / r, note: 'Indicatif — un élancement élevé augmente le risque de flambement (vérifier au calcul).' }
+    },
+  },
+
+  // ─── Toitures (Pro — A7) ──────────────────────────────────────────────────────
+  {
+    id: 'toit-chevron',
+    category: 'Toitures',
+    name: 'Longueur de chevron',
+    description: 'Longueur d’un chevron à partir de la course horizontale et de l’élévation : √(course² + élévation²).',
+    variables: [
+      { id: 'course', label: 'Course horizontale', unit: 'mm' },
+      { id: 'elevation', label: 'Élévation', unit: 'mm' },
+    ],
+    resultUnit: 'mm',
+    example: 'Ex. : course=3000 mm, élévation=1500 mm → 3354 mm (hors débord)',
+    compute: ({ course, elevation }) => {
+      const v = Math.hypot(course, elevation)
+      return { value: v, note: 'Longueur théorique hors débord et hors queue de chevron.' }
+    },
+  },
+  {
+    id: 'toit-surface-pente',
+    category: 'Toitures',
+    name: 'Surface réelle de toiture (en pente)',
+    description: 'Surface réelle d’un pan de toiture à partir de la surface projetée en plan et de la pente : aire / cos(angle).',
+    variables: [
+      { id: 'aire', label: 'Surface projetée (en plan)', unit: 'm²' },
+      { id: 'p', label: 'Pente', unit: '%' },
+    ],
+    resultUnit: 'm²',
+    example: 'Ex. : 50 m² projetés à 33 % → 52,7 m² réels',
+    compute: ({ aire, p }) => {
+      const angle = Math.atan(p / 100)
+      const real = aire / Math.cos(angle)
+      return { value: real, note: `Facteur de pente ≈ ${round(1 / Math.cos(angle), 3)} (hors débords et pertes).` }
+    },
+  },
+
+  // ─── Garde-corps (Pro — A7) ───────────────────────────────────────────────────
+  {
+    id: 'gc-nb-barreaux',
+    category: 'Garde-corps',
+    name: 'Garde-corps — nombre de barreaux',
+    description: 'Nombre de barreaux verticaux pour respecter un espacement libre maximal entre barreaux (l’espacement maximal dépend du code).',
+    variables: [
+      { id: 'W', label: 'Largeur libre entre poteaux', unit: 'mm' },
+      { id: 'gap', label: 'Espacement libre maximal', unit: 'mm' },
+      { id: 'd', label: 'Largeur d’un barreau', unit: 'mm' },
+    ],
+    resultUnit: 'barreaux',
+    example: 'Ex. : W=1500 mm, espacement max 100 mm, barreau 20 mm → 12 barreaux',
+    compute: ({ W, gap, d }) => {
+      if (W <= 0 || gap <= 0 || d < 0) return NaN
+      const n = Math.max(0, Math.ceil((W - gap) / (gap + d)))
+      const realGap = (W - n * d) / (n + 1)
+      return { value: n, note: `Espacement réel ≈ ${round(realGap, 1)} mm. Espacement maximal selon le code (souvent ~100 mm) — à vérifier.` }
+    },
+  },
+  {
+    id: 'gc-moment-ancrage',
+    category: 'Garde-corps',
+    name: 'Garde-corps — moment au pied',
+    description: 'Moment de renversement au pied par mètre courant, sous une charge horizontale linéaire en main courante : M = w · h.',
+    variables: [
+      { id: 'w', label: 'Charge horizontale linéaire', unit: 'kN/m' },
+      { id: 'h', label: 'Hauteur du garde-corps', unit: 'm' },
+    ],
+    resultUnit: 'kN·m/m',
+    example: 'Ex. : w=0,75 kN/m, h=1,07 m → 0,80 kN·m/m',
+    compute: ({ w, h }) => ({ value: w * h, note: 'La charge de calcul dépend de l’usage — à vérifier au code. Sert à dimensionner l’ancrage.' }),
+  },
+
+  // ─── Accessibilité (Pro — A7) ─────────────────────────────────────────────────
+  {
+    id: 'acc-rampe-longueur',
+    category: 'Accessibilité',
+    name: 'Rampe — longueur horizontale',
+    description: 'Longueur horizontale d’une rampe pour franchir une dénivelée à une pente donnée (la pente maximale dépend du code).',
+    variables: [
+      { id: 'denivele', label: 'Dénivelée à franchir', unit: 'mm' },
+      { id: 'p', label: 'Pente visée', unit: '%' },
+    ],
+    resultUnit: 'm',
+    example: 'Ex. : 400 mm à 8 % → 5 m (hors paliers)',
+    compute: ({ denivele, p }) => {
+      if (p <= 0) return NaN
+      const L = denivele / (10 * p) // (mm/1000) / (p/100) = mm/(10p) en m
+      return { value: L, note: 'Hors paliers de repos. Pente maximale (souvent ~1:12 ≈ 8,33 %) — à vérifier au code.' }
+    },
+  },
+  {
+    id: 'acc-rampe-paliers',
+    category: 'Accessibilité',
+    name: 'Rampe — nombre de paliers de repos',
+    description: 'Nombre de paliers de repos intermédiaires selon une distance maximale entre paliers (valeur selon le code).',
+    variables: [
+      { id: 'L', label: 'Longueur de la rampe', unit: 'm' },
+      { id: 'interval', label: 'Distance max entre paliers', unit: 'm' },
+    ],
+    resultUnit: 'paliers',
+    example: 'Ex. : rampe 30 m, palier tous les 9 m → 3 paliers',
+    compute: ({ L, interval }) => {
+      if (interval <= 0) return NaN
+      const n = Math.max(0, Math.ceil(L / interval) - 1)
+      return { value: n, note: 'Paliers intermédiaires (hors paliers de tête/pied). Distances selon le code — à vérifier.' }
+    },
+  },
+  {
+    id: 'acc-pente-verif',
+    category: 'Accessibilité',
+    name: 'Rampe — vérification de pente',
+    description: 'Pente d’une rampe à partir de la dénivelée et de la longueur horizontale, exprimée en pourcentage.',
+    variables: [
+      { id: 'denivele', label: 'Dénivelée', unit: 'mm' },
+      { id: 'L', label: 'Longueur horizontale', unit: 'mm' },
+    ],
+    resultUnit: '%',
+    example: 'Ex. : 400 mm sur 5000 mm → 8 %',
+    compute: ({ denivele, L }) => {
+      if (L <= 0) return NaN
+      const p = (denivele / L) * 100
+      return { value: p, note: 'Comparer à la pente maximale admissible (à vérifier au code).' }
+    },
+  },
+
+  // ─── Stationnement (Pro — A7) ─────────────────────────────────────────────────
+  {
+    id: 'stat-cases-surface',
+    category: 'Stationnement',
+    name: 'Cases requises (ratio par surface)',
+    description: 'Nombre de cases de stationnement requises selon un ratio « 1 case par X m² » (le ratio dépend du zonage/usage).',
+    variables: [
+      { id: 'surface', label: 'Surface de plancher', unit: 'm²' },
+      { id: 'ratio', label: 'Surface par case', unit: 'm²/case' },
+    ],
+    resultUnit: 'cases',
+    example: 'Ex. : 500 m², 1 case / 25 m² → 20 cases',
+    compute: ({ surface, ratio }) => {
+      if (ratio <= 0) return NaN
+      return { value: Math.ceil(surface / ratio), note: 'Ratio selon le règlement de zonage municipal et l’usage — à vérifier.' }
+    },
+  },
+  {
+    id: 'stat-cases-accessibles',
+    category: 'Stationnement',
+    name: 'Cases accessibles requises',
+    description: 'Nombre de cases accessibles selon un ratio « 1 accessible par X cases » (le ratio dépend du code/règlement).',
+    variables: [
+      { id: 'total', label: 'Nombre total de cases', unit: 'cases' },
+      { id: 'ratio', label: 'Cases par case accessible', unit: 'cases' },
+    ],
+    resultUnit: 'cases',
+    example: 'Ex. : 100 cases, 1 accessible / 25 → 4 cases accessibles',
+    compute: ({ total, ratio }) => {
+      if (ratio <= 0) return NaN
+      return { value: Math.max(1, Math.ceil(total / ratio)), note: 'Ratio et minimum selon le code/règlement applicable — à vérifier.' }
+    },
+  },
+  {
+    id: 'stat-cases-rangee',
+    category: 'Stationnement',
+    name: 'Cases sur une rangée',
+    description: 'Nombre de cases en enfilade sur une longueur donnée, selon la largeur de case.',
+    variables: [
+      { id: 'L', label: 'Longueur disponible', unit: 'm' },
+      { id: 'larg', label: 'Largeur d’une case', unit: 'm' },
+    ],
+    resultUnit: 'cases',
+    example: 'Ex. : 30 m, cases de 2,6 m → 11 cases',
+    compute: ({ L, larg }) => (larg > 0 ? Math.floor(L / larg) : NaN),
+  },
+
+  // ─── Occupation (Pro — A7) ────────────────────────────────────────────────────
+  {
+    id: 'occ-nb-personnes',
+    category: 'Occupation',
+    name: 'Nombre de personnes (charge d’occupants)',
+    description: 'Estimation du nombre de personnes selon l’aire et une superficie par personne (le facteur dépend de l’usage selon le code).',
+    variables: [
+      { id: 'aire', label: 'Aire de plancher', unit: 'm²' },
+      { id: 'facteur', label: 'Superficie par personne', unit: 'm²/pers' },
+    ],
+    resultUnit: 'personnes',
+    example: 'Ex. : 200 m², 1,2 m²/pers → 166 personnes',
+    compute: ({ aire, facteur }) => {
+      if (facteur <= 0) return NaN
+      return { value: Math.floor(aire / facteur), note: 'Facteur d’aire par personne selon l’usage (CNB) — à vérifier.' }
+    },
+  },
+  {
+    id: 'occ-largeur-evac',
+    category: 'Occupation',
+    name: 'Largeur d’évacuation requise',
+    description: 'Largeur totale des moyens d’évacuation selon le nombre de personnes et un facteur de largeur par personne (selon le code).',
+    variables: [
+      { id: 'personnes', label: 'Nombre de personnes', unit: 'pers' },
+      { id: 'facteur', label: 'Largeur par personne', unit: 'mm/pers' },
+    ],
+    resultUnit: 'mm',
+    example: 'Ex. : 150 personnes, 6,1 mm/pers → 915 mm',
+    compute: ({ personnes, facteur }) => ({ value: personnes * facteur, note: 'Facteur de largeur par personne selon l’usage et le type de moyen d’évacuation (CNB) — à vérifier.' }),
+  },
 ]
 
 /** Catégories dans l'ordre de déclaration (sans doublons). */
