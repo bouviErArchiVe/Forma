@@ -22,8 +22,9 @@ import { buildParametricBlock, PARAMETRIC_DEFS, type ParametricDef } from '../..
 import { CONSTRUCTION_DETAILS, detailToBlock, searchDetails } from '../../lib/resources/details'
 import { HATCHES, hatchToBlock, searchHatches } from '../../lib/resources/hatches'
 import { SYMBOLS, symbolToBlock, searchSymbols } from '../../lib/resources/symbols'
-import { LEGENDS, legendToResource, searchLegends } from '../../lib/resources/legends'
+import { LEGENDS, legendToResource, searchLegends, generateUsageLegend } from '../../lib/resources/legends'
 import { resourceToBlock } from '../../lib/resources/resourceToBlock'
+import { collectResourceUsage } from '../../lib/resources/resourceUsage'
 import { resolveAssetUrl } from '../../lib/assets'
 import { useBlockLibraryStore } from '../../stores/blockLibraryStore'
 import { useToastStore } from '../../stores/toastStore'
@@ -77,10 +78,13 @@ export function BlockLibraryPanel({
   notebookId,
   onPick,
   onClose,
+  pageImages = [],
 }: {
   notebookId: string
   onPick: (block: DrawingBlock) => void
   onClose: () => void
+  /** Éléments de la page courante (pour générer une légende des ressources utilisées). */
+  pageImages?: { blockId?: string }[]
 }) {
   const { unit, favorites, recents, customBlocks, setUnit, toggleFavorite, addCustomBlock, removeCustomBlock } =
     useBlockLibraryStore()
@@ -218,6 +222,26 @@ export function BlockLibraryPanel({
             </button>
           ))}
         </div>
+
+        {/* Action : légende auto depuis les ressources de la page (onglet Légendes) */}
+        {category === 'legend' && (
+          <button
+            type="button"
+            onClick={() => {
+              const usage = collectResourceUsage(pageImages)
+              const used = usage.entries.flatMap((e) => e.resource.type === 'legend' ? [] : [e.resource])
+              if (used.length === 0) {
+                useToastStore.getState().show('Aucune ressource détectée sur cette page')
+                return
+              }
+              onPick(resourceToBlock(generateUsageLegend(used)))
+            }}
+            className="shrink-0 mb-2 w-full text-[11px] px-2.5 py-1.5 rounded-lg bg-forma-accent/10 border border-forma-accent/30 text-forma-accent hover:bg-forma-accent/15 transition-colors inline-flex items-center justify-center gap-1.5"
+          >
+            <Icon name="sparkles" className="w-3.5 h-3.5" />
+            Générer une légende depuis cette page
+          </button>
+        )}
 
         {/* Compteur de résultats */}
         <div className="shrink-0 text-[10px] text-forma-muted mb-1 px-0.5">

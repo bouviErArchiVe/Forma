@@ -1202,6 +1202,7 @@ export const PageCanvas = forwardRef<PageCanvasHandle, PageCanvasProps>(function
       {showBlockLibrary && (
         <BlockLibraryPanel
           notebookId={local.notebookId}
+          pageImages={local.images}
           onPick={(block) => {
             // Clic = insertion au centre visible du viewport (fallback centre page).
             insertBlockAt(block, viewportCenterPt())

@@ -216,6 +216,17 @@ Pack livré sur branche `feat/resource-factory-details-legends` (à partir de `m
 - Légendes V1 (`src/lib/resources/legends.ts`) : 5 légendes (matériaux, hachures, symboles, détails, annotations), insérables via le pipeline (`legendToResource` → bloc `annotations`) ; onglet « Légendes » dans Ressources + dans la bibliothèque de blocs ; Search V3 (kind `legend`). Future-ready pour la génération automatique à partir des ressources d'un carnet.
 - Hachures / symboles non régressés ; aucune modification du canvas. Tests verts, build vert, Playwright vert.
 
+Mergé sur `main` le 2026-06-15 (fast-forward `363e71f2`).
+
+### Resource Factory Phase 3 (auto-légendes + resource usage)
+
+Pack livré sur branche `feat/auto-legends-resource-usage` (à partir de `main` `363e71f2`).
+
+- `src/lib/resources/resourceUsage.ts` : détection lecture seule des ressources Factory insérées dans une page à partir des `ImageElement.blockId` (`<type>-<resourceId>`). `parseResourceBlockId`, `resolveUsedResource`, `collectResourceUsage` → ressources uniques, occurrences, types, catégories. Les blocs hors catalogues Factory sont ignorés proprement ; aucune modification du canvas ni de Dexie.
+- `generateUsageLegend(resources)` dans `legends.ts` : génère une légende `GraphicResource` (titre + lignes « échantillon réel + nom ») à partir des ressources utilisées ; état vide propre ; insérable via le pipeline existant (`resourceToBlock` → raster → asset Dexie → ImageElement).
+- UI : bouton « Générer une légende depuis cette page » dans l'onglet Légendes de la bibliothèque de blocs (la page courante est passée via `pageImages`). Insertion réelle vérifiée (bloc `legend-auto-…`, asset Dexie, survit au reload).
+- Légendes statiques V1 non régressées. Tests verts, build vert, Playwright vert.
+
 Avant tout travail futur, confirmer si ce pack est bien mergé sur `main`.
 
 ## Tests et chiffres connus
@@ -234,7 +245,8 @@ Chiffres récents vus dans les rapports :
 - 807 tests après Compliance Checker ;
 - 819 tests après Hatch Library ;
 - 847 tests après Architecture Resource Factory (A4 + A8 + boost A3) ;
-- 854 tests après Resource Factory Phase 2 (détails migrés + 103 détails + légendes V1).
+- 854 tests après Resource Factory Phase 2 (détails migrés + 103 détails + légendes V1) ;
+- 865 tests après Resource Factory Phase 3 (auto-légendes + resource usage).
 
 Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tests réels du repo.
 
@@ -256,7 +268,8 @@ Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tes
 - `feat/compliance-checker` — commit `53fd48ce` (mergé)
 - `feat/hatch-library` — commit `bf7193d2` (mergé)
 - `feat/architecture-resource-factory` — commit `29575206` (mergé)
-- `feat/resource-factory-details-legends` — détails migrés + 103 détails + légendes V1
+- `feat/resource-factory-details-legends` — commit `363e71f2` (mergé)
+- `feat/auto-legends-resource-usage` — resource usage + auto-légendes (Phase 3)
 
 Toujours vérifier l’historique Git réel avant action.
 

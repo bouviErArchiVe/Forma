@@ -174,3 +174,87 @@ export function resolveLegendBlock(blockId: string): DrawingBlock | undefined {
   const legend = getLegend(blockId.slice('legend-'.length))
   return legend ? resourceToBlock(legendToResource(legend)) : undefined
 }
+
+// ─── Génération automatique de légende ──────────────────────────────────────
+
+function round(n: number, d = 2): number {
+  const f = 10 ** d
+  return Math.round(n * f) / f
+}
+
+function escapeXml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+/** Rend l'échantillon d'une ressource, mis à l'échelle dans une cellule carrée. */
+function renderSwatch(resource: GraphicResource, x: number, y: number, cell: number): string {
+  const parts = resource.viewBox.split(/\s+/).map(Number)
+  const vw = parts[2] || resource.defaultWidth || cell
+  const vh = parts[3] || resource.defaultHeight || cell
+  const s = cell / Math.max(vw, vh)
+  const ox = x + (cell - vw * s) / 2
+  const oy = y + (cell - vh * s) / 2
+  return `<g transform="translate(${round(ox)},${round(oy)}) scale(${round(s, 3)})">${resource.svg}</g>`
+}
+
+const GEN_W = 240
+const GEN_TITLE_H = 34
+const GEN_ROW_H = 24
+const GEN_CELL = 18
+const GEN_MAX_ROWS = 18
+
+/**
+ * Génère une légende `GraphicResource` à partir de ressources (typiquement
+ * celles utilisées dans un carnet). Chaque ligne montre l'échantillon réel de
+ * la ressource et son nom. Insérable via le pipeline bloc existant.
+ */
+export function generateUsageLegend(
+  resources: GraphicResource[],
+  opts: { title?: string } = {},
+): GraphicResource {
+  const title = opts.title ?? 'Légende — ressources utilisées'
+  const rows = resources.slice(0, GEN_MAX_ROWS)
+  const extra = resources.length - rows.length
+  const bodyRows = rows.length + (extra > 0 ? 1 : 0)
+  const height = GEN_TITLE_H + Math.max(1, bodyRows) * GEN_ROW_H + 8
+
+  let body =
+    `<rect x="4" y="4" width="${GEN_W - 8}" height="${height - 8}" rx="6"/>` +
+    `<text x="14" y="24" font-size="12" fill="currentColor" stroke="none">${escapeXml(title)}</text>` +
+    `<path d="M12 ${GEN_TITLE_H - 2} H${GEN_W - 12}"/>`
+
+  if (rows.length === 0) {
+    body += `<text x="14" y="${GEN_TITLE_H + 18}" font-size="11" fill="currentColor" stroke="none">Aucune ressource détectée sur cette page.</text>`
+  } else {
+    rows.forEach((r, i) => {
+      const rowY = GEN_TITLE_H + i * GEN_ROW_H
+      body += renderSwatch(r, 14, rowY + (GEN_ROW_H - GEN_CELL) / 2, GEN_CELL)
+      body += `<text x="${14 + GEN_CELL + 8}" y="${rowY + GEN_ROW_H / 2 + 4}" font-size="11" fill="currentColor" stroke="none">${escapeXml(r.name)}</text>`
+    })
+    if (extra > 0) {
+      const rowY = GEN_TITLE_H + rows.length * GEN_ROW_H
+      body += `<text x="14" y="${rowY + GEN_ROW_H / 2 + 4}" font-size="10" fill="currentColor" stroke="none">+ ${extra} autre(s)…</text>`
+    }
+  }
+
+  const typeTags = [...new Set(resources.map((r) => r.type))]
+  return {
+    id: `auto-${Date.now()}`,
+    type: 'legend',
+    name: title,
+    category: 'generee',
+    categoryLabel: 'Générée',
+    description: `Légende générée à partir de ${resources.length} ressource(s) utilisée(s).`,
+    tags: ['légende', 'générée', ...typeTags],
+    svg: body,
+    viewBox: `0 0 ${GEN_W} ${height}`,
+    defaultWidth: GEN_W,
+    defaultHeight: height,
+    searchText: '',
+    insertable: true,
+    disclaimer: LEGEND_DISCLAIMER,
+    sourceType: 'svg-block',
+    blockCategory: 'annotations',
+    blockTagPrefix: 'légende',
+  }
+}
