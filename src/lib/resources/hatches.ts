@@ -12,6 +12,8 @@
  * légendes.
  */
 import type { DrawingBlock } from '../blocks/types'
+import { buildSearchText, type GraphicResource } from './resourceTypes'
+import { resourceToBlock } from './resourceToBlock'
 
 export type HatchCategory =
   | 'mineral'
@@ -271,17 +273,30 @@ export function resolveHatchBlock(blockId: string): DrawingBlock | undefined {
   return hatch ? hatchToBlock(hatch) : undefined
 }
 
-/** Convertit une hachure en DrawingBlock pour l'insertion dans un dessin. */
-export function hatchToBlock(hatch: Hatch): DrawingBlock {
+/** Adapte une hachure vers la forme commune `GraphicResource` (Resource Factory). */
+export function hatchToResource(hatch: Hatch): GraphicResource {
   return {
-    id: `hatch-${hatch.id}`,
+    id: hatch.id,
+    type: 'hatch',
     name: hatch.name,
-    category: 'annotations',
-    unitSystem: 'metric',
-    tags: ['hachure', ...hatch.tags],
+    category: hatch.category,
+    categoryLabel: HATCH_CATEGORY_LABELS[hatch.category],
     description: hatch.description,
+    tags: hatch.tags,
+    svg: hatch.svgBody,
+    viewBox: `0 0 ${hatch.size} ${hatch.size}`,
     defaultWidth: hatch.size,
     defaultHeight: hatch.size,
-    svgBody: hatch.svgBody,
+    searchText: buildSearchText([hatch.name, hatch.description, hatch.tags, hatch.category, HATCH_CATEGORY_LABELS[hatch.category]]),
+    insertable: true,
+    disclaimer: HATCH_DISCLAIMER,
+    sourceType: 'svg-block',
+    blockCategory: 'annotations',
+    blockTagPrefix: 'hachure',
   }
+}
+
+/** Convertit une hachure en DrawingBlock pour l'insertion dans un dessin. */
+export function hatchToBlock(hatch: Hatch): DrawingBlock {
+  return resourceToBlock(hatchToResource(hatch))
 }

@@ -64,6 +64,22 @@ describe('searchEcosystem', () => {
     expect((await searchEcosystem('gravier')).some((h) => h.kind === 'hatch')).toBe(true)
   })
 
+  it('trouve des symboles techniques (catalogue statique)', async () => {
+    const res = await searchEcosystem('symbole')
+    const hit = res.find((h) => h.kind === 'symbol')
+    expect(hit).toBeDefined()
+    expect(hit?.to).toBe('/resources')
+    expect((await searchEcosystem('nord')).some((h) => h.kind === 'symbol')).toBe(true)
+  })
+
+  it('trouve des templates architecture (catalogue statique)', async () => {
+    const res = await searchEcosystem('rapport technique')
+    const hit = res.find((h) => h.kind === 'template')
+    expect(hit).toBeDefined()
+    expect(hit?.to).toBe('/resources')
+    expect((await searchEcosystem('carnet de chantier')).some((h) => h.kind === 'template')).toBe(true)
+  })
+
   it('les routes de navigation sont correctes', async () => {
     const p = await createProject({ name: 'Cuisine' })
     const hits = await searchEcosystem('cuisine')

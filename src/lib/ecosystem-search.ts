@@ -8,6 +8,8 @@ import { searchNormative } from './resources/normative'
 import { searchDetails } from './resources/details'
 import { searchMaterials } from './resources/materials'
 import { searchHatches } from './resources/hatches'
+import { searchSymbols } from './resources/symbols'
+import { searchTemplates, TEMPLATE_CATEGORY_LABELS } from './resources/templates'
 import { searchChecks, COMPLIANCE_CATEGORY_LABELS } from './compliance/checks'
 import { sessionLabel, TERM_LABELS } from '../services/academic'
 
@@ -18,6 +20,8 @@ export type EcosystemHitKind =
   | 'detail'
   | 'material'
   | 'hatch'
+  | 'symbol'
+  | 'template'
   | 'compliance'
   | 'quiz'
   | 'checklist'
@@ -121,6 +125,16 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
   // Hachures (catalogue statique)
   for (const h of searchHatches(query)) {
     hits.push({ kind: 'hatch', id: h.id, title: h.name, subtitle: 'Hachure', to: '/resources' })
+  }
+
+  // Symboles techniques (catalogue statique)
+  for (const s of searchSymbols(query)) {
+    hits.push({ kind: 'symbol', id: s.id, title: s.name, subtitle: 'Symbole', to: '/resources' })
+  }
+
+  // Templates architecture (catalogue statique)
+  for (const t of searchTemplates(query)) {
+    hits.push({ kind: 'template', id: t.id, title: t.name, subtitle: `Template · ${TEMPLATE_CATEGORY_LABELS[t.category]}`, to: '/resources' })
   }
 
   // Vérifications de conformité (catalogue statique)

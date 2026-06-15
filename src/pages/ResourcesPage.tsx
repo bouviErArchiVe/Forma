@@ -5,7 +5,7 @@
  * officielle. Les détails sont copiables (markdown) pour insertion ultérieure.
  */
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Icon } from '../components/ui/Icon'
 import { getProvider, resolveProviderSettings } from '../services/ai/providers'
 import { useToastStore } from '../stores/toastStore'
@@ -37,19 +37,21 @@ import {
   type Material,
   type MaterialCategory,
 } from '../lib/resources/materials'
+import { HATCHES, hatchToResource } from '../lib/resources/hatches'
+import { SYMBOLS, symbolToResource } from '../lib/resources/symbols'
 import {
-  HATCH_CATEGORY_LABELS,
-  HATCH_DISCLAIMER,
-  hatchCategories,
-  hatchToBlock,
-  searchHatches,
-  type Hatch,
-  type HatchCategory,
-} from '../lib/resources/hatches'
+  TEMPLATE_CATEGORY_LABELS,
+  createDocumentFromTemplate,
+  searchTemplates,
+  templateCategories,
+  type ArchitectureTemplate,
+  type TemplateCategory,
+} from '../lib/resources/templates'
+import { ResourceCatalog } from '../components/resources/ResourceCatalog'
 import { useResourceFavoritesStore } from '../stores/resourceFavoritesStore'
 import { useResourceNotesStore } from '../stores/resourceNotesStore'
 
-type MainTab = 'normes' | 'details' | 'materiaux' | 'hachures'
+type MainTab = 'normes' | 'details' | 'materiaux' | 'hachures' | 'symboles' | 'templates'
 
 export function ResourcesPage() {
   const [tab, setTab] = useState<MainTab>('normes')
@@ -73,6 +75,8 @@ export function ResourcesPage() {
           { id: 'materiaux' as MainTab, label: 'Matériaux' },
           { id: 'details' as MainTab, label: 'Détails constructifs' },
           { id: 'hachures' as MainTab, label: 'Hachures' },
+          { id: 'symboles' as MainTab, label: 'Symboles' },
+          { id: 'templates' as MainTab, label: 'Templates' },
         ]).map((t) => (
           <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${tab === t.id ? 'bg-forma-accent text-white' : 'text-forma-muted hover:text-forma-text border border-forma-border'}`}>
             {t.label}
@@ -80,7 +84,7 @@ export function ResourcesPage() {
         ))}
       </div>
 
-      {tab === 'normes' ? <NormativeTab /> : tab === 'materiaux' ? <MaterialsTab /> : tab === 'hachures' ? <HatchesTab /> : <DetailsTab />}
+      {tab === 'normes' ? <NormativeTab /> : tab === 'materiaux' ? <MaterialsTab /> : tab === 'hachures' ? <HatchesTab /> : tab === 'symboles' ? <SymbolsTab /> : tab === 'templates' ? <TemplatesTab /> : <DetailsTab />}
     </div>
   )
 }
@@ -485,64 +489,83 @@ function MaterialsTab() {
   )
 }
 
-// ─── Hachures ─────────────────────────────────────────────────────────────────
+// ─── Hachures & Symboles (via Resource Factory partagée) ──────────────────────
 
 function HatchesTab() {
-  const [category, setCategory] = useState<HatchCategory | 'all'>('all')
+  const resources = useMemo(() => HATCHES.map(hatchToResource), [])
+  return <ResourceCatalog resources={resources} searchPlaceholder="Rechercher une hachure…" insertTabLabel="Hachures" emptyLabel="Aucune hachure" gridCols={2} />
+}
+
+function SymbolsTab() {
+  const resources = useMemo(() => SYMBOLS.map(symbolToResource), [])
+  return <ResourceCatalog resources={resources} searchPlaceholder="Rechercher un symbole…" insertTabLabel="Symboles" emptyLabel="Aucun symbole" gridCols={3} />
+}
+
+// ─── Templates ────────────────────────────────────────────────────────────────
+
+function TemplatesTab() {
+  const navigate = useNavigate()
+  const [category, setCategory] = useState<TemplateCategory | 'all'>('all')
   const [search, setSearch] = useState('')
-  const [selected, setSelected] = useState<Hatch | null>(null)
+  const [selected, setSelected] = useState<ArchitectureTemplate | null>(null)
+  const [creating, setCreating] = useState(false)
 
-  const hatches = useMemo(() => searchHatches(search, category), [search, category])
+  const templates = useMemo(() => searchTemplates(search, category), [search, category])
 
-  const copySvg = async (h: Hatch) => {
-    try { await navigator.clipboard.writeText(blockToSvg(hatchToBlock(h), { stroke: '#1f2937' })); useToastStore.getState().show('Hachure copiée (SVG)') }
-    catch { useToastStore.getState().show('Copie impossible') }
+  const create = async (t: ArchitectureTemplate) => {
+    setCreating(true)
+    try {
+      const id = await createDocumentFromTemplate(t)
+      useToastStore.getState().show('Document créé depuis le template')
+      navigate(`/document/${id}`)
+    } catch {
+      useToastStore.getState().show('Création impossible')
+    } finally {
+      setCreating(false)
+    }
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[18rem_1fr] gap-4">
       <div>
-        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher une hachure…" className="w-full text-xs border border-forma-border rounded-lg px-2.5 py-1.5 bg-forma-bg focus:outline-none focus:border-forma-accent mb-2" />
+        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher un template…" className="w-full text-xs border border-forma-border rounded-lg px-2.5 py-1.5 bg-forma-bg focus:outline-none focus:border-forma-accent mb-2" />
         <div className="flex flex-wrap gap-1 mb-2">
-          <button type="button" onClick={() => setCategory('all')} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === 'all' ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>Toutes</button>
-          {hatchCategories().map((c) => (
-            <button key={c} type="button" onClick={() => setCategory(c)} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === c ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>{HATCH_CATEGORY_LABELS[c]}</button>
+          <button type="button" onClick={() => setCategory('all')} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === 'all' ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>Tous</button>
+          {templateCategories().map((c) => (
+            <button key={c} type="button" onClick={() => setCategory(c)} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === c ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>{TEMPLATE_CATEGORY_LABELS[c]}</button>
           ))}
         </div>
-        <div className="grid grid-cols-2 gap-1.5 max-h-[60vh] overflow-y-auto">
-          {hatches.map((h) => (
-            <button key={h.id} type="button" onClick={() => setSelected(h)} className={`text-left p-1.5 rounded-lg border transition-colors ${selected?.id === h.id ? 'border-forma-accent bg-forma-accent/5' : 'border-forma-border hover:border-forma-accent/50'}`}>
-              <span className="block w-full aspect-square rounded bg-forma-surface text-forma-text overflow-hidden [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: blockToSvg(hatchToBlock(h), { stroke: 'currentColor' }) }} />
-              <span className="block text-[10px] text-forma-text truncate mt-1">{h.name}</span>
+        <div className="space-y-1 max-h-[60vh] overflow-y-auto">
+          {templates.map((t) => (
+            <button key={t.id} type="button" onClick={() => setSelected(t)} className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors ${selected?.id === t.id ? 'bg-forma-accent/10 text-forma-accent' : 'text-forma-text hover:bg-forma-bg'}`}>
+              <span className="block font-medium truncate">{t.name}</span>
+              <span className="block text-[10px] text-forma-muted">{TEMPLATE_CATEGORY_LABELS[t.category]}</span>
             </button>
           ))}
-          {hatches.length === 0 && <p className="col-span-2 text-[11px] text-forma-muted text-center py-4">Aucune hachure</p>}
+          {templates.length === 0 && <p className="text-[11px] text-forma-muted text-center py-4">Aucun template</p>}
         </div>
       </div>
 
       <div>
         {!selected ? (
           <div className="h-full flex flex-col items-center justify-center text-center py-12">
-            <Icon name="layout" className="w-8 h-8 text-forma-muted mb-2" />
-            <p className="text-sm text-forma-muted max-w-sm">Sélectionnez une hachure. Motifs schématiques insérables dans un dessin.</p>
+            <Icon name="file-text" className="w-8 h-8 text-forma-muted mb-2" />
+            <p className="text-sm text-forma-muted max-w-sm">Sélectionnez un template pour créer un document pré-structuré.</p>
           </div>
         ) : (
           <div className="max-w-2xl">
-            <div className="flex items-start justify-between gap-2">
-              <h2 className="text-lg font-semibold text-forma-text">{selected.name}</h2>
-              <button type="button" onClick={() => void copySvg(selected)} title="Copier (SVG)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="copy" className="w-4 h-4" /></button>
-            </div>
-            <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-3">{HATCH_CATEGORY_LABELS[selected.category]}</p>
-            <div className="border border-forma-border rounded-xl p-4 bg-forma-surface mb-3 w-40 h-40 text-forma-text [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: blockToSvg(hatchToBlock(selected), { stroke: 'currentColor' }) }} />
-            <p className="text-sm text-forma-text leading-relaxed mb-2">{selected.description}</p>
+            <h2 className="text-lg font-semibold text-forma-text">{selected.name}</h2>
+            <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-3">{TEMPLATE_CATEGORY_LABELS[selected.category]}</p>
+            <p className="text-sm text-forma-text leading-relaxed mb-3">{selected.description}</p>
             <div className="flex flex-wrap gap-1 mb-3">
               {selected.tags.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-forma-bg text-forma-muted">{t}</span>)}
             </div>
-            <div className="p-2.5 rounded-lg border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 text-[11px] text-amber-700 dark:text-amber-300 inline-flex items-start gap-1.5 mb-3">
-              <Icon name="alert" className="w-3.5 h-3.5 shrink-0 mt-px" />
-              {HATCH_DISCLAIMER}
-            </div>
-            <p className="text-[11px] text-forma-muted">Pour insérer une hachure dans un dessin, ouvrez un carnet puis la bibliothèque de blocs (onglet « Hachures »).</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1">Aperçu de la structure</p>
+            <div className="border border-forma-border rounded-xl p-4 bg-forma-surface mb-4 max-h-72 overflow-y-auto text-sm text-forma-text [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-medium [&_h2]:mt-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_table]:w-full [&_th]:text-left [&_th]:border-b [&_th]:border-forma-border [&_blockquote]:text-[11px] [&_blockquote]:text-amber-600 dark:[&_blockquote]:text-amber-400" dangerouslySetInnerHTML={{ __html: selected.contentHtml }} />
+            <button type="button" disabled={creating} onClick={() => void create(selected)} className="text-sm px-4 py-2 rounded-lg bg-forma-accent text-white hover:bg-forma-accent-hover disabled:opacity-50 transition-colors inline-flex items-center gap-1.5">
+              <Icon name="plus" className="w-4 h-4" />
+              {creating ? 'Création…' : 'Créer depuis ce template'}
+            </button>
           </div>
         )}
       </div>

@@ -21,6 +21,7 @@ import { importCustomBlock } from '../../lib/blocks/custom-import'
 import { buildParametricBlock, PARAMETRIC_DEFS, type ParametricDef } from '../../lib/blocks/parametric'
 import { CONSTRUCTION_DETAILS, detailToBlock, searchDetails } from '../../lib/resources/details'
 import { HATCHES, hatchToBlock, searchHatches } from '../../lib/resources/hatches'
+import { SYMBOLS, symbolToBlock, searchSymbols } from '../../lib/resources/symbols'
 import { resolveAssetUrl } from '../../lib/assets'
 import { useBlockLibraryStore } from '../../stores/blockLibraryStore'
 import { useToastStore } from '../../stores/toastStore'
@@ -59,12 +60,14 @@ function BlockThumb({ block }: { block: DrawingBlock }) {
   )
 }
 
-type CatTab = DrawingBlockCategory | 'all' | 'favorites' | 'recents' | 'details' | 'hatch'
+type CatTab = DrawingBlockCategory | 'all' | 'favorites' | 'recents' | 'details' | 'hatch' | 'symbol'
 
 /** Détails constructifs convertis en blocs insérables (métrique). */
 const DETAIL_BLOCKS: DrawingBlock[] = CONSTRUCTION_DETAILS.map(detailToBlock)
 /** Hachures converties en blocs insérables (métrique). */
 const HATCH_BLOCKS: DrawingBlock[] = HATCHES.map(hatchToBlock)
+/** Symboles techniques convertis en blocs insérables (métrique). */
+const SYMBOL_BLOCKS: DrawingBlock[] = SYMBOLS.map(symbolToBlock)
 
 export function BlockLibraryPanel({
   notebookId,
@@ -84,8 +87,8 @@ export function BlockLibraryPanel({
 
   const categories = useMemo(() => categoriesForUnit(unit), [unit])
 
-  // Customs du store + détails constructifs + hachures (insérables, métrique).
-  const extraBlocks = useMemo(() => [...customBlocks, ...DETAIL_BLOCKS, ...HATCH_BLOCKS], [customBlocks])
+  // Customs du store + détails constructifs + hachures + symboles (insérables).
+  const extraBlocks = useMemo(() => [...customBlocks, ...DETAIL_BLOCKS, ...HATCH_BLOCKS, ...SYMBOL_BLOCKS], [customBlocks])
 
   const blocks = useMemo<DrawingBlock[]>(() => {
     if (category === 'favorites') {
@@ -105,6 +108,10 @@ export function BlockLibraryPanel({
     // Onglet dédié aux hachures (métrique, indépendant de l'unité).
     if (category === 'hatch') {
       return searchHatches(search).map(hatchToBlock)
+    }
+    // Onglet dédié aux symboles techniques (métrique, indépendant de l'unité).
+    if (category === 'symbol') {
+      return searchSymbols(search).map(symbolToBlock)
     }
     return queryBlocks({ unit, category, search, customBlocks: extraBlocks })
   }, [unit, category, search, favorites, recents, extraBlocks])
@@ -183,6 +190,7 @@ export function BlockLibraryPanel({
             { id: 'all' as CatTab, label: 'Tous' },
             { id: 'details' as CatTab, label: 'Détails constructifs' },
             { id: 'hatch' as CatTab, label: 'Hachures' },
+            { id: 'symbol' as CatTab, label: 'Symboles' },
             { id: 'favorites' as CatTab, label: '★ Favoris' },
             { id: 'recents' as CatTab, label: 'Récents' },
             ...categories.map((c) => ({ id: c as CatTab, label: BLOCK_CATEGORY_LABELS[c] })),
@@ -220,7 +228,9 @@ export function BlockLibraryPanel({
                     ? 'Aucun détail constructif trouvé.'
                     : category === 'hatch'
                       ? 'Aucune hachure trouvée.'
-                      : 'Aucun bloc trouvé.'}
+                      : category === 'symbol'
+                        ? 'Aucun symbole trouvé.'
+                        : 'Aucun bloc trouvé.'}
             </p>
           ) : (
             <div className="grid grid-cols-3 gap-1.5">

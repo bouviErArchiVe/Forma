@@ -237,6 +237,8 @@ export function SearchPage() {
                         : h.kind === 'norme' ? '📋'
                         : h.kind === 'material' ? '🧱'
                         : h.kind === 'hatch' ? '▦'
+                        : h.kind === 'symbol' ? '⊿'
+                        : h.kind === 'template' ? '📑'
                         : h.kind === 'compliance' ? '✔️'
                         : h.kind === 'quiz' ? '❓'
                         : h.kind === 'checklist' ? '☑️'

@@ -7,6 +7,8 @@
  * (SVG → raster → ImageElement) en réutilisant DrawingBlock.
  */
 import type { DrawingBlock } from '../blocks/types'
+import { buildSearchText, type GraphicResource } from './resourceTypes'
+import { resourceToBlock } from './resourceToBlock'
 
 export type DetailCategory =
   | 'murs'
@@ -531,6 +533,168 @@ export const CONSTRUCTION_DETAILS: ConstructionDetail[] = [
     width: 150, height: 190,
     svgBody: '<rect x="60" y="20" width="22" height="120"/><rect x="50" y="20" width="10" height="120" stroke-dasharray="3 3"/><path d="M40 140 H110 V175 H30 V140 Z"/><path d="M82 140 H120 M82 146 H120" stroke-width="2"/><circle cx="38" cy="150" r="5"/>',
   },
+
+  // ─── Boost A3 (V2 — expansion) ───────────────────────────────────────────────
+  {
+    id: 'd-wall-clt', name: 'Mur en bois massif (CLT)', category: 'structure-bois',
+    description: 'Panneau de bois lamellé-croisé (CLT) isolé par l’extérieur.',
+    tags: ['clt', 'bois massif', 'lamellé-croisé', 'mur', 'isolation extérieure'],
+    notes: 'Le panneau CLT est structural et étanche à l’air ; isolation continue extérieure et pare-intempérie, gestion de l’humidité du bois.',
+    width: 160, height: 120,
+    svgBody: '<rect x="30" y="10" width="22" height="100"/><path d="M30 30 H52 M30 50 H52 M30 70 H52 M30 90 H52" stroke-width="1"/><rect x="52" y="10" width="22" height="100" stroke-dasharray="3 3"/><rect x="80" y="10" width="8" height="100"/>',
+  },
+  {
+    id: 'd-roof-parapet-coping', name: 'Parapet avec couronnement', category: 'toitures',
+    description: 'Relevé d’étanchéité au parapet et couronnement métallique en pente.',
+    tags: ['parapet', 'couronnement', 'toiture', 'relevé', 'solin'],
+    notes: 'Relevé sur la hauteur du parapet, contre-solin et couronnement en pente vers l’intérieur ; continuité du pare-air.',
+    width: 150, height: 140,
+    svgBody: '<rect x="40" y="30" width="22" height="100"/><path d="M40 130 H120 M40 124 H120" stroke-width="2"/><path d="M40 30 L62 30 L62 70" stroke-width="2"/><path d="M34 24 H68 L62 34 H40 Z"/>',
+  },
+  {
+    id: 'd-roof-eave-vent', name: 'Débord de toit ventilé (soffite)', category: 'toitures',
+    description: 'Entrée d’air en soffite ventilé au débord de toiture.',
+    tags: ['débord', 'soffite', 'ventilation', 'comble', 'avant-toit'],
+    notes: 'Le soffite ventilé alimente la ventilation des combles ; déflecteur pour préserver le passage d’air au-dessus de l’isolant.',
+    width: 170, height: 110,
+    svgBody: '<path d="M20 40 L110 40 L150 70" stroke-width="2"/><path d="M20 50 L110 50" /><path d="M110 50 V80 H150" stroke-width="2"/><path d="M118 66 h26 M118 72 h26" stroke-width="1"/>',
+  },
+  {
+    id: 'd-floor-balcony', name: 'Balcon — rupture de pont thermique', category: 'planchers',
+    description: 'Liaison de balcon avec rupteur de pont thermique.',
+    tags: ['balcon', 'pont thermique', 'rupteur', 'plancher', 'porte-à-faux'],
+    notes: 'Le rupteur limite la déperdition et le risque de condensation à la jonction dalle/balcon ; étanchéité et pente d’évacuation.',
+    width: 180, height: 110,
+    svgBody: '<rect x="20" y="40" width="60" height="16"/><rect x="80" y="42" width="10" height="12" fill="currentColor" stroke="none" opacity="0.3"/><rect x="90" y="40" width="70" height="16"/><path d="M90 56 L160 60" /><path d="M20 40 V20" stroke-dasharray="3 3"/>',
+  },
+  {
+    id: 'd-found-pile-cap', name: 'Semelle sur pieux (chevêtre)', category: 'fondations',
+    description: 'Chevêtre (pile cap) reliant une colonne à un groupe de pieux.',
+    tags: ['pieux', 'chevêtre', 'pile cap', 'fondation profonde'],
+    notes: 'Le chevêtre répartit la charge de la colonne sur les pieux ; armatures et enrobage selon calcul, pieux sous niveau porteur.',
+    width: 160, height: 150,
+    svgBody: '<rect x="66" y="10" width="20" height="40"/><path d="M40 50 H110 V80 H40 Z"/><rect x="48" y="80" width="14" height="55"/><rect x="88" y="80" width="14" height="55"/>',
+  },
+  {
+    id: 'd-found-frost-wall', name: 'Mur de gel (hors-gel)', category: 'fondations',
+    description: 'Mur de fondation descendu sous la profondeur de gel.',
+    tags: ['gel', 'hors-gel', 'fondation', 'semelle', 'profondeur'],
+    notes: 'La semelle doit reposer sous la profondeur de gel locale (à vérifier) ; isolant horizontal possible pour réduire la profondeur.',
+    width: 150, height: 170,
+    svgBody: '<rect x="60" y="10" width="20" height="110"/><path d="M40 120 H100 V150 H30 V120 Z"/><path d="M20 70 H130" stroke-dasharray="6 4" stroke-width="1"/><text x="120" y="66" font-size="8" stroke="none" fill="#1f2937">gel</text>',
+  },
+  {
+    id: 'd-slab-control-joint', name: 'Joint de contrôle de dalle', category: 'beton',
+    description: 'Joint de retrait scié dans une dalle sur sol.',
+    tags: ['joint', 'contrôle', 'retrait', 'dalle', 'fissuration'],
+    notes: 'Le joint scié induit la fissuration de retrait à un emplacement maîtrisé ; profondeur ≈ 1/4 de l’épaisseur, espacement régulier.',
+    width: 180, height: 80,
+    svgBody: '<rect x="10" y="24" width="160" height="22"/><path d="M90 24 V36" stroke-width="2"/><path d="M10 46 H170" stroke-dasharray="2 2"/>',
+  },
+  {
+    id: 'd-expansion-joint', name: 'Joint de dilatation', category: 'enveloppe',
+    description: 'Joint de dilatation entre deux parties de bâtiment.',
+    tags: ['dilatation', 'joint', 'mouvement', 'enveloppe'],
+    notes: 'Le joint absorbe les mouvements thermiques/structuraux ; couvre-joint souple et étanche continu sur toute l’enveloppe.',
+    width: 160, height: 120,
+    svgBody: '<rect x="20" y="20" width="50" height="80"/><rect x="90" y="20" width="50" height="80"/><path d="M70 30 q10 10 0 20 q-10 10 0 20 q10 10 0 20" stroke-width="1.5"/><path d="M90 30 q-10 10 0 20 q10 10 0 20 q-10 10 0 20" stroke-width="1.5"/>',
+  },
+  {
+    id: 'd-skylight', name: 'Puits de lumière (lanterneau)', category: 'toitures',
+    description: 'Lanterneau sur toiture avec relevé d’étanchéité et solin.',
+    tags: ['puits de lumière', 'lanterneau', 'skylight', 'toiture', 'solin'],
+    notes: 'Relevé surélevé (curb) avec membrane retournée et contre-solin ; gestion de la condensation et continuité de l’isolation au pourtour.',
+    width: 170, height: 110,
+    svgBody: '<path d="M20 70 H150" stroke-width="2"/><rect x="60" y="40" width="50" height="30"/><path d="M60 40 L72 24 H98 L110 40" stroke-width="1.5"/><path d="M54 70 V58 H60 M110 58 H116 V70" stroke-width="2"/>',
+  },
+  {
+    id: 'd-section-ramp', name: 'Coupe type — rampe d’accès', category: 'coupe-type',
+    description: 'Coupe schématique d’une rampe d’accès avec palier et garde-corps.',
+    tags: ['rampe', 'accès', 'accessibilité', 'palier', 'coupe type'],
+    notes: 'Pente et paliers selon le code (à vérifier), bordures de protection et mains courantes continues ; surface antidérapante et drainage.',
+    width: 180, height: 120,
+    svgBody: '<path d="M20 100 L120 50 H160" stroke-width="2"/><path d="M20 100 H160" /><path d="M40 86 V70 M70 71 V55 M100 56 V40" stroke-width="1"/><path d="M120 50 V36 H160 V50" stroke-dasharray="3 3"/>',
+  },
+  {
+    id: 'd-stair-landing', name: 'Palier d’escalier', category: 'escaliers',
+    description: 'Palier intermédiaire entre deux volées d’escalier.',
+    tags: ['escalier', 'palier', 'volée', 'repos'],
+    notes: 'Palier de repos dimensionné selon l’usage (à vérifier) ; continuité de la main courante et échappée maintenue.',
+    width: 170, height: 130,
+    svgBody: '<path d="M20 110 V92 H40 V74 H60 V56 H100" stroke-width="2"/><path d="M100 56 H140 V40" stroke-width="2"/><path d="M100 56 V110 H140" stroke-dasharray="3 3"/>',
+  },
+  {
+    id: 'd-guardrail-anchor', name: 'Ancrage de garde-corps', category: 'structure-acier',
+    description: 'Fixation de poteau de garde-corps en rive de dalle.',
+    tags: ['garde-corps', 'ancrage', 'poteau', 'dalle', 'platine'],
+    notes: 'Platine et ancrages dimensionnés pour la charge horizontale (à vérifier) ; étanchéité au droit des fixations en rive.',
+    width: 130, height: 150,
+    svgBody: '<path d="M60 10 V100" stroke-width="3"/><rect x="44" y="100" width="32" height="8"/><rect x="20" y="108" width="90" height="30" stroke-dasharray="3 3"/><path d="M50 108 V128 M70 108 V128"/>',
+  },
+  {
+    id: 'd-steel-beam-column', name: 'Assemblage poutre-colonne acier', category: 'structure-acier',
+    description: 'Connexion boulonnée poutre sur colonne acier.',
+    tags: ['acier', 'poutre', 'colonne', 'assemblage', 'boulons'],
+    notes: 'Cornières/plaque et boulons selon calcul (CSA S16) ; vérifier cisaillement, pression diamétrale et soudures éventuelles.',
+    width: 140, height: 140,
+    svgBody: '<path d="M60 10 H70 M60 130 H70 M65 10 V130" stroke-width="3"/><path d="M65 60 H120 M65 80 H120 M92 60 V80" stroke-width="3"/><circle cx="74" cy="66" r="2"/><circle cx="74" cy="74" r="2"/>',
+  },
+  {
+    id: 'd-wood-floor-rim', name: 'Solive de rive (plancher bois)', category: 'structure-bois',
+    description: 'Solive de rive et fourrure au pourtour d’un plancher bois.',
+    tags: ['plancher', 'bois', 'solive de rive', 'rive', 'pont thermique'],
+    notes: 'Isoler et rendre étanche à l’air la solive de rive (point faible thermique) ; appui et continuité du pare-air à soigner.',
+    width: 170, height: 120,
+    svgBody: '<path d="M20 30 H160 M20 36 H160" stroke-width="2"/><rect x="24" y="36" width="12" height="50"/><rect x="60" y="36" width="12" height="50"/><rect x="100" y="36" width="12" height="50"/><rect x="36" y="40" width="20" height="42" stroke-dasharray="3 3"/>',
+  },
+  {
+    id: 'd-green-roof', name: 'Toiture végétalisée (extensive)', category: 'toitures',
+    description: 'Complexe de toiture végétalisée extensive sur membrane.',
+    tags: ['toiture', 'végétalisée', 'verte', 'drainage', 'anti-racines'],
+    notes: 'Membrane anti-racines, couche drainante, substrat et végétaux ; vérifier la surcharge structurale saturée et l’accès d’entretien.',
+    width: 180, height: 100,
+    svgBody: '<path d="M10 40 H170" stroke-width="2"/><path d="M10 48 H170" /><path d="M10 56 H170" stroke-dasharray="2 2"/><path d="M20 40 q4 -8 8 0 M40 40 q4 -8 8 0 M60 40 q4 -8 8 0 M80 40 q4 -8 8 0 M100 40 q4 -8 8 0 M120 40 q4 -8 8 0 M140 40 q4 -8 8 0" stroke-width="1"/>',
+  },
+  {
+    id: 'd-french-drain', name: 'Drain français (talus)', category: 'drainage',
+    description: 'Tranchée drainante avec drain perforé et géotextile.',
+    tags: ['drain', 'français', 'géotextile', 'gravier', 'talus'],
+    notes: 'Drain perforé enrobé de gravier propre et de géotextile, pente vers l’exutoire ; séparer les fines pour éviter le colmatage.',
+    width: 150, height: 130,
+    svgBody: '<path d="M30 30 L120 30 L120 90 L30 110 Z" stroke-dasharray="3 3"/><circle cx="75" cy="80" r="10"/><circle cx="75" cy="80" r="3"/><path d="M40 100 Q60 96 80 100 T120 100" stroke-width="1"/>',
+  },
+  {
+    id: 'd-curtain-wall', name: 'Mur-rideau (coupe)', category: 'enveloppe',
+    description: 'Coupe d’un mur-rideau aluminium à rupture de pont thermique.',
+    tags: ['mur-rideau', 'curtain wall', 'aluminium', 'vitrage', 'enveloppe'],
+    notes: 'Meneaux à rupture de pont thermique, vitrage isolant et drainage des meneaux ; étanchéité à l’air et continuité aux nez de dalle.',
+    width: 130, height: 150,
+    svgBody: '<rect x="50" y="10" width="14" height="130"/><path d="M57 10 V140" stroke-dasharray="2 4"/><rect x="64" y="20" width="40" height="40"/><rect x="64" y="80" width="40" height="40"/><path d="M40 66 H64 M40 74 H64" stroke-width="2"/>',
+  },
+  {
+    id: 'd-slab-edge-insul', name: 'Rive de dalle isolée', category: 'isolation',
+    description: 'Isolation de rive de dalle sur sol contre le pont thermique.',
+    tags: ['dalle', 'rive', 'isolation', 'pont thermique', 'périphérie'],
+    notes: 'Isolant vertical en rive de dalle pour rompre le pont thermique périphérique ; protéger l’isolant exposé hors sol.',
+    width: 160, height: 100,
+    svgBody: '<rect x="40" y="30" width="110" height="18"/><rect x="30" y="30" width="10" height="40" stroke-dasharray="3 3"/><path d="M40 48 H150" stroke-width="2"/><path d="M30 70 H150" stroke-dasharray="2 2"/>',
+  },
+  {
+    id: 'd-concrete-cold-joint', name: 'Reprise de bétonnage', category: 'beton',
+    description: 'Joint de reprise entre deux coulées de béton.',
+    tags: ['béton', 'reprise', 'joint', 'clé', 'bétonnage'],
+    notes: 'Surface rugueuse/propre et clé de cisaillement à la reprise ; armatures en attente pour assurer la continuité.',
+    width: 140, height: 150,
+    svgBody: '<rect x="50" y="20" width="40" height="120"/><path d="M50 80 H90" stroke-width="2"/><path d="M64 76 v8 h12 v-8" /><path d="M70 60 V100" stroke-dasharray="3 3"/>',
+  },
+  {
+    id: 'd-air-barrier-junction', name: 'Continuité du pare-air (jonction)', category: 'enveloppe',
+    description: 'Continuité du pare-air à la jonction mur / toiture.',
+    tags: ['pare-air', 'continuité', 'jonction', 'enveloppe', 'étanchéité'],
+    notes: 'Le pare-air doit être continu et raccordé aux jonctions (mur-toit, mur-fondation, ouvertures) ; membrane de transition rubannée.',
+    width: 160, height: 140,
+    svgBody: '<path d="M40 20 L140 20" stroke-width="2"/><path d="M40 130 V40 H120" stroke-width="2"/><path d="M40 40 Q44 28 56 24 L140 24" stroke-width="2" stroke-dasharray="4 2"/><circle cx="50" cy="34" r="2" fill="currentColor" stroke="none"/>',
+  },
 ]
 
 const DETAIL_BY_ID = new Map(CONSTRUCTION_DETAILS.map((d) => [d.id, d]))
@@ -567,17 +731,30 @@ export function resolveDetailBlock(blockId: string): DrawingBlock | undefined {
   return detail ? detailToBlock(detail) : undefined
 }
 
-/** Convertit un détail en DrawingBlock pour l'insertion dans un dessin. */
-export function detailToBlock(detail: ConstructionDetail): DrawingBlock {
+/** Adapte un détail vers la forme commune `GraphicResource` (Resource Factory). */
+export function detailToResource(detail: ConstructionDetail): GraphicResource {
   return {
-    id: `detail-${detail.id}`,
+    id: detail.id,
+    type: 'detail',
     name: detail.name,
-    category: 'annotations',
-    unitSystem: 'metric',
-    tags: ['détail', ...detail.tags],
+    category: detail.category,
+    categoryLabel: DETAIL_CATEGORY_LABELS[detail.category],
     description: detail.description,
+    tags: detail.tags,
+    svg: detail.svgBody,
+    viewBox: `0 0 ${detail.width} ${detail.height}`,
     defaultWidth: detail.width,
     defaultHeight: detail.height,
-    svgBody: detail.svgBody,
+    searchText: buildSearchText([detail.name, detail.description, detail.notes, detail.tags, detail.category, DETAIL_CATEGORY_LABELS[detail.category]]),
+    insertable: true,
+    disclaimer: DETAIL_DISCLAIMER,
+    sourceType: 'svg-block',
+    blockCategory: 'annotations',
+    blockTagPrefix: 'détail',
   }
+}
+
+/** Convertit un détail en DrawingBlock pour l'insertion dans un dessin. */
+export function detailToBlock(detail: ConstructionDetail): DrawingBlock {
+  return resourceToBlock(detailToResource(detail))
 }

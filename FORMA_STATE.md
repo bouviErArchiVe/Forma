@@ -172,6 +172,38 @@ Ajouts :
 - intégration Search V3 (kind `hatch`) ;
 - tests verts, build vert, Playwright vert.
 
+Mergé sur `main` le 2026-06-15 (fast-forward `bf7193d2`).
+
+### Architecture Resource Factory (A4 + A8 + A3 boost)
+
+Pack accélérateur livré sur branche `feat/architecture-resource-factory` (à partir de `main` `bf7193d2`). Regroupe A4 (symboles), A8 (templates) et un boost A3, sur une base commune réutilisable.
+
+Couche commune (Resource Factory) :
+
+- `src/lib/resources/resourceTypes.ts` — forme commune `GraphicResource` + helpers (recherche, catégories) ;
+- `src/lib/resources/resourceToBlock.ts` — conversion canonique ressource → DrawingBlock (`<type>-<id>`) ;
+- adaptateurs `hatchToResource` / `symbolToResource` / `detailToResource` ; les convertisseurs existants délèguent désormais ici (sortie identique, non-régression testée) ;
+- composants partagés `ResourceCatalog` / `ResourceGrid` / `ResourcePreview` / `ResourceFilters` (UI unique pour toute famille de ressources graphiques).
+
+A4 — Technical Symbols Library :
+
+- 41 symboles techniques en 5 catégories (architecture, structure, mécanique/plomberie, électricité, annotation/chantier), SVG 64×64 ;
+- onglet « Symboles » dans Ressources (via `ResourceCatalog`) + onglet « Symboles » dans la bibliothèque de blocs (insertion, catégorie bloc `symbols`) ;
+- Search V3 (kind `symbol`).
+
+A8 — Architecture Templates V1 :
+
+- 15 templates (`src/lib/resources/templates.ts`) en 5 catégories : carnet/visite/inspection chantier, rapport technique, fiches (matériaux, conformité, détail, escalier, accessibilité, stationnement, garde-corps), projets résidentiel/commercial, plan de révision, checklist de remise ;
+- onglet « Templates » dans Ressources avec aperçu de structure et action « Créer depuis ce template » (FormaDoc via le pipeline existant) ;
+- Search V3 (kind `template`) ;
+- les fiches « code » rappellent la vérification officielle (aucun article inventé).
+
+A3 — boost détails :
+
+- +20 détails constructifs (catalogue passé de 56 à 76), insérables et recherchables via le système existant.
+
+Migration progressive : les hachures (A5) et symboles (A4) passent par la base commune ; détails inchangés côté sortie. Aucune modification du canvas. Tests verts, build vert, Playwright vert.
+
 Avant tout travail futur, confirmer si ce pack est bien mergé sur `main`.
 
 ## Tests et chiffres connus
@@ -188,7 +220,8 @@ Chiffres récents vus dans les rapports :
 - 754 tests après Academic + Import + FormAI Actions ;
 - 782 tests après Architecture Calculators Pro ;
 - 807 tests après Compliance Checker ;
-- 819 tests après Hatch Library.
+- 819 tests après Hatch Library ;
+- 847 tests après Architecture Resource Factory (A4 + A8 + boost A3).
 
 Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tests réels du repo.
 
@@ -207,7 +240,9 @@ Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tes
 - `feat/normative-library-v2` — commit `2efdf726` (mergé)
 - `docs/forma-guide-system-pro` — commit `a3b57524` (mergé)
 - `main` (après merges) — commit `fd14fce9`
-- `feat/compliance-checker` — A6 Compliance Checker
+- `feat/compliance-checker` — commit `53fd48ce` (mergé)
+- `feat/hatch-library` — commit `bf7193d2` (mergé)
+- `feat/architecture-resource-factory` — A4 symboles + A8 templates + boost A3 + Resource Factory
 
 Toujours vérifier l’historique Git réel avant action.
 
