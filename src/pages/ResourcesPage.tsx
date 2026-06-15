@@ -17,18 +17,7 @@ import {
   type NormativeCategory,
   type NormativeSheet,
 } from '../lib/resources/normative'
-import {
-  blockToSvg,
-} from '../lib/blocks/types'
-import {
-  DETAIL_CATEGORY_LABELS,
-  DETAIL_DISCLAIMER,
-  detailCategories,
-  detailToBlock,
-  searchDetails,
-  type ConstructionDetail,
-  type DetailCategory,
-} from '../lib/resources/details'
+import { CONSTRUCTION_DETAILS, detailToResource } from '../lib/resources/details'
 import {
   MATERIAL_CATEGORY_LABELS,
   MATERIAL_DISCLAIMER,
@@ -39,6 +28,7 @@ import {
 } from '../lib/resources/materials'
 import { HATCHES, hatchToResource } from '../lib/resources/hatches'
 import { SYMBOLS, symbolToResource } from '../lib/resources/symbols'
+import { LEGENDS, legendToResource } from '../lib/resources/legends'
 import {
   TEMPLATE_CATEGORY_LABELS,
   createDocumentFromTemplate,
@@ -51,7 +41,7 @@ import { ResourceCatalog } from '../components/resources/ResourceCatalog'
 import { useResourceFavoritesStore } from '../stores/resourceFavoritesStore'
 import { useResourceNotesStore } from '../stores/resourceNotesStore'
 
-type MainTab = 'normes' | 'details' | 'materiaux' | 'hachures' | 'symboles' | 'templates'
+type MainTab = 'normes' | 'details' | 'materiaux' | 'hachures' | 'symboles' | 'legendes' | 'templates'
 
 export function ResourcesPage() {
   const [tab, setTab] = useState<MainTab>('normes')
@@ -76,6 +66,7 @@ export function ResourcesPage() {
           { id: 'details' as MainTab, label: 'Détails constructifs' },
           { id: 'hachures' as MainTab, label: 'Hachures' },
           { id: 'symboles' as MainTab, label: 'Symboles' },
+          { id: 'legendes' as MainTab, label: 'Légendes' },
           { id: 'templates' as MainTab, label: 'Templates' },
         ]).map((t) => (
           <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${tab === t.id ? 'bg-forma-accent text-white' : 'text-forma-muted hover:text-forma-text border border-forma-border'}`}>
@@ -84,7 +75,7 @@ export function ResourcesPage() {
         ))}
       </div>
 
-      {tab === 'normes' ? <NormativeTab /> : tab === 'materiaux' ? <MaterialsTab /> : tab === 'hachures' ? <HatchesTab /> : tab === 'symboles' ? <SymbolsTab /> : tab === 'templates' ? <TemplatesTab /> : <DetailsTab />}
+      {tab === 'normes' ? <NormativeTab /> : tab === 'materiaux' ? <MaterialsTab /> : tab === 'hachures' ? <HatchesTab /> : tab === 'symboles' ? <SymbolsTab /> : tab === 'legendes' ? <LegendsTab /> : tab === 'templates' ? <TemplatesTab /> : <DetailsTab />}
     </div>
   )
 }
@@ -257,66 +248,8 @@ function NormativeTab() {
 // ─── Détails constructifs ─────────────────────────────────────────────────────
 
 function DetailsTab() {
-  const [category, setCategory] = useState<DetailCategory | 'all'>('all')
-  const [search, setSearch] = useState('')
-  const [selected, setSelected] = useState<ConstructionDetail | null>(null)
-
-  const details = useMemo(() => searchDetails(search, category), [search, category])
-
-  const copyDetail = async (d: ConstructionDetail) => {
-    const md = `## ${d.name}\n\n${d.description}\n\n**Notes :** ${d.notes}\n\n*${DETAIL_DISCLAIMER}*`
-    try { await navigator.clipboard.writeText(md); useToastStore.getState().show('Détail copié (Markdown)') }
-    catch { useToastStore.getState().show('Copie impossible') }
-  }
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-[18rem_1fr] gap-4">
-      <div>
-        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher un détail…" className="w-full text-xs border border-forma-border rounded-lg px-2.5 py-1.5 bg-forma-bg focus:outline-none focus:border-forma-accent mb-2" />
-        <div className="flex flex-wrap gap-1 mb-2">
-          <button type="button" onClick={() => setCategory('all')} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === 'all' ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>Tous</button>
-          {detailCategories().map((c) => (
-            <button key={c} type="button" onClick={() => setCategory(c)} className={`text-[11px] px-2 py-0.5 rounded-full border ${category === c ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted'}`}>{DETAIL_CATEGORY_LABELS[c]}</button>
-          ))}
-        </div>
-        <div className="space-y-1 max-h-[60vh] overflow-y-auto">
-          {details.map((d) => (
-            <button key={d.id} type="button" onClick={() => setSelected(d)} className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors ${selected?.id === d.id ? 'bg-forma-accent/10 text-forma-accent' : 'text-forma-text hover:bg-forma-bg'}`}>
-              <span className="block font-medium truncate">{d.name}</span>
-              <span className="block text-[10px] text-forma-muted">{DETAIL_CATEGORY_LABELS[d.category]}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        {!selected ? (
-          <div className="h-full flex flex-col items-center justify-center text-center py-12">
-            <Icon name="layout" className="w-8 h-8 text-forma-muted mb-2" />
-            <p className="text-sm text-forma-muted max-w-sm">Sélectionnez un détail constructif. Schémas indicatifs à adapter au projet.</p>
-          </div>
-        ) : (
-          <div className="max-w-2xl">
-            <div className="flex items-start justify-between gap-2">
-              <h2 className="text-lg font-semibold text-forma-text">{selected.name}</h2>
-              <button type="button" onClick={() => void copyDetail(selected)} title="Copier (Markdown)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="copy" className="w-4 h-4" /></button>
-            </div>
-            <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-3">{DETAIL_CATEGORY_LABELS[selected.category]}</p>
-            <div className="border border-forma-border rounded-xl p-4 bg-forma-surface mb-3 flex items-center justify-center text-forma-text [&>svg]:max-w-full [&>svg]:max-h-48"
-              dangerouslySetInnerHTML={{ __html: blockToSvg(detailToBlock(selected), { stroke: 'currentColor' }) }}
-            />
-            <p className="text-sm text-forma-text leading-relaxed mb-2">{selected.description}</p>
-            <p className="text-xs text-forma-muted leading-relaxed mb-3"><span className="font-medium text-forma-text">Notes :</span> {selected.notes}</p>
-            <div className="p-2.5 rounded-lg border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 text-[11px] text-amber-700 dark:text-amber-300 inline-flex items-start gap-1.5">
-              <Icon name="alert" className="w-3.5 h-3.5 shrink-0 mt-px" />
-              {DETAIL_DISCLAIMER}
-            </div>
-            <p className="text-[11px] text-forma-muted mt-3">Astuce : pour insérer un détail dans un dessin, ouvrez un carnet puis la bibliothèque de blocs (onglet « Détails constructifs »).</p>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+  const resources = useMemo(() => CONSTRUCTION_DETAILS.map(detailToResource), [])
+  return <ResourceCatalog resources={resources} searchPlaceholder="Rechercher un détail…" insertTabLabel="Détails constructifs" emptyLabel="Aucun détail" gridCols={2} />
 }
 
 // ─── Matériaux ────────────────────────────────────────────────────────────────
@@ -499,6 +432,11 @@ function HatchesTab() {
 function SymbolsTab() {
   const resources = useMemo(() => SYMBOLS.map(symbolToResource), [])
   return <ResourceCatalog resources={resources} searchPlaceholder="Rechercher un symbole…" insertTabLabel="Symboles" emptyLabel="Aucun symbole" gridCols={3} />
+}
+
+function LegendsTab() {
+  const resources = useMemo(() => LEGENDS.map(legendToResource), [])
+  return <ResourceCatalog resources={resources} searchPlaceholder="Rechercher une légende…" insertTabLabel="Légendes" emptyLabel="Aucune légende" gridCols={2} />
 }
 
 // ─── Templates ────────────────────────────────────────────────────────────────

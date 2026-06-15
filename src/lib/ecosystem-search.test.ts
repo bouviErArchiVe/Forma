@@ -80,6 +80,13 @@ describe('searchEcosystem', () => {
     expect((await searchEcosystem('carnet de chantier')).some((h) => h.kind === 'template')).toBe(true)
   })
 
+  it('trouve des légendes (catalogue statique)', async () => {
+    const res = await searchEcosystem('légende')
+    const hit = res.find((h) => h.kind === 'legend')
+    expect(hit).toBeDefined()
+    expect(hit?.to).toBe('/resources')
+  })
+
   it('les routes de navigation sont correctes', async () => {
     const p = await createProject({ name: 'Cuisine' })
     const hits = await searchEcosystem('cuisine')

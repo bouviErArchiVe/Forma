@@ -9,6 +9,7 @@ import { searchDetails } from './resources/details'
 import { searchMaterials } from './resources/materials'
 import { searchHatches } from './resources/hatches'
 import { searchSymbols } from './resources/symbols'
+import { searchLegends } from './resources/legends'
 import { searchTemplates, TEMPLATE_CATEGORY_LABELS } from './resources/templates'
 import { searchChecks, COMPLIANCE_CATEGORY_LABELS } from './compliance/checks'
 import { sessionLabel, TERM_LABELS } from '../services/academic'
@@ -21,6 +22,7 @@ export type EcosystemHitKind =
   | 'material'
   | 'hatch'
   | 'symbol'
+  | 'legend'
   | 'template'
   | 'compliance'
   | 'quiz'
@@ -130,6 +132,11 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
   // Symboles techniques (catalogue statique)
   for (const s of searchSymbols(query)) {
     hits.push({ kind: 'symbol', id: s.id, title: s.name, subtitle: 'Symbole', to: '/resources' })
+  }
+
+  // Légendes (catalogue statique)
+  for (const l of searchLegends(query)) {
+    hits.push({ kind: 'legend', id: l.id, title: l.name, subtitle: 'Légende', to: '/resources' })
   }
 
   // Templates architecture (catalogue statique)

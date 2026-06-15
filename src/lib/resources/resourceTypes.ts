@@ -24,6 +24,8 @@ export interface GraphicResource {
   /** Libellé affichable de la catégorie. */
   categoryLabel: string
   description: string
+  /** Notes techniques complémentaires (ressources « riches » : détails…). */
+  notes?: string
   tags: string[]
   /** Corps SVG (géométrie, sans balise <svg>) dessiné dans `viewBox`. */
   svg: string

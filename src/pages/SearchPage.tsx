@@ -238,6 +238,7 @@ export function SearchPage() {
                         : h.kind === 'material' ? '🧱'
                         : h.kind === 'hatch' ? '▦'
                         : h.kind === 'symbol' ? '⊿'
+                        : h.kind === 'legend' ? '🗂️'
                         : h.kind === 'template' ? '📑'
                         : h.kind === 'compliance' ? '✔️'
                         : h.kind === 'quiz' ? '❓'

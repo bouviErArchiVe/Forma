@@ -100,4 +100,12 @@ describe('non-régression des convertisseurs existants', () => {
       expect(r.viewBox.startsWith('0 0 ')).toBe(true)
     }
   })
+
+  it('détails plus riches : notes portées dans la ressource', () => {
+    const r = detailToResource(CONSTRUCTION_DETAILS[0])
+    expect(r.notes).toBe(CONSTRUCTION_DETAILS[0].notes)
+    expect(r.notes && r.notes.length).toBeGreaterThan(0)
+    // les hachures/symboles n'ont pas de notes
+    expect(hatchToResource(HATCHES[0]).notes).toBeUndefined()
+  })
 })

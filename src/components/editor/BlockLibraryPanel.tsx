@@ -22,6 +22,8 @@ import { buildParametricBlock, PARAMETRIC_DEFS, type ParametricDef } from '../..
 import { CONSTRUCTION_DETAILS, detailToBlock, searchDetails } from '../../lib/resources/details'
 import { HATCHES, hatchToBlock, searchHatches } from '../../lib/resources/hatches'
 import { SYMBOLS, symbolToBlock, searchSymbols } from '../../lib/resources/symbols'
+import { LEGENDS, legendToResource, searchLegends } from '../../lib/resources/legends'
+import { resourceToBlock } from '../../lib/resources/resourceToBlock'
 import { resolveAssetUrl } from '../../lib/assets'
 import { useBlockLibraryStore } from '../../stores/blockLibraryStore'
 import { useToastStore } from '../../stores/toastStore'
@@ -60,7 +62,7 @@ function BlockThumb({ block }: { block: DrawingBlock }) {
   )
 }
 
-type CatTab = DrawingBlockCategory | 'all' | 'favorites' | 'recents' | 'details' | 'hatch' | 'symbol'
+type CatTab = DrawingBlockCategory | 'all' | 'favorites' | 'recents' | 'details' | 'hatch' | 'symbol' | 'legend'
 
 /** Détails constructifs convertis en blocs insérables (métrique). */
 const DETAIL_BLOCKS: DrawingBlock[] = CONSTRUCTION_DETAILS.map(detailToBlock)
@@ -68,6 +70,8 @@ const DETAIL_BLOCKS: DrawingBlock[] = CONSTRUCTION_DETAILS.map(detailToBlock)
 const HATCH_BLOCKS: DrawingBlock[] = HATCHES.map(hatchToBlock)
 /** Symboles techniques convertis en blocs insérables (métrique). */
 const SYMBOL_BLOCKS: DrawingBlock[] = SYMBOLS.map(symbolToBlock)
+/** Légendes converties en blocs insérables (métrique). */
+const LEGEND_BLOCKS: DrawingBlock[] = LEGENDS.map((l) => resourceToBlock(legendToResource(l)))
 
 export function BlockLibraryPanel({
   notebookId,
@@ -87,8 +91,8 @@ export function BlockLibraryPanel({
 
   const categories = useMemo(() => categoriesForUnit(unit), [unit])
 
-  // Customs du store + détails constructifs + hachures + symboles (insérables).
-  const extraBlocks = useMemo(() => [...customBlocks, ...DETAIL_BLOCKS, ...HATCH_BLOCKS, ...SYMBOL_BLOCKS], [customBlocks])
+  // Customs du store + détails + hachures + symboles + légendes (insérables).
+  const extraBlocks = useMemo(() => [...customBlocks, ...DETAIL_BLOCKS, ...HATCH_BLOCKS, ...SYMBOL_BLOCKS, ...LEGEND_BLOCKS], [customBlocks])
 
   const blocks = useMemo<DrawingBlock[]>(() => {
     if (category === 'favorites') {
@@ -112,6 +116,10 @@ export function BlockLibraryPanel({
     // Onglet dédié aux symboles techniques (métrique, indépendant de l'unité).
     if (category === 'symbol') {
       return searchSymbols(search).map(symbolToBlock)
+    }
+    // Onglet dédié aux légendes (métrique, indépendant de l'unité).
+    if (category === 'legend') {
+      return searchLegends(search).map((l) => resourceToBlock(legendToResource(l)))
     }
     return queryBlocks({ unit, category, search, customBlocks: extraBlocks })
   }, [unit, category, search, favorites, recents, extraBlocks])
@@ -191,6 +199,7 @@ export function BlockLibraryPanel({
             { id: 'details' as CatTab, label: 'Détails constructifs' },
             { id: 'hatch' as CatTab, label: 'Hachures' },
             { id: 'symbol' as CatTab, label: 'Symboles' },
+            { id: 'legend' as CatTab, label: 'Légendes' },
             { id: 'favorites' as CatTab, label: '★ Favoris' },
             { id: 'recents' as CatTab, label: 'Récents' },
             ...categories.map((c) => ({ id: c as CatTab, label: BLOCK_CATEGORY_LABELS[c] })),
@@ -230,7 +239,9 @@ export function BlockLibraryPanel({
                       ? 'Aucune hachure trouvée.'
                       : category === 'symbol'
                         ? 'Aucun symbole trouvé.'
-                        : 'Aucun bloc trouvé.'}
+                        : category === 'legend'
+                          ? 'Aucune légende trouvée.'
+                          : 'Aucun bloc trouvé.'}
             </p>
           ) : (
             <div className="grid grid-cols-3 gap-1.5">

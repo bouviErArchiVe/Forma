@@ -35,18 +35,41 @@ export function ResourcePreview({
     }
   }
 
+  const copyMarkdown = async () => {
+    const md = [
+      `## ${resource.name}`,
+      '',
+      resource.description,
+      resource.notes ? `\n**Notes :** ${resource.notes}` : '',
+      resource.tags.length ? `\n**Tags :** ${resource.tags.join(', ')}` : '',
+      resource.disclaimer ? `\n*${resource.disclaimer}*` : '',
+    ].filter(Boolean).join('\n')
+    try {
+      await navigator.clipboard.writeText(md)
+      useToastStore.getState().show('Ressource copiée (Markdown)')
+    } catch {
+      useToastStore.getState().show('Copie impossible')
+    }
+  }
+
   return (
     <div className="max-w-2xl">
       <div className="flex items-start justify-between gap-2">
         <h2 className="text-lg font-semibold text-forma-text">{resource.name}</h2>
-        <button type="button" onClick={() => void copySvg()} title="Copier (SVG)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="copy" className="w-4 h-4" /></button>
+        <div className="flex items-center gap-1 shrink-0">
+          <button type="button" onClick={() => void copySvg()} title="Copier (SVG)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="copy" className="w-4 h-4" /></button>
+          <button type="button" onClick={() => void copyMarkdown()} title="Copier (Markdown)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="file-text" className="w-4 h-4" /></button>
+        </div>
       </div>
       <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-3">{resource.categoryLabel}</p>
       <div
-        className="border border-forma-border rounded-xl p-4 bg-forma-surface mb-3 w-40 h-40 flex items-center justify-center text-forma-text [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
+        className="border border-forma-border rounded-xl p-4 bg-forma-surface mb-3 w-full max-w-sm h-44 flex items-center justify-center text-forma-text [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
         dangerouslySetInnerHTML={{ __html: blockToSvg(resourceToBlock(resource), { stroke: 'currentColor' }) }}
       />
       <p className="text-sm text-forma-text leading-relaxed mb-2">{resource.description}</p>
+      {resource.notes && (
+        <p className="text-xs text-forma-muted leading-relaxed mb-2"><span className="font-medium text-forma-text">Notes :</span> {resource.notes}</p>
+      )}
       <div className="flex flex-wrap gap-1 mb-3">
         {resource.tags.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-forma-bg text-forma-muted">{t}</span>)}
       </div>

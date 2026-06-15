@@ -48,7 +48,7 @@ describe('bibliothèque normative (V2)', () => {
 
 describe('détails constructifs', () => {
   it('charge le catalogue V2 étendu avec SVG, tags et notes', () => {
-    expect(CONSTRUCTION_DETAILS.length).toBeGreaterThanOrEqual(70)
+    expect(CONSTRUCTION_DETAILS.length).toBeGreaterThanOrEqual(100)
     const ids = CONSTRUCTION_DETAILS.map((d) => d.id)
     expect(new Set(ids).size).toBe(ids.length)
     for (const d of CONSTRUCTION_DETAILS) {
