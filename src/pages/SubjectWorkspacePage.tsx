@@ -10,6 +10,7 @@ import { Icon } from '../components/ui/Icon'
 import { LinkedDocuments } from '../components/workspace/LinkedDocuments'
 import { TasksPanel } from '../components/tasks/TasksPanel'
 import { SubjectStudyPanel } from '../components/study/SubjectStudyPanel'
+import { FlashcardsPanel } from '../components/study/FlashcardsPanel'
 import { TaskFromNoteButton } from '../components/study/TaskFromNoteButton'
 import { db } from '../db'
 import { upcomingEvents, type UpcomingEvent } from '../lib/dashboard-data'
@@ -128,7 +129,14 @@ export function SubjectWorkspacePage() {
           </div>
         )}
 
-        {tab === 'study' && <SubjectStudyPanel subjectId={id} subjectName={subject.name} />}
+        {tab === 'study' && (
+          <div className="space-y-6">
+            <FlashcardsPanel subjectId={id} />
+            <div className="border-t border-forma-border pt-5">
+              <SubjectStudyPanel subjectId={id} subjectName={subject.name} />
+            </div>
+          </div>
+        )}
 
         {tab === 'calendar' && (
           events.length === 0 ? (

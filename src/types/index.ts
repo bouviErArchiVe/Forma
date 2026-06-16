@@ -331,6 +331,38 @@ export interface StudyCard {
   createdAt: number
 }
 
+/**
+ * Flashcard de révision espacée (module Study C1/C2).
+ *
+ * Distincte de `StudyCard` (héritage notebook, conservée intacte) : modèle
+ * autonome avec état SRS SM-2 embarqué (voir src/lib/study/srs.ts). Le lien
+ * matière (`subjectId`, notebook de type 'subject') est optionnel.
+ */
+export interface Flashcard {
+  id: string
+  /** Recto (question / terme). */
+  front: string
+  /** Verso (réponse / définition). */
+  back: string
+  /** Matière liée (id d'un notebook 'subject'), optionnel. */
+  subjectId?: string
+  /** Étiquettes libres (recherche, regroupement). */
+  tags?: string[]
+  // ── État SRS (miroir de SrsState ; voir src/lib/study/srs.ts) ──
+  /** Facteur de facilité SM-2 (≥ 1.3). */
+  easeFactor: number
+  /** Intervalle courant en jours. */
+  interval: number
+  /** Révisions consécutives réussies. */
+  repetitions: number
+  /** Prochaine échéance (timestamp ms). */
+  dueDate: number
+  /** Dernière révision (timestamp ms), absent si jamais révisée. */
+  lastReviewedAt?: number
+  createdAt: number
+  updatedAt: number
+}
+
 /** Instantané manuel d'une page (historique de versions) */
 export interface PageSnapshot {
   id: string
