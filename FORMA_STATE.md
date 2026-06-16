@@ -246,13 +246,13 @@ Premier sprint en mode parallèle contrôlé (voir `FORMA_PARALLEL_SPRINTS.md`).
 
 - **Lane A — Architecture Resources** (`feat/arch-resources-polish`) : légendes auto-générées **groupées par type** (`generateUsageLegend` + `groupResourcesByType`/`RESOURCE_TYPE_*` dans `resourceTypes.ts`), vue groupée optionnelle du `ResourceCatalog`/`ResourceGrid`, nouvel onglet « Ressources graphiques » agrégé, polish `ResourcePreview`. Aucune régression des catalogues existants.
 - **Lane C — Study** (`feat/study-flashcards-srs`) : C1 flashcards (`src/services/flashcards.ts`, table Dexie additive **v13 → v14**, `FORMA_DB_VERSION = 14`) + C2 révision espacée SM-2-lite pure (`src/lib/study/srs.ts`, `review()` testable) ; `FlashcardsPanel` dans l'onglet « Réviser » de la matière.
-- **Lane D — FormAI** (`feat/formai-canvas-actions`) : actions canvas V1 local-first (`src/lib/ai/canvas-context.ts` + `canvas-actions.ts`) — expliquer page, résumer, créer tâche depuis note (confirmation obligatoire) ; composants réutilisables `src/components/ai/PageAIActions*.tsx` ; anti-hallucination + disclaimer ; aucune écriture canvas. **Surface UI pas encore montée** (zone éditeur = Lane B) → suivi d'intégration.
+- **Lane D — FormAI** (`feat/formai-canvas-actions`) : actions canvas V1 local-first (`src/lib/ai/canvas-context.ts` + `canvas-actions.ts`) — expliquer page, résumer, créer tâche depuis note (confirmation obligatoire) ; composants réutilisables `src/components/ai/PageAIActions*.tsx` ; anti-hallucination + disclaimer ; aucune écriture canvas. **Surface UI montée** (Lane E) : bouton « FormAI » dans l'en-tête de l'éditeur (`src/pages/EditorPage.tsx`), scope document.
 - **Lane B — Drawing** (`feat/drawing-annotations-cartouches`) : B2 annotations (`src/lib/drawing/annotations.ts` : label/callout/leader) + B3 cartouches A4→A0 (`src/lib/drawing/titleblocks.ts`) ; dialogues `AnnotationDialog`/`TitleBlockDialog` dans la bibliothèque de blocs, même pipeline SVG→bloc→ImageElement, **aucune modification du canvas**, cotes B1 intactes.
 - **Lane E — Intégration** : câblage Search V3 des flashcards (kind `flashcard`, recto/verso/tags → matière) ; maintenance `FORMA_STATE.md` ; exécution de la passe e2e après chaque étape.
 
 Dexie : **v14** (table `flashcards` additive). Tests verts (**970**), build vert, Playwright vert à chaque étape d'intégration.
 
-Suivi d'intégration restant : monter la surface FormAI (Lane D) dans l'en-tête de l'éditeur (mini-slice zone éditeur, à coordonner) ; option : indexer aussi les ressources graphiques statiques en Search (déjà indexées individuellement par kind).
+Surface FormAI (Lane D) montée dans l'en-tête de l'éditeur (bouton « FormAI », scope document). Option restante : indexer aussi les ressources graphiques statiques en Search (déjà indexées individuellement par kind).
 
 ## Tests et chiffres connus
 

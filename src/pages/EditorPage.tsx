@@ -72,6 +72,7 @@ import { useEditorStore } from '../stores/editorStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import { useTabsStore } from '../stores/tabsStore'
 import { useToastStore } from '../stores/toastStore'
+import { PageAIActionsButton } from '../components/ai/PageAIActionsButton'
 import type { Notebook, Page } from '../types'
 import { normalizePage } from '../types'
 
@@ -792,6 +793,14 @@ export function EditorPage() {
           >
             <Icon name="settings" className="w-4 h-4" />
           </button>
+          {notebook && (
+            <PageAIActionsButton
+              scope="document"
+              notebookId={notebook.id}
+              title={notebook.name}
+              taskDefaults={{ documentId: notebook.id, ...(notebook.subjectId ? { subjectId: notebook.subjectId } : {}), ...(notebook.projectId ? { projectId: notebook.projectId } : {}) }}
+            />
+          )}
           <div className="flex-1" />
           {saveStatus === 'error' ? (
             <button
