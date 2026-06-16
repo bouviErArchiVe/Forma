@@ -104,3 +104,46 @@ Search (`ecosystem-search.ts` + `SearchPage.tsx`) est câblé par Lane E lors de
 - `npm run build` vert
 - lint ciblé sur les fichiers modifiés
 - rapport : fichiers modifiés, ce qui est livré, tests, besoins inter-lanes (ex. câblage Search), limites
+
+---
+
+# Sprint #2 — Study + Resources + Drawing Foundations + FormAI Selection
+
+Sprint #1 (fondations Resource Factory + Drawing B1 + Study flashcards/SRS + FormAI canvas V1) validé et mergé sur `main` (`fe037d21`). Le Sprint #2 reprend exactement la même méthode : worktrees isolés par lane, propriété unique des fichiers critiques, Search/State centralisés en Lane E, Drawing mergé en dernier, gate après chaque merge.
+
+## Lanes & branches (Sprint #2)
+
+| Lane | Branche | Objectif |
+|---|---|---|
+| C — Study | `feat/study-exams-stats` | C3 examens blancs V1 + C4 statistiques d'apprentissage V1 (score, historique, par matière, depuis flashcards si possible) |
+| A — Resources | `feat/resources-search-polish` | polish Resource Factory : regroupement catégories/types, affichage ressources graphiques, previews, légendes ; préparer un kind unifié `resource` exposable à Search |
+| B — Drawing | `feat/drawing-scale-selection-foundation` | B4 échelles dynamiques V1 (modèle scale/profile + helper conversion page↔réel) + **accesseur de sélection read-only** typé/testé. Aucune refonte canvas. Merge en dernier |
+| D — FormAI | `feat/formai-selection-actions` | FormAI Canvas Actions V2 : expliquer page, résumé amélioré, **préparer expliquer-sélection** (utilise l'accesseur read-only de B si dispo+stable, sinon fallback propre + contrat documenté) |
+| E — Integration | `chore/integration-sprint-2` | maintenir coordination + `FORMA_STATE.md`, câbler Search V3, harmoniser libellés, exécuter les gates, piloter l'ordre de merge |
+
+## Propriété des fichiers critiques (Sprint #2 — un seul propriétaire)
+
+| Fichier / zone | Propriétaire |
+|---|---|
+| `src/components/editor/BlockLibraryPanel.tsx` | **Lane B** |
+| `src/canvas/*` | **Lane B** (dont l'accesseur de sélection read-only) |
+| `src/lib/dimensions/*`, `src/lib/drawing/*` | **Lane B** |
+| `src/lib/ecosystem-search.ts`, `src/pages/SearchPage.tsx` | **Lane E** |
+| `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` | **Lane E** |
+| `src/lib/resources/*`, `src/components/resources/*`, `src/pages/ResourcesPage.tsx` | **Lane A** |
+| `src/lib/study/*`, services/stores exams+stats+flashcards | **Lane C** |
+| `src/db/index.ts`, `src/types/index.ts` (Dexie/schema) | **Lane C** ce sprint (additif uniquement) |
+| `src/lib/ai/*`, `src/components/ai/*` | **Lane D** |
+| `src/pages/EditorPage.tsx`, `src/App.tsx` (montage/routes) | coordination via **Lane E** |
+
+## Contrat inter-lanes B↔D (sélection)
+Lane B expose un accesseur **read-only, typé, testé** de la sélection courante (sans casser strokes/images/blocs/cotes/annotations/cartouches). Lane D ne l'importe PAS ce sprint (il n'existe pas encore sur `main` au fork) : D livre expliquer-page/résumé + un **fallback** pour la sélection et **documente le contrat** attendu. La consommation réelle se fera dans un sprint ultérieur, une fois l'accesseur sur `main`.
+
+## Ordre de merge Sprint #2 (strict)
+1. `chore/integration-sprint-2` (base coordination)
+2. `feat/resources-search-polish`
+3. `feat/study-exams-stats`
+4. `feat/formai-selection-actions`
+5. `feat/drawing-scale-selection-foundation` (**canvas en dernier**)
+
+Gate après chaque merge : `git status` · `npm run test -- --run` · `npm run build` · `npx playwright test`. Search câblé par Lane E à l'intégration. Vérif e2e/navigateur centralisée (Lane E, un seul port 5173).
