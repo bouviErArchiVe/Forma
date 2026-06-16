@@ -227,6 +227,17 @@ Pack livré sur branche `feat/auto-legends-resource-usage` (à partir de `main` 
 - UI : bouton « Générer une légende depuis cette page » dans l'onglet Légendes de la bibliothèque de blocs (la page courante est passée via `pageImages`). Insertion réelle vérifiée (bloc `legend-auto-…`, asset Dexie, survit au reload).
 - Légendes statiques V1 non régressées. Tests verts, build vert, Playwright vert.
 
+Mergé sur `main` le 2026-06-15 (fast-forward `0e1686db`).
+
+### Pack B1 — Drawing Dimensions Foundation (cotes)
+
+Pack livré sur branche `feat/drawing-dimensions-foundation` (à partir de `main` `0e1686db`).
+
+- **Fondation des cotes** sans toucher au canvas : `src/lib/dimensions/dimensions.ts` (fonctions PURES — `distance`, `pxToReal`, `angleOf`, `midpoint`, `formatLength` mm/cm/m + impérial po/pi, `createDimension`, `buildDimensionSvg`, `dimensionToBlock`). Une cote est calculée puis rendue en SVG et insérée comme un bloc (`dimensionToBlock` → raster → asset Dexie → ImageElement) : elle hérite du rendu, de la sélection, du déplacement, de la sauvegarde/reload et de l'export, **sans modification du canvas**.
+- Types V1 : cote **horizontale**, **verticale**, **alignée** (angle). Style : ligne + flèches ou ticks + valeur centrée ; unité + échelle (1 px = N unités) configurables ; couleur `currentColor` (dark mode).
+- UI : déclencheur « Cote » dans la rangée paramétrique de la bibliothèque de blocs → `DimensionDialog` (type, longueur, unité, échelle, angle, embouts) avec aperçu en direct → insertion via `onPick`.
+- Modèle `Dimension` (id/type/start/end/text/unit/scale/measuredLength/displayLength/style/createdAt/updatedAt). Insertion réelle des 3 types vérifiée (`dimension-…`, asset Dexie, survit au reload) ; hachures/symboles/détails/blocs non régressés.
+
 Avant tout travail futur, confirmer si ce pack est bien mergé sur `main`.
 
 ## Tests et chiffres connus
@@ -246,7 +257,8 @@ Chiffres récents vus dans les rapports :
 - 819 tests après Hatch Library ;
 - 847 tests après Architecture Resource Factory (A4 + A8 + boost A3) ;
 - 854 tests après Resource Factory Phase 2 (détails migrés + 103 détails + légendes V1) ;
-- 865 tests après Resource Factory Phase 3 (auto-légendes + resource usage).
+- 865 tests après Resource Factory Phase 3 (auto-légendes + resource usage) ;
+- 879 tests après Pack B1 (fondation des cotes).
 
 Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tests réels du repo.
 
@@ -269,7 +281,8 @@ Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tes
 - `feat/hatch-library` — commit `bf7193d2` (mergé)
 - `feat/architecture-resource-factory` — commit `29575206` (mergé)
 - `feat/resource-factory-details-legends` — commit `363e71f2` (mergé)
-- `feat/auto-legends-resource-usage` — resource usage + auto-légendes (Phase 3)
+- `feat/auto-legends-resource-usage` — commit `0e1686db` (mergé)
+- `feat/drawing-dimensions-foundation` — fondation des cotes (Pack B1)
 
 Toujours vérifier l’historique Git réel avant action.
 

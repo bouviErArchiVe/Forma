@@ -19,6 +19,7 @@ import {
 } from '../../lib/blocks'
 import { importCustomBlock } from '../../lib/blocks/custom-import'
 import { buildParametricBlock, PARAMETRIC_DEFS, type ParametricDef } from '../../lib/blocks/parametric'
+import { DimensionDialog } from './DimensionDialog'
 import { CONSTRUCTION_DETAILS, detailToBlock, searchDetails } from '../../lib/resources/details'
 import { HATCHES, hatchToBlock, searchHatches } from '../../lib/resources/hatches'
 import { SYMBOLS, symbolToBlock, searchSymbols } from '../../lib/resources/symbols'
@@ -92,6 +93,7 @@ export function BlockLibraryPanel({
   const [search, setSearch] = useState('')
   const [showImport, setShowImport] = useState(false)
   const [paramDef, setParamDef] = useState<ParametricDef | null>(null)
+  const [showDimension, setShowDimension] = useState(false)
 
   const categories = useMemo(() => categoriesForUnit(unit), [unit])
 
@@ -194,6 +196,14 @@ export function BlockLibraryPanel({
               {d.name}
             </button>
           ))}
+          <button
+            type="button"
+            onClick={() => setShowDimension(true)}
+            className="text-[11px] px-2 py-0.5 rounded-full border border-forma-accent/40 text-forma-accent hover:bg-forma-accent/5 transition-colors inline-flex items-center gap-1"
+          >
+            <Icon name="edit" className="w-3 h-3" />
+            Cote
+          </button>
         </div>
 
         {/* Catégories */}
@@ -345,6 +355,16 @@ export function BlockLibraryPanel({
           onInsert={(block) => {
             onPick(block)
             setParamDef(null)
+          }}
+        />
+      )}
+
+      {showDimension && (
+        <DimensionDialog
+          onClose={() => setShowDimension(false)}
+          onInsert={(block) => {
+            onPick(block)
+            setShowDimension(false)
           }}
         />
       )}
