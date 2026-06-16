@@ -6,7 +6,7 @@
  * hachures/symboles/détails. V1 = légendes représentatives ; la génération
  * automatique à partir des ressources utilisées dans un carnet viendra ensuite.
  */
-import { buildSearchText, type GraphicResource } from './resourceTypes'
+import { buildSearchText, groupResourcesByType, type GraphicResource } from './resourceTypes'
 import { resourceToBlock } from './resourceToBlock'
 import type { DrawingBlock } from '../blocks/types'
 
@@ -200,40 +200,67 @@ function renderSwatch(resource: GraphicResource, x: number, y: number, cell: num
 const GEN_W = 240
 const GEN_TITLE_H = 34
 const GEN_ROW_H = 24
+const GEN_GROUP_H = 22
 const GEN_CELL = 18
+const GEN_LABEL_X = 14 + GEN_CELL + 8
 const GEN_MAX_ROWS = 18
 
 /**
  * Génère une légende `GraphicResource` à partir de ressources (typiquement
- * celles utilisées dans un carnet). Chaque ligne montre l'échantillon réel de
- * la ressource et son nom. Insérable via le pipeline bloc existant.
+ * celles utilisées dans un carnet). Les lignes sont regroupées par TYPE de
+ * ressource (Hachures / Symboles / Détails…) sous de petits sous-en-têtes ;
+ * chaque ligne montre l'échantillon réel de la ressource et son nom.
+ *
+ * Pur et déterministe (mêmes entrées → même SVG, hors `id`). Insérable via le
+ * pipeline bloc existant. `opts.grouped: false` rétablit la liste à plat.
  */
 export function generateUsageLegend(
   resources: GraphicResource[],
-  opts: { title?: string } = {},
+  opts: { title?: string; grouped?: boolean } = {},
 ): GraphicResource {
   const title = opts.title ?? 'Légende — ressources utilisées'
-  const rows = resources.slice(0, GEN_MAX_ROWS)
-  const extra = resources.length - rows.length
-  const bodyRows = rows.length + (extra > 0 ? 1 : 0)
-  const height = GEN_TITLE_H + Math.max(1, bodyRows) * GEN_ROW_H + 8
+  const grouped = opts.grouped ?? true
+  const shown = resources.slice(0, GEN_MAX_ROWS)
+  const extra = resources.length - shown.length
+
+  // Découpe en sections (sous-en-tête de type + lignes) — une seule section
+  // sans en-tête si `grouped` est désactivé, pour préserver l'ancien rendu plat.
+  const sections: { label: string | null; resources: GraphicResource[] }[] = grouped
+    ? groupResourcesByType(shown).map((g) => ({ label: g.label, resources: g.resources }))
+    : shown.length > 0
+      ? [{ label: null, resources: shown }]
+      : []
+
+  // Hauteur : titre + (en-tête + lignes) par section + ligne « + N autre(s) ».
+  const sectionsHeight = sections.reduce(
+    (acc, s) => acc + (s.label ? GEN_GROUP_H : 0) + s.resources.length * GEN_ROW_H,
+    0,
+  )
+  const bodyHeight = sections.length === 0 ? GEN_ROW_H : sectionsHeight + (extra > 0 ? GEN_ROW_H : 0)
+  const height = GEN_TITLE_H + bodyHeight + 8
 
   let body =
     `<rect x="4" y="4" width="${GEN_W - 8}" height="${height - 8}" rx="6"/>` +
     `<text x="14" y="24" font-size="12" fill="currentColor" stroke="none">${escapeXml(title)}</text>` +
     `<path d="M12 ${GEN_TITLE_H - 2} H${GEN_W - 12}"/>`
 
-  if (rows.length === 0) {
-    body += `<text x="14" y="${GEN_TITLE_H + 18}" font-size="11" fill="currentColor" stroke="none">Aucune ressource détectée sur cette page.</text>`
+  let cursorY = GEN_TITLE_H
+  if (sections.length === 0) {
+    body += `<text x="14" y="${cursorY + 18}" font-size="11" fill="currentColor" stroke="none">Aucune ressource détectée sur cette page.</text>`
   } else {
-    rows.forEach((r, i) => {
-      const rowY = GEN_TITLE_H + i * GEN_ROW_H
-      body += renderSwatch(r, 14, rowY + (GEN_ROW_H - GEN_CELL) / 2, GEN_CELL)
-      body += `<text x="${14 + GEN_CELL + 8}" y="${rowY + GEN_ROW_H / 2 + 4}" font-size="11" fill="currentColor" stroke="none">${escapeXml(r.name)}</text>`
-    })
+    for (const section of sections) {
+      if (section.label) {
+        body += `<text x="14" y="${cursorY + GEN_GROUP_H - 7}" font-size="10" font-weight="600" fill="currentColor" stroke="none" opacity="0.7">${escapeXml(section.label)}</text>`
+        cursorY += GEN_GROUP_H
+      }
+      for (const r of section.resources) {
+        body += renderSwatch(r, 14, cursorY + (GEN_ROW_H - GEN_CELL) / 2, GEN_CELL)
+        body += `<text x="${GEN_LABEL_X}" y="${cursorY + GEN_ROW_H / 2 + 4}" font-size="11" fill="currentColor" stroke="none">${escapeXml(r.name)}</text>`
+        cursorY += GEN_ROW_H
+      }
+    }
     if (extra > 0) {
-      const rowY = GEN_TITLE_H + rows.length * GEN_ROW_H
-      body += `<text x="14" y="${rowY + GEN_ROW_H / 2 + 4}" font-size="10" fill="currentColor" stroke="none">+ ${extra} autre(s)…</text>`
+      body += `<text x="14" y="${cursorY + GEN_ROW_H / 2 + 4}" font-size="10" fill="currentColor" stroke="none">+ ${extra} autre(s)…</text>`
     }
   }
 

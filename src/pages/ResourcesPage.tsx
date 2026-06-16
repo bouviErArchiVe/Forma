@@ -41,7 +41,7 @@ import { ResourceCatalog } from '../components/resources/ResourceCatalog'
 import { useResourceFavoritesStore } from '../stores/resourceFavoritesStore'
 import { useResourceNotesStore } from '../stores/resourceNotesStore'
 
-type MainTab = 'normes' | 'details' | 'materiaux' | 'hachures' | 'symboles' | 'legendes' | 'templates'
+type MainTab = 'normes' | 'graphiques' | 'details' | 'materiaux' | 'hachures' | 'symboles' | 'legendes' | 'templates'
 
 export function ResourcesPage() {
   const [tab, setTab] = useState<MainTab>('normes')
@@ -63,6 +63,7 @@ export function ResourcesPage() {
         {([
           { id: 'normes' as MainTab, label: 'Bibliothèque normative' },
           { id: 'materiaux' as MainTab, label: 'Matériaux' },
+          { id: 'graphiques' as MainTab, label: 'Ressources graphiques' },
           { id: 'details' as MainTab, label: 'Détails constructifs' },
           { id: 'hachures' as MainTab, label: 'Hachures' },
           { id: 'symboles' as MainTab, label: 'Symboles' },
@@ -75,7 +76,7 @@ export function ResourcesPage() {
         ))}
       </div>
 
-      {tab === 'normes' ? <NormativeTab /> : tab === 'materiaux' ? <MaterialsTab /> : tab === 'hachures' ? <HatchesTab /> : tab === 'symboles' ? <SymbolsTab /> : tab === 'legendes' ? <LegendsTab /> : tab === 'templates' ? <TemplatesTab /> : <DetailsTab />}
+      {tab === 'normes' ? <NormativeTab /> : tab === 'materiaux' ? <MaterialsTab /> : tab === 'graphiques' ? <GraphicResourcesTab /> : tab === 'hachures' ? <HatchesTab /> : tab === 'symboles' ? <SymbolsTab /> : tab === 'legendes' ? <LegendsTab /> : tab === 'templates' ? <TemplatesTab /> : <DetailsTab />}
     </div>
   )
 }
@@ -423,6 +424,33 @@ function MaterialsTab() {
 }
 
 // ─── Hachures & Symboles (via Resource Factory partagée) ──────────────────────
+
+/**
+ * Catalogue combiné de toutes les ressources graphiques insérables (hachures,
+ * symboles, détails, légendes), avec bascule « Grouper par type ». Les onglets
+ * mono-famille restent disponibles pour un accès direct.
+ */
+function GraphicResourcesTab() {
+  const resources = useMemo(
+    () => [
+      ...HATCHES.map(hatchToResource),
+      ...SYMBOLS.map(symbolToResource),
+      ...CONSTRUCTION_DETAILS.map(detailToResource),
+      ...LEGENDS.map(legendToResource),
+    ],
+    [],
+  )
+  return (
+    <ResourceCatalog
+      resources={resources}
+      searchPlaceholder="Rechercher une ressource graphique…"
+      insertTabLabel="Hachures / Symboles / Détails"
+      emptyLabel="Aucune ressource"
+      gridCols={3}
+      enableGrouping
+    />
+  )
+}
 
 function HatchesTab() {
   const resources = useMemo(() => HATCHES.map(hatchToResource), [])

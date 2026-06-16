@@ -7,6 +7,7 @@
  */
 import { useMemo, useState } from 'react'
 import {
+  groupResourcesByType,
   resourceCategories,
   searchResources,
   type GraphicResource,
@@ -21,6 +22,7 @@ export function ResourceCatalog({
   insertTabLabel,
   emptyLabel,
   gridCols = 3,
+  enableGrouping = false,
 }: {
   resources: GraphicResource[]
   searchPlaceholder?: string
@@ -28,13 +30,25 @@ export function ResourceCatalog({
   insertTabLabel?: string
   emptyLabel?: string
   gridCols?: 2 | 3
+  /**
+   * Propose une bascule « par type » regroupant les vignettes par famille
+   * (Hachures / Symboles / Détails…). N'apparaît que si les ressources
+   * couvrent plusieurs types. Désactivé par défaut : les onglets mono-type
+   * (Hachures/Symboles/Détails) conservent leur affichage à plat.
+   */
+  enableGrouping?: boolean
 }) {
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState<string>('all')
+  const [grouped, setGrouped] = useState(false)
   const [selected, setSelected] = useState<GraphicResource | null>(null)
 
   const categories = useMemo(() => resourceCategories(resources), [resources])
   const visible = useMemo(() => searchResources(resources, search, category), [resources, search, category])
+
+  // La bascule n'a de sens que si plusieurs types coexistent dans la sélection.
+  const typeCount = useMemo(() => groupResourcesByType(visible).length, [visible])
+  const canGroup = enableGrouping && typeCount > 1
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[18rem_1fr] gap-4">
@@ -47,12 +61,25 @@ export function ResourceCatalog({
           categories={categories}
           placeholder={searchPlaceholder}
         />
+        {canGroup && (
+          <div className="flex items-center justify-end mb-2">
+            <button
+              type="button"
+              onClick={() => setGrouped((g) => !g)}
+              aria-pressed={grouped}
+              className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${grouped ? 'border-forma-accent text-forma-accent' : 'border-forma-border text-forma-muted hover:text-forma-text'}`}
+            >
+              {grouped ? 'Vue à plat' : 'Grouper par type'}
+            </button>
+          </div>
+        )}
         <ResourceGrid
           resources={visible}
           selectedId={selected?.id ?? null}
           onSelect={setSelected}
           cols={gridCols}
           emptyLabel={emptyLabel}
+          grouped={canGroup && grouped}
         />
       </div>
       <div>

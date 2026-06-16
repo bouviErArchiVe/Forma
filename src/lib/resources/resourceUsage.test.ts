@@ -102,6 +102,60 @@ describe('generateUsageLegend', () => {
     expect(legend.name).toBe('Ma légende')
     expect(legend.svg).toContain('Ma légende')
   })
+
+  it('regroupe les lignes par type avec sous-en-têtes (par défaut)', () => {
+    const usage = collectResourceUsage([
+      { blockId: 'hatch-h-beton' },
+      { blockId: 'symbol-sym-nord' },
+      { blockId: 'detail-d-wall-wood' },
+    ])
+    const legend = generateUsageLegend(usage.entries.map((e) => e.resource))
+    // sous-en-têtes de type présents
+    expect(legend.svg).toContain('Hachures')
+    expect(legend.svg).toContain('Symboles')
+    expect(legend.svg).toContain('Détails')
+    // ordre stable : Hachures avant Symboles avant Détails
+    const iHatch = legend.svg.indexOf('Hachures')
+    const iSym = legend.svg.indexOf('Symboles')
+    const iDet = legend.svg.indexOf('Détails')
+    expect(iHatch).toBeLessThan(iSym)
+    expect(iSym).toBeLessThan(iDet)
+  })
+
+  it('déterministe : mêmes ressources → même SVG (hors id)', () => {
+    const resources = collectResourceUsage([
+      { blockId: 'hatch-h-beton' },
+      { blockId: 'symbol-sym-nord' },
+    ]).entries.map((e) => e.resource)
+    const a = generateUsageLegend(resources)
+    const b = generateUsageLegend(resources)
+    expect(a.svg).toBe(b.svg)
+    expect(a.viewBox).toBe(b.viewBox)
+  })
+
+  it('grouped:false rétablit une liste à plat (sans sous-en-têtes)', () => {
+    const resources = collectResourceUsage([
+      { blockId: 'hatch-h-beton' },
+      { blockId: 'symbol-sym-nord' },
+    ]).entries.map((e) => e.resource)
+    const flat = generateUsageLegend(resources, { grouped: false })
+    // pas de sous-en-tête de type, mais les noms de ressources restent présents
+    expect(flat.svg).toContain('Béton')
+    expect(flat.svg).toContain('Flèche Nord')
+    // la version groupée est plus haute (lignes d'en-tête en plus)
+    const grouped = generateUsageLegend(resources)
+    expect(grouped.defaultHeight).toBeGreaterThan(flat.defaultHeight)
+  })
+
+  it('un seul type : un seul sous-en-tête', () => {
+    const resources = collectResourceUsage([
+      { blockId: 'hatch-h-beton' },
+      { blockId: 'symbol-sym-nord' }, // ignoré ci-dessous via filtre
+    ]).entries.map((e) => e.resource).filter((r) => r.type === 'hatch')
+    const legend = generateUsageLegend(resources)
+    expect(legend.svg).toContain('Hachures')
+    expect(legend.svg).not.toContain('Symboles')
+  })
 })
 
 describe('non-régression des légendes statiques', () => {

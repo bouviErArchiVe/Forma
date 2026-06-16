@@ -5,7 +5,10 @@
  */
 import { describe, expect, it } from 'vitest'
 import {
+  RESOURCE_TYPE_LABELS,
+  RESOURCE_TYPE_ORDER,
   buildSearchText,
+  groupResourcesByType,
   resourceCategories,
   searchResources,
   type GraphicResource,
@@ -35,6 +38,43 @@ describe('helpers génériques', () => {
     const keys = cats.map((c) => c.key)
     expect(new Set(keys).size).toBe(keys.length)
     expect(cats.every((c) => c.label.length > 0)).toBe(true)
+  })
+})
+
+describe('groupResourcesByType', () => {
+  const mixed: GraphicResource[] = [
+    detailToResource(CONSTRUCTION_DETAILS[0]),
+    symbolToResource(SYMBOLS[0]),
+    hatchToResource(HATCHES[0]),
+    hatchToResource(HATCHES[1]),
+  ]
+
+  it('regroupe par type et respecte l’ordre RESOURCE_TYPE_ORDER', () => {
+    const groups = groupResourcesByType(mixed)
+    expect(groups.map((g) => g.type)).toEqual(['hatch', 'symbol', 'detail'])
+    expect(groups[0].label).toBe(RESOURCE_TYPE_LABELS.hatch)
+    expect(groups[0].resources.length).toBe(2)
+  })
+
+  it('ne crée que des groupes non vides, ordre des ressources préservé', () => {
+    const groups = groupResourcesByType(mixed)
+    expect(groups.every((g) => g.resources.length > 0)).toBe(true)
+    expect(groups.find((g) => g.type === 'hatch')!.resources[0].id).toBe(HATCHES[0].id)
+  })
+
+  it('liste vide → aucun groupe', () => {
+    expect(groupResourcesByType([])).toEqual([])
+  })
+
+  it('un seul type → un seul groupe', () => {
+    const groups = groupResourcesByType(HATCHES.map(hatchToResource))
+    expect(groups.length).toBe(1)
+    expect(groups[0].type).toBe('hatch')
+  })
+
+  it('RESOURCE_TYPE_ORDER couvre tous les libellés', () => {
+    for (const t of RESOURCE_TYPE_ORDER) expect(RESOURCE_TYPE_LABELS[t]).toBeTruthy()
+    expect(new Set(RESOURCE_TYPE_ORDER).size).toBe(RESOURCE_TYPE_ORDER.length)
   })
 })
 

@@ -12,6 +12,18 @@ import type { DrawingBlockCategory } from '../blocks/types'
 
 export type ResourceType = 'hatch' | 'symbol' | 'detail' | 'material' | 'legend'
 
+/** Libellés affichables des types de ressources (sous-en-têtes, regroupements). */
+export const RESOURCE_TYPE_LABELS: Record<ResourceType, string> = {
+  hatch: 'Hachures',
+  symbol: 'Symboles',
+  detail: 'Détails',
+  material: 'Matériaux',
+  legend: 'Légendes',
+}
+
+/** Ordre d'affichage stable des types (regroupements déterministes). */
+export const RESOURCE_TYPE_ORDER: ResourceType[] = ['hatch', 'symbol', 'detail', 'material', 'legend']
+
 /** Comment la ressource est consommée. */
 export type ResourceSourceType = 'svg-block' | 'document-template'
 
@@ -79,4 +91,30 @@ export function resourceCategories<T extends GraphicResource>(resources: T[]): {
   const seen = new Map<string, string>()
   for (const r of resources) if (!seen.has(r.category)) seen.set(r.category, r.categoryLabel)
   return [...seen].map(([key, label]) => ({ key, label }))
+}
+
+/** Un groupe de ressources partageant le même type (avec son libellé). */
+export interface ResourceTypeGroup<T extends GraphicResource = GraphicResource> {
+  type: ResourceType
+  label: string
+  resources: T[]
+}
+
+/**
+ * Regroupe des ressources par TYPE (hachures / symboles / détails…), en
+ * conservant l'ordre stable `RESOURCE_TYPE_ORDER`. Pur et déterministe : ne
+ * crée que les groupes non vides, et préserve l'ordre des ressources dans
+ * chaque groupe. Utilisé par le catalogue (vue groupée) et la génération de
+ * légendes par type.
+ */
+export function groupResourcesByType<T extends GraphicResource>(resources: T[]): ResourceTypeGroup<T>[] {
+  const byType = new Map<ResourceType, T[]>()
+  for (const r of resources) {
+    const list = byType.get(r.type)
+    if (list) list.push(r)
+    else byType.set(r.type, [r])
+  }
+  return RESOURCE_TYPE_ORDER
+    .filter((type) => byType.has(type))
+    .map((type) => ({ type, label: RESOURCE_TYPE_LABELS[type], resources: byType.get(type)! }))
 }

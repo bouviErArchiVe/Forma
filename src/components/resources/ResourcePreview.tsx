@@ -6,7 +6,7 @@
 import { Icon } from '../ui/Icon'
 import { blockToSvg } from '../../lib/blocks/types'
 import { resourceToBlock } from '../../lib/resources/resourceToBlock'
-import type { GraphicResource } from '../../lib/resources/resourceTypes'
+import { RESOURCE_TYPE_LABELS, type GraphicResource } from '../../lib/resources/resourceTypes'
 import { useToastStore } from '../../stores/toastStore'
 
 export function ResourcePreview({
@@ -21,7 +21,7 @@ export function ResourcePreview({
     return (
       <div className="h-full flex flex-col items-center justify-center text-center py-12">
         <Icon name="layout" className="w-8 h-8 text-forma-muted mb-2" />
-        <p className="text-sm text-forma-muted max-w-sm">Sélectionnez une ressource.</p>
+        <p className="text-sm text-forma-muted max-w-sm">Sélectionnez une ressource pour voir son aperçu, ses tags et comment l’insérer dans un dessin.</p>
       </div>
     )
   }
@@ -61,7 +61,11 @@ export function ResourcePreview({
           <button type="button" onClick={() => void copyMarkdown()} title="Copier (Markdown)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="file-text" className="w-4 h-4" /></button>
         </div>
       </div>
-      <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-3">{resource.categoryLabel}</p>
+      <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-3">
+        <span className="text-forma-muted">{RESOURCE_TYPE_LABELS[resource.type]}</span>
+        <span className="mx-1 text-forma-muted">·</span>
+        {resource.categoryLabel}
+      </p>
       <div
         className="border border-forma-border rounded-xl p-4 bg-forma-surface mb-3 w-full max-w-sm h-44 flex items-center justify-center text-forma-text [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
         dangerouslySetInnerHTML={{ __html: blockToSvg(resourceToBlock(resource), { stroke: 'currentColor' }) }}
