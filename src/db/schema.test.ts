@@ -136,8 +136,33 @@ describe('Dexie schema', () => {
         'academicSessions',
         'quizzes',
         'checklists',
+        'flashcards',
       ].sort(),
     )
+  })
+
+  it('bumps to v14 and exposes the flashcards store', async () => {
+    expect(FORMA_DB_VERSION).toBe(14)
+    expect(db.verno).toBe(14)
+    const now = Date.now()
+    await db.flashcards.put({
+      id: 'fc-schema-1',
+      front: 'Recto',
+      back: 'Verso',
+      subjectId: 'subj-1',
+      easeFactor: 2.5,
+      interval: 0,
+      repetitions: 0,
+      dueDate: now,
+      createdAt: now,
+      updatedAt: now,
+    })
+    const row = await db.flashcards.get('fc-schema-1')
+    expect(row?.front).toBe('Recto')
+    expect(row?.easeFactor).toBe(2.5)
+    // index subjectId interrogeable
+    const bySubject = await db.flashcards.where('subjectId').equals('subj-1').toArray()
+    expect(bySubject).toHaveLength(1)
   })
 
   it('persists blob rows in assets store (v5)', async () => {
