@@ -238,7 +238,21 @@ Pack livré sur branche `feat/drawing-dimensions-foundation` (à partir de `main
 - UI : déclencheur « Cote » dans la rangée paramétrique de la bibliothèque de blocs → `DimensionDialog` (type, longueur, unité, échelle, angle, embouts) avec aperçu en direct → insertion via `onPick`.
 - Modèle `Dimension` (id/type/start/end/text/unit/scale/measuredLength/displayLength/style/createdAt/updatedAt). Insertion réelle des 3 types vérifiée (`dimension-…`, asset Dexie, survit au reload) ; hachures/symboles/détails/blocs non régressés.
 
-Avant tout travail futur, confirmer si ce pack est bien mergé sur `main`.
+Mergé sur `main` le 2026-06-15 (fast-forward `3724014a`).
+
+### Sprint parallèle #1 (lanes A/B/C/D + intégration E)
+
+Premier sprint en mode parallèle contrôlé (voir `FORMA_PARALLEL_SPRINTS.md`). 4 lanes en worktrees isolés, branches dédiées, propriété unique des fichiers critiques, vérif e2e centralisée par Lane E. Ordre de merge respecté : E base → A → C → D → **B (canvas) en dernier**. Fichiers disjoints (zéro conflit).
+
+- **Lane A — Architecture Resources** (`feat/arch-resources-polish`) : légendes auto-générées **groupées par type** (`generateUsageLegend` + `groupResourcesByType`/`RESOURCE_TYPE_*` dans `resourceTypes.ts`), vue groupée optionnelle du `ResourceCatalog`/`ResourceGrid`, nouvel onglet « Ressources graphiques » agrégé, polish `ResourcePreview`. Aucune régression des catalogues existants.
+- **Lane C — Study** (`feat/study-flashcards-srs`) : C1 flashcards (`src/services/flashcards.ts`, table Dexie additive **v13 → v14**, `FORMA_DB_VERSION = 14`) + C2 révision espacée SM-2-lite pure (`src/lib/study/srs.ts`, `review()` testable) ; `FlashcardsPanel` dans l'onglet « Réviser » de la matière.
+- **Lane D — FormAI** (`feat/formai-canvas-actions`) : actions canvas V1 local-first (`src/lib/ai/canvas-context.ts` + `canvas-actions.ts`) — expliquer page, résumer, créer tâche depuis note (confirmation obligatoire) ; composants réutilisables `src/components/ai/PageAIActions*.tsx` ; anti-hallucination + disclaimer ; aucune écriture canvas. **Surface UI pas encore montée** (zone éditeur = Lane B) → suivi d'intégration.
+- **Lane B — Drawing** (`feat/drawing-annotations-cartouches`) : B2 annotations (`src/lib/drawing/annotations.ts` : label/callout/leader) + B3 cartouches A4→A0 (`src/lib/drawing/titleblocks.ts`) ; dialogues `AnnotationDialog`/`TitleBlockDialog` dans la bibliothèque de blocs, même pipeline SVG→bloc→ImageElement, **aucune modification du canvas**, cotes B1 intactes.
+- **Lane E — Intégration** : câblage Search V3 des flashcards (kind `flashcard`, recto/verso/tags → matière) ; maintenance `FORMA_STATE.md` ; exécution de la passe e2e après chaque étape.
+
+Dexie : **v14** (table `flashcards` additive). Tests verts (**970**), build vert, Playwright vert à chaque étape d'intégration.
+
+Suivi d'intégration restant : monter la surface FormAI (Lane D) dans l'en-tête de l'éditeur (mini-slice zone éditeur, à coordonner) ; option : indexer aussi les ressources graphiques statiques en Search (déjà indexées individuellement par kind).
 
 ## Tests et chiffres connus
 
@@ -258,7 +272,8 @@ Chiffres récents vus dans les rapports :
 - 847 tests après Architecture Resource Factory (A4 + A8 + boost A3) ;
 - 854 tests après Resource Factory Phase 2 (détails migrés + 103 détails + légendes V1) ;
 - 865 tests après Resource Factory Phase 3 (auto-légendes + resource usage) ;
-- 879 tests après Pack B1 (fondation des cotes).
+- 879 tests après Pack B1 (fondation des cotes) ;
+- 970 tests après le Sprint parallèle #1 (A légendes groupées + C flashcards/SRS + D FormAI canvas + B annotations/cartouches).
 
 Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tests réels du repo.
 
@@ -282,7 +297,9 @@ Ces chiffres servent d’indication, mais Claude doit toujours exécuter les tes
 - `feat/architecture-resource-factory` — commit `29575206` (mergé)
 - `feat/resource-factory-details-legends` — commit `363e71f2` (mergé)
 - `feat/auto-legends-resource-usage` — commit `0e1686db` (mergé)
-- `feat/drawing-dimensions-foundation` — fondation des cotes (Pack B1)
+- `feat/drawing-dimensions-foundation` — commit `3724014a` (mergé)
+- `docs: parallel sprint coordination` — commit `81b5e597` (mergé)
+- Sprint parallèle #1 (mergé) : `feat/arch-resources-polish`, `feat/study-flashcards-srs`, `feat/formai-canvas-actions`, `feat/drawing-annotations-cartouches` + intégration Lane E
 
 Toujours vérifier l’historique Git réel avant action.
 

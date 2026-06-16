@@ -28,6 +28,7 @@ export type EcosystemHitKind =
   | 'quiz'
   | 'checklist'
   | 'session'
+  | 'flashcard'
 
 export interface EcosystemHit {
   kind: EcosystemHitKind
@@ -96,6 +97,19 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
         kind: 'checklist', id: c.id, title: c.title,
         subtitle: `Checklist · ${done}/${c.items.length}`,
         to: c.projectId ? `/projects/${c.projectId}` : '/projects',
+      })
+    }
+  }
+
+  // Flashcards (recto + verso + tags) → matière liée si présente
+  const flashcards = await db.flashcards.toArray()
+  for (const f of flashcards) {
+    const hay = normalize(`${f.front} ${f.back} ${(f.tags ?? []).join(' ')}`)
+    if (hay.includes(q)) {
+      hits.push({
+        kind: 'flashcard', id: f.id, title: f.front,
+        subtitle: 'Flashcard',
+        to: f.subjectId ? `/subjects/${f.subjectId}` : '/dashboard',
       })
     }
   }

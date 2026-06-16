@@ -9,6 +9,7 @@ import { createTask } from '../services/tasks'
 import { createProject } from '../services/projects'
 import { createSession } from '../services/academic'
 import { saveChecklist, saveQuiz } from '../services/study-content'
+import { createFlashcard } from '../services/flashcards'
 import { searchEcosystem } from './ecosystem-search'
 import { upcomingEvents } from './dashboard-data'
 
@@ -21,6 +22,7 @@ beforeEach(async () => {
   await db.quizzes.clear()
   await db.checklists.clear()
   await db.academicSessions.clear()
+  await db.flashcards.clear()
 })
 
 describe('searchEcosystem', () => {
@@ -47,6 +49,15 @@ describe('searchEcosystem', () => {
     expect(acier.some((h) => h.kind === 'material')).toBe(true)
     const hit = acier.find((h) => h.kind === 'material')
     expect(hit?.to).toBe('/resources')
+  })
+
+  it('trouve des flashcards (recto/verso) → matière liée', async () => {
+    await createFlashcard({ front: 'Loi de Hooke', back: 'σ = E·ε', subjectId: 's1' })
+    const hits = await searchEcosystem('hooke')
+    const hit = hits.find((h) => h.kind === 'flashcard')
+    expect(hit).toBeDefined()
+    expect(hit?.to).toBe('/subjects/s1')
+    expect((await searchEcosystem('σ = E·ε')).some((h) => h.kind === 'flashcard')).toBe(true)
   })
 
   it('trouve des vérifications de conformité (catalogue statique)', async () => {
