@@ -147,3 +147,21 @@ Lane B expose un accesseur **read-only, typé, testé** de la sélection courant
 5. `feat/drawing-scale-selection-foundation` (**canvas en dernier**)
 
 Gate après chaque merge : `git status` · `npm run test -- --run` · `npm run build` · `npx playwright test`. Search câblé par Lane E à l'intégration. Vérif e2e/navigateur centralisée (Lane E, un seul port 5173).
+
+---
+
+# Sprint #3 — Resources Search / Study Goals / FormAI Agents / Drawing Scale-UI
+
+Sprint #2 validé/mergé (`511d7bd0`, Dexie v15). Même méthode : worktrees isolés, propriété unique des fichiers critiques, Search/State/routes en Lane E, Drawing mergé en dernier, gate après chaque merge.
+
+| Lane | Branche | Objectif | Propriété |
+|---|---|---|---|
+| A | `feat/arch-resources-v3` | export `resource` unifié pour Search + sous-groupage par catégorie + polish previews | `src/lib/resources/*`, `src/components/resources/*`, `src/pages/ResourcesPage.tsx` |
+| C | `feat/study-goals-stats` | C5 objectifs académiques + page stats globales (réutilise exams/flashcards) | `src/lib/study/*`, `src/services/*` (study), `src/stores/*`, study pages, `src/db/index.ts`+`src/types/index.ts` (additif **v15→v16**) |
+| D | `feat/formai-agents-v2` | agents spécialisés (Archi/CNB/Structure/Études) + grounding ; explain-selection garde le fallback | `src/lib/ai/*`, `src/components/ai/*` |
+| B | `feat/drawing-scale-ui-legend` (dernier) | B4 UI d'échelle dans les dialogues + B6 légende de dessin ; consomme l'accesseur de sélection read-only | `src/canvas/*`, `src/components/editor/*`, `src/lib/drawing/*`, `src/lib/dimensions/*` |
+| E | `chore/integration-sprint-3` | Search (`ecosystem-search.ts`, `SearchPage.tsx`), `FORMA_STATE.md`, **routes** (`App.tsx`, nav), gates, ordre de merge ; câble getSelectionText→FormAI si contrat B stable | Search + State + routes |
+
+Interdits transverses : aucune lane hors E ne touche Search/State/routes ; D↔B selection wiring **différé** (E câble à l'intégration si stable, sinon fallback). C Dexie **additif** seulement.
+
+Ordre de merge strict : `chore/integration-sprint-3` → `feat/arch-resources-v3` → `feat/study-goals-stats` → `feat/formai-agents-v2` → `feat/drawing-scale-ui-legend`. Gate complet après chaque merge ; push `main` seulement après le vert final.
