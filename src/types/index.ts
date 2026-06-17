@@ -284,6 +284,72 @@ export interface Quiz {
   createdAt: number
 }
 
+// ─── Examens blancs & statistiques d'apprentissage (Study C3/C4) ──────────────
+
+/**
+ * Question d'examen blanc. Reprend la même grammaire de réponse que
+ * `QuizQuestion` (voir generateQuizLocal / grading) :
+ *  - mcq        : `answer` = index (chaîne) de la bonne option dans `options` ;
+ *  - truefalse  : `answer` = 'vrai' | 'faux' ;
+ *  - short      : `answer` = texte attendu (comparaison normalisée).
+ * `points` pondère la question dans le score (défaut 1).
+ */
+export interface ExamQuestion {
+  id: string
+  type: QuizQuestionType
+  question: string
+  options?: string[]
+  answer: string
+  points: number
+  /** Provenance ('flashcard' | 'quiz') pour le rapport et la traçabilité. */
+  source: 'flashcard' | 'quiz'
+}
+
+/**
+ * Examen blanc généré pour une matière à partir de ses flashcards / quiz.
+ * Persiste le sujet (questions figées) ; les passages sont des `ExamAttempt`.
+ */
+export interface Exam {
+  id: string
+  title: string
+  /** Matière liée (id d'un notebook 'subject'), optionnel. */
+  subjectId?: string
+  questions: ExamQuestion[]
+  /** Total des points (somme des `points`). */
+  totalPoints: number
+  createdAt: number
+}
+
+/** Réponse d'un candidat à une question, avec correction. */
+export interface ExamAnswer {
+  questionId: string
+  /** Réponse donnée (même grammaire que `ExamQuestion.answer`). */
+  given: string
+  correct: boolean
+  /** Points obtenus (0 ou `points` de la question). */
+  earned: number
+}
+
+/**
+ * Passage d'un examen : réponses, correction, score. Historisé par matière
+ * (table `examAttempts`, index `subjectId` + `createdAt`).
+ */
+export interface ExamAttempt {
+  id: string
+  examId: string
+  subjectId?: string
+  answers: ExamAnswer[]
+  /** Points obtenus. */
+  score: number
+  /** Total des points possibles. */
+  total: number
+  /** Pourcentage 0-100 arrondi. */
+  percent: number
+  /** Durée du passage en secondes (optionnel). */
+  durationSec?: number
+  createdAt: number
+}
+
 export interface ChecklistItem {
   id: string
   text: string

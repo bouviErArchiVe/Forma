@@ -11,6 +11,7 @@ import { LinkedDocuments } from '../components/workspace/LinkedDocuments'
 import { TasksPanel } from '../components/tasks/TasksPanel'
 import { SubjectStudyPanel } from '../components/study/SubjectStudyPanel'
 import { FlashcardsPanel } from '../components/study/FlashcardsPanel'
+import { ExamPanel } from '../components/study/ExamPanel'
 import { TaskFromNoteButton } from '../components/study/TaskFromNoteButton'
 import { db } from '../db'
 import { upcomingEvents, type UpcomingEvent } from '../lib/dashboard-data'
@@ -132,6 +133,10 @@ export function SubjectWorkspacePage() {
         {tab === 'study' && (
           <div className="space-y-6">
             <FlashcardsPanel subjectId={id} />
+            <div className="border-t border-forma-border pt-5">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-3">Examens blancs & progrès</p>
+              <ExamPanel subjectId={id} subjectName={subject.name} />
+            </div>
             <div className="border-t border-forma-border pt-5">
               <SubjectStudyPanel subjectId={id} subjectName={subject.name} />
             </div>

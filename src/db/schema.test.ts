@@ -137,13 +137,15 @@ describe('Dexie schema', () => {
         'quizzes',
         'checklists',
         'flashcards',
+        'exams',
+        'examAttempts',
       ].sort(),
     )
   })
 
-  it('bumps to v14 and exposes the flashcards store', async () => {
-    expect(FORMA_DB_VERSION).toBe(14)
-    expect(db.verno).toBe(14)
+  it('bumps to v15 and exposes the flashcards store', async () => {
+    expect(FORMA_DB_VERSION).toBe(15)
+    expect(db.verno).toBe(15)
     const now = Date.now()
     await db.flashcards.put({
       id: 'fc-schema-1',
@@ -163,6 +165,39 @@ describe('Dexie schema', () => {
     // index subjectId interrogeable
     const bySubject = await db.flashcards.where('subjectId').equals('subj-1').toArray()
     expect(bySubject).toHaveLength(1)
+  })
+
+  it('v15 exposes exams + examAttempts stores with queryable indexes', async () => {
+    const now = Date.now()
+    await db.exams.put({
+      id: 'exam-schema-1',
+      title: 'Examen blanc',
+      subjectId: 'subj-1',
+      questions: [
+        { id: 'q1', type: 'short', question: 'Recto', answer: 'Verso', points: 1, source: 'flashcard' },
+      ],
+      totalPoints: 1,
+      createdAt: now,
+    })
+    await db.examAttempts.put({
+      id: 'attempt-schema-1',
+      examId: 'exam-schema-1',
+      subjectId: 'subj-1',
+      answers: [{ questionId: 'q1', given: 'Verso', correct: true, earned: 1 }],
+      score: 1,
+      total: 1,
+      percent: 100,
+      createdAt: now,
+    })
+
+    const exam = await db.exams.get('exam-schema-1')
+    expect(exam?.questions).toHaveLength(1)
+    expect(exam?.totalPoints).toBe(1)
+
+    // index subjectId / examId interrogeables
+    expect(await db.exams.where('subjectId').equals('subj-1').toArray()).toHaveLength(1)
+    expect(await db.examAttempts.where('examId').equals('exam-schema-1').toArray()).toHaveLength(1)
+    expect(await db.examAttempts.where('subjectId').equals('subj-1').toArray()).toHaveLength(1)
   })
 
   it('persists blob rows in assets store (v5)', async () => {

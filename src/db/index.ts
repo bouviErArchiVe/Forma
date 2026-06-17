@@ -7,6 +7,8 @@ import type {
   AcademicSession,
   AudioRecording,
   Checklist,
+  Exam,
+  ExamAttempt,
   Flashcard,
   Folder,
   Notebook,
@@ -43,6 +45,7 @@ export interface ThumbnailEntry {
  * v12 : écosystème workspace — tasks, projects
  * v13 : académique — academicSessions, quizzes, checklists
  * v14 : study — flashcards (répétition espacée SM-2, état SRS embarqué)
+ * v15 : study — examens blancs (exams) + historique de passages (examAttempts)
  *
  * Champs temporels (gaps connus, non bloquants pour l’index Dexie) :
  * - Page : id ✓ — pas de createdAt/updatedAt (ordre via `order`, pas d’historique row)
@@ -71,6 +74,8 @@ export class FormaDatabase extends Dexie {
   quizzes!: Table<Quiz, string>
   checklists!: Table<Checklist, string>
   flashcards!: Table<Flashcard, string>
+  exams!: Table<Exam, string>
+  examAttempts!: Table<ExamAttempt, string>
 
   constructor() {
     super('forma')
@@ -278,11 +283,38 @@ export class FormaDatabase extends Dexie {
       checklists: 'id, projectId, updatedAt',
       flashcards: 'id, subjectId, dueDate, updatedAt',
     })
+    // v15 : examens blancs + historique de passages (additif, non destructif).
+    // exams.subjectId pour filtrer par matière ; examAttempts indexe examId,
+    // subjectId et createdAt (historique chronologique + agrégation stats).
+    this.version(15).stores({
+      folders: 'id, parentId, name, updatedAt',
+      notebooks: 'id, folderId, name, updatedAt, favorite, deletedAt, pdfSourceAssetId',
+      pages: 'id, notebookId, order, pdfAssetId, updatedAt',
+      audio: 'id, notebookId, createdAt',
+      studyCards: 'id, notebookId, nextReview',
+      shareLinks: 'id, notebookId, token',
+      pageSnapshots: 'id, pageId, createdAt',
+      assets: 'id, notebookId, createdAt',
+      settings: 'key',
+      thumbnails: 'pageId, notebookId, updatedAt',
+      aiConversations: 'id, updatedAt, agentId',
+      aiMemory: 'id, createdAt',
+      aiKnowledgeDocs: 'id, addedAt',
+      aiKnowledgeChunks: 'id, docId',
+      tasks: 'id, status, dueDate, subjectId, projectId, documentId, updatedAt',
+      projects: 'id, name, updatedAt',
+      academicSessions: 'id, updatedAt',
+      quizzes: 'id, subjectId, createdAt',
+      checklists: 'id, projectId, updatedAt',
+      flashcards: 'id, subjectId, dueDate, updatedAt',
+      exams: 'id, subjectId, createdAt',
+      examAttempts: 'id, examId, subjectId, createdAt',
+    })
   }
 }
 
 /** Version Dexie courante (tests / diagnostics). */
-export const FORMA_DB_VERSION = 14
+export const FORMA_DB_VERSION = 15
 
 export const db = new FormaDatabase()
 
