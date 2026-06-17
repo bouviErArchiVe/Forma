@@ -18,7 +18,7 @@
  * entière (voir contrat documenté dans canvas-actions.ts).
  */
 import { useState } from 'react'
-import { Icon } from '../ui/Icon'
+import { Icon, type IconName } from '../ui/Icon'
 import {
   AI_DISCLAIMER,
   runDocumentAction,
@@ -28,6 +28,14 @@ import {
   type CanvasActionKind,
   type CanvasActionResult,
 } from '../../lib/ai/canvas-actions'
+import {
+  DEFAULT_PAGE_AGENT_ID,
+  NORMATIVE_DISCLAIMER,
+  PAGE_AGENTS,
+  getPageAgent,
+  isNormativeAgent,
+  type PageAgentId,
+} from '../../lib/ai/agents'
 import { createTask } from '../../services/tasks'
 import type { TaskSuggestion } from '../../lib/study-generators'
 import { getProvider, resolveProviderSettings } from '../../services/ai/providers'
@@ -51,6 +59,11 @@ export interface PageAIActionsProps {
   getSelectionText?: () => string | undefined
   /** Liens optionnels propagés à la tâche créée. */
   taskDefaults?: { subjectId?: string; projectId?: string; documentId?: string }
+  /**
+   * Agent spécialisé initial appliqué aux actions (défaut `generic`). Un
+   * sélecteur permet d'en changer ; `generic` laisse le comportement inchangé.
+   */
+  agentId?: PageAgentId
   className?: string
 }
 
@@ -63,12 +76,17 @@ export function PageAIActions({
   scope = 'page',
   getSelectionText,
   taskDefaults = {},
+  agentId: initialAgentId = DEFAULT_PAGE_AGENT_ID,
   className = '',
 }: PageAIActionsProps) {
   const [mode, setMode] = useState<Mode>('idle')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<CanvasActionResult | null>(null)
   const [resultKind, setResultKind] = useState<CanvasActionKind>('explain')
+
+  // Agent spécialisé actif (preset de prompt système). `generic` = défaut.
+  const [agentId, setAgentId] = useState<PageAgentId>(initialAgentId)
+  const agent = getPageAgent(agentId)
 
   // Tâche depuis note
   const [note, setNote] = useState('')
@@ -95,11 +113,12 @@ export function PageAIActions({
         const selectionText = getSelectionText?.()
         res = await runSelectionAction(pageId, title, {
           ...(selectionText ? { selectionText } : {}),
+          agentId,
         })
       } else if (scope === 'document' && notebookId) {
-        res = await runDocumentAction(notebookId, kind, title)
+        res = await runDocumentAction(notebookId, kind, title, { agentId })
       } else if (pageId) {
-        res = await runPageAction(pageId, kind, title)
+        res = await runPageAction(pageId, kind, title, { agentId })
       }
       if (!res) {
         useToastStore.getState().show('Page introuvable')
@@ -161,6 +180,35 @@ export function PageAIActions({
           <Icon name={fromCloud ? 'cloud' : 'monitor'} className="w-3 h-3" />
           {providerLabel}
         </span>
+      </div>
+
+      {/* Sélecteur d'agent spécialisé (défaut : Général) */}
+      <div className="mb-2">
+        <label className="sr-only" htmlFor="formai-agent">Agent FormAI</label>
+        <div className="relative">
+          <Icon
+            name={agent.icon as IconName}
+            className="w-3.5 h-3.5 text-forma-accent absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none"
+          />
+          <select
+            id="formai-agent"
+            value={agentId}
+            disabled={loading}
+            onChange={(e) => setAgentId(e.target.value as PageAgentId)}
+            title={agent.description}
+            className="w-full text-xs pl-7 pr-2 py-1.5 rounded-lg border border-forma-border bg-forma-bg text-forma-text disabled:opacity-40 focus:outline-none focus:border-forma-accent"
+          >
+            {PAGE_AGENTS.map((a) => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </select>
+        </div>
+        {isNormativeAgent(agentId) && (
+          <p className="mt-1 text-[10px] text-amber-500 leading-snug inline-flex items-start gap-1">
+            <Icon name="alert" className="w-3 h-3 mt-px shrink-0" />
+            {NORMATIVE_DISCLAIMER}
+          </p>
+        )}
       </div>
 
       {/* Boutons d'action */}
@@ -239,6 +287,12 @@ export function PageAIActions({
             <p className="text-[10px] text-forma-muted leading-snug inline-flex items-start gap-1">
               <Icon name="alert" className="w-3 h-3 mt-px shrink-0" />
               {AI_DISCLAIMER}
+            </p>
+          )}
+          {!result.empty && isNormativeAgent(agentId) && (
+            <p className="text-[10px] text-amber-500 leading-snug inline-flex items-start gap-1">
+              <Icon name="alert" className="w-3 h-3 mt-px shrink-0" />
+              {NORMATIVE_DISCLAIMER}
             </p>
           )}
           <div className="flex gap-2">
