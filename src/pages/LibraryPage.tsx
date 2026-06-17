@@ -982,6 +982,7 @@ export function LibraryPage() {
                       { icon: 'upload', label: 'Importer du contenu', action: () => navigate('/import') },
                       { icon: 'book', label: 'Ressources architecture', action: () => navigate('/resources') },
                       { icon: 'check', label: 'Vérif. conformité', action: () => navigate('/compliance') },
+                      { icon: 'layout', label: 'Statistiques d’étude', action: () => navigate('/study/stats') },
                       { icon: 'layout', label: 'Modèles de page', action: () => navigate('/templates') },
                       { icon: 'search', label: 'Recherche globale', action: () => navigate('/search') },
                       { icon: 'sparkles', label: 'Offres Forma', action: () => navigate('/plans') },

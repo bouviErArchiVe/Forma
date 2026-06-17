@@ -263,6 +263,15 @@ Surface FormAI (Lane D) montée dans l'en-tête de l'éditeur (bouton « FormAI 
 
 Dexie : **v15**. Tests verts (**1052**), build vert, Playwright vert. Contrat B↔D : l'accesseur de sélection de B est sur `main` ; câblage réel dans FormAI à faire dans un sprint ultérieur.
 
+### Sprint parallèle #3 (lanes A/C/D/B + intégration E)
+- **Lane A** (`feat/arch-resources-v3`) : source Search unifiée `graphicResourceHits()` (resourceFactory) + sous-groupage par catégorie dans la vue groupée + polish previews.
+- **Lane C** (`feat/study-goals-stats`) : C5 objectifs académiques (`src/lib/study/goals.ts`, `src/services/goals.ts`, `GoalsPanel`) + page stats globales `StudyStatsPage` (exams + flashcards + objectifs). Dexie additive **v15 → v16** (`academicGoals`), `FORMA_DB_VERSION = 16`.
+- **Lane D** (`feat/formai-agents-v2`) : registre d'agents page (`src/lib/ai/agents.ts`) — Architecture/Normes/Structure/Études + grounding renforcé/disclaimer normatif ; sélecteur dans PageAIActions (générique par défaut).
+- **Lane B** (`feat/drawing-scale-ui-legend`) : B4 UI d'échelle (1:N / réel-par-px) dans DimensionDialog + B6 légende de dessin (`src/lib/drawing/legend.ts` + dialog) ; pipeline SVG→bloc→ImageElement, aucune modif canvas.
+- **Lane E** : route `/study/stats` (App.tsx + nav Library) ; pas de nouveau câblage Search requis (familles déjà indexées) ; `FORMA_STATE.md`.
+
+Dexie : **v16**. Tests verts (**1130**), build vert, Playwright vert. Reste : adopter `graphicResourceHits()` dans ecosystem-search (refactor optionnel) ; câbler getSelectionText→FormAI (contrat B prêt).
+
 ## Tests et chiffres connus
 
 Chiffres récents vus dans les rapports :
