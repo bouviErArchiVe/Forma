@@ -3,13 +3,19 @@
  *
  * Actions locales-first (aucune clé API requise pour ouvrir/utiliser) :
  *   • Expliquer cette page
- *   • Résumer le contenu
+ *   • Expliquer la sélection (si un extrait est fourni — sinon repli page)
+ *   • Résumer le contenu (page ou document)
  *   • Créer une tâche depuis une note (confirmation OBLIGATOIRE avant création)
  *
  * Lecture seule des données (Dexie) — n'écrit jamais sur le canvas. La logique
  * vit dans src/lib/ai/canvas-actions.ts ; ce composant orchestre l'UI.
  *
  * Réutilisable : menu de la liseuse, panneau latéral d'un document, etc.
+ *
+ * Note « sélection » : `getSelectionText` est une prop OPTIONNELLE fournie par
+ * l'appelant (futur accesseur read-only de Lane B). Tant qu'elle n'est pas
+ * passée, l'action « expliquer la sélection » retombe proprement sur la page
+ * entière (voir contrat documenté dans canvas-actions.ts).
  */
 import { useState } from 'react'
 import { Icon } from '../ui/Icon'
@@ -17,6 +23,7 @@ import {
   AI_DISCLAIMER,
   runDocumentAction,
   runPageAction,
+  runSelectionAction,
   suggestTaskFromText,
   type CanvasActionKind,
   type CanvasActionResult,
@@ -35,6 +42,13 @@ export interface PageAIActionsProps {
   title: string
   /** 'page' (défaut) analyse une page ; 'document' agrège toutes les pages. */
   scope?: 'page' | 'document'
+  /**
+   * Accesseur read-only OPTIONNEL du texte sélectionné sur le canvas (fourni
+   * par l'appelant ; futur accesseur de Lane B). Lu au clic, jamais conservé.
+   * Doit être pur/synchrone et NE rien modifier. Quand absent ou renvoyant une
+   * chaîne vide, « expliquer la sélection » retombe sur la page entière.
+   */
+  getSelectionText?: () => string | undefined
   /** Liens optionnels propagés à la tâche créée. */
   taskDefaults?: { subjectId?: string; projectId?: string; documentId?: string }
   className?: string
@@ -47,6 +61,7 @@ export function PageAIActions({
   notebookId,
   title,
   scope = 'page',
+  getSelectionText,
   taskDefaults = {},
   className = '',
 }: PageAIActionsProps) {
@@ -74,7 +89,14 @@ export function PageAIActions({
     setResult(null)
     try {
       let res: CanvasActionResult | undefined
-      if (scope === 'document' && notebookId) {
+      if (kind === 'explain-selection' && pageId) {
+        // Lecture de la sélection au clic (jamais conservée). Fallback page
+        // entière géré par runSelectionAction si la sélection est vide/absente.
+        const selectionText = getSelectionText?.()
+        res = await runSelectionAction(pageId, title, {
+          ...(selectionText ? { selectionText } : {}),
+        })
+      } else if (scope === 'document' && notebookId) {
         res = await runDocumentAction(notebookId, kind, title)
       } else if (pageId) {
         res = await runPageAction(pageId, kind, title)
@@ -152,6 +174,17 @@ export function PageAIActions({
           <Icon name="help" className="w-3.5 h-3.5 text-forma-accent" />
           {scope === 'document' ? 'Expliquer ce document' : 'Expliquer cette page'}
         </button>
+        {scope !== 'document' && pageId && (
+          <button
+            type="button"
+            onClick={() => void run('explain-selection')}
+            disabled={loading}
+            className="text-left text-xs px-3 py-2 rounded-lg border border-forma-border hover:border-forma-accent/60 hover:bg-forma-accent/5 text-forma-text disabled:opacity-40 transition-colors inline-flex items-center gap-2"
+          >
+            <Icon name="help" className="w-3.5 h-3.5 text-forma-accent" />
+            Expliquer la sélection
+          </button>
+        )}
         <button
           type="button"
           onClick={() => void run('summarize')}
@@ -186,7 +219,11 @@ export function PageAIActions({
       {mode === 'result' && result && !loading && (
         <div className="mt-3 space-y-2">
           <div className="text-[10px] text-forma-muted uppercase tracking-wide">
-            {resultKind === 'explain' ? 'Explication' : 'Résumé'}
+            {resultKind === 'summarize'
+              ? 'Résumé'
+              : resultKind === 'explain-selection'
+                ? 'Explication de la sélection'
+                : 'Explication'}
           </div>
           <div className="text-xs text-forma-text whitespace-pre-wrap break-words leading-relaxed max-h-72 overflow-y-auto rounded-lg border border-forma-border bg-forma-bg p-2.5">
             {result.text}
