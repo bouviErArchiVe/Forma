@@ -29,6 +29,7 @@ export type EcosystemHitKind =
   | 'checklist'
   | 'session'
   | 'flashcard'
+  | 'exam'
 
 export interface EcosystemHit {
   kind: EcosystemHitKind
@@ -110,6 +111,19 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
         kind: 'flashcard', id: f.id, title: f.front,
         subtitle: 'Flashcard',
         to: f.subjectId ? `/subjects/${f.subjectId}` : '/dashboard',
+      })
+    }
+  }
+
+  // Examens blancs (titre + énoncés) → matière liée si présente
+  const exams = await db.exams.toArray()
+  for (const ex of exams) {
+    const hay = normalize(`${ex.title} ${ex.questions.map((qq) => qq.question).join(' ')}`)
+    if (hay.includes(q)) {
+      hits.push({
+        kind: 'exam', id: ex.id, title: ex.title,
+        subtitle: `Examen blanc · ${ex.questions.length} q.`,
+        to: ex.subjectId ? `/subjects/${ex.subjectId}` : '/dashboard',
       })
     }
   }

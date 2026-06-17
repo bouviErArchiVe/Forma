@@ -23,6 +23,7 @@ beforeEach(async () => {
   await db.checklists.clear()
   await db.academicSessions.clear()
   await db.flashcards.clear()
+  await db.exams.clear()
 })
 
 describe('searchEcosystem', () => {
@@ -58,6 +59,17 @@ describe('searchEcosystem', () => {
     expect(hit).toBeDefined()
     expect(hit?.to).toBe('/subjects/s1')
     expect((await searchEcosystem('σ = E·ε')).some((h) => h.kind === 'flashcard')).toBe(true)
+  })
+
+  it('trouve des examens blancs (titre/énoncés) → matière liée', async () => {
+    await db.exams.add({
+      id: 'ex1', title: 'Examen structures', subjectId: 's1', totalPoints: 1, createdAt: Date.now(),
+      questions: [{ id: 'q1', type: 'short', question: 'Définir le moment fléchissant', answer: 'M', points: 1, source: 'flashcard' }],
+    })
+    const byTitle = await searchEcosystem('structures')
+    const hit = byTitle.find((h) => h.kind === 'exam')
+    expect(hit?.to).toBe('/subjects/s1')
+    expect((await searchEcosystem('fléchissant')).some((h) => h.kind === 'exam')).toBe(true)
   })
 
   it('trouve des vérifications de conformité (catalogue statique)', async () => {

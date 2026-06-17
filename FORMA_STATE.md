@@ -252,7 +252,16 @@ Premier sprint en mode parallèle contrôlé (voir `FORMA_PARALLEL_SPRINTS.md`).
 
 Dexie : **v14** (table `flashcards` additive). Tests verts (**970**), build vert, Playwright vert à chaque étape d'intégration.
 
-Surface FormAI (Lane D) montée dans l'en-tête de l'éditeur (bouton « FormAI », scope document). Option restante : indexer aussi les ressources graphiques statiques en Search (déjà indexées individuellement par kind).
+Surface FormAI (Lane D) montée dans l'en-tête de l'éditeur (bouton « FormAI », scope document).
+
+### Sprint parallèle #2 (lanes A/C/D/B + intégration E)
+- **Lane A** (`feat/resources-search-polish`) : façade unifiée `src/lib/resources/resourceFactory.ts` (`allGraphicResources`/`searchGraphicResources`/facettes `type:category` sans collision) + polish catalogue/preview.
+- **Lane C** (`feat/study-exams-stats`) : C3 examens blancs (`src/lib/study/exam.ts`, `src/services/exams.ts`, `ExamPanel`) générés depuis flashcards/quiz + C4 stats (score/historique/par matière). Dexie additive **v14 → v15** (`exams`, `examAttempts`), `FORMA_DB_VERSION = 15`.
+- **Lane D** (`feat/formai-selection-actions`) : FormAI Canvas V2 — explain V2, résumé scope-aware, **explain-selection préparé** (param `selectionText` + fallback page, contrat read-only documenté pour B).
+- **Lane B** (`feat/drawing-scale-selection-foundation`) : B4 échelles (`src/lib/drawing/scale.ts`, page↔réel) + **accesseur de sélection read-only** testé (`src/lib/drawing/selection-accessor.ts`). Aucune modif canvas.
+- **Lane E** : Search V3 + kinds `flashcard` (sprint #1) et **`exam`** ; ordre de merge E→A→C→D→B respecté.
+
+Dexie : **v15**. Tests verts (**1052**), build vert, Playwright vert. Contrat B↔D : l'accesseur de sélection de B est sur `main` ; câblage réel dans FormAI à faire dans un sprint ultérieur.
 
 ## Tests et chiffres connus
 
