@@ -350,6 +350,34 @@ export interface ExamAttempt {
   createdAt: number
 }
 
+// ─── Objectifs académiques (Study C5) ─────────────────────────────────────────
+
+/**
+ * Objectif d'étude rattaché (optionnellement) à une matière : un compteur de
+ * progression (`progress`) vers une cible (`target`), avec échéance optionnelle.
+ * `target` est un nombre libre (heures, chapitres, cartes…) ; l'unité est
+ * purement informative (`unit`). Le pourcentage et l'état (en retard / atteint)
+ * sont dérivés en logique pure (src/lib/study/goals.ts), jamais persistés.
+ */
+export interface AcademicGoal {
+  id: string
+  title: string
+  /** Matière liée (id d'un notebook 'subject'), optionnel. */
+  subjectId?: string
+  /** Valeur cible à atteindre (> 0). */
+  target: number
+  /** Progression courante (≥ 0). */
+  progress: number
+  /** Unité informative (« h », « chapitres », « cartes »…), optionnel. */
+  unit?: string
+  /** Échéance locale `YYYY-MM-DD`, optionnel. */
+  dueDate?: string
+  /** Date de complétion (timestamp ms) figée quand progress atteint target. */
+  completedAt?: number
+  createdAt: number
+  updatedAt: number
+}
+
 export interface ChecklistItem {
   id: string
   text: string

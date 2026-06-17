@@ -4,6 +4,7 @@ import { runDexieDataUrlMigrationTx, runDexiePdfSourceMigrationTx } from '../lib
 import type { AIConversation, AIMemoryEntry } from '../services/ai/types'
 import type { KnowledgeChunk, KnowledgeDocument } from '../lib/rag/types'
 import type {
+  AcademicGoal,
   AcademicSession,
   AudioRecording,
   Checklist,
@@ -46,6 +47,7 @@ export interface ThumbnailEntry {
  * v13 : académique — academicSessions, quizzes, checklists
  * v14 : study — flashcards (répétition espacée SM-2, état SRS embarqué)
  * v15 : study — examens blancs (exams) + historique de passages (examAttempts)
+ * v16 : study — objectifs académiques (academicGoals)
  *
  * Champs temporels (gaps connus, non bloquants pour l’index Dexie) :
  * - Page : id ✓ — pas de createdAt/updatedAt (ordre via `order`, pas d’historique row)
@@ -76,6 +78,7 @@ export class FormaDatabase extends Dexie {
   flashcards!: Table<Flashcard, string>
   exams!: Table<Exam, string>
   examAttempts!: Table<ExamAttempt, string>
+  academicGoals!: Table<AcademicGoal, string>
 
   constructor() {
     super('forma')
@@ -310,11 +313,39 @@ export class FormaDatabase extends Dexie {
       exams: 'id, subjectId, createdAt',
       examAttempts: 'id, examId, subjectId, createdAt',
     })
+    // v16 : objectifs académiques (additif, non destructif). subjectId pour
+    // filtrer par matière ; dueDate (chaîne ISO) indexé pour le tri par échéance ;
+    // updatedAt pour la récence.
+    this.version(16).stores({
+      folders: 'id, parentId, name, updatedAt',
+      notebooks: 'id, folderId, name, updatedAt, favorite, deletedAt, pdfSourceAssetId',
+      pages: 'id, notebookId, order, pdfAssetId, updatedAt',
+      audio: 'id, notebookId, createdAt',
+      studyCards: 'id, notebookId, nextReview',
+      shareLinks: 'id, notebookId, token',
+      pageSnapshots: 'id, pageId, createdAt',
+      assets: 'id, notebookId, createdAt',
+      settings: 'key',
+      thumbnails: 'pageId, notebookId, updatedAt',
+      aiConversations: 'id, updatedAt, agentId',
+      aiMemory: 'id, createdAt',
+      aiKnowledgeDocs: 'id, addedAt',
+      aiKnowledgeChunks: 'id, docId',
+      tasks: 'id, status, dueDate, subjectId, projectId, documentId, updatedAt',
+      projects: 'id, name, updatedAt',
+      academicSessions: 'id, updatedAt',
+      quizzes: 'id, subjectId, createdAt',
+      checklists: 'id, projectId, updatedAt',
+      flashcards: 'id, subjectId, dueDate, updatedAt',
+      exams: 'id, subjectId, createdAt',
+      examAttempts: 'id, examId, subjectId, createdAt',
+      academicGoals: 'id, subjectId, dueDate, updatedAt',
+    })
   }
 }
 
 /** Version Dexie courante (tests / diagnostics). */
-export const FORMA_DB_VERSION = 15
+export const FORMA_DB_VERSION = 16
 
 export const db = new FormaDatabase()
 
