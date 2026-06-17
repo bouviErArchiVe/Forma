@@ -139,13 +139,14 @@ describe('Dexie schema', () => {
         'flashcards',
         'exams',
         'examAttempts',
+        'academicGoals',
       ].sort(),
     )
   })
 
   it('bumps to v15 and exposes the flashcards store', async () => {
-    expect(FORMA_DB_VERSION).toBe(15)
-    expect(db.verno).toBe(15)
+    expect(FORMA_DB_VERSION).toBe(16)
+    expect(db.verno).toBe(16)
     const now = Date.now()
     await db.flashcards.put({
       id: 'fc-schema-1',
@@ -198,6 +199,30 @@ describe('Dexie schema', () => {
     expect(await db.exams.where('subjectId').equals('subj-1').toArray()).toHaveLength(1)
     expect(await db.examAttempts.where('examId').equals('exam-schema-1').toArray()).toHaveLength(1)
     expect(await db.examAttempts.where('subjectId').equals('subj-1').toArray()).toHaveLength(1)
+  })
+
+  it('v16 exposes the academicGoals store with queryable indexes', async () => {
+    expect(FORMA_DB_VERSION).toBe(16)
+    const now = Date.now()
+    await db.academicGoals.put({
+      id: 'goal-schema-1',
+      title: 'Réviser 5 chapitres',
+      subjectId: 'subj-1',
+      target: 5,
+      progress: 2,
+      unit: 'chapitres',
+      dueDate: '2026-07-01',
+      createdAt: now,
+      updatedAt: now,
+    })
+    const row = await db.academicGoals.get('goal-schema-1')
+    expect(row?.title).toBe('Réviser 5 chapitres')
+    expect(row?.target).toBe(5)
+    expect(row?.progress).toBe(2)
+
+    // index subjectId / dueDate interrogeables
+    expect(await db.academicGoals.where('subjectId').equals('subj-1').toArray()).toHaveLength(1)
+    expect(await db.academicGoals.where('dueDate').equals('2026-07-01').toArray()).toHaveLength(1)
   })
 
   it('persists blob rows in assets store (v5)', async () => {
