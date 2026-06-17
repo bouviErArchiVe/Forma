@@ -22,6 +22,12 @@ import { buildParametricBlock, PARAMETRIC_DEFS, type ParametricDef } from '../..
 import { DimensionDialog } from './DimensionDialog'
 import { AnnotationDialog } from './AnnotationDialog'
 import { TitleBlockDialog } from './TitleBlockDialog'
+import { createLegend, legendToBlock, type LegendKeyEntry } from '../../lib/drawing/legend'
+import {
+  COMMON_RATIO_DENOMINATORS,
+  scaleFromRatio,
+  type ScaleUnit,
+} from '../../lib/drawing/scale'
 import { CONSTRUCTION_DETAILS, detailToBlock, searchDetails } from '../../lib/resources/details'
 import { HATCHES, hatchToBlock, searchHatches } from '../../lib/resources/hatches'
 import { SYMBOLS, symbolToBlock, searchSymbols } from '../../lib/resources/symbols'
@@ -98,6 +104,7 @@ export function BlockLibraryPanel({
   const [showDimension, setShowDimension] = useState(false)
   const [showAnnotation, setShowAnnotation] = useState(false)
   const [showTitleBlock, setShowTitleBlock] = useState(false)
+  const [showLegend, setShowLegend] = useState(false)
 
   const categories = useMemo(() => categoriesForUnit(unit), [unit])
 
@@ -223,6 +230,14 @@ export function BlockLibraryPanel({
           >
             <Icon name="edit" className="w-3 h-3" />
             Cartouche
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowLegend(true)}
+            className="text-[11px] px-2 py-0.5 rounded-full border border-forma-accent/40 text-forma-accent hover:bg-forma-accent/5 transition-colors inline-flex items-center gap-1"
+          >
+            <Icon name="edit" className="w-3 h-3" />
+            Légende dessin
           </button>
         </div>
 
@@ -408,7 +423,119 @@ export function BlockLibraryPanel({
           }}
         />
       )}
+
+      {showLegend && (
+        <LegendDialog
+          onClose={() => setShowLegend(false)}
+          onInsert={(block) => {
+            onPick(block)
+            setShowLegend(false)
+          }}
+        />
+      )}
     </>
+  )
+}
+
+// ─── Dialogue de légende de dessin (Pack B6) ──────────────────────────────────
+
+const LEGEND_UNITS: ScaleUnit[] = ['m', 'cm', 'mm', 'in', 'ft']
+
+function LegendDialog({
+  onClose,
+  onInsert,
+}: {
+  onClose: () => void
+  onInsert: (block: DrawingBlock) => void
+}) {
+  const [title, setTitle] = useState('Légende')
+  const [showScale, setShowScale] = useState(true)
+  const [ratio, setRatio] = useState('100')
+  const [unit, setUnit] = useState<ScaleUnit>('m')
+  const [entries, setEntries] = useState<LegendKeyEntry[]>([
+    { label: 'Mur porteur', color: '#1f2937' },
+    { label: 'Cloison', color: '#6b7280' },
+  ])
+
+  const block = useMemo(() => {
+    const scale = showScale ? scaleFromRatio(Number(ratio.replace(',', '.')), unit) : undefined
+    return legendToBlock(createLegend({ title, scale, entries }))
+  }, [title, showScale, ratio, unit, entries])
+
+  const previewSvg = useMemo(() => blockToSvg(block, { stroke: 'currentColor' }), [block])
+  const field = 'w-full text-sm border border-forma-border rounded-lg px-2.5 py-1.5 bg-forma-bg focus:outline-none focus:border-forma-accent'
+
+  const setEntry = (i: number, patch: Partial<LegendKeyEntry>) =>
+    setEntries((es) => es.map((e, j) => (j === i ? { ...e, ...patch } : e)))
+  const addEntry = () => setEntries((es) => [...es, { label: '', color: '#1f2937' }])
+  const removeEntry = (i: number) => setEntries((es) => es.filter((_, j) => j !== i))
+
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div className="bg-forma-surface border border-forma-border rounded-xl shadow-xl p-4 w-80 max-w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <h3 className="text-sm font-semibold text-forma-text mb-3">Légende de dessin</h3>
+
+        {/* Aperçu */}
+        <div className="border border-forma-border rounded-lg p-2 mb-3 max-h-40 flex items-center justify-center text-forma-text [&>svg]:max-w-full [&>svg]:max-h-36 [&>svg]:w-auto [&>svg]:h-auto"
+          dangerouslySetInnerHTML={{ __html: previewSvg }}
+        />
+
+        <div className="space-y-2">
+          <label className="block text-xs">
+            <span className="text-forma-muted">Titre</span>
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className={`mt-0.5 ${field}`} />
+          </label>
+
+          <label className="flex items-center gap-2 text-xs text-forma-muted">
+            <input type="checkbox" checked={showScale} onChange={(e) => setShowScale(e.target.checked)} />
+            Afficher l’échelle
+          </label>
+
+          {showScale && (
+            <div className="grid grid-cols-2 gap-2">
+              <label className="block text-xs">
+                <span className="text-forma-muted">Échelle 1:N</span>
+                <select value={ratio} onChange={(e) => setRatio(e.target.value)} className={`mt-0.5 ${field}`}>
+                  {COMMON_RATIO_DENOMINATORS.map((n) => <option key={n} value={n}>1:{n}</option>)}
+                </select>
+              </label>
+              <label className="block text-xs">
+                <span className="text-forma-muted">Unité</span>
+                <select value={unit} onChange={(e) => setUnit(e.target.value as ScaleUnit)} className={`mt-0.5 ${field}`}>
+                  {LEGEND_UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
+                </select>
+              </label>
+            </div>
+          )}
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-forma-muted">Clés</span>
+              <button type="button" onClick={addEntry} className="text-[11px] px-2 py-0.5 rounded-full border border-forma-accent/40 text-forma-accent hover:bg-forma-accent/5 transition-colors inline-flex items-center gap-1">
+                <Icon name="plus" className="w-3 h-3" /> Ajouter
+              </button>
+            </div>
+            <div className="space-y-1.5">
+              {entries.map((e, i) => (
+                <div key={i} className="flex items-center gap-1.5">
+                  <input type="color" value={e.color ?? '#1f2937'} onChange={(ev) => setEntry(i, { color: ev.target.value })} className="w-7 h-7 shrink-0 rounded border border-forma-border bg-transparent cursor-pointer" aria-label="Couleur" />
+                  <input type="text" value={e.label} onChange={(ev) => setEntry(i, { label: ev.target.value })} placeholder="Libellé" className="flex-1 text-sm border border-forma-border rounded-lg px-2 py-1 bg-forma-bg focus:outline-none focus:border-forma-accent" />
+                  <button type="button" onClick={() => removeEntry(i)} aria-label="Retirer" className="w-7 h-7 shrink-0 flex items-center justify-center rounded text-forma-muted hover:text-red-500 transition-colors">
+                    <Icon name="trash" className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+              {entries.length === 0 && <p className="text-[10px] text-forma-muted">Aucune clé — ajoutez-en une.</p>}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 mt-4">
+          <button type="button" onClick={onClose} className="flex-1 text-xs py-1.5 rounded-lg border border-forma-border text-forma-text hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">Annuler</button>
+          <button type="button" onClick={() => onInsert(block)} className="flex-1 text-xs py-1.5 rounded-lg bg-forma-accent text-white hover:bg-forma-accent-hover transition-colors">Insérer</button>
+        </div>
+      </div>
+    </div>
   )
 }
 

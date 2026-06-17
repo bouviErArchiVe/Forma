@@ -11,6 +11,7 @@ import {
   pageToRealInUnit,
   realInUnitToPage,
   realToPage,
+  scaleFromInput,
   scaleFromRatio,
   scaleFromRealPerPx,
   type ScaleProfile,
@@ -125,6 +126,33 @@ describe('conversions avec unité cible', () => {
     const px = 256
     const inMeters = pageToRealInUnit(px, p, 'm')
     expect(realInUnitToPage(inMeters, 'm', p)).toBeCloseTo(px, 6)
+  })
+})
+
+describe('scaleFromInput (mapping UI B4)', () => {
+  it('mode ratio : 1:N → realPerPx = N', () => {
+    const p = scaleFromInput({ mode: 'ratio', ratio: 50, unit: 'm' })
+    expect(p.realPerPx).toBe(50)
+    expect(p.ratio).toBe(50)
+    expect(p.label).toBe('1:50')
+  })
+  it('mode realPerPx : densité directe', () => {
+    const p = scaleFromInput({ mode: 'realPerPx', realPerPx: 10, unit: 'mm' })
+    expect(p.realPerPx).toBe(10)
+    expect(p.ratio).toBeUndefined()
+  })
+  it('accepte des chaînes avec virgule décimale', () => {
+    expect(scaleFromInput({ mode: 'realPerPx', realPerPx: '2,5', unit: 'cm' }).realPerPx).toBeCloseTo(2.5, 9)
+    expect(scaleFromInput({ mode: 'ratio', ratio: '200', unit: 'm' }).realPerPx).toBe(200)
+  })
+  it('entrées invalides → repli realPerPx = 1', () => {
+    expect(scaleFromInput({ mode: 'ratio', ratio: 'abc', unit: 'm' }).realPerPx).toBe(1)
+    expect(scaleFromInput({ mode: 'realPerPx', realPerPx: -3, unit: 'm' }).realPerPx).toBe(1)
+    expect(scaleFromInput({ mode: 'ratio', unit: 'm' }).realPerPx).toBe(1)
+  })
+  it('realPerPx du profil pilote la conversion page→réel', () => {
+    const p = scaleFromInput({ mode: 'ratio', ratio: 100, unit: 'm' })
+    expect(pageToReal(3, p)).toBe(300)
   })
 })
 

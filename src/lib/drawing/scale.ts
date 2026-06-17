@@ -159,3 +159,42 @@ export const COMMON_RATIO_DENOMINATORS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 10
 export function commonScalePresets(unit: ScaleUnit = 'm'): ScaleProfile[] {
   return COMMON_RATIO_DENOMINATORS.map((n) => scaleFromRatio(n, unit))
 }
+
+// ─── Mapping UI (B4) : deux modes de saisie → ScaleProfile ───────────────────
+
+/**
+ * Mode de saisie d'échelle exposé dans l'UI (DimensionDialog) :
+ *  - `ratio`    : ratio architectural 1:N (sélecteur de preset).
+ *  - `realPerPx`: densité directe « 1 px = K unités » (champ libre, modèle cote).
+ */
+export type ScaleInputMode = 'ratio' | 'realPerPx'
+
+export interface ScaleInput {
+  mode: ScaleInputMode
+  /** Dénominateur 1:N (mode `ratio`). */
+  ratio?: number | string
+  /** Réel par pixel (mode `realPerPx`). */
+  realPerPx?: number | string
+  /** Unité réelle de référence. */
+  unit: ScaleUnit
+}
+
+/** Parse une valeur numérique tolérante (virgule décimale, chaîne). */
+function toNumber(v: number | string | undefined): number {
+  if (typeof v === 'number') return v
+  if (typeof v === 'string') return Number(v.replace(',', '.'))
+  return NaN
+}
+
+/**
+ * Construit un `ScaleProfile` à partir des entrées UI, quel que soit le mode.
+ * Source de vérité unique pour le DimensionDialog : le `realPerPx` du profil
+ * retourné est directement utilisable comme champ `scale` (réel/px) d'une cote.
+ * Entrées invalides → repli sûr (realPerPx = 1) via les helpers existants.
+ */
+export function scaleFromInput(input: ScaleInput): ScaleProfile {
+  if (input.mode === 'ratio') {
+    return scaleFromRatio(toNumber(input.ratio), input.unit)
+  }
+  return scaleFromRealPerPx(toNumber(input.realPerPx), input.unit)
+}
