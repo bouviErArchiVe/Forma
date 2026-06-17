@@ -65,6 +65,11 @@ import {
   truncateContext,
   type PageContext,
 } from './canvas-context'
+import {
+  applyAgentToSystemPrompt,
+  DEFAULT_PAGE_AGENT_ID,
+  type PageAgentId,
+} from './agents'
 import type { Page } from '../../types'
 import type { ProviderChatResult } from '../../services/ai/types'
 
@@ -168,21 +173,31 @@ export function buildSummarizePrompt(
 /**
  * Route vers le builder adapté. `scope` n'affecte que le résumé (libellé
  * page/document). Pour `explain-selection`, `context` est l'extrait sélectionné.
+ *
+ * `agentId` (optionnel, défaut `generic`) applique un PRESET d'agent spécialisé
+ * (voir `agents.ts`) en préfixant le prompt système par la persona métier. Avec
+ * `generic`, le prompt reste strictement identique au comportement historique.
  */
 export function buildPrompt(
   kind: CanvasActionKind,
   title: string,
   context: string,
   scope: 'page' | 'document' = 'page',
+  agentId: PageAgentId | string = DEFAULT_PAGE_AGENT_ID,
 ): BuiltPrompt {
+  let built: BuiltPrompt
   switch (kind) {
     case 'explain':
-      return buildExplainPrompt(title, context)
+      built = buildExplainPrompt(title, context)
+      break
     case 'explain-selection':
-      return buildExplainSelectionPrompt(title, context)
+      built = buildExplainSelectionPrompt(title, context)
+      break
     case 'summarize':
-      return buildSummarizePrompt(title, context, scope)
+      built = buildSummarizePrompt(title, context, scope)
+      break
   }
+  return { ...built, system: applyAgentToSystemPrompt(built.system, agentId) }
 }
 
 // ─── Messages d'état vide / honnêteté locale ──────────────────────────────────
@@ -249,6 +264,8 @@ export interface RunCanvasActionInput {
   scope?: 'page' | 'document'
   /** Note additionnelle à fusionner dans le résultat (ex. fallback sélection). */
   extraNote?: string
+  /** Agent spécialisé appliqué au prompt système (défaut `generic`). */
+  agentId?: PageAgentId | string
 }
 
 /** Fusionne deux notes optionnelles en une seule chaîne (séparateur espace). */
@@ -285,7 +302,13 @@ export async function runCanvasAction(
 
   const budget = input.budget ?? DEFAULT_CONTEXT_BUDGET
   const context = truncateContext(input.context.text, budget)
-  const { system, user } = buildPrompt(input.kind, input.title, context, input.scope ?? 'page')
+  const { system, user } = buildPrompt(
+    input.kind,
+    input.title,
+    context,
+    input.scope ?? 'page',
+    input.agentId ?? DEFAULT_PAGE_AGENT_ID,
+  )
 
   const result = await provider.chat({
     messages: [
@@ -319,7 +342,7 @@ export async function runPageAction(
   pageId: string,
   kind: CanvasActionKind,
   title: string,
-  opts: { signal?: AbortSignal; budget?: number } = {},
+  opts: { signal?: AbortSignal; budget?: number; agentId?: PageAgentId | string } = {},
 ): Promise<CanvasActionResult | undefined> {
   const page = await readPage(pageId)
   if (!page) return undefined
@@ -330,6 +353,7 @@ export async function runPageAction(
     context,
     ...(opts.signal ? { signal: opts.signal } : {}),
     ...(opts.budget !== undefined ? { budget: opts.budget } : {}),
+    ...(opts.agentId ? { agentId: opts.agentId } : {}),
   })
 }
 
@@ -342,7 +366,7 @@ export async function runDocumentAction(
   notebookId: string,
   kind: CanvasActionKind,
   title: string,
-  opts: { signal?: AbortSignal; budget?: number } = {},
+  opts: { signal?: AbortSignal; budget?: number; agentId?: PageAgentId | string } = {},
 ): Promise<CanvasActionResult> {
   const pages = await readNotebookPages(notebookId)
   const context = extractDocumentContext(pages)
@@ -353,6 +377,7 @@ export async function runDocumentAction(
     scope: 'document',
     ...(opts.signal ? { signal: opts.signal } : {}),
     ...(opts.budget !== undefined ? { budget: opts.budget } : {}),
+    ...(opts.agentId ? { agentId: opts.agentId } : {}),
   })
 }
 
@@ -368,6 +393,8 @@ export interface RunSelectionActionOptions {
   selectionText?: string
   signal?: AbortSignal
   budget?: number
+  /** Agent spécialisé appliqué au prompt système (défaut `generic`). */
+  agentId?: PageAgentId | string
 }
 
 /**
@@ -405,6 +432,7 @@ export async function runSelectionAction(
       context,
       ...(opts.signal ? { signal: opts.signal } : {}),
       ...(opts.budget !== undefined ? { budget: opts.budget } : {}),
+      ...(opts.agentId ? { agentId: opts.agentId } : {}),
     })
   }
 
@@ -419,6 +447,7 @@ export async function runSelectionAction(
     extraNote: SELECTION_FALLBACK_NOTE,
     ...(opts.signal ? { signal: opts.signal } : {}),
     ...(opts.budget !== undefined ? { budget: opts.budget } : {}),
+    ...(opts.agentId ? { agentId: opts.agentId } : {}),
   })
 }
 
