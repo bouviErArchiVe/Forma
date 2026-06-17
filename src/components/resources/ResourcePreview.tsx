@@ -74,6 +74,16 @@ export function ResourcePreview({
       {resource.notes && (
         <p className="text-xs text-forma-muted leading-relaxed mb-2"><span className="font-medium text-forma-text">Notes :</span> {resource.notes}</p>
       )}
+      <dl className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-forma-muted mb-3">
+        <div className="inline-flex items-center gap-1">
+          <dt className="font-medium text-forma-text">Insertion</dt>
+          <dd>{Math.round(resource.defaultWidth)} × {Math.round(resource.defaultHeight)} px</dd>
+        </div>
+        <div className="inline-flex items-center gap-1">
+          <dt className="font-medium text-forma-text">Source</dt>
+          <dd>{resource.sourceType === 'svg-block' ? 'Bloc vectoriel' : 'Modèle de document'}</dd>
+        </div>
+      </dl>
       <div className="flex flex-wrap gap-1 mb-3">
         {resource.tags.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-forma-bg text-forma-muted">{t}</span>)}
       </div>

@@ -29,6 +29,7 @@ import {
 import { HATCHES, hatchToResource } from '../lib/resources/hatches'
 import { SYMBOLS, symbolToResource } from '../lib/resources/symbols'
 import { LEGENDS, legendToResource } from '../lib/resources/legends'
+import { allGraphicResources } from '../lib/resources/resourceFactory'
 import {
   TEMPLATE_CATEGORY_LABELS,
   createDocumentFromTemplate,
@@ -431,15 +432,7 @@ function MaterialsTab() {
  * mono-famille restent disponibles pour un accès direct.
  */
 function GraphicResourcesTab() {
-  const resources = useMemo(
-    () => [
-      ...HATCHES.map(hatchToResource),
-      ...SYMBOLS.map(symbolToResource),
-      ...CONSTRUCTION_DETAILS.map(detailToResource),
-      ...LEGENDS.map(legendToResource),
-    ],
-    [],
-  )
+  const resources = useMemo(() => allGraphicResources(), [])
   return (
     <ResourceCatalog
       resources={resources}

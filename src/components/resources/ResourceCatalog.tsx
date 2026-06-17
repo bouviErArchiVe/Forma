@@ -61,8 +61,12 @@ export function ResourceCatalog({
           categories={categories}
           placeholder={searchPlaceholder}
         />
-        {canGroup && (
-          <div className="flex items-center justify-end mb-2">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <p className="text-[10px] text-forma-muted">
+            {visible.length} ressource{visible.length > 1 ? 's' : ''}
+            {visible.length !== resources.length ? ` sur ${resources.length}` : ''}
+          </p>
+          {canGroup && (
             <button
               type="button"
               onClick={() => setGrouped((g) => !g)}
@@ -71,8 +75,8 @@ export function ResourceCatalog({
             >
               {grouped ? 'Vue à plat' : 'Grouper par type'}
             </button>
-          </div>
-        )}
+          )}
+        </div>
         <ResourceGrid
           resources={visible}
           selectedId={selected?.id ?? null}
