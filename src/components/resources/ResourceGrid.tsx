@@ -5,7 +5,8 @@
  */
 import { blockToSvg } from '../../lib/blocks/types'
 import { resourceToBlock } from '../../lib/resources/resourceToBlock'
-import { groupResourcesByType, type GraphicResource } from '../../lib/resources/resourceTypes'
+import { groupResourcesByTypeThenCategory } from '../../lib/resources/resourceFactory'
+import type { GraphicResource } from '../../lib/resources/resourceTypes'
 
 function ResourceTile({
   resource,
@@ -54,19 +55,37 @@ export function ResourceGrid({
   const gridClass = `grid ${cols === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-1.5`
 
   if (grouped) {
-    const groups = groupResourcesByType(resources)
+    const groups = groupResourcesByTypeThenCategory(resources)
+    // Sous-en-têtes de catégorie seulement utiles quand le type en compte plusieurs.
     return (
       <div className="space-y-3 max-h-[60vh] overflow-y-auto">
         {groups.map((g) => (
           <div key={g.type}>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1.5 sticky top-0 bg-forma-bg/95 py-0.5">
-              {g.label} <span className="font-normal opacity-70">({g.resources.length})</span>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1.5 sticky top-0 z-10 bg-forma-bg/95 py-0.5">
+              {g.label} <span className="font-normal opacity-70">({g.count})</span>
             </p>
-            <div className={gridClass}>
-              {g.resources.map((r) => (
-                <ResourceTile key={r.id} resource={r} selectedId={selectedId} onSelect={onSelect} />
-              ))}
-            </div>
+            {g.categories.length > 1 ? (
+              <div className="space-y-2">
+                {g.categories.map((c) => (
+                  <div key={c.category}>
+                    <p className="text-[9px] uppercase tracking-wide text-forma-muted/80 mb-1 pl-0.5">
+                      {c.label} <span className="opacity-70">({c.resources.length})</span>
+                    </p>
+                    <div className={gridClass}>
+                      {c.resources.map((r) => (
+                        <ResourceTile key={r.id} resource={r} selectedId={selectedId} onSelect={onSelect} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={gridClass}>
+                {g.categories.flatMap((c) => c.resources).map((r) => (
+                  <ResourceTile key={r.id} resource={r} selectedId={selectedId} onSelect={onSelect} />
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>

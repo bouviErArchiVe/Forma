@@ -8,6 +8,7 @@ import {
   RESOURCE_TYPE_LABELS,
   RESOURCE_TYPE_ORDER,
   buildSearchText,
+  groupResourcesByCategory,
   groupResourcesByType,
   resourceCategories,
   searchResources,
@@ -75,6 +76,48 @@ describe('groupResourcesByType', () => {
   it('RESOURCE_TYPE_ORDER couvre tous les libellés', () => {
     for (const t of RESOURCE_TYPE_ORDER) expect(RESOURCE_TYPE_LABELS[t]).toBeTruthy()
     expect(new Set(RESOURCE_TYPE_ORDER).size).toBe(RESOURCE_TYPE_ORDER.length)
+  })
+})
+
+describe('groupResourcesByCategory', () => {
+  const hatches: GraphicResource[] = HATCHES.map(hatchToResource)
+
+  it('regroupe par catégorie, sous-groupes non vides', () => {
+    const groups = groupResourcesByCategory(hatches)
+    expect(groups.length).toBeGreaterThan(0)
+    expect(groups.every((g) => g.resources.length > 0)).toBe(true)
+    expect(groups.every((g) => g.resources.every((r) => r.category === g.category))).toBe(true)
+  })
+
+  it('partitionne sans perte ni doublon', () => {
+    const groups = groupResourcesByCategory(hatches)
+    const flat = groups.flatMap((g) => g.resources.map((r) => r.id))
+    expect(flat.length).toBe(hatches.length)
+    expect(new Set(flat).size).toBe(hatches.length)
+  })
+
+  it('catégories uniques + libellé porté', () => {
+    const groups = groupResourcesByCategory(hatches)
+    expect(new Set(groups.map((g) => g.category)).size).toBe(groups.length)
+    expect(groups.every((g) => g.label.length > 0)).toBe(true)
+  })
+
+  it('ordre = première apparition de chaque catégorie', () => {
+    const groups = groupResourcesByCategory(hatches)
+    const firstSeen: string[] = []
+    for (const r of hatches) if (!firstSeen.includes(r.category)) firstSeen.push(r.category)
+    expect(groups.map((g) => g.category)).toEqual(firstSeen)
+  })
+
+  it('préserve l’ordre des ressources dans un sous-groupe', () => {
+    const groups = groupResourcesByCategory(hatches)
+    const cat = groups[0].category
+    const expected = hatches.filter((r) => r.category === cat).map((r) => r.id)
+    expect(groups[0].resources.map((r) => r.id)).toEqual(expected)
+  })
+
+  it('liste vide → aucun sous-groupe', () => {
+    expect(groupResourcesByCategory([])).toEqual([])
   })
 })
 

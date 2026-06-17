@@ -9,7 +9,9 @@ import {
   allGraphicResources,
   graphicResourceCategoryFacets,
   graphicResourceCount,
+  graphicResourceHits,
   graphicResourcesByType,
+  groupResourcesByTypeThenCategory,
   qualifiedCategoryKey,
   searchGraphicResources,
 } from './resourceFactory'
@@ -119,5 +121,71 @@ describe('facettes de catégorie qualifiées', () => {
       expect(f.typeLabel.length).toBeGreaterThan(0)
       expect(f.categoryLabel.length).toBeGreaterThan(0)
     }
+  })
+})
+
+describe('groupResourcesByTypeThenCategory', () => {
+  it('deux niveaux : types stables, puis catégories', () => {
+    const groups = groupResourcesByTypeThenCategory(allGraphicResources())
+    expect(groups.map((g) => g.type)).toEqual(['hatch', 'symbol', 'detail', 'legend'])
+    expect(groups.every((g) => g.categories.length > 0)).toBe(true)
+  })
+
+  it('count du type = somme des ressources de ses catégories = total du type', () => {
+    const groups = groupResourcesByTypeThenCategory(allGraphicResources())
+    for (const g of groups) {
+      const sum = g.categories.reduce((acc, c) => acc + c.resources.length, 0)
+      expect(g.count).toBe(sum)
+      expect(g.count).toBe(graphicResourcesByType(g.type).length)
+    }
+  })
+
+  it('partitionne sans perte (somme = total global)', () => {
+    const groups = groupResourcesByTypeThenCategory(allGraphicResources())
+    const total = groups.reduce((acc, g) => acc + g.count, 0)
+    expect(total).toBe(graphicResourceCount())
+  })
+
+  it('catégories uniques au sein d’un type', () => {
+    for (const g of groupResourcesByTypeThenCategory(allGraphicResources())) {
+      const cats = g.categories.map((c) => c.category)
+      expect(new Set(cats).size).toBe(cats.length)
+    }
+  })
+
+  it('liste vide → aucun groupe', () => {
+    expect(groupResourcesByTypeThenCategory([])).toEqual([])
+  })
+})
+
+describe('graphicResourceHits (source unique pour la recherche)', () => {
+  it('sans argument → un hit par ressource, même ordre', () => {
+    const hits = graphicResourceHits()
+    expect(hits.length).toBe(graphicResourceCount())
+    expect(hits.map((h) => h.id)).toEqual(allGraphicResources().map((r) => r.id))
+  })
+
+  it('kind = type de ressource (compatible kinds de recherche existants)', () => {
+    expect(new Set(graphicResourceHits().map((h) => h.kind))).toEqual(
+      new Set(['hatch', 'symbol', 'detail', 'legend']),
+    )
+  })
+
+  it('sous-titre prêt à l’emploi « Type · Catégorie »', () => {
+    for (const h of graphicResourceHits()) {
+      expect(h.subtitle).toBe(`${h.typeLabel} · ${h.categoryLabel}`)
+      expect(h.title.length).toBeGreaterThan(0)
+      expect(h.searchText.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('avec query → déjà filtré (même résultat que searchGraphicResources)', () => {
+    const ids = graphicResourceHits('beton').map((h) => h.id)
+    expect(ids).toEqual(searchGraphicResources('beton').map((r) => r.id))
+    expect(ids.length).toBeGreaterThan(0)
+  })
+
+  it('query introuvable → vide', () => {
+    expect(graphicResourceHits('zzzqqq-nope')).toEqual([])
   })
 })

@@ -118,3 +118,32 @@ export function groupResourcesByType<T extends GraphicResource>(resources: T[]):
     .filter((type) => byType.has(type))
     .map((type) => ({ type, label: RESOURCE_TYPE_LABELS[type], resources: byType.get(type)! }))
 }
+
+/** Un sous-groupe de ressources partageant la même catégorie (avec son libellé). */
+export interface ResourceCategoryGroup<T extends GraphicResource = GraphicResource> {
+  /** Clé de catégorie brute (unique au sein d'un type donné). */
+  category: string
+  label: string
+  resources: T[]
+}
+
+/**
+ * Regroupe des ressources par CATÉGORIE (sol, isolation, plomberie…), en
+ * conservant l'ordre de première apparition des catégories ET l'ordre des
+ * ressources dans chaque sous-groupe. Pur et déterministe : ne crée que les
+ * sous-groupes non vides.
+ *
+ * Destiné au sous-regroupement par catégorie À L'INTÉRIEUR d'un type dans le
+ * catalogue groupé : on appelle d'abord `groupResourcesByType`, puis ceci sur
+ * chaque groupe (où toutes les ressources partagent le même type, donc les
+ * clés de catégorie ne se chevauchent pas entre familles).
+ */
+export function groupResourcesByCategory<T extends GraphicResource>(resources: T[]): ResourceCategoryGroup<T>[] {
+  const byCategory = new Map<string, ResourceCategoryGroup<T>>()
+  for (const r of resources) {
+    const existing = byCategory.get(r.category)
+    if (existing) existing.resources.push(r)
+    else byCategory.set(r.category, { category: r.category, label: r.categoryLabel, resources: [r] })
+  }
+  return [...byCategory.values()]
+}
