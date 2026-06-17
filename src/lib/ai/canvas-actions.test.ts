@@ -14,12 +14,15 @@ import {
   AI_DISCLAIMER,
   EMPTY_PAGE_MESSAGE,
   INK_ONLY_NOTE,
+  SELECTION_FALLBACK_NOTE,
   buildExplainPrompt,
+  buildExplainSelectionPrompt,
   buildPrompt,
   buildSummarizePrompt,
   runCanvasAction,
   runDocumentAction,
   runPageAction,
+  runSelectionAction,
   suggestTaskFromText,
 } from './canvas-actions'
 import { extractPageContext } from './canvas-context'
@@ -63,20 +66,42 @@ describe('builders de prompt', () => {
     expect(system).toContain('UNIQUEMENT sur le texte')
   })
 
-  it('buildSummarizePrompt demande des points clés', () => {
+  it('buildSummarizePrompt demande des points clés (portée page par défaut)', () => {
     const { system, user } = buildSummarizePrompt('Doc', 'contenu')
     expect(user.toLowerCase()).toContain('résume')
+    expect(user.toLowerCase()).toContain('page')
     expect(system.toLowerCase()).toContain('résumé')
   })
 
-  it('titre vide → libellé de repli', () => {
-    const { user } = buildExplainPrompt('   ', 'x')
-    expect(user).toContain('Document sans titre')
+  it('buildSummarizePrompt adapte le libellé en portée document', () => {
+    const { system, user } = buildSummarizePrompt('Carnet', 'contenu', 'document')
+    expect(user.toLowerCase()).toContain('document')
+    expect(user).toContain('Contenu du document')
+    expect(system.toLowerCase()).toContain('document')
+  })
+
+  it('buildExplainSelectionPrompt cible l’extrait et garde l’ancrage', () => {
+    const { system, user } = buildExplainSelectionPrompt('Mur', 'le pare-vapeur')
+    expect(user.toLowerCase()).toContain('extrait sélectionné')
+    expect(user).toContain('le pare-vapeur')
+    expect(user).toContain('Mur')
+    expect(system.toLowerCase()).toContain('extrait')
+    expect(system).toContain('UNIQUEMENT sur le texte')
+  })
+
+  it('titre vide → libellé de repli (explain & selection)', () => {
+    expect(buildExplainPrompt('   ', 'x').user).toContain('Document sans titre')
+    expect(buildExplainSelectionPrompt('', 'x').user).toContain('Document sans titre')
   })
 
   it('buildPrompt route selon le type d’action', () => {
     expect(buildPrompt('explain', 't', 'c').user).toContain('Explique')
     expect(buildPrompt('summarize', 't', 'c').user.toLowerCase()).toContain('résume')
+    expect(buildPrompt('explain-selection', 't', 'c').user.toLowerCase()).toContain('extrait')
+  })
+
+  it('buildPrompt summarize honore la portée document', () => {
+    expect(buildPrompt('summarize', 't', 'c', 'document').user.toLowerCase()).toContain('document')
   })
 
   it('aucun prompt ne contient de référence normative inventée', () => {
@@ -182,6 +207,60 @@ describe('runDocumentAction', () => {
     const res = await runDocumentAction('nbEmpty', 'explain', 'Vide')
     expect(res.empty).toBe(true)
     expect(res.text).toBe(EMPTY_PAGE_MESSAGE)
+  })
+})
+
+// ─── Expliquer la sélection (V2 — préparé, fallback page entière) ──────────────
+
+describe('runSelectionAction', () => {
+  it('avec une sélection : explique l’extrait sans toucher Dexie', async () => {
+    // Pas de page en base : prouve qu'aucune lecture Dexie n'est nécessaire.
+    const res = await runSelectionAction('absente', 'Mur', {
+      selectionText: 'Le pare-vapeur se place côté chaud du mur.',
+    })
+    expect(res).toBeDefined()
+    expect(res?.empty).toBe(false)
+    expect(res?.note).toBeUndefined()
+    expect(res?.text.trim().length).toBeGreaterThan(0)
+  })
+
+  it('sélection vide/blanche → fallback page entière avec note', async () => {
+    await db.pages.add(
+      makePage({ id: 'selPage', content: '<p>Contenu complet de la page.</p>' }),
+    )
+    const res = await runSelectionAction('selPage', 'Page', { selectionText: '   ' })
+    expect(res).toBeDefined()
+    expect(res?.empty).toBe(false)
+    expect(res?.note).toBe(SELECTION_FALLBACK_NOTE)
+  })
+
+  it('sans selectionText → fallback page entière avec note', async () => {
+    await db.pages.add(
+      makePage({ id: 'selPage2', content: '<p>Autre contenu.</p>' }),
+    )
+    const res = await runSelectionAction('selPage2', 'Page')
+    expect(res?.note).toBe(SELECTION_FALLBACK_NOTE)
+    expect(res?.empty).toBe(false)
+  })
+
+  it('fallback sur page introuvable → undefined', async () => {
+    const res = await runSelectionAction('inexistante', 'X')
+    expect(res).toBeUndefined()
+  })
+
+  it('fallback sur page vide → message page vide + note de sélection', async () => {
+    await db.pages.add(makePage({ id: 'selEmpty' }))
+    const res = await runSelectionAction('selEmpty', 'Vide')
+    expect(res?.empty).toBe(true)
+    expect(res?.text).toBe(EMPTY_PAGE_MESSAGE)
+    expect(res?.note).toBe(SELECTION_FALLBACK_NOTE)
+  })
+
+  it('ne modifie pas la page en fallback (lecture seule)', async () => {
+    await db.pages.add(makePage({ id: 'selRO', content: '<p>Intact.</p>' }))
+    await runSelectionAction('selRO', 'RO')
+    const after = await db.pages.get('selRO')
+    expect(after?.content).toBe('<p>Intact.</p>')
   })
 })
 
