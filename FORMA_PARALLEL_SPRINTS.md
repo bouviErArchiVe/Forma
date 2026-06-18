@@ -165,3 +165,21 @@ Sprint #2 validé/mergé (`511d7bd0`, Dexie v15). Même méthode : worktrees iso
 Interdits transverses : aucune lane hors E ne touche Search/State/routes ; D↔B selection wiring **différé** (E câble à l'intégration si stable, sinon fallback). C Dexie **additif** seulement.
 
 Ordre de merge strict : `chore/integration-sprint-3` → `feat/arch-resources-v3` → `feat/study-goals-stats` → `feat/formai-agents-v2` → `feat/drawing-scale-ui-legend`. Gate complet après chaque merge ; push `main` seulement après le vert final.
+
+---
+
+# Sprint #4 — Selection wiring / Resources search / Study v2 / Cartouches v2
+
+Sprint #3 validé/mergé (`27aab943`, Dexie v16). Même méthode.
+
+| Lane | Branche | Objectif | Propriété |
+|---|---|---|---|
+| A | `feat/arch-resources-v4` | adopter `graphicResourceHits()` (préparer source Search unique) + polish détails/légendes | `src/lib/resources/*`, `src/components/resources/*`, `src/pages/ResourcesPage.tsx` |
+| C | `feat/study-goals-stats-v2` | progression objectifs depuis activité exams/flashcards + drilldown par matière sur StudyStatsPage | `src/lib/study/*`, `src/services/*` (study), `src/stores/*`, study pages, db/types (additif **v16→v17 seulement si indispensable**) |
+| D | `feat/formai-selection-wire` | brancher `getSelectionText` (accesseur read-only de B, déjà sur `main`) dans explain-selection, fallback conservé | `src/lib/ai/*`, `src/components/ai/*` |
+| B | `feat/drawing-titleblock-v2` (dernier) | cartouches V2 (champs custom/zone logo/ligne révision) + polish cote/échelle | `src/canvas/*`, `src/components/editor/*`, `src/lib/drawing/*`, `src/lib/dimensions/*` |
+| E | `chore/integration-sprint-4` | Search (adopter `graphicResourceHits`), `FORMA_STATE.md`, routes, **hand-off sélection→FormAI dans l'éditeur** si nécessaire, gates | Search + State + routes + EditorPage |
+
+Interdits transverses : hors E, pas de Search/State/routes/EditorPage. D consomme `src/lib/drawing/selection-accessor.ts` en lecture seule (déjà sur `main`, stable) ; le branchement de la sélection vivante dans l'éditeur est fait par E à l'intégration. C Dexie additif uniquement.
+
+Ordre strict : `chore/integration-sprint-4` → `feat/arch-resources-v4` → `feat/study-goals-stats-v2` → `feat/formai-selection-wire` → `feat/drawing-titleblock-v2`. Gate complet après chaque merge ; push après vert final.
