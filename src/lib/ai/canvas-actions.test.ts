@@ -86,7 +86,15 @@ describe('builders de prompt', () => {
     expect(user).toContain('le pare-vapeur')
     expect(user).toContain('Mur')
     expect(system.toLowerCase()).toContain('extrait')
+    expect(system).toContain('UNIQUEMENT')
     expect(system).toContain('UNIQUEMENT sur le texte')
+  })
+
+  it('buildExplainSelectionPrompt interdit explicitement l’extrapolation hors extrait', () => {
+    const { system, user } = buildExplainSelectionPrompt('Mur', 'le pare-vapeur')
+    // Ancrage renforcé : centré sur l'extrait, pas d'ajout hors extrait.
+    expect(system.toLowerCase()).toContain('n’extrapole')
+    expect(user.toLowerCase()).toContain('sans rien ajouter')
   })
 
   it('titre vide → libellé de repli (explain & selection)', () => {
