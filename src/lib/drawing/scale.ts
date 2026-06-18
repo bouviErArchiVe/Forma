@@ -120,6 +120,15 @@ function roundNice(n: number): number {
   return Math.round(n * 1e4) / 1e4
 }
 
+/**
+ * Libellé court et propre de la densité d'un profil pour l'UI (B4 polish).
+ * Évite d'afficher des flottants à rallonge (« 0.0010000001 ») : arrondi propre
+ * + unité. Ex. `« 0.001 mm/px »`.
+ */
+export function formatRealPerPx(profile: ScaleProfile): string {
+  return `${roundNice(profile.realPerPx)} ${SCALE_UNIT_LABELS[profile.unit]}/px`
+}
+
 // ─── Conversions page ↔ réel ─────────────────────────────────────────────────
 
 /** Pixels canvas → longueur réelle (dans l'unité du profil). */

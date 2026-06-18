@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 import {
   commonScalePresets,
   convertUnit,
+  formatRealPerPx,
   identityScale,
   pageToReal,
   pageToRealInUnit,
@@ -165,5 +166,18 @@ describe('commonScalePresets', () => {
     // ratios strictement croissants
     const ratios = presets.map((p) => p.ratio!)
     for (let i = 1; i < ratios.length; i++) expect(ratios[i]).toBeGreaterThan(ratios[i - 1])
+  })
+})
+
+describe('formatRealPerPx', () => {
+  it('arrondit proprement et suffixe l’unité (pas de flottant à rallonge)', () => {
+    const p = scaleFromRatio(1000, 'm') // realPerPx = 1000
+    expect(formatRealPerPx(p)).toBe('1000 m/px')
+  })
+
+  it('borne à 4 décimales et utilise le libellé d’unité localisé', () => {
+    const p = scaleFromRealPerPx(0.0010000001, 'mm')
+    expect(formatRealPerPx(p)).toBe('0.001 mm/px')
+    expect(formatRealPerPx(scaleFromRealPerPx(2, 'in'))).toBe('2 po/px')
   })
 })

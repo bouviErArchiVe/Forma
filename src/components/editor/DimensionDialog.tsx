@@ -19,6 +19,7 @@ import {
 } from '../../lib/dimensions/dimensions'
 import {
   COMMON_RATIO_DENOMINATORS,
+  formatRealPerPx,
   scaleFromInput,
   type ScaleInputMode,
   type ScaleUnit,
@@ -128,7 +129,7 @@ export function DimensionDialog({
                 <input type="text" inputMode="decimal" value={scale} onChange={(e) => setScale(e.target.value)} className={field} aria-label={`Réel par pixel (${DIMENSION_UNIT_LABELS[unit]})`} placeholder={`1 px = … ${DIMENSION_UNIT_LABELS[unit]}`} />
               </label>
             )}
-            <p className="text-[10px] text-forma-muted mt-0.5">{profile.label} · 1 px = {profile.realPerPx} {DIMENSION_UNIT_LABELS[unit]}/px</p>
+            <p className="text-[10px] text-forma-muted mt-0.5">{profile.label} · 1 px = {formatRealPerPx(profile)}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
