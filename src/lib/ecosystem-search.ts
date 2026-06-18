@@ -5,11 +5,8 @@
  */
 import { db } from '../db'
 import { searchNormative } from './resources/normative'
-import { searchDetails } from './resources/details'
 import { searchMaterials } from './resources/materials'
-import { searchHatches } from './resources/hatches'
-import { searchSymbols } from './resources/symbols'
-import { searchLegends } from './resources/legends'
+import { graphicResourceHits } from './resources/resourceFactory'
 import { searchTemplates, TEMPLATE_CATEGORY_LABELS } from './resources/templates'
 import { searchChecks, COMPLIANCE_CATEGORY_LABELS } from './compliance/checks'
 import { sessionLabel, TERM_LABELS } from '../services/academic'
@@ -142,29 +139,14 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
     hits.push({ kind: 'norme', id: s.id, title: s.title, subtitle: `Norme · ${s.category.toUpperCase()}`, to: '/resources' })
   }
 
-  // Détails constructifs (catalogue statique)
-  for (const d of searchDetails(query)) {
-    hits.push({ kind: 'detail', id: d.id, title: d.name, subtitle: 'Détail constructif', to: '/resources' })
+  // Ressources graphiques (hachures/symboles/détails/légendes) — source unifiée
+  for (const h of graphicResourceHits(query)) {
+    hits.push({ kind: h.kind, id: h.id, title: h.title, subtitle: h.subtitle, to: h.to })
   }
 
-  // Matériaux (catalogue statique)
+  // Matériaux (catalogue statique, hors ressources graphiques)
   for (const m of searchMaterials(query)) {
     hits.push({ kind: 'material', id: m.id, title: m.name, subtitle: 'Matériau', to: '/resources' })
-  }
-
-  // Hachures (catalogue statique)
-  for (const h of searchHatches(query)) {
-    hits.push({ kind: 'hatch', id: h.id, title: h.name, subtitle: 'Hachure', to: '/resources' })
-  }
-
-  // Symboles techniques (catalogue statique)
-  for (const s of searchSymbols(query)) {
-    hits.push({ kind: 'symbol', id: s.id, title: s.name, subtitle: 'Symbole', to: '/resources' })
-  }
-
-  // Légendes (catalogue statique)
-  for (const l of searchLegends(query)) {
-    hits.push({ kind: 'legend', id: l.id, title: l.name, subtitle: 'Légende', to: '/resources' })
   }
 
   // Templates architecture (catalogue statique)

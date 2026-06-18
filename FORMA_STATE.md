@@ -272,6 +272,17 @@ Dexie : **v15**. Tests verts (**1052**), build vert, Playwright vert. Contrat B�
 
 Dexie : **v16**. Tests verts (**1130**), build vert, Playwright vert. Reste : adopter `graphicResourceHits()` dans ecosystem-search (refactor optionnel) ; câbler getSelectionText→FormAI (contrat B prêt).
 
+### Sprint parallèle #4 (lanes A/C/D/B + intégration E)
+- **Lane A** (`feat/arch-resources-v4`) : `graphicResourceHits()` durci (`globalId` `type-id`, route, `resourceCategoryCounts`) + chips détails comptés/labels légendes.
+- **Lane C** (`feat/study-goals-stats-v2`) : auto-progression des objectifs depuis l'activité (exams/flashcards, `progressFromActivity`/`refreshAutoGoals`) + drilldown par matière sur StudyStatsPage. **Aucun changement Dexie (reste v16)** — champ `auto` optionnel non indexé.
+- **Lane D** (`feat/formai-selection-wire`) : explain-selection réel branchable (`src/lib/ai/selection-context.ts` : `buildSelectionText`/`makeGetSelectionText`), import **types-only** de l'accesseur de sélection ; fallback page conservé.
+- **Lane B** (`feat/drawing-titleblock-v2`) : cartouches V2 (champs custom/zone logo/lignes révision) + `formatRealPerPx` pour le libellé d'échelle. Pipeline SVG→bloc→ImageElement, aucune modif canvas.
+- **Lane E** : Search **adopte `graphicResourceHits()`** (4 boucles → 1 source unifiée, sous-titres « Type · Catégorie », matériaux restent séparés) ; `FORMA_STATE.md`.
+
+Dexie : **v16** (inchangé). Tests verts (**1191**), build vert, Playwright vert.
+
+Limite notée (non forcée) : le **hand-off sélection→FormAI dans l'éditeur** n'est pas câblé — la sélection vit dans `src/canvas/*` (state non exposé à `EditorPage`), donc le brancher toucherait le canvas (risqué). Le contrat est prêt (`makeGetSelectionText` + accesseur read-only) ; à câbler dans un mini-slice Lane B/éditeur dédié.
+
 ## Tests et chiffres connus
 
 Chiffres récents vus dans les rapports :
