@@ -117,6 +117,30 @@ export interface ResourceCategoryFacet {
   count: number
 }
 
+/** Une catégorie présente dans une liste, avec son libellé et son compte. */
+export interface ResourceCategoryCount {
+  key: string
+  label: string
+  count: number
+}
+
+/**
+ * Catégories (clé brute + libellé + compte) présentes dans une liste de
+ * ressources, dans l'ordre de première apparition. Pensé pour des chips de
+ * filtre « riches » d'un catalogue mono-type (où les clés de catégorie ne se
+ * chevauchent pas) : on affiche le libellé ET le nombre de ressources, sans
+ * recompter côté UI. Pur et déterministe.
+ */
+export function resourceCategoryCounts(resources: GraphicResource[]): ResourceCategoryCount[] {
+  const byKey = new Map<string, ResourceCategoryCount>()
+  for (const r of resources) {
+    const existing = byKey.get(r.category)
+    if (existing) existing.count += 1
+    else byKey.set(r.category, { key: r.category, label: r.categoryLabel, count: 1 })
+  }
+  return [...byKey.values()]
+}
+
 /**
  * Construit les facettes de catégorie transverses pour une liste de ressources
  * (par défaut toutes). Triées par ordre de type stable, puis par libellé de
@@ -153,6 +177,38 @@ export function graphicResourceCategoryFacets(
 }
 
 /**
+ * Route de destination par type de ressource graphique. Toutes les familles
+ * sont présentées dans `/resources` (onglets de `ResourcesPage`) ; ce mapping
+ * explicite donne à la recherche transverse (Lane E) un indice de route stable
+ * sans coder « /resources » en dur dans chaque boucle, et reste le seul point à
+ * modifier si une famille gagne un jour sa propre route.
+ */
+export const RESOURCE_ROUTE_BY_TYPE: Record<ResourceType, string> = {
+  hatch: '/resources',
+  symbol: '/resources',
+  detail: '/resources',
+  material: '/resources',
+  legend: '/resources',
+}
+
+/** Indice de route d'une ressource (où la consulter dans l'app). */
+export function resourceRoute(type: ResourceType): string {
+  return RESOURCE_ROUTE_BY_TYPE[type]
+}
+
+/**
+ * Identifiant globalement unique d'une ressource, sous la forme `type-id`.
+ *
+ * Les `id` bruts ne sont uniques qu'au sein d'une famille : ils peuvent entrer
+ * en collision entre types (et même les libellés sont homonymes, ex. deux
+ * « Joint de dilatation »). Préfixer par le type garantit l'unicité globale —
+ * indispensable comme clé React/recherche dès qu'on mélange les familles.
+ */
+export function globalResourceId(resource: Pick<GraphicResource, 'type' | 'id'>): string {
+  return `${resource.type}-${resource.id}`
+}
+
+/**
  * Hit de ressource graphique prêt pour l'indexation par la recherche transverse
  * (Lane E). Forme autonome et minimale : la recherche mappe une seule source au
  * lieu d'itérer chaque famille (hachures, symboles, détails, légendes).
@@ -164,13 +220,21 @@ export function graphicResourceCategoryFacets(
 export interface GraphicResourceHit {
   /** Type de ressource = kind de recherche (`hatch` | `symbol` | `detail` | `legend`). */
   kind: ResourceType
+  /** Id brut de la ressource (unique au sein de sa famille seulement). */
   id: string
+  /**
+   * Id globalement unique `type-id`. À utiliser comme clé stable quand les
+   * familles sont mélangées (les `id` bruts peuvent entrer en collision).
+   */
+  globalId: string
   /** Titre affichable (nom de la ressource). */
   title: string
   /** Sous-titre prêt à l'emploi : « <TypeLabel> · <CatégorieLabel> ». */
   subtitle: string
   typeLabel: string
   categoryLabel: string
+  /** Indice de route : où consulter la ressource dans l'app. */
+  to: string
   /** Texte normalisé pré-calculé (sous-chaîne) pour le filtrage. */
   searchText: string
 }
@@ -181,10 +245,12 @@ function toHit(r: GraphicResource): GraphicResourceHit {
   return {
     kind: r.type,
     id: r.id,
+    globalId: globalResourceId(r),
     title: r.name,
     subtitle: `${typeLabel} · ${r.categoryLabel}`,
     typeLabel,
     categoryLabel: r.categoryLabel,
+    to: resourceRoute(r.type),
     searchText: r.searchText,
   }
 }

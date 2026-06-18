@@ -8,10 +8,10 @@
 import { useMemo, useState } from 'react'
 import {
   groupResourcesByType,
-  resourceCategories,
   searchResources,
   type GraphicResource,
 } from '../../lib/resources/resourceTypes'
+import { resourceCategoryCounts } from '../../lib/resources/resourceFactory'
 import { ResourceFilters } from './ResourceFilters'
 import { ResourceGrid } from './ResourceGrid'
 import { ResourcePreview } from './ResourcePreview'
@@ -43,7 +43,10 @@ export function ResourceCatalog({
   const [grouped, setGrouped] = useState(false)
   const [selected, setSelected] = useState<GraphicResource | null>(null)
 
-  const categories = useMemo(() => resourceCategories(resources), [resources])
+  // Catégories + comptes calculés sur le résultat texte (avant filtre catégorie)
+  // pour que chaque badge reflète ce qui correspond à la recherche en cours.
+  const textMatched = useMemo(() => searchResources(resources, search), [resources, search])
+  const categories = useMemo(() => resourceCategoryCounts(textMatched), [textMatched])
   const visible = useMemo(() => searchResources(resources, search, category), [resources, search, category])
 
   // La bascule n'a de sens que si plusieurs types coexistent dans la sélection.

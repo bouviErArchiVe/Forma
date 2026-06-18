@@ -5,14 +5,18 @@
  */
 import { describe, expect, it } from 'vitest'
 import {
+  RESOURCE_ROUTE_BY_TYPE,
   allGraphicResourceGroups,
   allGraphicResources,
+  globalResourceId,
   graphicResourceCategoryFacets,
   graphicResourceCount,
   graphicResourceHits,
   graphicResourcesByType,
   groupResourcesByTypeThenCategory,
   qualifiedCategoryKey,
+  resourceCategoryCounts,
+  resourceRoute,
   searchGraphicResources,
 } from './resourceFactory'
 import { HATCHES } from './hatches'
@@ -187,5 +191,98 @@ describe('graphicResourceHits (source unique pour la recherche)', () => {
 
   it('query introuvable → vide', () => {
     expect(graphicResourceHits('zzzqqq-nope')).toEqual([])
+  })
+
+  // ── Hardening Lane E : id global stable, route, couverture, anti-doublon ──
+
+  it('couvre TOUTES les familles (un hit par ressource de chaque catalogue)', () => {
+    const byKind = new Map<string, number>()
+    for (const h of graphicResourceHits()) byKind.set(h.kind, (byKind.get(h.kind) ?? 0) + 1)
+    expect(byKind.get('hatch')).toBe(HATCHES.length)
+    expect(byKind.get('symbol')).toBe(SYMBOLS.length)
+    expect(byKind.get('detail')).toBe(CONSTRUCTION_DETAILS.length)
+    expect(byKind.get('legend')).toBe(LEGENDS.length)
+  })
+
+  it('globalId = `type-id` et globalement unique (aucun doublon inter-familles)', () => {
+    const hits = graphicResourceHits()
+    for (const h of hits) expect(h.globalId).toBe(`${h.kind}-${h.id}`)
+    const globals = hits.map((h) => h.globalId)
+    expect(new Set(globals).size).toBe(globals.length)
+  })
+
+  it('globalId désambiguïse les id bruts homonymes entre familles', () => {
+    // garde-fou : si un id brut se répète entre deux types, le globalId reste unique.
+    const hits = graphicResourceHits()
+    const byRawId = new Map<string, Set<string>>()
+    for (const h of hits) {
+      const set = byRawId.get(h.id) ?? new Set()
+      set.add(h.kind)
+      byRawId.set(h.id, set)
+    }
+    for (const [, kinds] of byRawId) {
+      if (kinds.size > 1) {
+        // même id brut, types différents → globalId distincts
+        const collisions = hits.filter((h) => kinds.has(h.kind))
+        expect(new Set(collisions.map((h) => h.globalId)).size).toBe(collisions.length)
+      }
+    }
+  })
+
+  it('chaque hit porte un indice de route cohérent avec resourceRoute', () => {
+    for (const h of graphicResourceHits()) {
+      expect(h.to.length).toBeGreaterThan(0)
+      expect(h.to).toBe(resourceRoute(h.kind))
+      expect(h.to).toBe(RESOURCE_ROUTE_BY_TYPE[h.kind])
+    }
+  })
+
+  it('route stable `/resources` pour toutes les familles graphiques', () => {
+    for (const t of RESOURCE_TYPE_ORDER) expect(resourceRoute(t)).toBe('/resources')
+  })
+
+  it('globalResourceId est pur (mêmes entrées → même sortie)', () => {
+    expect(globalResourceId({ type: 'hatch', id: 'x' })).toBe('hatch-x')
+    expect(globalResourceId({ type: 'detail', id: 'd-1' })).toBe('detail-d-1')
+  })
+
+  it('forme du hit complète : champs requis renseignés', () => {
+    for (const h of graphicResourceHits()) {
+      expect(h.kind.length).toBeGreaterThan(0)
+      expect(h.id.length).toBeGreaterThan(0)
+      expect(h.title.length).toBeGreaterThan(0)
+      expect(h.typeLabel.length).toBeGreaterThan(0)
+      expect(h.categoryLabel.length).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe('resourceCategoryCounts (filtre catalogue plus riche)', () => {
+  it('compte par catégorie, ordre de première apparition', () => {
+    const hatches = graphicResourcesByType('hatch')
+    const counts = resourceCategoryCounts(hatches)
+    expect(counts.length).toBeGreaterThan(0)
+    const firstSeen: string[] = []
+    for (const r of hatches) if (!firstSeen.includes(r.category)) firstSeen.push(r.category)
+    expect(counts.map((c) => c.key)).toEqual(firstSeen)
+  })
+
+  it('somme des comptes = nombre de ressources, libellés portés', () => {
+    const details = graphicResourcesByType('detail')
+    const counts = resourceCategoryCounts(details)
+    expect(counts.reduce((acc, c) => acc + c.count, 0)).toBe(details.length)
+    expect(counts.every((c) => c.label.length > 0)).toBe(true)
+    expect(new Set(counts.map((c) => c.key)).size).toBe(counts.length)
+  })
+
+  it('détails : filtrage par catégorie cohérent avec les comptes', () => {
+    const details = graphicResourcesByType('detail')
+    for (const c of resourceCategoryCounts(details)) {
+      expect(details.filter((r) => r.category === c.key).length).toBe(c.count)
+    }
+  })
+
+  it('liste vide → aucun compte', () => {
+    expect(resourceCategoryCounts([])).toEqual([])
   })
 })
