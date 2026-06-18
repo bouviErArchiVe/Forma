@@ -136,12 +136,16 @@ export function buildExplainSelectionPrompt(title: string, selection: string): B
   return {
     system:
       "Tu es FormAI, l'assistant de Forma (architecture, design, construction). "
-      + "Tu expliques un EXTRAIT sélectionné par l'étudiant : ce qu'il signifie, "
-      + 'pourquoi il est important, et les termes clés qu’il contient. Concentre-toi '
-      + "sur l'extrait, sans extrapoler au reste de la page. Reste clair et bref. "
+      + "Tu expliques UNIQUEMENT l'extrait sélectionné par l'étudiant, délimité "
+      + 'ci-dessous : ce qu’il signifie, pourquoi il est important, et les termes '
+      + 'clés qu’il contient. Reste STRICTEMENT centré sur cet extrait : n’extrapole '
+      + 'pas au reste de la page et n’ajoute aucune information absente de l’extrait. '
+      + 'Si l’extrait est trop court ou ambigu pour être expliqué seul, dis-le '
+      + 'clairement. Reste clair et bref. '
       + GROUNDING_RULES,
     user:
-      `Explique l'extrait sélectionné dans la page « ${safeTitle} ».\n\n`
+      `L'étudiant a sélectionné un extrait dans la page « ${safeTitle} ». `
+      + 'Explique uniquement cet extrait, sans rien ajouter qui n’y figure pas.\n\n'
       + contextBlock(selection, 'Extrait sélectionné'),
   }
 }

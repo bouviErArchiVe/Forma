@@ -13,9 +13,16 @@
  * Réutilisable : menu de la liseuse, panneau latéral d'un document, etc.
  *
  * Note « sélection » : `getSelectionText` est une prop OPTIONNELLE fournie par
- * l'appelant (futur accesseur read-only de Lane B). Tant qu'elle n'est pas
- * passée, l'action « expliquer la sélection » retombe proprement sur la page
- * entière (voir contrat documenté dans canvas-actions.ts).
+ * l'appelant (l'hôte — éditeur/liseuse — qui connaît la sélection courante).
+ * Elle est lue au clic, jamais conservée, et doit être pure/synchrone. Quand
+ * elle est absente ou renvoie une chaîne vide, l'action « expliquer la
+ * sélection » retombe proprement sur la page entière.
+ *
+ * L'hôte peut la fabriquer facilement avec `makeGetSelectionText` de
+ * `src/lib/ai/selection-context.ts`, qui combine le texte sélectionné et
+ * l'instantané read-only de l'accesseur de sélection (Lane B,
+ * `src/lib/drawing/selection-accessor.ts`, stable sur `main`). Le câblage de la
+ * sélection vivante dans l'éditeur est assuré par Lane E.
  */
 import { useState } from 'react'
 import { Icon, type IconName } from '../ui/Icon'
@@ -51,10 +58,12 @@ export interface PageAIActionsProps {
   /** 'page' (défaut) analyse une page ; 'document' agrège toutes les pages. */
   scope?: 'page' | 'document'
   /**
-   * Accesseur read-only OPTIONNEL du texte sélectionné sur le canvas (fourni
-   * par l'appelant ; futur accesseur de Lane B). Lu au clic, jamais conservé.
-   * Doit être pur/synchrone et NE rien modifier. Quand absent ou renvoyant une
-   * chaîne vide, « expliquer la sélection » retombe sur la page entière.
+   * Accesseur read-only OPTIONNEL du texte sélectionné sur le canvas, fourni
+   * par l'hôte. Lu au clic, jamais conservé. Doit être pur/synchrone et NE rien
+   * modifier. Quand absent ou renvoyant une chaîne vide/`undefined`,
+   * « expliquer la sélection » retombe sur la page entière. Voir
+   * `makeGetSelectionText` (src/lib/ai/selection-context.ts) pour le construire
+   * à partir de l'accesseur read-only de Lane B.
    */
   getSelectionText?: () => string | undefined
   /** Liens optionnels propagés à la tâche créée. */
