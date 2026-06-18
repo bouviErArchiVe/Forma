@@ -183,3 +183,21 @@ Sprint #3 validé/mergé (`27aab943`, Dexie v16). Même méthode.
 Interdits transverses : hors E, pas de Search/State/routes/EditorPage. D consomme `src/lib/drawing/selection-accessor.ts` en lecture seule (déjà sur `main`, stable) ; le branchement de la sélection vivante dans l'éditeur est fait par E à l'intégration. C Dexie additif uniquement.
 
 Ordre strict : `chore/integration-sprint-4` → `feat/arch-resources-v4` → `feat/study-goals-stats-v2` → `feat/formai-selection-wire` → `feat/drawing-titleblock-v2`. Gate complet après chaque merge ; push après vert final.
+
+---
+
+# Sprint #5 — Study Hub / Resources exploitables / FormAI doc / Drawing polish
+
+Sprint #4 validé/mergé (`94f3fbda`, Dexie v16). Même méthode.
+
+| Lane | Branche | Objectif | Propriété |
+|---|---|---|---|
+| A | `feat/arch-resources-v5` | détails/légendes/templates plus exploitables : favoris ressources graphiques, copie/insert affordances, aperçu template avant création | `src/lib/resources/*`, `src/components/resources/*`, `src/pages/ResourcesPage.tsx` |
+| C | `feat/study-hub` | page Study Hub globale routée (flashcards + examens + objectifs + à réviser/aujourd'hui), filtres par matière, réutilise services existants | `src/lib/study/*`, `src/services/*` (study), `src/stores/*`, study pages/composants, db/types (additif **seulement si indispensable**) |
+| D | `feat/formai-doc-actions` | FormAI documents/notes : reformuler/traduire/plan du texte de page (local-first, grounded), réutilise canvas-actions | `src/lib/ai/*`, `src/components/ai/*` |
+| B | `feat/drawing-annotation-polish` (dernier) | polish annotations/cotes/cartouches + B6 légende (aperçu avant insert, défauts) ; hand-off sélection→FormAI **seulement si low-risk, sinon defer** | `src/canvas/*`, `src/components/editor/*`, `src/lib/drawing/*`, `src/lib/dimensions/*` |
+| E | `chore/integration-sprint-5` | routes (Study Hub), Search si nouveaux indexables, `FORMA_STATE.md`, gates | Search + State + routes + EditorPage |
+
+Interdits transverses : hors E, pas de Search/State/routes/EditorPage/App.tsx. C Dexie additif uniquement (v16→v17 seulement si nouvelle table indispensable). C expose le composant page ; E ajoute la route.
+
+Ordre strict : `chore/integration-sprint-5` → `feat/arch-resources-v5` → `feat/study-hub` → `feat/formai-doc-actions` → `feat/drawing-annotation-polish`. Gate complet après chaque merge ; push après vert final.
