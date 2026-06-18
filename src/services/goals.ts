@@ -7,8 +7,14 @@
  * Lien matière (`subjectId`, notebook 'subject') optionnel.
  */
 import { db } from '../db'
-import { applyGoalPatch, buildGoal, type GoalPatch } from '../lib/study/goals'
-import type { AcademicGoal } from '../types'
+import {
+  applyGoalPatch,
+  buildGoal,
+  syncedGoal,
+  type GoalActivity,
+  type GoalPatch,
+} from '../lib/study/goals'
+import type { AcademicGoal, GoalAutoSource } from '../types'
 
 export interface CreateGoalInput {
   title: string
@@ -18,6 +24,8 @@ export interface CreateGoalInput {
   unit?: string
   /** Échéance locale `YYYY-MM-DD`. */
   dueDate?: string
+  /** Source d'auto-progression (objectif piloté par l'activité réelle). */
+  auto?: GoalAutoSource
 }
 
 /** Crée et persiste un objectif. */
@@ -32,6 +40,7 @@ export async function createGoal(
     ...(input.progress !== undefined ? { progress: input.progress } : {}),
     ...(input.unit ? { unit: input.unit } : {}),
     ...(input.dueDate ? { dueDate: input.dueDate } : {}),
+    ...(input.auto ? { auto: input.auto } : {}),
     createdAt: now,
   })
   await db.academicGoals.add(goal)
@@ -97,4 +106,31 @@ export async function listGoals(opts: ListGoalsOptions = {}): Promise<AcademicGo
     if (!a.dueDate && b.dueDate) return 1
     return b.updatedAt - a.updatedAt
   })
+}
+
+/**
+ * Resynchronise la progression de tous les objectifs `auto` depuis l'activité
+ * réelle (passages d'examens + état des flashcards). Lit une seule fois chaque
+ * table, dérive la nouvelle progression via la logique pure
+ * (`syncedGoal` → `progressFromActivity`), et ne réécrit que les objectifs dont
+ * la valeur a changé. Idempotent : sans nouvelle activité, aucune écriture.
+ * Renvoie le nombre d'objectifs effectivement mis à jour.
+ */
+export async function refreshAutoGoals(now: number = Date.now()): Promise<number> {
+  const goals = await db.academicGoals.toArray()
+  const autoGoals = goals.filter((g) => g.auto)
+  if (autoGoals.length === 0) return 0
+
+  const [attempts, flashcards] = await Promise.all([
+    db.examAttempts.toArray(),
+    db.flashcards.toArray(),
+  ])
+  const activity: GoalActivity = { attempts, flashcards }
+
+  const changed = autoGoals
+    .map((g) => syncedGoal(g, activity, now))
+    .filter((next, i) => next !== autoGoals[i])
+
+  if (changed.length > 0) await db.academicGoals.bulkPut(changed)
+  return changed.length
 }

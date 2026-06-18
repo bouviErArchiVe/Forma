@@ -353,6 +353,25 @@ export interface ExamAttempt {
 // ─── Objectifs académiques (Study C5) ─────────────────────────────────────────
 
 /**
+ * Métrique d'activité réelle dont la progression d'un objectif peut être
+ * automatiquement dérivée (Study Sprint #4). Un objectif `auto` cesse d'être
+ * incrémenté à la main : `progress` est recalculé depuis le matériel d'étude
+ * (passages d'examens + révisions de flashcards) par la logique pure
+ * src/lib/study/goals.ts (`progressFromActivity`). Limité (le cas échéant) à la
+ * matière de l'objectif (`subjectId`).
+ *
+ *  - 'exam-attempts'        : nombre de passages d'examen ;
+ *  - 'exam-best-percent'    : meilleur pourcentage obtenu (0-100) ;
+ *  - 'flashcards-reviewed'  : flashcards révisées au moins une fois ;
+ *  - 'flashcards-mastered'  : flashcards maîtrisées (≥ 2 répétitions réussies).
+ */
+export type GoalAutoSource =
+  | 'exam-attempts'
+  | 'exam-best-percent'
+  | 'flashcards-reviewed'
+  | 'flashcards-mastered'
+
+/**
  * Objectif d'étude rattaché (optionnellement) à une matière : un compteur de
  * progression (`progress`) vers une cible (`target`), avec échéance optionnelle.
  * `target` est un nombre libre (heures, chapitres, cartes…) ; l'unité est
@@ -372,6 +391,11 @@ export interface AcademicGoal {
   unit?: string
   /** Échéance locale `YYYY-MM-DD`, optionnel. */
   dueDate?: string
+  /**
+   * Source d'auto-progression (optionnel, additif Sprint #4). Présent ⇒
+   * `progress` est dérivé de l'activité réelle et non éditable à la main.
+   */
+  auto?: GoalAutoSource
   /** Date de complétion (timestamp ms) figée quand progress atteint target. */
   completedAt?: number
   createdAt: number

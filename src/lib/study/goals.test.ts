@@ -9,11 +9,42 @@ import {
   applyGoalPatch,
   buildGoal,
   goalView,
+  progressFromActivity,
   summarizeGoals,
+  syncedGoal,
+  type GoalActivity,
 } from './goals'
-import type { AcademicGoal } from '../../types'
+import type { AcademicGoal, ExamAttempt, Flashcard } from '../../types'
 
 const ID = () => 'g1'
+
+function attempt(p: Partial<ExamAttempt>): ExamAttempt {
+  return {
+    id: 'a',
+    examId: 'e',
+    answers: [],
+    score: 0,
+    total: 100,
+    percent: 0,
+    createdAt: 0,
+    ...p,
+  }
+}
+
+function card(p: Partial<Flashcard>): Flashcard {
+  return {
+    id: 'c',
+    front: 'f',
+    back: 'b',
+    easeFactor: 2.5,
+    interval: 0,
+    repetitions: 0,
+    dueDate: 0,
+    createdAt: 0,
+    updatedAt: 0,
+    ...p,
+  }
+}
 
 describe('buildGoal', () => {
   it('normalise titre, cible (≥1) et progression bornée', () => {
@@ -151,5 +182,96 @@ describe('summarizeGoals', () => {
 
   it('liste vide → résumé vide', () => {
     expect(summarizeGoals([])).toEqual(EMPTY_GOALS_SUMMARY)
+  })
+})
+
+describe('progressFromActivity', () => {
+  const activity: GoalActivity = {
+    attempts: [
+      attempt({ subjectId: 'math', percent: 60 }),
+      attempt({ subjectId: 'math', percent: 90 }),
+      attempt({ subjectId: 'bio', percent: 40 }),
+      attempt({ percent: 100 }), // sans matière
+    ],
+    flashcards: [
+      card({ subjectId: 'math', repetitions: 0 }),
+      card({ subjectId: 'math', repetitions: 1 }),
+      card({ subjectId: 'math', repetitions: 3 }),
+      card({ subjectId: 'bio', repetitions: 5 }),
+    ],
+  }
+
+  it('objectif non-auto → progression inchangée (rien à dériver)', () => {
+    const g = buildGoal({ title: 'manuel', target: 10, progress: 4, createdAt: 1 })
+    expect(progressFromActivity(g, activity)).toBe(4)
+  })
+
+  it('exam-attempts compte les passages (filtré par matière)', () => {
+    const g = buildGoal({ title: 'x', target: 5, auto: 'exam-attempts', subjectId: 'math', createdAt: 1 })
+    expect(progressFromActivity(g, activity)).toBe(2)
+  })
+
+  it('exam-attempts sans matière compte tous les passages', () => {
+    const g = buildGoal({ title: 'x', target: 5, auto: 'exam-attempts', createdAt: 1 })
+    expect(progressFromActivity(g, activity)).toBe(4)
+  })
+
+  it('exam-best-percent prend le meilleur score de la matière', () => {
+    const g = buildGoal({ title: 'x', target: 100, auto: 'exam-best-percent', subjectId: 'math', createdAt: 1 })
+    expect(progressFromActivity(g, activity)).toBe(90)
+  })
+
+  it('exam-best-percent → 0 sans passage', () => {
+    const g = buildGoal({ title: 'x', target: 100, auto: 'exam-best-percent', subjectId: 'chimie', createdAt: 1 })
+    expect(progressFromActivity(g, activity)).toBe(0)
+  })
+
+  it('flashcards-reviewed compte les cartes vues au moins une fois', () => {
+    const g = buildGoal({ title: 'x', target: 10, auto: 'flashcards-reviewed', subjectId: 'math', createdAt: 1 })
+    expect(progressFromActivity(g, activity)).toBe(2) // repetitions 1 et 3
+  })
+
+  it('flashcards-mastered compte les cartes ≥ 2 répétitions', () => {
+    const g = buildGoal({ title: 'x', target: 10, auto: 'flashcards-mastered', subjectId: 'math', createdAt: 1 })
+    expect(progressFromActivity(g, activity)).toBe(1) // seul repetitions:3
+  })
+
+  it('activité vide par défaut → 0', () => {
+    const g = buildGoal({ title: 'x', target: 5, auto: 'exam-attempts', createdAt: 1 })
+    expect(progressFromActivity(g)).toBe(0)
+  })
+})
+
+describe('syncedGoal', () => {
+  it('met à jour progress + updatedAt quand la valeur dérivée change', () => {
+    const g = buildGoal({ title: 'x', target: 5, auto: 'exam-attempts', progress: 0, createdAt: 1 })
+    const activity: GoalActivity = { attempts: [attempt({}), attempt({})], flashcards: [] }
+    const next = syncedGoal(g, activity, 999)
+    expect(next).not.toBe(g)
+    expect(next.progress).toBe(2)
+    expect(next.updatedAt).toBe(999)
+  })
+
+  it('borne à la cible et fige completedAt', () => {
+    const g = buildGoal({ title: 'x', target: 2, auto: 'exam-attempts', progress: 0, createdAt: 1 })
+    const activity: GoalActivity = {
+      attempts: [attempt({}), attempt({}), attempt({})],
+      flashcards: [],
+    }
+    const next = syncedGoal(g, activity, 999)
+    expect(next.progress).toBe(2)
+    expect(next.completedAt).toBe(999)
+  })
+
+  it('inchangé (même référence) si la progression dérivée est identique', () => {
+    const g = buildGoal({ title: 'x', target: 5, auto: 'exam-attempts', progress: 1, createdAt: 1 })
+    const activity: GoalActivity = { attempts: [attempt({})], flashcards: [] }
+    expect(syncedGoal(g, activity, 999)).toBe(g)
+  })
+
+  it('objectif non-auto → inchangé', () => {
+    const g = buildGoal({ title: 'x', target: 5, progress: 1, createdAt: 1 })
+    const activity: GoalActivity = { attempts: [attempt({}), attempt({})], flashcards: [] }
+    expect(syncedGoal(g, activity, 999)).toBe(g)
   })
 })

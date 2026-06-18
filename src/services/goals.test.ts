@@ -11,13 +11,45 @@ import {
   deleteGoal,
   getGoal,
   listGoals,
+  refreshAutoGoals,
   updateGoal,
 } from './goals'
+import type { ExamAttempt, Flashcard } from '../types'
 
 beforeEach(async () => {
   await db.open()
   await db.academicGoals.clear()
+  await db.examAttempts.clear()
+  await db.flashcards.clear()
 })
+
+function attempt(p: Partial<ExamAttempt>): ExamAttempt {
+  return {
+    id: Math.random().toString(36).slice(2),
+    examId: 'e',
+    answers: [],
+    score: 0,
+    total: 100,
+    percent: 0,
+    createdAt: 0,
+    ...p,
+  }
+}
+
+function card(p: Partial<Flashcard>): Flashcard {
+  return {
+    id: Math.random().toString(36).slice(2),
+    front: 'f',
+    back: 'b',
+    easeFactor: 2.5,
+    interval: 0,
+    repetitions: 0,
+    dueDate: 0,
+    createdAt: 0,
+    updatedAt: 0,
+    ...p,
+  }
+}
 
 describe('CRUD + persistance', () => {
   it('crée et persiste un objectif', async () => {
@@ -82,5 +114,49 @@ describe('listGoals', () => {
     const noDue = await createGoal({ title: 'noDue', target: 5 }, 3)
     const list = await listGoals()
     expect(list.map((g) => g.id)).toEqual([sooner.id, later.id, noDue.id])
+  })
+})
+
+describe('refreshAutoGoals', () => {
+  it('dérive la progression des objectifs auto depuis l’activité (filtré matière)', async () => {
+    const g = await createGoal({ title: 'passages', target: 5, subjectId: 's1', auto: 'exam-attempts' })
+    await db.examAttempts.bulkAdd([
+      attempt({ subjectId: 's1' }),
+      attempt({ subjectId: 's1' }),
+      attempt({ subjectId: 's2' }),
+    ])
+
+    const updated = await refreshAutoGoals(999)
+    expect(updated).toBe(1)
+    const stored = await getGoal(g.id)
+    expect(stored?.progress).toBe(2) // deux passages s1
+    expect(stored?.updatedAt).toBe(999)
+  })
+
+  it('dérive flashcards maîtrisées et fige completedAt si la cible est atteinte', async () => {
+    const g = await createGoal({ title: 'maîtrise', target: 2, subjectId: 's1', auto: 'flashcards-mastered' })
+    await db.flashcards.bulkAdd([
+      card({ subjectId: 's1', repetitions: 3 }),
+      card({ subjectId: 's1', repetitions: 2 }),
+      card({ subjectId: 's1', repetitions: 1 }),
+    ])
+    await refreshAutoGoals(999)
+    const stored = await getGoal(g.id)
+    expect(stored?.progress).toBe(2)
+    expect(stored?.completedAt).toBe(999)
+  })
+
+  it('ne touche pas les objectifs manuels et est idempotent', async () => {
+    const manual = await createGoal({ title: 'manuel', target: 5, progress: 3 })
+    await db.examAttempts.add(attempt({}))
+    const first = await refreshAutoGoals(999)
+    expect(first).toBe(0) // aucun objectif auto
+    expect((await getGoal(manual.id))?.progress).toBe(3)
+
+    // Avec un objectif auto déjà à jour : seconde passe sans réécriture.
+    await createGoal({ title: 'auto', target: 5, auto: 'exam-attempts' })
+    await refreshAutoGoals(1000)
+    const second = await refreshAutoGoals(1001)
+    expect(second).toBe(0)
   })
 })

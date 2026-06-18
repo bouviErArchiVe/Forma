@@ -14,7 +14,12 @@ import { Icon } from '../components/ui/Icon'
 import { db } from '../db'
 import { examStats, examStatsBySubject } from '../services/exams'
 import { flashcardStats, type FlashcardStats } from '../services/flashcards'
-import { listGoals } from '../services/goals'
+import { listGoals, refreshAutoGoals } from '../services/goals'
+import {
+  listDrilldownSubjects,
+  loadSubjectDrilldown,
+  type DrilldownSubject,
+} from '../services/study-stats'
 import {
   EMPTY_EXAM_STATS,
   type ExamStats,
@@ -25,6 +30,7 @@ import {
   summarizeGoals,
   type GoalsSummary,
 } from '../lib/study/goals'
+import type { SubjectDrilldown } from '../lib/study/drilldown'
 import { GoalsPanel } from '../components/study/GoalsPanel'
 import type { AcademicGoal } from '../types'
 
@@ -60,16 +66,23 @@ export function StudyStatsPage() {
   const [goals, setGoals] = useState<AcademicGoal[]>([])
   const [goalsSummary, setGoalsSummary] = useState<GoalsSummary>(EMPTY_GOALS_SUMMARY)
   const [subjectNames, setSubjectNames] = useState<Record<string, string>>({})
+  const [subjects, setSubjects] = useState<DrilldownSubject[]>([])
+  const [selectedSubject, setSelectedSubject] = useState('')
+  const [drilldown, setDrilldown] = useState<SubjectDrilldown | null>(null)
 
   useEffect(() => {
     let alive = true
     void (async () => {
-      const [e, s, c, g, subjects] = await Promise.all([
+      // Resynchronise d'abord les objectifs auto depuis l'activité réelle, puis
+      // charge les agrégats (qui reflètent ainsi la progression à jour).
+      await refreshAutoGoals()
+      const [e, s, c, g, subjectNotebooks, subj] = await Promise.all([
         examStats(),
         examStatsBySubject(),
         flashcardStats(),
         listGoals(),
         db.notebooks.filter((n) => n.type === 'subject' && !n.deletedAt).toArray(),
+        listDrilldownSubjects(),
       ])
       if (!alive) return
       setExams(e)
@@ -77,12 +90,24 @@ export function StudyStatsPage() {
       setCards(c)
       setGoals(g)
       setGoalsSummary(summarizeGoals(g))
-      setSubjectNames(Object.fromEntries(subjects.map((n) => [n.id, n.name])))
+      setSubjectNames(Object.fromEntries(subjectNotebooks.map((n) => [n.id, n.name])))
+      setSubjects(subj)
     })()
     return () => {
       alive = false
     }
   }, [])
+
+  useEffect(() => {
+    let alive = true
+    void (async () => {
+      const d = selectedSubject ? await loadSubjectDrilldown(selectedSubject) : null
+      if (alive) setDrilldown(d)
+    })()
+    return () => {
+      alive = false
+    }
+  }, [selectedSubject])
 
   return (
     <div className="min-h-full p-6 max-w-3xl mx-auto space-y-8">
@@ -151,6 +176,84 @@ export function StudyStatsPage() {
           <StatCard value={String(cards.fresh)} label="jamais vues" />
         </div>
       </Section>
+
+      {subjects.length > 0 && (
+        <Section title="Détail par matière">
+          <select
+            value={selectedSubject}
+            onChange={(e) => setSelectedSubject(e.target.value)}
+            className="w-full sm:w-auto text-sm px-3 py-1.5 rounded-lg border border-forma-border bg-forma-bg text-forma-text focus:outline-none focus:border-forma-accent/60"
+          >
+            <option value="">Choisir une matière…</option>
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+
+          {drilldown && (
+            <div className="space-y-4 pt-1">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1">
+                  Examens
+                </p>
+                {drilldown.exams.attempts === 0 ? (
+                  <p className="text-xs text-forma-muted">Aucun passage pour cette matière.</p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <StatCard
+                      value={`${drilldown.exams.averagePercent}%`}
+                      label={`moyenne (${drilldown.exams.attempts})`}
+                    />
+                    <StatCard value={`${drilldown.exams.bestPercent}%`} label="meilleur" />
+                    <StatCard
+                      value={`${drilldown.exams.lastPercent}%`}
+                      label={
+                        drilldown.exams.trend !== 'none'
+                          ? `dernier · ${TREND_LABEL[drilldown.exams.trend]}`
+                          : 'dernier'
+                      }
+                    />
+                    <StatCard value={String(drilldown.exams.attempts)} label="passages" />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1">
+                  Flashcards
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <StatCard value={String(drilldown.flashcards.total)} label="total" />
+                  <StatCard value={String(drilldown.flashcards.due)} label="à réviser" />
+                  <StatCard value={String(drilldown.flashcards.reviewed)} label="révisées" />
+                  <StatCard value={String(drilldown.flashcards.fresh)} label="jamais vues" />
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1">
+                  Objectifs
+                </p>
+                {drilldown.goals.total === 0 ? (
+                  <p className="text-xs text-forma-muted">Aucun objectif pour cette matière.</p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <StatCard value={String(drilldown.goals.total)} label="objectifs" />
+                    <StatCard value={String(drilldown.goals.done)} label="atteints" />
+                    <StatCard value={String(drilldown.goals.overdue)} label="en retard" />
+                    <StatCard
+                      value={`${drilldown.goals.averagePercent}%`}
+                      label="avancement"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </Section>
+      )}
 
       <Section title="Objectifs">
         {goals.length === 0 ? null : (

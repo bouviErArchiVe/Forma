@@ -7,7 +7,7 @@
  * Le pourcentage, l'état (atteint / en retard) et l'agrégat sont calculés ici
  * et jamais stockés (sauf `completedAt`, figé au moment de l'atteinte).
  */
-import type { AcademicGoal } from '../../types'
+import type { AcademicGoal, ExamAttempt, Flashcard, GoalAutoSource } from '../../types'
 import { createId } from '../id'
 
 export interface BuildGoalInput {
@@ -19,6 +19,8 @@ export interface BuildGoalInput {
   unit?: string
   /** Échéance locale `YYYY-MM-DD`. */
   dueDate?: string
+  /** Source d'auto-progression (objectif piloté par l'activité réelle). */
+  auto?: GoalAutoSource
   createdAt: number
 }
 
@@ -47,6 +49,7 @@ export function buildGoal(input: BuildGoalInput, opts: BuildGoalOptions = {}): A
     ...(input.subjectId ? { subjectId: input.subjectId } : {}),
     ...(unit ? { unit } : {}),
     ...(dueDate ? { dueDate } : {}),
+    ...(input.auto ? { auto: input.auto } : {}),
     ...(reached ? { completedAt: input.createdAt } : {}),
     createdAt: input.createdAt,
     updatedAt: input.createdAt,
@@ -167,6 +170,75 @@ export function summarizeGoals(goals: AcademicGoal[], today: string = todayISO()
     active: goals.length - done - overdue,
     averagePercent: Math.round(sumPercent / goals.length),
   }
+}
+
+// ─── Auto-progression depuis l'activité réelle (Sprint #4) ─────────────────────
+
+/** Seuil de répétitions SM-2 à partir duquel une flashcard est « maîtrisée ». */
+export const MASTERED_REPETITIONS = 2
+
+/**
+ * Matériel d'étude brut servant à dériver la progression d'un objectif `auto`.
+ * Les listes sont déjà restreintes à la matière voulue par l'appelant lorsque
+ * c'est pertinent — `progressFromActivity` refiltre néanmoins par `subjectId`
+ * pour rester correct quelle que soit l'entrée. PURE : aucun accès base.
+ */
+export interface GoalActivity {
+  attempts: ExamAttempt[]
+  flashcards: Flashcard[]
+}
+
+const EMPTY_ACTIVITY: GoalActivity = { attempts: [], flashcards: [] }
+
+/**
+ * Calcule la valeur de progression dérivée d'un objectif `auto` à partir de
+ * l'activité réelle. Renvoie un entier ≥ 0 (non borné à la cible — le bornage
+ * appartient à `applyGoalPatch`). Si l'objectif n'est pas `auto`, renvoie sa
+ * progression courante (rien à dériver). Si l'objectif cible une matière, seules
+ * les données de cette matière sont comptées. PURE.
+ */
+export function progressFromActivity(
+  goal: AcademicGoal,
+  activity: GoalActivity = EMPTY_ACTIVITY,
+): number {
+  if (!goal.auto) return goal.progress
+
+  const inSubject = <T extends { subjectId?: string }>(item: T): boolean =>
+    !goal.subjectId || item.subjectId === goal.subjectId
+
+  const attempts = activity.attempts.filter(inSubject)
+  const flashcards = activity.flashcards.filter(inSubject)
+
+  switch (goal.auto) {
+    case 'exam-attempts':
+      return attempts.length
+    case 'exam-best-percent':
+      return attempts.length === 0 ? 0 : Math.max(...attempts.map((a) => a.percent))
+    case 'flashcards-reviewed':
+      return flashcards.filter((c) => c.repetitions > 0).length
+    case 'flashcards-mastered':
+      return flashcards.filter((c) => c.repetitions >= MASTERED_REPETITIONS).length
+    default:
+      return goal.progress
+  }
+}
+
+/**
+ * Renvoie l'objectif avec sa progression resynchronisée depuis l'activité, en
+ * passant par `applyGoalPatch` (bornage + figeage de `completedAt`). Si la
+ * progression dérivée est identique, l'objet d'origine est renvoyé tel quel
+ * (`updatedAt` non touché — pas d'écriture inutile). Objectif non-`auto` :
+ * inchangé. PURE.
+ */
+export function syncedGoal(
+  goal: AcademicGoal,
+  activity: GoalActivity,
+  now: number,
+): AcademicGoal {
+  if (!goal.auto) return goal
+  const derived = progressFromActivity(goal, activity)
+  if (derived === goal.progress) return goal
+  return applyGoalPatch(goal, { progress: derived }, now)
 }
 
 // ─── Dates (local, jamais toISOString) ─────────────────────────────────────────
