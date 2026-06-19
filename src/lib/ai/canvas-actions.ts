@@ -73,7 +73,37 @@ import {
 import type { Page } from '../../types'
 import type { ProviderChatResult } from '../../services/ai/types'
 
-export type CanvasActionKind = 'explain' | 'summarize' | 'explain-selection'
+export type CanvasActionKind =
+  | 'explain'
+  | 'summarize'
+  | 'explain-selection'
+  | 'reformulate'
+  | 'translate'
+  | 'outline'
+
+/**
+ * Langue cible pour l'action « traduire ». Local-first : ces libellés sont
+ * passés tels quels dans le prompt (le provider local honnête ne traduit pas et
+ * le dira). Liste volontairement courte et stable (testable).
+ */
+export type TranslateLanguage = 'en' | 'es' | 'de' | 'it' | 'fr'
+
+/** Libellé humain (en français) d'une langue cible de traduction. */
+export const TRANSLATE_LANGUAGE_LABELS: Record<TranslateLanguage, string> = {
+  en: 'anglais',
+  es: 'espagnol',
+  de: 'allemand',
+  it: 'italien',
+  fr: 'français',
+}
+
+/** Langue cible par défaut de l'action « traduire ». */
+export const DEFAULT_TRANSLATE_LANGUAGE: TranslateLanguage = 'en'
+
+/** Résout le libellé humain d'une langue cible (repli : anglais). */
+export function translateLanguageLabel(lang: TranslateLanguage | string): string {
+  return TRANSLATE_LANGUAGE_LABELS[lang as TranslateLanguage] ?? TRANSLATE_LANGUAGE_LABELS.en
+}
 
 /** Note de prudence affichée pour toute sortie IA (jamais d'avis normatif final). */
 export const AI_DISCLAIMER =
@@ -175,8 +205,97 @@ export function buildSummarizePrompt(
 }
 
 /**
- * Route vers le builder adapté. `scope` n'affecte que le résumé (libellé
- * page/document). Pour `explain-selection`, `context` est l'extrait sélectionné.
+ * Construit le prompt de REFORMULATION d'un contenu. Transformation (read-only,
+ * aucune écriture) : on réécrit le texte fourni de façon plus claire et fluide
+ * SANS en changer le sens, sans rien ajouter ni retirer d'information. `scope`
+ * adapte le libellé (« page » / « document »).
+ */
+export function buildReformulatePrompt(
+  title: string,
+  context: string,
+  scope: 'page' | 'document' = 'page',
+): BuiltPrompt {
+  const safeTitle = safeTitleOf(title)
+  const noun = scope === 'document' ? 'document' : 'page'
+  const label = scope === 'document' ? 'Contenu du document' : 'Contenu de la page'
+  return {
+    system:
+      "Tu es FormAI, l'assistant de Forma. Tu REFORMULES le texte fourni pour le "
+      + 'rendre plus clair, plus fluide et mieux structuré, SANS en modifier le sens '
+      + 'ni le contenu. Tu n’ajoutes AUCUNE information, exemple, chiffre ou référence '
+      + 'absente du texte, et tu n’en retires aucune information importante. Conserve la '
+      + 'langue d’origine du texte et un niveau de détail équivalent. '
+      + GROUNDING_RULES,
+    user:
+      `Reformule le ${noun} « ${safeTitle} » plus clairement, en gardant exactement le même sens.\n\n`
+      + contextBlock(context, label),
+  }
+}
+
+/**
+ * Construit le prompt de TRADUCTION d'un contenu vers `language`. Transformation
+ * stricte : on traduit UNIQUEMENT le texte fourni, sans rien ajouter ni
+ * commenter. `scope` adapte le libellé. La consigne de langue de sortie REMPLACE
+ * volontairement le « Réponds en français » des GROUNDING_RULES : la sortie doit
+ * être dans la langue cible, l'ancrage anti-invention restant en vigueur.
+ */
+export function buildTranslatePrompt(
+  title: string,
+  context: string,
+  language: TranslateLanguage | string = DEFAULT_TRANSLATE_LANGUAGE,
+  scope: 'page' | 'document' = 'page',
+): BuiltPrompt {
+  const safeTitle = safeTitleOf(title)
+  const noun = scope === 'document' ? 'document' : 'page'
+  const label = scope === 'document' ? 'Contenu du document' : 'Contenu de la page'
+  const langLabel = translateLanguageLabel(language)
+  return {
+    system:
+      "Tu es FormAI, l'assistant de Forma. Tu TRADUIS fidèlement le texte fourni "
+      + `vers ${langLabel}. Traduis UNIQUEMENT le texte fourni : n’ajoute aucune `
+      + 'information, aucun commentaire, aucune note, aucune explication, et n’invente '
+      + 'aucune donnée, chiffre ni référence absente du texte. Respecte le sens, le ton '
+      + 'et la structure (titres, listes, paragraphes) du texte d’origine. Si un passage '
+      + 'est ambigu ou intraduisible, conserve-le tel quel. '
+      + `Rédige toute ta réponse en ${langLabel}.`,
+    user:
+      `Traduis le ${noun} « ${safeTitle} » vers ${langLabel}.\n\n`
+      + contextBlock(context, label),
+  }
+}
+
+/**
+ * Construit le prompt de PLAN (« outline ») d'un contenu : extrait la structure
+ * hiérarchique (titres / sous-points) du texte fourni, fidèlement et sans
+ * invention. `scope` adapte le libellé (« page » / « document »).
+ */
+export function buildOutlinePrompt(
+  title: string,
+  context: string,
+  scope: 'page' | 'document' = 'page',
+): BuiltPrompt {
+  const safeTitle = safeTitleOf(title)
+  const noun = scope === 'document' ? 'document' : 'page'
+  const label = scope === 'document' ? 'Contenu du document' : 'Contenu de la page'
+  return {
+    system:
+      "Tu es FormAI, l'assistant de Forma. Tu produis le PLAN structuré du texte "
+      + `fourni : dégage les grandes parties et leurs sous-points sous forme de liste `
+      + 'hiérarchique (titres puis tirets), dans l’ordre du contenu. Reste fidèle au '
+      + 'texte : n’invente aucune section, aucun titre ni aucun point qui n’y figure pas. '
+      + 'Si le texte est trop court ou non structuré pour un plan, dis-le clairement '
+      + 'plutôt que d’inventer une structure. Sois concis. '
+      + GROUNDING_RULES,
+    user:
+      `Établis le plan structuré du ${noun} « ${safeTitle} ».\n\n`
+      + contextBlock(context, label),
+  }
+}
+
+/**
+ * Route vers le builder adapté. `scope` affecte le résumé, la reformulation, la
+ * traduction et le plan (libellé page/document). Pour `explain-selection`,
+ * `context` est l'extrait sélectionné. `language` n'affecte que `translate`.
  *
  * `agentId` (optionnel, défaut `generic`) applique un PRESET d'agent spécialisé
  * (voir `agents.ts`) en préfixant le prompt système par la persona métier. Avec
@@ -188,6 +307,7 @@ export function buildPrompt(
   context: string,
   scope: 'page' | 'document' = 'page',
   agentId: PageAgentId | string = DEFAULT_PAGE_AGENT_ID,
+  language: TranslateLanguage | string = DEFAULT_TRANSLATE_LANGUAGE,
 ): BuiltPrompt {
   let built: BuiltPrompt
   switch (kind) {
@@ -199,6 +319,15 @@ export function buildPrompt(
       break
     case 'summarize':
       built = buildSummarizePrompt(title, context, scope)
+      break
+    case 'reformulate':
+      built = buildReformulatePrompt(title, context, scope)
+      break
+    case 'translate':
+      built = buildTranslatePrompt(title, context, language, scope)
+      break
+    case 'outline':
+      built = buildOutlinePrompt(title, context, scope)
       break
   }
   return { ...built, system: applyAgentToSystemPrompt(built.system, agentId) }
@@ -264,8 +393,10 @@ export interface RunCanvasActionInput {
   signal?: AbortSignal
   /** Budget de caractères du contexte (défaut DEFAULT_CONTEXT_BUDGET). */
   budget?: number
-  /** Portée du résumé (libellé page/document). Sans effet hors `summarize`. */
+  /** Portée (libellé page/document) pour résumé/reformulation/traduction/plan. */
   scope?: 'page' | 'document'
+  /** Langue cible de la traduction. Sans effet hors `translate`. */
+  language?: TranslateLanguage | string
   /** Note additionnelle à fusionner dans le résultat (ex. fallback sélection). */
   extraNote?: string
   /** Agent spécialisé appliqué au prompt système (défaut `generic`). */
@@ -312,6 +443,7 @@ export async function runCanvasAction(
     context,
     input.scope ?? 'page',
     input.agentId ?? DEFAULT_PAGE_AGENT_ID,
+    input.language ?? DEFAULT_TRANSLATE_LANGUAGE,
   )
 
   const result = await provider.chat({
@@ -346,7 +478,12 @@ export async function runPageAction(
   pageId: string,
   kind: CanvasActionKind,
   title: string,
-  opts: { signal?: AbortSignal; budget?: number; agentId?: PageAgentId | string } = {},
+  opts: {
+    signal?: AbortSignal
+    budget?: number
+    agentId?: PageAgentId | string
+    language?: TranslateLanguage | string
+  } = {},
 ): Promise<CanvasActionResult | undefined> {
   const page = await readPage(pageId)
   if (!page) return undefined
@@ -358,6 +495,7 @@ export async function runPageAction(
     ...(opts.signal ? { signal: opts.signal } : {}),
     ...(opts.budget !== undefined ? { budget: opts.budget } : {}),
     ...(opts.agentId ? { agentId: opts.agentId } : {}),
+    ...(opts.language ? { language: opts.language } : {}),
   })
 }
 
@@ -370,7 +508,12 @@ export async function runDocumentAction(
   notebookId: string,
   kind: CanvasActionKind,
   title: string,
-  opts: { signal?: AbortSignal; budget?: number; agentId?: PageAgentId | string } = {},
+  opts: {
+    signal?: AbortSignal
+    budget?: number
+    agentId?: PageAgentId | string
+    language?: TranslateLanguage | string
+  } = {},
 ): Promise<CanvasActionResult> {
   const pages = await readNotebookPages(notebookId)
   const context = extractDocumentContext(pages)
@@ -382,6 +525,7 @@ export async function runDocumentAction(
     ...(opts.signal ? { signal: opts.signal } : {}),
     ...(opts.budget !== undefined ? { budget: opts.budget } : {}),
     ...(opts.agentId ? { agentId: opts.agentId } : {}),
+    ...(opts.language ? { language: opts.language } : {}),
   })
 }
 
