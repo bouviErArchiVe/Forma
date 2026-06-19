@@ -12,6 +12,12 @@ import {
   type GraphicResource,
 } from '../../lib/resources/resourceTypes'
 import { resourceCategoryCounts } from '../../lib/resources/resourceFactory'
+import {
+  filterByFavorites,
+  isResourceFavorite,
+  toggleResourceFavorite,
+} from '../../lib/resources/resourceFavorites'
+import { useResourceFavoritesStore } from '../../stores/resourceFavoritesStore'
 import { ResourceFilters } from './ResourceFilters'
 import { ResourceGrid } from './ResourceGrid'
 import { ResourcePreview } from './ResourcePreview'
@@ -41,13 +47,23 @@ export function ResourceCatalog({
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState<string>('all')
   const [grouped, setGrouped] = useState(false)
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
   const [selected, setSelected] = useState<GraphicResource | null>(null)
+
+  const favorites = useResourceFavoritesStore((s) => s.favorites)
+  const favCount = useMemo(
+    () => filterByFavorites(resources, favorites).length,
+    [resources, favorites],
+  )
 
   // Catégories + comptes calculés sur le résultat texte (avant filtre catégorie)
   // pour que chaque badge reflète ce qui correspond à la recherche en cours.
   const textMatched = useMemo(() => searchResources(resources, search), [resources, search])
   const categories = useMemo(() => resourceCategoryCounts(textMatched), [textMatched])
-  const visible = useMemo(() => searchResources(resources, search, category), [resources, search, category])
+  const visible = useMemo(() => {
+    const matched = searchResources(resources, search, category)
+    return favoritesOnly ? filterByFavorites(matched, favorites) : matched
+  }, [resources, search, category, favoritesOnly, favorites])
 
   // La bascule n'a de sens que si plusieurs types coexistent dans la sélection.
   const typeCount = useMemo(() => groupResourcesByType(visible).length, [visible])
@@ -64,6 +80,19 @@ export function ResourceCatalog({
           categories={categories}
           placeholder={searchPlaceholder}
         />
+        <div className="flex items-center gap-1 mb-2">
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly((f) => !f)}
+            aria-pressed={favoritesOnly}
+            title={favoritesOnly ? 'Afficher toutes les ressources' : 'Afficher uniquement mes favoris'}
+            className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors inline-flex items-center gap-1 ${favoritesOnly ? 'border-amber-400 text-amber-500' : 'border-forma-border text-forma-muted hover:text-forma-text'}`}
+          >
+            <span className={favoritesOnly ? 'text-amber-400' : ''}>★</span>
+            Favoris
+            <span className="opacity-60">{favCount}</span>
+          </button>
+        </div>
         <div className="flex items-center justify-between gap-2 mb-2">
           <p className="text-[10px] text-forma-muted">
             {visible.length} ressource{visible.length > 1 ? 's' : ''}
@@ -85,12 +114,18 @@ export function ResourceCatalog({
           selectedId={selected?.id ?? null}
           onSelect={setSelected}
           cols={gridCols}
-          emptyLabel={emptyLabel}
+          emptyLabel={favoritesOnly ? 'Aucun favori — touchez l’étoile sur une ressource.' : emptyLabel}
           grouped={canGroup && grouped}
+          favorites={favorites}
         />
       </div>
       <div>
-        <ResourcePreview resource={selected} insertTabLabel={insertTabLabel} />
+        <ResourcePreview
+          resource={selected}
+          insertTabLabel={insertTabLabel}
+          isFavorite={selected ? isResourceFavorite(selected, favorites) : false}
+          onToggleFavorite={selected ? () => toggleResourceFavorite(selected) : undefined}
+        />
       </div>
     </div>
   )

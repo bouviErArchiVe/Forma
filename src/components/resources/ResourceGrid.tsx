@@ -6,23 +6,30 @@
 import { blockToSvg } from '../../lib/blocks/types'
 import { resourceToBlock } from '../../lib/resources/resourceToBlock'
 import { groupResourcesByTypeThenCategory } from '../../lib/resources/resourceFactory'
+import { isResourceFavorite } from '../../lib/resources/resourceFavorites'
 import type { GraphicResource } from '../../lib/resources/resourceTypes'
 
 function ResourceTile({
   resource,
   selectedId,
   onSelect,
+  favorites,
 }: {
   resource: GraphicResource
   selectedId: string | null
   onSelect: (r: GraphicResource) => void
+  favorites: readonly string[]
 }) {
+  const fav = isResourceFavorite(resource, favorites)
   return (
     <button
       type="button"
       onClick={() => onSelect(resource)}
-      className={`text-left p-1.5 rounded-lg border transition-colors ${selectedId === resource.id ? 'border-forma-accent bg-forma-accent/5' : 'border-forma-border hover:border-forma-accent/50'}`}
+      className={`relative text-left p-1.5 rounded-lg border transition-colors ${selectedId === resource.id ? 'border-forma-accent bg-forma-accent/5' : 'border-forma-border hover:border-forma-accent/50'}`}
     >
+      {fav && (
+        <span className="absolute top-1 right-1 text-amber-400 text-[10px] leading-none pointer-events-none" aria-label="Favori">★</span>
+      )}
       <span
         className="flex w-full aspect-square items-center justify-center rounded bg-forma-surface text-forma-text overflow-hidden [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
         dangerouslySetInnerHTML={{ __html: blockToSvg(resourceToBlock(resource), { stroke: 'currentColor' }) }}
@@ -39,6 +46,7 @@ export function ResourceGrid({
   cols = 3,
   emptyLabel = 'Aucune ressource',
   grouped = false,
+  favorites = [],
 }: {
   resources: GraphicResource[]
   selectedId: string | null
@@ -47,6 +55,8 @@ export function ResourceGrid({
   emptyLabel?: string
   /** Regroupe les vignettes par type (Hachures / Symboles / Détails…) avec sous-en-têtes. */
   grouped?: boolean
+  /** Clés de favoris (`${type}:${id}`) pour afficher l'étoile sur les vignettes. */
+  favorites?: readonly string[]
 }) {
   if (resources.length === 0) {
     return <p className="text-[11px] text-forma-muted text-center py-4">{emptyLabel}</p>
@@ -73,7 +83,7 @@ export function ResourceGrid({
                     </p>
                     <div className={gridClass}>
                       {c.resources.map((r) => (
-                        <ResourceTile key={r.id} resource={r} selectedId={selectedId} onSelect={onSelect} />
+                        <ResourceTile key={r.id} resource={r} selectedId={selectedId} onSelect={onSelect} favorites={favorites} />
                       ))}
                     </div>
                   </div>
@@ -82,7 +92,7 @@ export function ResourceGrid({
             ) : (
               <div className={gridClass}>
                 {g.categories.flatMap((c) => c.resources).map((r) => (
-                  <ResourceTile key={r.id} resource={r} selectedId={selectedId} onSelect={onSelect} />
+                  <ResourceTile key={r.id} resource={r} selectedId={selectedId} onSelect={onSelect} favorites={favorites} />
                 ))}
               </div>
             )}
@@ -95,7 +105,7 @@ export function ResourceGrid({
   return (
     <div className={`${gridClass} max-h-[60vh] overflow-y-auto`}>
       {resources.map((r) => (
-        <ResourceTile key={r.id} resource={r} selectedId={selectedId} onSelect={onSelect} />
+        <ResourceTile key={r.id} resource={r} selectedId={selectedId} onSelect={onSelect} favorites={favorites} />
       ))}
     </div>
   )

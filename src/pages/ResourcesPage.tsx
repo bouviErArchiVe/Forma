@@ -38,6 +38,7 @@ import {
   type ArchitectureTemplate,
   type TemplateCategory,
 } from '../lib/resources/templates'
+import { buildTemplatePreview, type TemplateSectionContent } from '../lib/resources/templatePreview'
 import { ResourceCatalog } from '../components/resources/ResourceCatalog'
 import { useResourceFavoritesStore } from '../stores/resourceFavoritesStore'
 import { useResourceNotesStore } from '../stores/resourceNotesStore'
@@ -462,14 +463,35 @@ function LegendsTab() {
 
 // ─── Templates ────────────────────────────────────────────────────────────────
 
+const TEMPLATE_SECTION_HINT: Record<TemplateSectionContent, string> = {
+  list: 'liste',
+  table: 'tableau',
+  text: 'texte',
+  empty: 'à compléter',
+}
+
 function TemplatesTab() {
   const navigate = useNavigate()
   const [category, setCategory] = useState<TemplateCategory | 'all'>('all')
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<ArchitectureTemplate | null>(null)
   const [creating, setCreating] = useState(false)
+  const [previewMode, setPreviewMode] = useState<'structure' | 'rendu'>('structure')
 
   const templates = useMemo(() => searchTemplates(search, category), [search, category])
+  const preview = useMemo(() => (selected ? buildTemplatePreview(selected) : null), [selected])
+
+  const copyStructure = (t: ArchitectureTemplate) => {
+    const p = buildTemplatePreview(t)
+    const md = [
+      `# ${p.title}`,
+      '',
+      ...p.sections.map((s) => `- ${s.title}${s.itemCount > 0 ? ` (${s.itemCount})` : ''}${s.hasTable ? ' [tableau]' : ''}`),
+    ].join('\n')
+    void navigator.clipboard.writeText(md)
+      .then(() => useToastStore.getState().show('Structure copiée (Markdown)'))
+      .catch(() => useToastStore.getState().show('Copie impossible'))
+  }
 
   const create = async (t: ArchitectureTemplate) => {
     setCreating(true)
@@ -519,8 +541,52 @@ function TemplatesTab() {
             <div className="flex flex-wrap gap-1 mb-3">
               {selected.tags.map((t) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-forma-bg text-forma-muted">{t}</span>)}
             </div>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted mb-1">Aperçu de la structure</p>
-            <div className="border border-forma-border rounded-xl p-4 bg-forma-surface mb-4 max-h-72 overflow-y-auto text-sm text-forma-text [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-medium [&_h2]:mt-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_table]:w-full [&_th]:text-left [&_th]:border-b [&_th]:border-forma-border [&_blockquote]:text-[11px] [&_blockquote]:text-amber-600 dark:[&_blockquote]:text-amber-400" dangerouslySetInnerHTML={{ __html: selected.contentHtml }} />
+
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-forma-muted">
+                Aperçu de la structure
+                {preview && (
+                  <span className="ml-1 font-normal opacity-70">· {preview.sectionCount} section{preview.sectionCount > 1 ? 's' : ''}{preview.totalItems > 0 ? ` · ${preview.totalItems} champ${preview.totalItems > 1 ? 's' : ''}` : ''}</span>
+                )}
+              </p>
+              <div className="flex items-center gap-1 shrink-0">
+                <div className="inline-flex rounded-full border border-forma-border overflow-hidden">
+                  {(['structure', 'rendu'] as const).map((m) => (
+                    <button key={m} type="button" onClick={() => setPreviewMode(m)} aria-pressed={previewMode === m} className={`text-[10px] px-2 py-0.5 transition-colors ${previewMode === m ? 'bg-forma-accent text-white' : 'text-forma-muted hover:text-forma-text'}`}>
+                      {m === 'structure' ? 'Plan' : 'Rendu'}
+                    </button>
+                  ))}
+                </div>
+                <button type="button" onClick={() => copyStructure(selected)} title="Copier le plan (Markdown)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="copy" className="w-3.5 h-3.5" /></button>
+              </div>
+            </div>
+
+            {previewMode === 'structure' && preview ? (
+              <div className="border border-forma-border rounded-xl p-3 bg-forma-surface mb-4 max-h-72 overflow-y-auto">
+                <p className="text-sm font-semibold text-forma-text mb-1.5">{preview.title}</p>
+                {preview.sections.length > 0 ? (
+                  <ul className="space-y-1">
+                    {preview.sections.map((s, i) => (
+                      <li key={`${s.title}-${i}`} className="flex items-baseline gap-1.5 text-xs text-forma-text">
+                        <span className="text-forma-muted shrink-0">{i + 1}.</span>
+                        <span className="min-w-0 flex-1 truncate">{s.title}</span>
+                        <span className="text-[10px] text-forma-muted shrink-0">
+                          {TEMPLATE_SECTION_HINT[s.content]}{s.content === 'list' && s.itemCount > 0 ? ` · ${s.itemCount}` : ''}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-forma-muted">Document libre (sans sections prédéfinies).</p>
+                )}
+                {preview.hasDisclaimer && (
+                  <p className="mt-2 text-[10px] text-amber-600 dark:text-amber-400 inline-flex items-center gap-1"><Icon name="alert" className="w-3 h-3" />Inclut l’avertissement officiel.</p>
+                )}
+              </div>
+            ) : (
+              <div className="border border-forma-border rounded-xl p-4 bg-forma-surface mb-4 max-h-72 overflow-y-auto text-sm text-forma-text [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-sm [&_h2]:font-medium [&_h2]:mt-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_table]:w-full [&_th]:text-left [&_th]:border-b [&_th]:border-forma-border [&_blockquote]:text-[11px] [&_blockquote]:text-amber-600 dark:[&_blockquote]:text-amber-400" dangerouslySetInnerHTML={{ __html: selected.contentHtml }} />
+            )}
+
             <button type="button" disabled={creating} onClick={() => void create(selected)} className="text-sm px-4 py-2 rounded-lg bg-forma-accent text-white hover:bg-forma-accent-hover disabled:opacity-50 transition-colors inline-flex items-center gap-1.5">
               <Icon name="plus" className="w-4 h-4" />
               {creating ? 'Création…' : 'Créer depuis ce template'}

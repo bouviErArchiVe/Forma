@@ -12,10 +12,16 @@ import { useToastStore } from '../../stores/toastStore'
 export function ResourcePreview({
   resource,
   insertTabLabel,
+  isFavorite = false,
+  onToggleFavorite,
 }: {
   resource: GraphicResource | null
   /** Libellé de l'onglet de la bibliothèque de blocs (rappel d'insertion). */
   insertTabLabel?: string
+  /** La ressource affichée est-elle en favori ? */
+  isFavorite?: boolean
+  /** Bascule le favori de la ressource (masque le bouton si absent). */
+  onToggleFavorite?: () => void
 }) {
   if (!resource) {
     return (
@@ -57,8 +63,19 @@ export function ResourcePreview({
       <div className="flex items-start justify-between gap-2">
         <h2 className="text-lg font-semibold text-forma-text">{resource.name}</h2>
         <div className="flex items-center gap-1 shrink-0">
-          <button type="button" onClick={() => void copySvg()} title="Copier (SVG)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="copy" className="w-4 h-4" /></button>
-          <button type="button" onClick={() => void copyMarkdown()} title="Copier (Markdown)" className="p-1 text-forma-muted hover:text-forma-accent"><Icon name="file-text" className="w-4 h-4" /></button>
+          {onToggleFavorite && (
+            <button
+              type="button"
+              onClick={onToggleFavorite}
+              title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+              aria-pressed={isFavorite}
+              className={`p-1 ${isFavorite ? 'text-amber-400' : 'text-forma-muted hover:text-amber-400'}`}
+            >
+              <Icon name={isFavorite ? 'star' : 'star-outline'} className="w-4 h-4" />
+            </button>
+          )}
+          <button type="button" onClick={() => void copySvg()} title="Copier le SVG" className="text-[11px] px-2 py-1 rounded-lg border border-forma-border text-forma-muted hover:text-forma-accent hover:border-forma-accent/60 transition-colors inline-flex items-center gap-1"><Icon name="copy" className="w-3.5 h-3.5" />SVG</button>
+          <button type="button" onClick={() => void copyMarkdown()} title="Copier en Markdown" className="text-[11px] px-2 py-1 rounded-lg border border-forma-border text-forma-muted hover:text-forma-accent hover:border-forma-accent/60 transition-colors inline-flex items-center gap-1"><Icon name="file-text" className="w-3.5 h-3.5" />Markdown</button>
         </div>
       </div>
       <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-3">
