@@ -15,15 +15,20 @@ import {
   EMPTY_PAGE_MESSAGE,
   INK_ONLY_NOTE,
   SELECTION_FALLBACK_NOTE,
+  TRANSLATE_LANGUAGE_LABELS,
   buildExplainPrompt,
   buildExplainSelectionPrompt,
+  buildOutlinePrompt,
   buildPrompt,
+  buildReformulatePrompt,
   buildSummarizePrompt,
+  buildTranslatePrompt,
   runCanvasAction,
   runDocumentAction,
   runPageAction,
   runSelectionAction,
   suggestTaskFromText,
+  translateLanguageLabel,
 } from './canvas-actions'
 import { extractPageContext } from './canvas-context'
 import type { Page } from '../../types'
@@ -116,6 +121,115 @@ describe('builders de prompt', () => {
     const { system } = buildExplainPrompt('t', 'c')
     expect(system).toMatch(/référence normative/i)
     expect(system).toContain('aucune')
+  })
+})
+
+// ─── Builders : reformuler / traduire / plan (purs + ancrage) ──────────────────
+
+describe('buildReformulatePrompt', () => {
+  it('réécrit sans changer le sens, ancrage anti-invention conservé', () => {
+    const { system, user } = buildReformulatePrompt('Mur', 'Le pare-vapeur côté chaud.')
+    expect(user.toLowerCase()).toContain('reformule')
+    expect(user).toContain('Mur')
+    expect(user).toContain('Le pare-vapeur côté chaud.')
+    expect(system).toContain('UNIQUEMENT sur le texte')
+    expect(system.toLowerCase()).toContain('sans en modifier le sens')
+    expect(system.toLowerCase()).toContain('aucune information')
+  })
+
+  it('adapte le libellé en portée document', () => {
+    const { user } = buildReformulatePrompt('Carnet', 'contenu', 'document')
+    expect(user.toLowerCase()).toContain('document')
+    expect(user).toContain('Contenu du document')
+  })
+
+  it('titre vide → libellé de repli', () => {
+    expect(buildReformulatePrompt('  ', 'x').user).toContain('Document sans titre')
+  })
+})
+
+describe('buildTranslatePrompt', () => {
+  it('traduit uniquement le texte fourni, sans ajout', () => {
+    const { system, user } = buildTranslatePrompt('Mur', 'Le pare-vapeur.', 'en')
+    expect(user.toLowerCase()).toContain('traduis')
+    expect(user).toContain('Le pare-vapeur.')
+    expect(user).toContain('anglais')
+    expect(system.toLowerCase()).toContain('uniquement le texte fourni')
+    expect(system.toLowerCase()).toContain('aucun commentaire')
+    expect(system.toLowerCase()).toContain('n’invente')
+  })
+
+  it('langue par défaut = anglais ; sortie demandée dans la langue cible', () => {
+    const en = buildTranslatePrompt('t', 'c')
+    expect(en.user).toContain('anglais')
+    expect(en.system).toContain('en anglais')
+    const es = buildTranslatePrompt('t', 'c', 'es')
+    expect(es.user).toContain('espagnol')
+    expect(es.system).toContain('en espagnol')
+  })
+
+  it('langue inconnue → repli anglais', () => {
+    const { user } = buildTranslatePrompt('t', 'c', 'zz')
+    expect(user).toContain('anglais')
+  })
+
+  it('adapte le libellé en portée document', () => {
+    const { user } = buildTranslatePrompt('Carnet', 'contenu', 'de', 'document')
+    expect(user.toLowerCase()).toContain('document')
+    expect(user).toContain('allemand')
+  })
+})
+
+describe('buildOutlinePrompt', () => {
+  it('demande un plan hiérarchique fidèle, ancrage conservé', () => {
+    const { system, user } = buildOutlinePrompt('Cours', 'Partie A. Partie B.')
+    expect(user.toLowerCase()).toContain('plan')
+    expect(user).toContain('Cours')
+    expect(user).toContain('Partie A. Partie B.')
+    expect(system).toContain('UNIQUEMENT sur le texte')
+    expect(system.toLowerCase()).toContain('n’invente aucune section')
+  })
+
+  it('adapte le libellé en portée document', () => {
+    const { user } = buildOutlinePrompt('Carnet', 'contenu', 'document')
+    expect(user.toLowerCase()).toContain('document')
+    expect(user).toContain('Contenu du document')
+  })
+})
+
+describe('translateLanguageLabel', () => {
+  it('résout les libellés connus et retombe sur anglais', () => {
+    expect(translateLanguageLabel('en')).toBe('anglais')
+    expect(translateLanguageLabel('es')).toBe('espagnol')
+    expect(translateLanguageLabel('zz')).toBe(TRANSLATE_LANGUAGE_LABELS.en)
+  })
+})
+
+// ─── Routage buildPrompt pour les nouvelles actions ───────────────────────────
+
+describe('buildPrompt — routage reformulate / translate / outline', () => {
+  it('route reformulate', () => {
+    expect(buildPrompt('reformulate', 't', 'c').user.toLowerCase()).toContain('reformule')
+  })
+
+  it('route outline', () => {
+    expect(buildPrompt('outline', 't', 'c').user.toLowerCase()).toContain('plan')
+  })
+
+  it('route translate avec langue (6e paramètre)', () => {
+    const built = buildPrompt('translate', 't', 'c', 'page', 'generic', 'es')
+    expect(built.user.toLowerCase()).toContain('traduis')
+    expect(built.user).toContain('espagnol')
+  })
+
+  it('translate honore la portée document', () => {
+    const built = buildPrompt('translate', 't', 'c', 'document', 'generic', 'en')
+    expect(built.user.toLowerCase()).toContain('document')
+  })
+
+  it('reformulate/outline gardent l’ancrage anti-hallucination', () => {
+    expect(buildPrompt('reformulate', 't', 'c').system).toContain('UNIQUEMENT sur le texte')
+    expect(buildPrompt('outline', 't', 'c').system).toContain('UNIQUEMENT sur le texte')
   })
 })
 
@@ -215,6 +329,54 @@ describe('runDocumentAction', () => {
     const res = await runDocumentAction('nbEmpty', 'explain', 'Vide')
     expect(res.empty).toBe(true)
     expect(res.text).toBe(EMPTY_PAGE_MESSAGE)
+  })
+})
+
+// ─── Orchestration des nouvelles actions (read-only, aucune écriture DB) ───────
+
+describe('nouvelles actions — routage runPageAction / runDocumentAction', () => {
+  const html =
+    '<p>La toiture végétalisée retient l’eau de pluie et améliore l’isolation thermique du bâtiment.</p>'
+
+  it('runPageAction route reformulate sans modifier la page (read-only)', async () => {
+    await db.pages.add(makePage({ id: 'reformPage', content: html }))
+    const res = await runPageAction('reformPage', 'reformulate', 'Toiture')
+    expect(res?.empty).toBe(false)
+    expect(res?.fromCloud).toBe(false)
+    const after = await db.pages.get('reformPage')
+    expect(after?.content).toBe(html)
+  })
+
+  it('runPageAction route outline', async () => {
+    await db.pages.add(makePage({ id: 'outlinePage', content: html }))
+    const res = await runPageAction('outlinePage', 'outline', 'Toiture')
+    expect(res?.empty).toBe(false)
+    expect(res?.text.trim().length).toBeGreaterThan(0)
+  })
+
+  it('runPageAction route translate avec langue cible', async () => {
+    await db.pages.add(makePage({ id: 'transPage', content: html }))
+    const res = await runPageAction('transPage', 'translate', 'Toiture', { language: 'en' })
+    expect(res?.empty).toBe(false)
+    expect(res?.fromCloud).toBe(false)
+  })
+
+  it('runDocumentAction route les nouvelles actions sur l’agrégat', async () => {
+    await db.pages.bulkAdd([
+      makePage({ id: 'da', notebookId: 'nbNew', order: 0, content: '<p>Intro.</p>' }),
+      makePage({ id: 'dbp', notebookId: 'nbNew', order: 1, content: '<p>Suite du contenu.</p>' }),
+    ])
+    const res = await runDocumentAction('nbNew', 'outline', 'Carnet')
+    expect(res.empty).toBe(false)
+    expect(res.text.trim().length).toBeGreaterThan(0)
+  })
+
+  it('aucune création de tâche par ces actions (table tasks vide)', async () => {
+    await db.pages.add(makePage({ id: 'noTask', content: html }))
+    await runPageAction('noTask', 'reformulate', 'X')
+    await runPageAction('noTask', 'translate', 'X', { language: 'es' })
+    await runPageAction('noTask', 'outline', 'X')
+    expect(await db.tasks.count()).toBe(0)
   })
 })
 

@@ -28,12 +28,16 @@ import { useState } from 'react'
 import { Icon, type IconName } from '../ui/Icon'
 import {
   AI_DISCLAIMER,
+  DEFAULT_TRANSLATE_LANGUAGE,
+  TRANSLATE_LANGUAGE_LABELS,
   runDocumentAction,
   runPageAction,
   runSelectionAction,
   suggestTaskFromText,
+  translateLanguageLabel,
   type CanvasActionKind,
   type CanvasActionResult,
+  type TranslateLanguage,
 } from '../../lib/ai/canvas-actions'
 import {
   DEFAULT_PAGE_AGENT_ID,
@@ -97,6 +101,9 @@ export function PageAIActions({
   const [agentId, setAgentId] = useState<PageAgentId>(initialAgentId)
   const agent = getPageAgent(agentId)
 
+  // Langue cible de l'action « traduire » (défaut : anglais).
+  const [language, setLanguage] = useState<TranslateLanguage>(DEFAULT_TRANSLATE_LANGUAGE)
+
   // Tâche depuis note
   const [note, setNote] = useState('')
   const [suggestion, setSuggestion] = useState<TaskSuggestion | null>(null)
@@ -125,9 +132,9 @@ export function PageAIActions({
           agentId,
         })
       } else if (scope === 'document' && notebookId) {
-        res = await runDocumentAction(notebookId, kind, title, { agentId })
+        res = await runDocumentAction(notebookId, kind, title, { agentId, language })
       } else if (pageId) {
-        res = await runPageAction(pageId, kind, title, { agentId })
+        res = await runPageAction(pageId, kind, title, { agentId, language })
       }
       if (!res) {
         useToastStore.getState().show('Page introuvable')
@@ -253,6 +260,49 @@ export function PageAIActions({
         </button>
         <button
           type="button"
+          onClick={() => void run('reformulate')}
+          disabled={loading}
+          className="text-left text-xs px-3 py-2 rounded-lg border border-forma-border hover:border-forma-accent/60 hover:bg-forma-accent/5 text-forma-text disabled:opacity-40 transition-colors inline-flex items-center gap-2"
+        >
+          <Icon name="file-text" className="w-3.5 h-3.5 text-forma-accent" />
+          {scope === 'document' ? 'Reformuler ce document' : 'Reformuler cette page'}
+        </button>
+        <button
+          type="button"
+          onClick={() => void run('outline')}
+          disabled={loading}
+          className="text-left text-xs px-3 py-2 rounded-lg border border-forma-border hover:border-forma-accent/60 hover:bg-forma-accent/5 text-forma-text disabled:opacity-40 transition-colors inline-flex items-center gap-2"
+        >
+          <Icon name="layout" className="w-3.5 h-3.5 text-forma-accent" />
+          {scope === 'document' ? 'Plan du document' : 'Plan de la page'}
+        </button>
+        {/* Traduire : langue cible + déclenchement */}
+        <div className="flex items-stretch gap-1.5">
+          <button
+            type="button"
+            onClick={() => void run('translate')}
+            disabled={loading}
+            className="flex-1 text-left text-xs px-3 py-2 rounded-lg border border-forma-border hover:border-forma-accent/60 hover:bg-forma-accent/5 text-forma-text disabled:opacity-40 transition-colors inline-flex items-center gap-2"
+          >
+            <Icon name="book" className="w-3.5 h-3.5 text-forma-accent" />
+            Traduire
+          </button>
+          <label className="sr-only" htmlFor="formai-language">Langue de traduction</label>
+          <select
+            id="formai-language"
+            value={language}
+            disabled={loading}
+            onChange={(e) => setLanguage(e.target.value as TranslateLanguage)}
+            title={`Traduire vers ${translateLanguageLabel(language)}`}
+            className="text-xs px-2 py-1.5 rounded-lg border border-forma-border bg-forma-bg text-forma-text disabled:opacity-40 focus:outline-none focus:border-forma-accent"
+          >
+            {(Object.keys(TRANSLATE_LANGUAGE_LABELS) as TranslateLanguage[]).map((code) => (
+              <option key={code} value={code}>{TRANSLATE_LANGUAGE_LABELS[code]}</option>
+            ))}
+          </select>
+        </div>
+        <button
+          type="button"
           onClick={() => { setMode('task'); setSuggestion(null) }}
           disabled={loading}
           className="text-left text-xs px-3 py-2 rounded-lg border border-forma-border hover:border-forma-accent/60 hover:bg-forma-accent/5 text-forma-text disabled:opacity-40 transition-colors inline-flex items-center gap-2"
@@ -278,9 +328,15 @@ export function PageAIActions({
           <div className="text-[10px] text-forma-muted uppercase tracking-wide">
             {resultKind === 'summarize'
               ? 'Résumé'
-              : resultKind === 'explain-selection'
-                ? 'Explication de la sélection'
-                : 'Explication'}
+              : resultKind === 'reformulate'
+                ? 'Reformulation'
+                : resultKind === 'translate'
+                  ? `Traduction (${translateLanguageLabel(language)})`
+                  : resultKind === 'outline'
+                    ? 'Plan'
+                    : resultKind === 'explain-selection'
+                      ? 'Explication de la sélection'
+                      : 'Explication'}
           </div>
           <div className="text-xs text-forma-text whitespace-pre-wrap break-words leading-relaxed max-h-72 overflow-y-auto rounded-lg border border-forma-border bg-forma-bg p-2.5">
             {result.text}
