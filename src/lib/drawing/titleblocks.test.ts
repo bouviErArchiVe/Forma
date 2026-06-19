@@ -89,6 +89,22 @@ describe('buildTitleBlockSvg', () => {
     expect(svg.svgBody).toContain('&quot;')
     expect(svg.svgBody).toContain('&#39;')
   })
+
+  it('valeur courte tient sans troncature', () => {
+    const svg = buildTitleBlockSvg(createTitleBlock({ format: 'A1', fields: { projet: 'Villa' } }))
+    expect(svg.svgBody).toContain('Villa')
+    expect(svg.svgBody).not.toContain('…')
+  })
+
+  it('valeur trop longue pour une colonne étroite est tronquée (« … »)', () => {
+    // « Échelle » est une colonne étroite (fieldW) ; une valeur très longue déborde.
+    const svg = buildTitleBlockSvg(
+      createTitleBlock({ format: 'A4', fields: { projet: 'P', echelle: 'valeur-extremement-longue-qui-deborde' } }),
+    )
+    expect(svg.svgBody).toContain('…')
+    // la valeur intégrale n'apparaît pas telle quelle
+    expect(svg.svgBody).not.toContain('valeur-extremement-longue-qui-deborde')
+  })
 })
 
 describe('titleBlockToBlock', () => {

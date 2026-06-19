@@ -111,6 +111,21 @@ function esc(s: string): string {
 }
 
 /**
+ * Tronque une valeur (ajoute « … ») pour qu'elle tienne dans une largeur de
+ * cellule donnée à une taille de police donnée. Heuristique (0.55 × fontSize par
+ * caractère) évitant que les valeurs longues ne débordent dans la colonne
+ * voisine. Pure et déterministe (pas de mesure DOM).
+ */
+function truncateToWidth(text: string, maxWidth: number, fontSize: number): string {
+  if (text === '' || maxWidth <= 0) return text
+  const charW = fontSize * 0.55
+  const maxChars = Math.floor(maxWidth / charW)
+  if (maxChars >= text.length) return text
+  if (maxChars <= 1) return '…'
+  return `${text.slice(0, maxChars - 1).trimEnd()}…`
+}
+
+/**
  * Largeur du cartouche en px canvas pour un format donné. Proportionnelle à la
  * largeur de la feuille, bornée pour rester maniable sur le canvas Forma.
  */
@@ -189,6 +204,7 @@ export function createTitleBlock(input: CreateTitleBlockInput): TitleBlock {
 function cell(
   x: number,
   y: number,
+  w: number,
   h: number,
   label: string,
   value: string,
@@ -196,12 +212,15 @@ function cell(
   valueSize: number,
 ): string {
   const pad = round(h * 0.16)
+  const inner = w - pad * 2
+  // Le libellé (fixe, court) n'est jamais tronqué ; seule la valeur (saisie
+  // libre) est ajustée pour ne pas déborder dans la colonne voisine.
   const lab =
     `<text x="${round(x + pad)}" y="${round(y + pad + labelSize)}" font-size="${round(labelSize)}" ` +
     `fill="currentColor" stroke="none" opacity="0.65">${esc(label)}</text>`
   const val =
     `<text x="${round(x + pad)}" y="${round(y + h - pad)}" font-size="${round(valueSize)}" ` +
-    `fill="currentColor" stroke="none">${esc(value || '—')}</text>`
+    `fill="currentColor" stroke="none">${esc(truncateToWidth(value || '—', inner, valueSize))}</text>`
   return lab + val
 }
 
@@ -286,10 +305,10 @@ export function buildTitleBlockSvg(tb: TitleBlock): TitleBlockSvg {
   const projetW = round(width - fieldW * 3)
 
   const cols = [
-    { x: 0, label: TITLE_BLOCK_FIELD_LABELS.projet, value: tb.fields.projet },
-    { x: projetW, label: TITLE_BLOCK_FIELD_LABELS.date, value: tb.fields.date },
-    { x: projetW + fieldW, label: TITLE_BLOCK_FIELD_LABELS.echelle, value: tb.fields.echelle },
-    { x: projetW + fieldW * 2, label: TITLE_BLOCK_FIELD_LABELS.feuille, value: tb.fields.feuille },
+    { x: 0, w: projetW, label: TITLE_BLOCK_FIELD_LABELS.projet, value: tb.fields.projet },
+    { x: projetW, w: fieldW, label: TITLE_BLOCK_FIELD_LABELS.date, value: tb.fields.date },
+    { x: projetW + fieldW, w: fieldW, label: TITLE_BLOCK_FIELD_LABELS.echelle, value: tb.fields.echelle },
+    { x: projetW + fieldW * 2, w: fieldW, label: TITLE_BLOCK_FIELD_LABELS.feuille, value: tb.fields.feuille },
   ]
 
   // Cadre extérieur (englobe les lignes additionnelles).
@@ -312,7 +331,7 @@ export function buildTitleBlockSvg(tb: TitleBlock): TitleBlockSvg {
   }
 
   const cells = cols
-    .map((c) => cell(c.x, 0, bandH, c.label, c.value, labelSize, valueSize))
+    .map((c) => cell(c.x, 0, c.w, bandH, c.label, c.value, labelSize, valueSize))
     .join('')
 
   // Estampille du format dans le coin supérieur droit du projet (discret).
