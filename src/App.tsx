@@ -59,6 +59,7 @@ const ResourcesPage = lazy(() => import('./pages/ResourcesPage').then((m) => ({ 
 const ImportHubPage = lazy(() => import('./pages/ImportHubPage').then((m) => ({ default: m.ImportHubPage })))
 const ComplianceCheckerPage = lazy(() => import('./pages/ComplianceCheckerPage').then((m) => ({ default: m.ComplianceCheckerPage })))
 const StudyStatsPage = lazy(() => import('./pages/StudyStatsPage').then((m) => ({ default: m.StudyStatsPage })))
+const StudyHubPage = lazy(() => import('./pages/StudyHubPage').then((m) => ({ default: m.StudyHubPage })))
 
 function PageFallback() {
   return (
@@ -124,6 +125,7 @@ export default function App() {
             <Route path="/resources" element={<ResourcesPage />} />
             <Route path="/import" element={<ImportHubPage />} />
             <Route path="/compliance" element={<ComplianceCheckerPage />} />
+            <Route path="/study" element={<StudyHubPage />} />
             <Route path="/study/stats" element={<StudyStatsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -283,6 +283,15 @@ Dexie : **v16** (inchangé). Tests verts (**1191**), build vert, Playwright vert
 
 Limite notée (non forcée) : le **hand-off sélection→FormAI dans l'éditeur** n'est pas câblé — la sélection vit dans `src/canvas/*` (state non exposé à `EditorPage`), donc le brancher toucherait le canvas (risqué). Le contrat est prêt (`makeGetSelectionText` + accesseur read-only) ; à câbler dans un mini-slice Lane B/éditeur dédié.
 
+### Sprint parallèle #5 (lanes A/C/D/B + intégration E)
+- **Lane A** (`feat/arch-resources-v5`) : favoris ressources graphiques (filtre ★ + toggle, `resourceFavorites.ts`) + aperçu de template avant création (`templatePreview.ts`, plan + copie structure) + polish copie.
+- **Lane C** (`feat/study-hub`) : page **Study Hub** globale (`StudyHubPage`, `src/lib/study/hub.ts`, `loadStudyHub`) — flashcards + examens + objectifs par matière, à réviser/aujourd'hui, tendances. Aucun changement Dexie (reste v16).
+- **Lane D** (`feat/formai-doc-actions`) : actions document FormAI — reformuler / traduire / plan (`canvas-actions.ts`, grounded, lecture seule), boutons + sélecteur de langue dans PageAIActions.
+- **Lane B** (`feat/drawing-annotation-polish`) : légende/cartouche anti-débordement + captions « W×H px » sous les aperçus de dialogues. Hand-off sélection→FormAI **différé** (hors scope lane, fichiers ai/*).
+- **Lane E** : routes `/study` (Study Hub) + `/study/stats` ; nav Library (Étude hub + Stats) ; `FORMA_STATE.md`. Pas de nouveau câblage Search.
+
+Dexie : **v16** (inchangé). Tests verts (**1237**), build vert, Playwright vert.
+
 ## Tests et chiffres connus
 
 Chiffres récents vus dans les rapports :
