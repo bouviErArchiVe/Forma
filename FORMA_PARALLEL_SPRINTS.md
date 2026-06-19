@@ -201,3 +201,20 @@ Sprint #4 validé/mergé (`94f3fbda`, Dexie v16). Même méthode.
 Interdits transverses : hors E, pas de Search/State/routes/EditorPage/App.tsx. C Dexie additif uniquement (v16→v17 seulement si nouvelle table indispensable). C expose le composant page ; E ajoute la route.
 
 Ordre strict : `chore/integration-sprint-5` → `feat/arch-resources-v5` → `feat/study-hub` → `feat/formai-doc-actions` → `feat/drawing-annotation-polish`. Gate complet après chaque merge ; push après vert final.
+
+---
+
+# Sprint #6 — Knowledge / Dictionnaire Foundation V1 (pas de Drawing)
+
+Sprint #5 validé/mergé (`a45caaec`, Dexie v16). Transformer le dictionnaire en base Forma Knowledge V1, sans encyclopédie complète ni dump offline.
+
+| Lane | Branche | Objectif | Propriété |
+|---|---|---|---|
+| K | `feat/knowledge-core` | `KnowledgeEntry` (terme, domaine, définition, **source + confidence obligatoires**), providers locaux extractifs, search-intent ; transforme le dictionnaire **sans le casser** | `src/lib/knowledge/*`, `src/modules/dictionary/*`, `src/components/knowledge/*` (seule lane à toucher le dictionnaire) |
+| C | `feat/knowledge-study` | créer flashcard / question d'examen depuis une fiche Knowledge (réutilise flashcards/exams) | `src/lib/study/*`, `src/services/*` (study), `src/components/study/*`, db/types (additif si indispensable) ; importe types Knowledge read-only |
+| D | `feat/knowledge-formai` | FormAI sur fiche Knowledge : expliquer/comparer/résumer/quiz, local-first + grounding + source/confidence affichés | `src/lib/ai/*`, `src/components/ai/*` ; importe types Knowledge read-only |
+| E | `chore/integration-sprint-6` | routes (knowledge/dictionnaire), Search (kind `knowledge`), `FORMA_STATE.md`, gates | `src/lib/ecosystem-search.ts`, `src/pages/SearchPage.tsx`, `src/App.tsx`, `FORMA_STATE.md` |
+
+Interdits transverses : seule K touche `src/modules/dictionary/*` et `src/lib/knowledge/*` ; C/D importent les types Knowledge en read-only (K mergé en premier) ; pas de Wikipedia/Wikidata complet, pas de gros dump offline ; source + confidence obligatoires ; local-first ; no hallucination. Dexie additif uniquement si indispensable.
+
+Séquencement : **K mergé d'abord** (C/D dépendent de ses types) → puis C, D. Ordre : `chore/integration-sprint-6`(base) → `feat/knowledge-core` → `feat/knowledge-study` → `feat/knowledge-formai`. Gate complet après chaque merge ; push après vert final.
