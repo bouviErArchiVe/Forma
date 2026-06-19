@@ -70,9 +70,12 @@ export function AnnotationDialog({
         </div>
 
         {/* Aperçu */}
-        <div className="border border-forma-border rounded-lg p-2 mb-3 h-24 flex items-center justify-center text-forma-text [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
+        <div className="border border-forma-border rounded-lg p-2 h-24 flex items-center justify-center text-forma-text [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
           dangerouslySetInnerHTML={{ __html: previewSvg }}
         />
+        <p className="text-[10px] text-forma-muted text-center mb-3 mt-1">
+          {block.defaultWidth} × {block.defaultHeight} px sur le dessin
+        </p>
 
         <div className="space-y-2">
           <label className="block text-xs">

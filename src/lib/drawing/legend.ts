@@ -92,7 +92,8 @@ export interface LegendSvg {
   height: number
 }
 
-const LEGEND_WIDTH = 220
+const MIN_LEGEND_WIDTH = 160
+const MAX_LEGEND_WIDTH = 360
 const PAD = 12
 const TITLE_SIZE = 13
 const ROW_SIZE = 11
@@ -100,12 +101,41 @@ const ROW_H = 20
 const SWATCH = 11
 
 /**
+ * Largeur approximative d'une chaîne en px pour une police donnée. Heuristique
+ * (0.58 × fontSize par caractère) suffisante pour dimensionner le cartel sans
+ * mesurer le DOM (rendu pur/testable).
+ */
+function approxTextWidth(text: string, fontSize: number): number {
+  return Math.ceil(text.length * fontSize * 0.58)
+}
+
+/**
+ * Largeur du cartel ajustée au contenu le plus large (titre, ligne d'échelle,
+ * libellés des clés), bornée entre `MIN_LEGEND_WIDTH` et `MAX_LEGEND_WIDTH` pour
+ * rester maniable. Évite que les longs libellés débordent du cadre fixe.
+ */
+function legendWidth(legend: Legend): number {
+  let content = approxTextWidth(legend.title, TITLE_SIZE)
+  if (legend.scale) {
+    content = Math.max(content, approxTextWidth(`Échelle ${legend.scale.label}`, ROW_SIZE))
+  }
+  // Les libellés de clé sont décalés de la pastille : pastille + marge.
+  const keyOffset = SWATCH + 8
+  for (const e of legend.entries) {
+    content = Math.max(content, keyOffset + approxTextWidth(e.label, ROW_SIZE))
+  }
+  const fitted = Math.round(content + PAD * 2)
+  return Math.max(MIN_LEGEND_WIDTH, Math.min(MAX_LEGEND_WIDTH, fitted))
+}
+
+/**
  * Rend une légende en corps SVG + dimensions du viewBox. Cadre extérieur, titre,
  * ligne d'échelle optionnelle (label du `ScaleProfile`), puis une ligne par clé
- * (pastille + libellé). Hauteur calculée pour contenir toutes les lignes.
+ * (pastille + libellé). Largeur ajustée au contenu (bornée), hauteur calculée
+ * pour contenir toutes les lignes.
  */
 export function buildLegendSvg(legend: Legend): LegendSvg {
-  const width = LEGEND_WIDTH
+  const width = legendWidth(legend)
   const stroke = 1.5
 
   let y = PAD
@@ -140,7 +170,8 @@ export function buildLegendSvg(legend: Legend): LegendSvg {
     })
     .join('')
 
-  const height = Math.round(y + PAD)
+  // Hauteur min : le cartel reste lisible même titre seul (sans échelle ni clé).
+  const height = Math.max(44, Math.round(y + PAD))
 
   // Cadre extérieur (dessiné en dernier pour la dimension finale).
   const frame =

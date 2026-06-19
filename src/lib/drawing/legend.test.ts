@@ -91,6 +91,25 @@ describe('buildLegendSvg', () => {
     const svg = buildLegendSvg(createLegend({ entries: [{ label: 'A', color: '#ff8800' }] }))
     expect(svg.svgBody).toContain('fill="#ff8800"')
   })
+
+  it('largeur ajustée : un long libellé élargit le cartel (borné)', () => {
+    const short = buildLegendSvg(createLegend({ entries: [{ label: 'A' }] }))
+    const long = buildLegendSvg(createLegend({ entries: [{ label: 'Mur en béton armé coulé en place très épais' }] }))
+    expect(long.width).toBeGreaterThan(short.width)
+    // bornes [160, 360]
+    expect(short.width).toBeGreaterThanOrEqual(160)
+    expect(long.width).toBeLessThanOrEqual(360)
+  })
+
+  it('largeur bornée même pour un libellé démesuré', () => {
+    const huge = buildLegendSvg(createLegend({ entries: [{ label: 'x'.repeat(500) }] }))
+    expect(huge.width).toBe(360)
+  })
+
+  it('hauteur minimale : titre seul reste lisible', () => {
+    const svg = buildLegendSvg(createLegend({ title: 'T', entries: [] }))
+    expect(svg.height).toBeGreaterThanOrEqual(44)
+  })
 })
 
 describe('legendToBlock', () => {
