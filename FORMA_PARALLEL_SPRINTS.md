@@ -263,3 +263,19 @@ Objectif : préparer l'enrichissement massif du dictionnaire **sans salir la bas
 Décisions : surface rapport = **script CLI uniquement** (pas de panneau dev) ; `/dictionary` inchangé ; `provenance` optionnel/additif (dérivé de `sources[].type` si absent) ; jamais de suppression auto d'une entrée weak (marquer/rapporter/classer seulement) ; pack test autorisé car **isolé** (dossier `test-packs/`, non globé par le loader).
 
 Ordre : **Q → I → E**, full gate (`tsc -b`/`vitest`/`build`) à chaque palier, Playwright final unique, push après vert final. Lanes intégrées en ligne (lib + scripts, très testables, faible risque) après les blocages répétés de limite de session sur sous-agents.
+
+---
+
+# Sprint #10 — Content Quality Upgrade (Lanes Q2 + C + U)
+
+Objectif : faire passer un lot réel d'entrées de weak/review → ok, et résoudre les doublons, **sans ajouter de volume sale** et **tout via le pipeline** #9/#10.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| Q2 | Pipeline apply/merge : `applyUpgradePack` (patch par id + qualité avant/après) + `applyDedupPlan` (merge/distinguish explicites), CLI `knowledge:upgrade` (réécrit les seeds) | `src/lib/knowledge/{upgrade,dedup-resolve}.ts`, `scripts/knowledge-upgrade.ts`, tests |
+| C | Plan de résolution des 28 exacts + 1 quasi (1 merge + 13 distinguish ; quasi `valeur R/U` = FP documenté) | `src/data/knowledge/upgrades/dedup-plan.json` |
+| U | Upgrade pack de 81 entrées prioritaires enrichies (matériaux/structure/architecture) | `src/data/knowledge/upgrades/upgrade-pack-01.json` (+ seeds réécrits) |
+
+Règles respectées : Q2 fige le contrat avant C/U ; C ne supprime rien automatiquement (merge = décision explicite tracée) ; chaque entrée U a shortDefinition/longDefinition/examples/synonyms/relatedTerms/tags/sources/confidence ; source obligatoire ; confidence ajustée honnêtement (à-vérifier pour le normatif) ; qualityScore avant/après obligatoire.
+
+Résultat : **ok 0 → 79**, doublons slug 28 → 0, base 920 → 919. `/dictionary` + Search intacts, Dexie inchangé, seeds lazy/code-split, full gate vert à chaque palier. Lanes intégrées en ligne (data + lib + scripts).
