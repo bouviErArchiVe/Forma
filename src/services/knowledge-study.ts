@@ -7,7 +7,8 @@
  * service existant `createFlashcard` (services/flashcards.ts). Aucune table
  * Dexie nouvelle (réutilise `flashcards`).
  */
-import { flashcardFromKnowledge, type KnowledgeEntry } from '../lib/study/knowledge-study'
+import { flashcardFromKnowledge } from '../lib/study/knowledge-study'
+import type { KnowledgeEntry } from '../lib/knowledge'
 import { createFlashcard } from './flashcards'
 import type { Flashcard } from '../types'
 

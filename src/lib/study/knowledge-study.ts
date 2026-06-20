@@ -8,41 +8,21 @@
  *
  * Contrat de type Knowledge (read-only)
  * -------------------------------------
- * La fiche Knowledge est la propriété de la Lane K (`src/lib/knowledge/*`,
- * mergée avant cette lane). Pour rester dans le périmètre autorisé de la
- * Lane C (interdit d'éditer `src/lib/knowledge/*`) et garder `tsc` propre tant
- * que la Lane K n'est pas mergée, on redéfinit ici le **contrat minimal**
- * read-only de `KnowledgeEntry` tel que documenté dans FORMA_PARALLEL_SPRINTS
- * (Sprint #6) : terme, domaine, définition, **source + confidence
- * obligatoires**. Une fois `src/lib/knowledge` disponible sur `main`, ce type
- * local pourra être remplacé par un `import type` direct sans changer la
- * logique ci-dessous (structurellement compatible).
+ * Le type `KnowledgeEntry` provient désormais de la Lane K
+ * (`src/lib/knowledge`, schéma canonique). On lit la définition et la source
+ * via les accesseurs `entryDefinition` / `entrySourceLabel` (pas de champ
+ * `definition`/`source` legacy). La `confidence` est un libellé qualitatif
+ * (`KnowledgeConfidence`), pas un nombre.
  */
+import {
+  entryDefinition,
+  entrySourceLabel,
+  KNOWLEDGE_CONFIDENCE_LABEL,
+  type KnowledgeEntry,
+} from '../knowledge'
 import type { CreateFlashcardInput } from '../../services/flashcards'
 import type { ExamQuestion } from '../../types'
 import { createId } from '../id'
-
-/**
- * Contrat read-only minimal d'une fiche Knowledge (cf. Lane K).
- * Champs obligatoires conformes au cahier des charges : `term`, `domain`,
- * `definition`, `source`, `confidence`.
- */
-export interface KnowledgeEntry {
-  /** Terme / entrée (recto naturel d'une flashcard). */
-  term: string
-  /** Domaine / catégorie (ex. « Structure »). */
-  domain: string
-  /** Définition (verso naturel d'une flashcard). */
-  definition: string
-  /** Provenance de l'information (provider, glossaire local, etc.). */
-  source: string
-  /** Niveau de confiance 0..1 (grounding, anti-hallucination). */
-  confidence: number
-  /** Synonymes éventuels (utilisés comme tags additionnels). */
-  synonyms?: string[]
-  /** Exemple d'usage éventuel. */
-  example?: string
-}
 
 const TAG_KNOWLEDGE = 'knowledge'
 
@@ -51,22 +31,17 @@ function normalizeTag(s: string): string {
   return s.trim().toLowerCase().replace(/\s+/g, ' ')
 }
 
-/** Arrondit une confidence dans [0,1] (tolère les entrées hors bornes). */
-function clampConfidence(c: number): number {
-  if (!Number.isFinite(c)) return 0
-  return Math.min(1, Math.max(0, c))
-}
-
 /**
  * Tags dérivés d'une fiche : `knowledge`, le domaine, la source et les
  * synonymes. Dédupliqués, non vides, ordre stable (déterministe).
  */
 export function tagsFromKnowledge(entry: KnowledgeEntry): string[] {
+  const sourceLabel = entrySourceLabel(entry)
   const raw = [
     TAG_KNOWLEDGE,
     entry.domain,
-    entry.source ? `source:${entry.source}` : '',
-    ...(entry.synonyms ?? []),
+    sourceLabel ? `source:${sourceLabel}` : '',
+    ...entry.synonyms,
   ]
   const seen = new Set<string>()
   const out: string[] = []
@@ -91,7 +66,7 @@ export function flashcardFromKnowledge(
   opts: { subjectId?: string } = {},
 ): CreateFlashcardInput | null {
   const front = entry.term.trim()
-  const back = entry.definition.trim()
+  const back = entryDefinition(entry).trim()
   if (front === '' || back === '') return null
   return {
     front,
@@ -112,11 +87,12 @@ export function examQuestionFromKnowledge(
   opts: { points?: number; idFn?: () => string } = {},
 ): (ExamQuestion & { notes: string }) | null {
   const question = entry.term.trim()
-  const answer = entry.definition.trim()
+  const answer = entryDefinition(entry).trim()
   if (question === '' || answer === '') return null
   const id = (opts.idFn ?? createId)()
-  const confidence = clampConfidence(entry.confidence)
-  const notes = `source: ${entry.source.trim() || 'inconnue'} · confiance: ${confidence.toFixed(2)}`
+  const sourceLabel = entrySourceLabel(entry).trim() || 'inconnue'
+  const confidenceLabel = KNOWLEDGE_CONFIDENCE_LABEL[entry.confidence]
+  const notes = `source: ${sourceLabel} · confiance: ${confidenceLabel}`
   return {
     id,
     type: 'short',

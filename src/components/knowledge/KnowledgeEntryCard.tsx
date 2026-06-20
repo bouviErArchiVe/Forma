@@ -6,6 +6,8 @@
  * réutilisable par Study (C) et FormAI (D). Aucune logique réseau ni IA.
  */
 import {
+  entryDefinition,
+  entrySourceLabel,
   KNOWLEDGE_CONFIDENCE_LABEL,
   type KnowledgeConfidence,
   type KnowledgeEntry,
@@ -46,7 +48,7 @@ export function KnowledgeEntryCard({ entry, className }: KnowledgeEntryCardProps
         <KnowledgeConfidenceBadge confidence={entry.confidence} />
       </header>
       <p className="text-[10px] uppercase tracking-wide text-forma-accent mb-2">{entry.domain}</p>
-      <p className="text-sm text-forma-text leading-relaxed">{entry.definition}</p>
+      <p className="text-sm text-forma-text leading-relaxed">{entryDefinition(entry)}</p>
 
       {entry.tags && entry.tags.length > 0 && (
         <ul className="flex flex-wrap gap-1 mt-3">
@@ -63,7 +65,7 @@ export function KnowledgeEntryCard({ entry, className }: KnowledgeEntryCardProps
 
       <p className="text-[10px] text-forma-muted mt-3 pt-2 border-t border-forma-border">
         <span className="font-medium text-forma-text">Source : </span>
-        {entry.source}
+        {entrySourceLabel(entry)}
       </p>
     </article>
   )

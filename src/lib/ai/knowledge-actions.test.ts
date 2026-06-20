@@ -26,15 +26,26 @@ import {
 } from './knowledge-actions'
 import { KNOWLEDGE_CONFIDENCE_LABEL, type KnowledgeEntry } from '../knowledge'
 
+const ARCH_SOURCE = 'Base intégrée — Glossaire d’architecture Forma'
+
 function makeEntry(partial: Partial<KnowledgeEntry> = {}): KnowledgeEntry {
   return {
     id: 'architecture:linteau',
+    slug: 'linteau',
     term: 'Linteau',
+    language: 'fr',
+    type: 'concept',
     domain: 'architecture',
-    definition: 'Élément horizontal porteur au-dessus d’une ouverture.',
-    source: 'Base intégrée — Glossaire d’architecture Forma',
-    confidence: 'indicatif',
+    shortDefinition: 'Élément horizontal porteur au-dessus d’une ouverture.',
+    longDefinition: 'Élément horizontal porteur au-dessus d’une ouverture.',
+    examples: [],
+    synonyms: [],
+    relatedTerms: [],
     tags: ['structure', 'ouverture'],
+    sources: [{ label: ARCH_SOURCE, type: 'internal' }],
+    confidence: 'indicatif',
+    createdAt: '2026-06-20',
+    updatedAt: '2026-06-20',
     ...partial,
   }
 }
@@ -148,7 +159,7 @@ describe('runKnowledgeAction — orchestration locale honnête', () => {
     expect(res.text.length).toBeGreaterThan(0)
     expect(res.fromCloud).toBe(false)
     expect(res.entries).toHaveLength(1)
-    expect(res.entries[0].source).toBe(entry.source)
+    expect(res.entries[0].sources[0].label).toBe(entry.sources[0].label)
     expect(res.entries[0].confidence).toBe(entry.confidence)
   })
 

@@ -7,15 +7,26 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../db'
 import { createFlashcardFromKnowledge } from './knowledge-study'
 import { listFlashcards } from './flashcards'
-import type { KnowledgeEntry } from '../lib/study/knowledge-study'
+import type { KnowledgeEntry } from '../lib/knowledge'
 
 function entry(p: Partial<KnowledgeEntry> = {}): KnowledgeEntry {
   return {
+    id: 'charpente:solive',
+    slug: 'solive',
     term: 'Solive',
+    language: 'fr',
+    type: 'concept',
     domain: 'Charpente',
-    definition: 'Pièce horizontale répétitive supportant un plancher.',
-    source: 'glossaire-local',
-    confidence: 0.8,
+    shortDefinition: 'Pièce horizontale répétitive supportant un plancher.',
+    longDefinition: 'Pièce horizontale répétitive supportant un plancher.',
+    examples: [],
+    synonyms: [],
+    relatedTerms: [],
+    tags: [],
+    sources: [{ label: 'glossaire-local', type: 'internal' }],
+    confidence: 'indicatif',
+    createdAt: '2026-06-20',
+    updatedAt: '2026-06-20',
     ...p,
   }
 }
@@ -46,7 +57,7 @@ describe('createFlashcardFromKnowledge', () => {
   })
 
   it('ne persiste rien si la fiche est inexploitable', async () => {
-    const card = await createFlashcardFromKnowledge(entry({ definition: '   ' }))
+    const card = await createFlashcardFromKnowledge(entry({ shortDefinition: '   ', longDefinition: '   ' }))
     expect(card).toBeNull()
     expect(await listFlashcards()).toHaveLength(0)
   })
