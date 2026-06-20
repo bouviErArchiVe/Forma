@@ -11,7 +11,9 @@
     "test:e2e": "playwright test",
     "test:all": "vitest run && playwright test",
     "preview": "vite preview",
-    "icons": "node scripts/generate-pwa-icons.mjs"
+    "icons": "node scripts/generate-pwa-icons.mjs",
+    "knowledge:quality": "vite-node scripts/knowledge-quality.ts",
+    "knowledge:import": "vite-node scripts/knowledge-import.ts"
   },
   "dependencies": {
     "dexie": "^4.4.3",
