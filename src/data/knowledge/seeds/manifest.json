@@ -1,0 +1,104 @@
+{
+  "pack": "Forma Knowledge Seed Pro",
+  "version": "1.0.0",
+  "createdAt": "2026-06-20",
+  "language": "fr",
+  "entryCount": 920,
+  "fileCount": 8,
+  "files": [
+    {
+      "file": "architecture_core.json",
+      "count": 103,
+      "domains": [
+        "architecture"
+      ],
+      "types": [
+        "concept"
+      ]
+    },
+    {
+      "file": "construction_systems.json",
+      "count": 99,
+      "domains": [
+        "construction"
+      ],
+      "types": [
+        "construction_system"
+      ]
+    },
+    {
+      "file": "materials.json",
+      "count": 94,
+      "domains": [
+        "construction"
+      ],
+      "types": [
+        "material"
+      ]
+    },
+    {
+      "file": "history_styles_movements.json",
+      "count": 100,
+      "domains": [
+        "architecture"
+      ],
+      "types": [
+        "concept",
+        "style"
+      ]
+    },
+    {
+      "file": "people_buildings.json",
+      "count": 100,
+      "domains": [
+        "architecture"
+      ],
+      "types": [
+        "building",
+        "person"
+      ]
+    },
+    {
+      "file": "norms_methods_formulas.json",
+      "count": 138,
+      "domains": [
+        "architecture"
+      ],
+      "types": [
+        "formula",
+        "method",
+        "norm"
+      ]
+    },
+    {
+      "file": "general_academic_vocabulary.json",
+      "count": 183,
+      "domains": [
+        "études"
+      ],
+      "types": [
+        "word"
+      ]
+    },
+    {
+      "file": "interior_environment.json",
+      "count": 103,
+      "domains": [
+        "architecture intérieure"
+      ],
+      "types": [
+        "concept"
+      ]
+    }
+  ],
+  "confidenceValues": [
+    "indicatif",
+    "concept",
+    "à-vérifier"
+  ],
+  "notes": [
+    "Contenu original, pédagogique, orienté Forma.",
+    "Les entrées normatives ou historiques sensibles sont marquées à-vérifier lorsque nécessaire.",
+    "Pack conçu comme seed local-first, pas comme copie d'un dictionnaire externe."
+  ]
+}

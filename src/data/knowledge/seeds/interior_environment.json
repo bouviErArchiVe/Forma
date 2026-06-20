@@ -1,0 +1,3813 @@
+[
+  {
+    "id": "int-allege",
+    "slug": "allege",
+    "term": "allège",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "allège est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « allège » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier allège sur un plan",
+      "Décrire allège dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 1
+  },
+  {
+    "id": "int-ambiance-interieure",
+    "slug": "ambiance-interieure",
+    "term": "ambiance intérieure",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "ambiance intérieure est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « ambiance intérieure » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier ambiance intérieure sur un plan",
+      "Décrire ambiance intérieure dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 2
+  },
+  {
+    "id": "int-applique-murale",
+    "slug": "applique-murale",
+    "term": "applique murale",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "applique murale est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « applique murale » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier applique murale sur un plan",
+      "Décrire applique murale dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 3
+  },
+  {
+    "id": "int-appui-de-fenetre",
+    "slug": "appui-de-fenetre",
+    "term": "appui de fenêtre",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "appui de fenêtre est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « appui de fenêtre » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier appui de fenêtre sur un plan",
+      "Décrire appui de fenêtre dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 4
+  },
+  {
+    "id": "int-armoire",
+    "slug": "armoire",
+    "term": "armoire",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "armoire est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « armoire » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier armoire sur un plan",
+      "Décrire armoire dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 5
+  },
+  {
+    "id": "int-aspirateur-central",
+    "slug": "aspirateur-central",
+    "term": "aspirateur central",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "aspirateur central est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « aspirateur central » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier aspirateur central sur un plan",
+      "Décrire aspirateur central dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 6
+  },
+  {
+    "id": "int-atelier",
+    "slug": "atelier",
+    "term": "atelier",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "atelier est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « atelier » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier atelier sur un plan",
+      "Décrire atelier dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 7
+  },
+  {
+    "id": "int-baignoire",
+    "slug": "baignoire",
+    "term": "baignoire",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "baignoire est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « baignoire » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier baignoire sur un plan",
+      "Décrire baignoire dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 8
+  },
+  {
+    "id": "int-banquette",
+    "slug": "banquette",
+    "term": "banquette",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "banquette est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « banquette » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier banquette sur un plan",
+      "Décrire banquette dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 9
+  },
+  {
+    "id": "int-buanderie",
+    "slug": "buanderie",
+    "term": "buanderie",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "buanderie est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « buanderie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier buanderie sur un plan",
+      "Décrire buanderie dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 10
+  },
+  {
+    "id": "int-bureau",
+    "slug": "bureau",
+    "term": "bureau",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "bureau est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « bureau » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier bureau sur un plan",
+      "Décrire bureau dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 11
+  },
+  {
+    "id": "int-cadre",
+    "slug": "cadre",
+    "term": "cadre",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "cadre est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « cadre » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier cadre sur un plan",
+      "Décrire cadre dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 12
+  },
+  {
+    "id": "int-caisson",
+    "slug": "caisson",
+    "term": "caisson",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "caisson est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « caisson » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier caisson sur un plan",
+      "Décrire caisson dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 13
+  },
+  {
+    "id": "int-chambre",
+    "slug": "chambre",
+    "term": "chambre",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "chambre est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « chambre » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier chambre sur un plan",
+      "Décrire chambre dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 14
+  },
+  {
+    "id": "int-chambre-principale",
+    "slug": "chambre-principale",
+    "term": "chambre principale",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "chambre principale est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « chambre principale » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier chambre principale sur un plan",
+      "Décrire chambre principale dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 15
+  },
+  {
+    "id": "int-charniere",
+    "slug": "charniere",
+    "term": "charnière",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "charnière est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « charnière » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier charnière sur un plan",
+      "Décrire charnière dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 16
+  },
+  {
+    "id": "int-chassis",
+    "slug": "chassis",
+    "term": "châssis",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "châssis est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « châssis » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier châssis sur un plan",
+      "Décrire châssis dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 17
+  },
+  {
+    "id": "int-circulation-interieure",
+    "slug": "circulation-interieure",
+    "term": "circulation intérieure",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "circulation intérieure est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « circulation intérieure » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier circulation intérieure sur un plan",
+      "Décrire circulation intérieure dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 18
+  },
+  {
+    "id": "int-climatisation",
+    "slug": "climatisation",
+    "term": "climatisation",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "climatisation est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « climatisation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier climatisation sur un plan",
+      "Décrire climatisation dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 19
+  },
+  {
+    "id": "int-cloison",
+    "slug": "cloison",
+    "term": "cloison",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "cloison est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « cloison » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier cloison sur un plan",
+      "Décrire cloison dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 20
+  },
+  {
+    "id": "int-comptoir",
+    "slug": "comptoir",
+    "term": "comptoir",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "comptoir est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « comptoir » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier comptoir sur un plan",
+      "Décrire comptoir dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 21
+  },
+  {
+    "id": "int-conduit",
+    "slug": "conduit",
+    "term": "conduit",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "conduit est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « conduit » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier conduit sur un plan",
+      "Décrire conduit dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 22
+  },
+  {
+    "id": "int-convecteur",
+    "slug": "convecteur",
+    "term": "convecteur",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "convecteur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « convecteur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier convecteur sur un plan",
+      "Décrire convecteur dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 23
+  },
+  {
+    "id": "int-corniche",
+    "slug": "corniche",
+    "term": "corniche",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "corniche est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « corniche » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier corniche sur un plan",
+      "Décrire corniche dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 24
+  },
+  {
+    "id": "int-corridor",
+    "slug": "corridor",
+    "term": "corridor",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "corridor est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « corridor » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier corridor sur un plan",
+      "Décrire corridor dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 25
+  },
+  {
+    "id": "int-coulisse",
+    "slug": "coulisse",
+    "term": "coulisse",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "coulisse est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « coulisse » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier coulisse sur un plan",
+      "Décrire coulisse dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 26
+  },
+  {
+    "id": "int-cuisine",
+    "slug": "cuisine",
+    "term": "cuisine",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "cuisine est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « cuisine » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier cuisine sur un plan",
+      "Décrire cuisine dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 27
+  },
+  {
+    "id": "int-diffuseur",
+    "slug": "diffuseur",
+    "term": "diffuseur",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "diffuseur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « diffuseur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier diffuseur sur un plan",
+      "Décrire diffuseur dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 28
+  },
+  {
+    "id": "int-dosseret",
+    "slug": "dosseret",
+    "term": "dosseret",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "dosseret est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « dosseret » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier dosseret sur un plan",
+      "Décrire dosseret dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 29
+  },
+  {
+    "id": "int-douche",
+    "slug": "douche",
+    "term": "douche",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "douche est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « douche » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier douche sur un plan",
+      "Décrire douche dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 30
+  },
+  {
+    "id": "int-drain",
+    "slug": "drain",
+    "term": "drain",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "drain est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « drain » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier drain sur un plan",
+      "Décrire drain dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 31
+  },
+  {
+    "id": "int-drain-lineaire",
+    "slug": "drain-lineaire",
+    "term": "drain linéaire",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "drain linéaire est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « drain linéaire » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier drain linéaire sur un plan",
+      "Décrire drain linéaire dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 32
+  },
+  {
+    "id": "int-degagement-fonctionnel",
+    "slug": "degagement-fonctionnel",
+    "term": "dégagement fonctionnel",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "dégagement fonctionnel est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « dégagement fonctionnel » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier dégagement fonctionnel sur un plan",
+      "Décrire dégagement fonctionnel dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 33
+  },
+  {
+    "id": "int-detail-interieur",
+    "slug": "detail-interieur",
+    "term": "détail intérieur",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "détail intérieur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « détail intérieur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier détail intérieur sur un plan",
+      "Décrire détail intérieur dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 34
+  },
+  {
+    "id": "int-detecteur-de-fumee",
+    "slug": "detecteur-de-fumee",
+    "term": "détecteur de fumée",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "détecteur de fumée est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « détecteur de fumée » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier détecteur de fumée sur un plan",
+      "Décrire détecteur de fumée dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 35
+  },
+  {
+    "id": "int-detecteur-de-monoxyde",
+    "slug": "detecteur-de-monoxyde",
+    "term": "détecteur de monoxyde",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "détecteur de monoxyde est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « détecteur de monoxyde » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier détecteur de monoxyde sur un plan",
+      "Décrire détecteur de monoxyde dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 36
+  },
+  {
+    "id": "int-embrasure",
+    "slug": "embrasure",
+    "term": "embrasure",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "embrasure est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « embrasure » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier embrasure sur un plan",
+      "Décrire embrasure dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 37
+  },
+  {
+    "id": "int-entree",
+    "slug": "entree",
+    "term": "entrée",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "entrée est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « entrée » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier entrée sur un plan",
+      "Décrire entrée dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 38
+  },
+  {
+    "id": "int-ergonomie-de-cuisine",
+    "slug": "ergonomie-de-cuisine",
+    "term": "ergonomie de cuisine",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "ergonomie de cuisine est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « ergonomie de cuisine » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier ergonomie de cuisine sur un plan",
+      "Décrire ergonomie de cuisine dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 39
+  },
+  {
+    "id": "int-extincteur",
+    "slug": "extincteur",
+    "term": "extincteur",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "extincteur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « extincteur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier extincteur sur un plan",
+      "Décrire extincteur dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 40
+  },
+  {
+    "id": "int-fenetre",
+    "slug": "fenetre",
+    "term": "fenêtre",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "fenêtre est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « fenêtre » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier fenêtre sur un plan",
+      "Décrire fenêtre dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 41
+  },
+  {
+    "id": "int-garage",
+    "slug": "garage",
+    "term": "garage",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "garage est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « garage » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier garage sur un plan",
+      "Décrire garage dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 42
+  },
+  {
+    "id": "int-garde-manger",
+    "slug": "garde-manger",
+    "term": "garde-manger",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "garde-manger est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « garde-manger » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier garde-manger sur un plan",
+      "Décrire garde-manger dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 43
+  },
+  {
+    "id": "int-gicleur",
+    "slug": "gicleur",
+    "term": "gicleur",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "gicleur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « gicleur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier gicleur sur un plan",
+      "Décrire gicleur dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 44
+  },
+  {
+    "id": "int-gradation",
+    "slug": "gradation",
+    "term": "gradation",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "gradation est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « gradation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier gradation sur un plan",
+      "Décrire gradation dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 45
+  },
+  {
+    "id": "int-interrupteur",
+    "slug": "interrupteur",
+    "term": "interrupteur",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "interrupteur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « interrupteur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier interrupteur sur un plan",
+      "Décrire interrupteur dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 46
+  },
+  {
+    "id": "int-isolant-acoustique",
+    "slug": "isolant-acoustique",
+    "term": "isolant acoustique",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "isolant acoustique est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « isolant acoustique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier isolant acoustique sur un plan",
+      "Décrire isolant acoustique dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 47
+  },
+  {
+    "id": "int-jambage",
+    "slug": "jambage",
+    "term": "jambage",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "jambage est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « jambage » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier jambage sur un plan",
+      "Décrire jambage dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 48
+  },
+  {
+    "id": "int-lavabo",
+    "slug": "lavabo",
+    "term": "lavabo",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "lavabo est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « lavabo » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier lavabo sur un plan",
+      "Décrire lavabo dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 49
+  },
+  {
+    "id": "int-linteau-de-fenetre",
+    "slug": "linteau-de-fenetre",
+    "term": "linteau de fenêtre",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "linteau de fenêtre est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « linteau de fenêtre » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier linteau de fenêtre sur un plan",
+      "Décrire linteau de fenêtre dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 50
+  },
+  {
+    "id": "int-local-mecanique",
+    "slug": "local-mecanique",
+    "term": "local mécanique",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "local mécanique est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « local mécanique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier local mécanique sur un plan",
+      "Décrire local mécanique dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 51
+  },
+  {
+    "id": "int-miroir",
+    "slug": "miroir",
+    "term": "miroir",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "miroir est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « miroir » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier miroir sur un plan",
+      "Décrire miroir dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 52
+  },
+  {
+    "id": "int-mobilier-integre",
+    "slug": "mobilier-integre",
+    "term": "mobilier intégré",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "mobilier intégré est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « mobilier intégré » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier mobilier intégré sur un plan",
+      "Décrire mobilier intégré dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 53
+  },
+  {
+    "id": "int-mockup",
+    "slug": "mockup",
+    "term": "mockup",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "mockup est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « mockup » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier mockup sur un plan",
+      "Décrire mockup dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 54
+  },
+  {
+    "id": "int-moulure",
+    "slug": "moulure",
+    "term": "moulure",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "moulure est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « moulure » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier moulure sur un plan",
+      "Décrire moulure dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 55
+  },
+  {
+    "id": "int-mudroom",
+    "slug": "mudroom",
+    "term": "mudroom",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "mudroom est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « mudroom » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier mudroom sur un plan",
+      "Décrire mudroom dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 56
+  },
+  {
+    "id": "int-mur-interieur",
+    "slug": "mur-interieur",
+    "term": "mur intérieur",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "mur intérieur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « mur intérieur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier mur intérieur sur un plan",
+      "Décrire mur intérieur dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 57
+  },
+  {
+    "id": "int-niche-de-douche",
+    "slug": "niche-de-douche",
+    "term": "niche de douche",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "niche de douche est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « niche de douche » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier niche de douche sur un plan",
+      "Décrire niche de douche dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 58
+  },
+  {
+    "id": "int-palette-de-materiaux",
+    "slug": "palette-de-materiaux",
+    "term": "palette de matériaux",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "palette de matériaux est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « palette de matériaux » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier palette de matériaux sur un plan",
+      "Décrire palette de matériaux dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 59
+  },
+  {
+    "id": "int-panneau-electrique",
+    "slug": "panneau-electrique",
+    "term": "panneau électrique",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "panneau électrique est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « panneau électrique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier panneau électrique sur un plan",
+      "Décrire panneau électrique dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 60
+  },
+  {
+    "id": "int-penture",
+    "slug": "penture",
+    "term": "penture",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "penture est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « penture » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier penture sur un plan",
+      "Décrire penture dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 61
+  },
+  {
+    "id": "int-placard",
+    "slug": "placard",
+    "term": "placard",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "placard est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « placard » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier placard sur un plan",
+      "Décrire placard dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 62
+  },
+  {
+    "id": "int-plafond-suspendu",
+    "slug": "plafond-suspendu",
+    "term": "plafond suspendu",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "plafond suspendu est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plafond suspendu » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier plafond suspendu sur un plan",
+      "Décrire plafond suspendu dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 63
+  },
+  {
+    "id": "int-plan-d-eclairage",
+    "slug": "plan-d-eclairage",
+    "term": "plan d'éclairage",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "plan d'éclairage est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plan d'éclairage » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier plan d'éclairage sur un plan",
+      "Décrire plan d'éclairage dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 64
+  },
+  {
+    "id": "int-plan-de-finition",
+    "slug": "plan-de-finition",
+    "term": "plan de finition",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "plan de finition est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plan de finition » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier plan de finition sur un plan",
+      "Décrire plan de finition dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 65
+  },
+  {
+    "id": "int-plan-de-mobilier",
+    "slug": "plan-de-mobilier",
+    "term": "plan de mobilier",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "plan de mobilier est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plan de mobilier » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier plan de mobilier sur un plan",
+      "Décrire plan de mobilier dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 66
+  },
+  {
+    "id": "int-plan-de-plafond-reflechi",
+    "slug": "plan-de-plafond-reflechi",
+    "term": "plan de plafond réfléchi",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "plan de plafond réfléchi est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plan de plafond réfléchi » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier plan de plafond réfléchi sur un plan",
+      "Décrire plan de plafond réfléchi dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 67
+  },
+  {
+    "id": "int-plancher-chauffant",
+    "slug": "plancher-chauffant",
+    "term": "plancher chauffant",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "plancher chauffant est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plancher chauffant » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier plancher chauffant sur un plan",
+      "Décrire plancher chauffant dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 68
+  },
+  {
+    "id": "int-plinthe",
+    "slug": "plinthe",
+    "term": "plinthe",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "plinthe est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plinthe » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier plinthe sur un plan",
+      "Décrire plinthe dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 69
+  },
+  {
+    "id": "int-plomberie",
+    "slug": "plomberie",
+    "term": "plomberie",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "plomberie est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plomberie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier plomberie sur un plan",
+      "Décrire plomberie dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 70
+  },
+  {
+    "id": "int-poignee",
+    "slug": "poignee",
+    "term": "poignée",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "poignée est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « poignée » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier poignée sur un plan",
+      "Décrire poignée dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 71
+  },
+  {
+    "id": "int-porte",
+    "slug": "porte",
+    "term": "porte",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "porte est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « porte » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier porte sur un plan",
+      "Décrire porte dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 72
+  },
+  {
+    "id": "int-porte-fenetre",
+    "slug": "porte-fenetre",
+    "term": "porte-fenêtre",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "porte-fenêtre est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « porte-fenêtre » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier porte-fenêtre sur un plan",
+      "Décrire porte-fenêtre dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 73
+  },
+  {
+    "id": "int-prise-electrique",
+    "slug": "prise-electrique",
+    "term": "prise électrique",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "prise électrique est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « prise électrique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier prise électrique sur un plan",
+      "Décrire prise électrique dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 74
+  },
+  {
+    "id": "int-quincaillerie",
+    "slug": "quincaillerie",
+    "term": "quincaillerie",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "quincaillerie est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « quincaillerie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier quincaillerie sur un plan",
+      "Décrire quincaillerie dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 75
+  },
+  {
+    "id": "int-radiateur",
+    "slug": "radiateur",
+    "term": "radiateur",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "radiateur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « radiateur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier radiateur sur un plan",
+      "Décrire radiateur dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 76
+  },
+  {
+    "id": "int-rangement",
+    "slug": "rangement",
+    "term": "rangement",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "rangement est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « rangement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier rangement sur un plan",
+      "Décrire rangement dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 77
+  },
+  {
+    "id": "int-revetement-de-sol",
+    "slug": "revetement-de-sol",
+    "term": "revêtement de sol",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "revêtement de sol est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « revêtement de sol » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier revêtement de sol sur un plan",
+      "Décrire revêtement de sol dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 78
+  },
+  {
+    "id": "int-robinet",
+    "slug": "robinet",
+    "term": "robinet",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "robinet est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « robinet » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier robinet sur un plan",
+      "Décrire robinet dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 79
+  },
+  {
+    "id": "int-ruban-del",
+    "slug": "ruban-del",
+    "term": "ruban DEL",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "ruban DEL est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « ruban DEL » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier ruban DEL sur un plan",
+      "Décrire ruban DEL dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 80
+  },
+  {
+    "id": "int-salle-d-eau",
+    "slug": "salle-d-eau",
+    "term": "salle d'eau",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "salle d'eau est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « salle d'eau » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier salle d'eau sur un plan",
+      "Décrire salle d'eau dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 81
+  },
+  {
+    "id": "int-salle-de-bain",
+    "slug": "salle-de-bain",
+    "term": "salle de bain",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "salle de bain est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « salle de bain » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier salle de bain sur un plan",
+      "Décrire salle de bain dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 82
+  },
+  {
+    "id": "int-salle-a-manger",
+    "slug": "salle-a-manger",
+    "term": "salle à manger",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "salle à manger est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « salle à manger » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier salle à manger sur un plan",
+      "Décrire salle à manger dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 83
+  },
+  {
+    "id": "int-salon",
+    "slug": "salon",
+    "term": "salon",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "salon est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « salon » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier salon sur un plan",
+      "Décrire salon dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 84
+  },
+  {
+    "id": "int-serrure",
+    "slug": "serrure",
+    "term": "serrure",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "serrure est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « serrure » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier serrure sur un plan",
+      "Décrire serrure dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 85
+  },
+  {
+    "id": "int-seuil-de-porte",
+    "slug": "seuil-de-porte",
+    "term": "seuil de porte",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "seuil de porte est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « seuil de porte » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier seuil de porte sur un plan",
+      "Décrire seuil de porte dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 86
+  },
+  {
+    "id": "int-specification",
+    "slug": "specification",
+    "term": "spécification",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "spécification est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « spécification » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier spécification sur un plan",
+      "Décrire spécification dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 87
+  },
+  {
+    "id": "int-suspension",
+    "slug": "suspension",
+    "term": "suspension",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "suspension est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « suspension » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier suspension sur un plan",
+      "Décrire suspension dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 88
+  },
+  {
+    "id": "int-tableau-des-finis",
+    "slug": "tableau-des-finis",
+    "term": "tableau des finis",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "tableau des finis est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « tableau des finis » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier tableau des finis sur un plan",
+      "Décrire tableau des finis dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 89
+  },
+  {
+    "id": "int-tableau-des-portes",
+    "slug": "tableau-des-portes",
+    "term": "tableau des portes",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "tableau des portes est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « tableau des portes » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier tableau des portes sur un plan",
+      "Décrire tableau des portes dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 90
+  },
+  {
+    "id": "int-thermopompe",
+    "slug": "thermopompe",
+    "term": "thermopompe",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "thermopompe est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « thermopompe » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier thermopompe sur un plan",
+      "Décrire thermopompe dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 91
+  },
+  {
+    "id": "int-thermostat",
+    "slug": "thermostat",
+    "term": "thermostat",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "thermostat est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « thermostat » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier thermostat sur un plan",
+      "Décrire thermostat dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 92
+  },
+  {
+    "id": "int-tiroir",
+    "slug": "tiroir",
+    "term": "tiroir",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "tiroir est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « tiroir » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier tiroir sur un plan",
+      "Décrire tiroir dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 93
+  },
+  {
+    "id": "int-toilette",
+    "slug": "toilette",
+    "term": "toilette",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "toilette est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « toilette » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier toilette sur un plan",
+      "Décrire toilette dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 94
+  },
+  {
+    "id": "int-triangle-de-travail",
+    "slug": "triangle-de-travail",
+    "term": "triangle de travail",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "triangle de travail est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « triangle de travail » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier triangle de travail sur un plan",
+      "Décrire triangle de travail dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 95
+  },
+  {
+    "id": "int-ventilation",
+    "slug": "ventilation",
+    "term": "ventilation",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "ventilation est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « ventilation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier ventilation sur un plan",
+      "Décrire ventilation dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 96
+  },
+  {
+    "id": "int-walk-in",
+    "slug": "walk-in",
+    "term": "walk-in",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "walk-in est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « walk-in » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier walk-in sur un plan",
+      "Décrire walk-in dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 97
+  },
+  {
+    "id": "int-echantillon",
+    "slug": "echantillon",
+    "term": "échantillon",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "échantillon est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « échantillon » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier échantillon sur un plan",
+      "Décrire échantillon dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 98
+  },
+  {
+    "id": "int-eclairage-encastre",
+    "slug": "eclairage-encastre",
+    "term": "éclairage encastré",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "éclairage encastré est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « éclairage encastré » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier éclairage encastré sur un plan",
+      "Décrire éclairage encastré dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 99
+  },
+  {
+    "id": "int-etagere",
+    "slug": "etagere",
+    "term": "étagère",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "étagère est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « étagère » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier étagère sur un plan",
+      "Décrire étagère dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 100
+  },
+  {
+    "id": "int-event",
+    "slug": "event",
+    "term": "évent",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "évent est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « évent » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier évent sur un plan",
+      "Décrire évent dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 101
+  },
+  {
+    "id": "int-evier",
+    "slug": "evier",
+    "term": "évier",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "évier est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « évier » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier évier sur un plan",
+      "Décrire évier dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 102
+  },
+  {
+    "id": "int-ilot-de-cuisine",
+    "slug": "ilot-de-cuisine",
+    "term": "îlot de cuisine",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture intérieure",
+    "subdomain": "espaces et équipements",
+    "shortDefinition": "îlot de cuisine est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « îlot de cuisine » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Identifier îlot de cuisine sur un plan",
+      "Décrire îlot de cuisine dans une fiche de projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "intérieur",
+      "équipement",
+      "détail",
+      "usage"
+    ],
+    "tags": [
+      "intérieur",
+      "équipement"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 103
+  }
+]

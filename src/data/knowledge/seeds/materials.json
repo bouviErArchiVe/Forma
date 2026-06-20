@@ -1,0 +1,3480 @@
+[
+  {
+    "id": "mat-acier",
+    "slug": "acier",
+    "term": "acier",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "acier est un matériau ou produit de construction associé à les structures, assemblages et armatures.",
+    "longDefinition": "acier est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir acier pour les structures, assemblages et armatures",
+      "Comparer acier à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 1
+  },
+  {
+    "id": "mat-acier-corten",
+    "slug": "acier-corten",
+    "term": "acier corten",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "acier corten est un matériau ou produit de construction associé à les façades oxydées contrôlées.",
+    "longDefinition": "acier corten est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir acier corten pour les façades oxydées contrôlées",
+      "Comparer acier corten à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 2
+  },
+  {
+    "id": "mat-acier-galvanise",
+    "slug": "acier-galvanise",
+    "term": "acier galvanisé",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "acier galvanisé est un matériau ou produit de construction associé à la protection contre la corrosion.",
+    "longDefinition": "acier galvanisé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir acier galvanisé pour la protection contre la corrosion",
+      "Comparer acier galvanisé à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 3
+  },
+  {
+    "id": "mat-acier-inoxydable",
+    "slug": "acier-inoxydable",
+    "term": "acier inoxydable",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "acier inoxydable est un matériau ou produit de construction associé à les usages exposés ou durables.",
+    "longDefinition": "acier inoxydable est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir acier inoxydable pour les usages exposés ou durables",
+      "Comparer acier inoxydable à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 4
+  },
+  {
+    "id": "mat-acrylique",
+    "slug": "acrylique",
+    "term": "acrylique",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "acrylique est un matériau ou produit de construction associé à les panneaux transparents ou signalétiques.",
+    "longDefinition": "acrylique est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir acrylique pour les panneaux transparents ou signalétiques",
+      "Comparer acrylique à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 5
+  },
+  {
+    "id": "mat-adhesif-de-construction",
+    "slug": "adhesif-de-construction",
+    "term": "adhésif de construction",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "adhésif de construction est un matériau ou produit de construction associé à les collages sur chantier.",
+    "longDefinition": "adhésif de construction est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir adhésif de construction pour les collages sur chantier",
+      "Comparer adhésif de construction à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 6
+  },
+  {
+    "id": "mat-adobe",
+    "slug": "adobe",
+    "term": "adobe",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "adobe est un matériau ou produit de construction associé à les briques de terre crue.",
+    "longDefinition": "adobe est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir adobe pour les briques de terre crue",
+      "Comparer adobe à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 7
+  },
+  {
+    "id": "mat-aluminium",
+    "slug": "aluminium",
+    "term": "aluminium",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "aluminium est un matériau ou produit de construction associé à les menuiseries et systèmes légers.",
+    "longDefinition": "aluminium est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir aluminium pour les menuiseries et systèmes légers",
+      "Comparer aluminium à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 8
+  },
+  {
+    "id": "mat-ardoise",
+    "slug": "ardoise",
+    "term": "ardoise",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "ardoise est un matériau ou produit de construction associé à les couvertures et parements.",
+    "longDefinition": "ardoise est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir ardoise pour les couvertures et parements",
+      "Comparer ardoise à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 9
+  },
+  {
+    "id": "mat-armature",
+    "slug": "armature",
+    "term": "armature",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "armature est un matériau ou produit de construction associé à le renforcement du béton.",
+    "longDefinition": "armature est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir armature pour le renforcement du béton",
+      "Comparer armature à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 10
+  },
+  {
+    "id": "mat-asphalte",
+    "slug": "asphalte",
+    "term": "asphalte",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "asphalte est un matériau ou produit de construction associé à les revêtements et toitures.",
+    "longDefinition": "asphalte est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir asphalte pour les revêtements et toitures",
+      "Comparer asphalte à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 11
+  },
+  {
+    "id": "mat-bambou",
+    "slug": "bambou",
+    "term": "bambou",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "bambou est un matériau ou produit de construction associé à les revêtements et panneaux.",
+    "longDefinition": "bambou est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir bambou pour les revêtements et panneaux",
+      "Comparer bambou à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 12
+  },
+  {
+    "id": "mat-bardeau-d-asphalte",
+    "slug": "bardeau-d-asphalte",
+    "term": "bardeau d'asphalte",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "bardeau d'asphalte est un matériau ou produit de construction associé à les toitures résidentielles.",
+    "longDefinition": "bardeau d'asphalte est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir bardeau d'asphalte pour les toitures résidentielles",
+      "Comparer bardeau d'asphalte à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 13
+  },
+  {
+    "id": "mat-barre-d-armature",
+    "slug": "barre-d-armature",
+    "term": "barre d'armature",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "barre d'armature est un matériau ou produit de construction associé à le ferraillage.",
+    "longDefinition": "barre d'armature est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir barre d'armature pour le ferraillage",
+      "Comparer barre d'armature à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 14
+  },
+  {
+    "id": "mat-bloc-de-beton",
+    "slug": "bloc-de-beton",
+    "term": "bloc de béton",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "bloc de béton est un matériau ou produit de construction associé à les maçonneries courantes.",
+    "longDefinition": "bloc de béton est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir bloc de béton pour les maçonneries courantes",
+      "Comparer bloc de béton à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 15
+  },
+  {
+    "id": "mat-bois-lamelle-colle",
+    "slug": "bois-lamelle-colle",
+    "term": "bois lamellé-collé",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "bois lamellé-collé est un matériau ou produit de construction associé à les grandes portées et structures apparentes.",
+    "longDefinition": "bois lamellé-collé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir bois lamellé-collé pour les grandes portées et structures apparentes",
+      "Comparer bois lamellé-collé à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 16
+  },
+  {
+    "id": "mat-bois-lamelle-croise-clt",
+    "slug": "bois-lamelle-croise-clt",
+    "term": "bois lamellé-croisé CLT",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "bois lamellé-croisé CLT est un matériau ou produit de construction associé à les panneaux structuraux massifs.",
+    "longDefinition": "bois lamellé-croisé CLT est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir bois lamellé-croisé CLT pour les panneaux structuraux massifs",
+      "Comparer bois lamellé-croisé CLT à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 17
+  },
+  {
+    "id": "mat-bois-massif",
+    "slug": "bois-massif",
+    "term": "bois massif",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "bois massif est un matériau ou produit de construction associé à les éléments de charpente ou de finition.",
+    "longDefinition": "bois massif est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir bois massif pour les éléments de charpente ou de finition",
+      "Comparer bois massif à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 18
+  },
+  {
+    "id": "mat-brique",
+    "slug": "brique",
+    "term": "brique",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "brique est un matériau ou produit de construction associé à les murs, parements et maçonneries.",
+    "longDefinition": "brique est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir brique pour les murs, parements et maçonneries",
+      "Comparer brique à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 19
+  },
+  {
+    "id": "mat-beton",
+    "slug": "beton",
+    "term": "béton",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "béton est un matériau ou produit de construction associé à les éléments coulés, préfabriqués ou structurels.",
+    "longDefinition": "béton est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir béton pour les éléments coulés, préfabriqués ou structurels",
+      "Comparer béton à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 20
+  },
+  {
+    "id": "mat-beton-apparent",
+    "slug": "beton-apparent",
+    "term": "béton apparent",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "béton apparent est un matériau ou produit de construction associé à la finition architecturale visible.",
+    "longDefinition": "béton apparent est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir béton apparent pour la finition architecturale visible",
+      "Comparer béton apparent à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 21
+  },
+  {
+    "id": "mat-beton-arme",
+    "slug": "beton-arme",
+    "term": "béton armé",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "béton armé est un matériau ou produit de construction associé à les dalles, poutres, poteaux et voiles.",
+    "longDefinition": "béton armé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir béton armé pour les dalles, poutres, poteaux et voiles",
+      "Comparer béton armé à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 22
+  },
+  {
+    "id": "mat-beton-leger",
+    "slug": "beton-leger",
+    "term": "béton léger",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "béton léger est un matériau ou produit de construction associé à les ouvrages nécessitant une masse réduite.",
+    "longDefinition": "béton léger est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir béton léger pour les ouvrages nécessitant une masse réduite",
+      "Comparer béton léger à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 23
+  },
+  {
+    "id": "mat-beton-prefabrique",
+    "slug": "beton-prefabrique",
+    "term": "béton préfabriqué",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "béton préfabriqué est un matériau ou produit de construction associé à les éléments fabriqués hors site.",
+    "longDefinition": "béton préfabriqué est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir béton préfabriqué pour les éléments fabriqués hors site",
+      "Comparer béton préfabriqué à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 24
+  },
+  {
+    "id": "mat-caillebotis",
+    "slug": "caillebotis",
+    "term": "caillebotis",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "caillebotis est un matériau ou produit de construction associé à les planchers techniques.",
+    "longDefinition": "caillebotis est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir caillebotis pour les planchers techniques",
+      "Comparer caillebotis à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 25
+  },
+  {
+    "id": "mat-caoutchouc",
+    "slug": "caoutchouc",
+    "term": "caoutchouc",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "caoutchouc est un matériau ou produit de construction associé à les sols techniques.",
+    "longDefinition": "caoutchouc est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir caoutchouc pour les sols techniques",
+      "Comparer caoutchouc à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 26
+  },
+  {
+    "id": "mat-cellulose",
+    "slug": "cellulose",
+    "term": "cellulose",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "cellulose est un matériau ou produit de construction associé à l'isolation biosourcée.",
+    "longDefinition": "cellulose est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir cellulose pour l'isolation biosourcée",
+      "Comparer cellulose à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 27
+  },
+  {
+    "id": "mat-chanvre",
+    "slug": "chanvre",
+    "term": "chanvre",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "chanvre est un matériau ou produit de construction associé à les matériaux biosourcés.",
+    "longDefinition": "chanvre est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir chanvre pour les matériaux biosourcés",
+      "Comparer chanvre à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 28
+  },
+  {
+    "id": "mat-chaume",
+    "slug": "chaume",
+    "term": "chaume",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "chaume est un matériau ou produit de construction associé à les couvertures végétales.",
+    "longDefinition": "chaume est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir chaume pour les couvertures végétales",
+      "Comparer chaume à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 29
+  },
+  {
+    "id": "mat-composite-bois-plastique",
+    "slug": "composite-bois-plastique",
+    "term": "composite bois-plastique",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "composite bois-plastique est un matériau ou produit de construction associé à les terrasses et parements.",
+    "longDefinition": "composite bois-plastique est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir composite bois-plastique pour les terrasses et parements",
+      "Comparer composite bois-plastique à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 30
+  },
+  {
+    "id": "mat-contreplaque",
+    "slug": "contreplaque",
+    "term": "contreplaqué",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "contreplaqué est un matériau ou produit de construction associé à les panneaux structuraux ou de finition.",
+    "longDefinition": "contreplaqué est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir contreplaqué pour les panneaux structuraux ou de finition",
+      "Comparer contreplaqué à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 31
+  },
+  {
+    "id": "mat-coulis",
+    "slug": "coulis",
+    "term": "coulis",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "coulis est un matériau ou produit de construction associé à le remplissage fin et l'injection.",
+    "longDefinition": "coulis est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir coulis pour le remplissage fin et l'injection",
+      "Comparer coulis à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 32
+  },
+  {
+    "id": "mat-crepi",
+    "slug": "crepi",
+    "term": "crépi",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "crépi est un matériau ou produit de construction associé à les parements extérieurs.",
+    "longDefinition": "crépi est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir crépi pour les parements extérieurs",
+      "Comparer crépi à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 33
+  },
+  {
+    "id": "mat-cuivre",
+    "slug": "cuivre",
+    "term": "cuivre",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "cuivre est un matériau ou produit de construction associé à les couvertures, évacuations et détails.",
+    "longDefinition": "cuivre est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir cuivre pour les couvertures, évacuations et détails",
+      "Comparer cuivre à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 34
+  },
+  {
+    "id": "mat-ceramique",
+    "slug": "ceramique",
+    "term": "céramique",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "céramique est un matériau ou produit de construction associé à les sols et murs humides.",
+    "longDefinition": "céramique est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir céramique pour les sols et murs humides",
+      "Comparer céramique à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 35
+  },
+  {
+    "id": "mat-enduit",
+    "slug": "enduit",
+    "term": "enduit",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "enduit est un matériau ou produit de construction associé à les finitions murales.",
+    "longDefinition": "enduit est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir enduit pour les finitions murales",
+      "Comparer enduit à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 36
+  },
+  {
+    "id": "mat-epdm",
+    "slug": "epdm",
+    "term": "EPDM",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "EPDM est un matériau ou produit de construction associé à les membranes de toiture.",
+    "longDefinition": "EPDM est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir EPDM pour les membranes de toiture",
+      "Comparer EPDM à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 37
+  },
+  {
+    "id": "mat-fibre-de-carbone",
+    "slug": "fibre-de-carbone",
+    "term": "fibre de carbone",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "fibre de carbone est un matériau ou produit de construction associé à les renforcements spécialisés.",
+    "longDefinition": "fibre de carbone est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir fibre de carbone pour les renforcements spécialisés",
+      "Comparer fibre de carbone à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 38
+  },
+  {
+    "id": "mat-fibre-de-verre",
+    "slug": "fibre-de-verre",
+    "term": "fibre de verre",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "fibre de verre est un matériau ou produit de construction associé à les renforts et isolants.",
+    "longDefinition": "fibre de verre est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir fibre de verre pour les renforts et isolants",
+      "Comparer fibre de verre à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 39
+  },
+  {
+    "id": "mat-fibrociment",
+    "slug": "fibrociment",
+    "term": "fibrociment",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "fibrociment est un matériau ou produit de construction associé à les panneaux et bardages.",
+    "longDefinition": "fibrociment est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir fibrociment pour les panneaux et bardages",
+      "Comparer fibrociment à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 40
+  },
+  {
+    "id": "mat-granit",
+    "slug": "granit",
+    "term": "granit",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "granit est un matériau ou produit de construction associé à les surfaces et parements.",
+    "longDefinition": "granit est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir granit pour les surfaces et parements",
+      "Comparer granit à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 41
+  },
+  {
+    "id": "mat-granulat",
+    "slug": "granulat",
+    "term": "granulat",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "granulat est un matériau ou produit de construction associé à la composition du béton.",
+    "longDefinition": "granulat est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir granulat pour la composition du béton",
+      "Comparer granulat à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 42
+  },
+  {
+    "id": "mat-gravier",
+    "slug": "gravier",
+    "term": "gravier",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "gravier est un matériau ou produit de construction associé à les fondations et bétons.",
+    "longDefinition": "gravier est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir gravier pour les fondations et bétons",
+      "Comparer gravier à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 43
+  },
+  {
+    "id": "mat-gypse",
+    "slug": "gypse",
+    "term": "gypse",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "gypse est un matériau ou produit de construction associé à les cloisons et plafonds intérieurs.",
+    "longDefinition": "gypse est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir gypse pour les cloisons et plafonds intérieurs",
+      "Comparer gypse à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 44
+  },
+  {
+    "id": "mat-geotextile",
+    "slug": "geotextile",
+    "term": "géotextile",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "géotextile est un matériau ou produit de construction associé à la séparation et filtration des sols.",
+    "longDefinition": "géotextile est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir géotextile pour la séparation et filtration des sols",
+      "Comparer géotextile à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 45
+  },
+  {
+    "id": "mat-laine-de-roche",
+    "slug": "laine-de-roche",
+    "term": "laine de roche",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "laine de roche est un matériau ou produit de construction associé à l'isolation coupe-feu et acoustique.",
+    "longDefinition": "laine de roche est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir laine de roche pour l'isolation coupe-feu et acoustique",
+      "Comparer laine de roche à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 46
+  },
+  {
+    "id": "mat-laine-de-verre",
+    "slug": "laine-de-verre",
+    "term": "laine de verre",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "laine de verre est un matériau ou produit de construction associé à l'isolation courante.",
+    "longDefinition": "laine de verre est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir laine de verre pour l'isolation courante",
+      "Comparer laine de verre à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 47
+  },
+  {
+    "id": "mat-laine-minerale",
+    "slug": "laine-minerale",
+    "term": "laine minérale",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "laine minérale est un matériau ou produit de construction associé à l'isolation thermique et acoustique.",
+    "longDefinition": "laine minérale est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir laine minérale pour l'isolation thermique et acoustique",
+      "Comparer laine minérale à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 48
+  },
+  {
+    "id": "mat-linoleum",
+    "slug": "linoleum",
+    "term": "linoléum",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "linoléum est un matériau ou produit de construction associé à les revêtements de sol.",
+    "longDefinition": "linoléum est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir linoléum pour les revêtements de sol",
+      "Comparer linoléum à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 49
+  },
+  {
+    "id": "mat-liege",
+    "slug": "liege",
+    "term": "liège",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "liège est un matériau ou produit de construction associé à l'isolation et les finitions.",
+    "longDefinition": "liège est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir liège pour l'isolation et les finitions",
+      "Comparer liège à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 50
+  },
+  {
+    "id": "mat-marbre",
+    "slug": "marbre",
+    "term": "marbre",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "marbre est un matériau ou produit de construction associé à les finitions nobles.",
+    "longDefinition": "marbre est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir marbre pour les finitions nobles",
+      "Comparer marbre à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 51
+  },
+  {
+    "id": "mat-mdf",
+    "slug": "mdf",
+    "term": "MDF",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "MDF est un matériau ou produit de construction associé à les aménagements intérieurs.",
+    "longDefinition": "MDF est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir MDF pour les aménagements intérieurs",
+      "Comparer MDF à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 52
+  },
+  {
+    "id": "mat-membrane-bitumineuse",
+    "slug": "membrane-bitumineuse",
+    "term": "membrane bitumineuse",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "membrane bitumineuse est un matériau ou produit de construction associé à l'étanchéité des toitures.",
+    "longDefinition": "membrane bitumineuse est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir membrane bitumineuse pour l'étanchéité des toitures",
+      "Comparer membrane bitumineuse à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 53
+  },
+  {
+    "id": "mat-membrane-liquide",
+    "slug": "membrane-liquide",
+    "term": "membrane liquide",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "membrane liquide est un matériau ou produit de construction associé à l'étanchéité appliquée sur surface.",
+    "longDefinition": "membrane liquide est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir membrane liquide pour l'étanchéité appliquée sur surface",
+      "Comparer membrane liquide à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 54
+  },
+  {
+    "id": "mat-moquette",
+    "slug": "moquette",
+    "term": "moquette",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "moquette est un matériau ou produit de construction associé à les sols souples.",
+    "longDefinition": "moquette est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir moquette pour les sols souples",
+      "Comparer moquette à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 55
+  },
+  {
+    "id": "mat-mortier",
+    "slug": "mortier",
+    "term": "mortier",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "mortier est un matériau ou produit de construction associé à la liaison et le jointoiement.",
+    "longDefinition": "mortier est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir mortier pour la liaison et le jointoiement",
+      "Comparer mortier à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 56
+  },
+  {
+    "id": "mat-mousse-acoustique",
+    "slug": "mousse-acoustique",
+    "term": "mousse acoustique",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "mousse acoustique est un matériau ou produit de construction associé à le traitement sonore intérieur.",
+    "longDefinition": "mousse acoustique est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir mousse acoustique pour le traitement sonore intérieur",
+      "Comparer mousse acoustique à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 57
+  },
+  {
+    "id": "mat-osb",
+    "slug": "osb",
+    "term": "OSB",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "OSB est un matériau ou produit de construction associé à les panneaux de contreventement ou support.",
+    "longDefinition": "OSB est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir OSB pour les panneaux de contreventement ou support",
+      "Comparer OSB à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 58
+  },
+  {
+    "id": "mat-paille",
+    "slug": "paille",
+    "term": "paille",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "paille est un matériau ou produit de construction associé à l'isolation et la construction biosourcée.",
+    "longDefinition": "paille est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir paille pour l'isolation et la construction biosourcée",
+      "Comparer paille à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 59
+  },
+  {
+    "id": "mat-panneau-acoustique",
+    "slug": "panneau-acoustique",
+    "term": "panneau acoustique",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "panneau acoustique est un matériau ou produit de construction associé à la correction acoustique.",
+    "longDefinition": "panneau acoustique est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir panneau acoustique pour la correction acoustique",
+      "Comparer panneau acoustique à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 60
+  },
+  {
+    "id": "mat-panneau-hpl",
+    "slug": "panneau-hpl",
+    "term": "panneau HPL",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "panneau HPL est un matériau ou produit de construction associé à les façades et surfaces compactes.",
+    "longDefinition": "panneau HPL est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir panneau HPL pour les façades et surfaces compactes",
+      "Comparer panneau HPL à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 61
+  },
+  {
+    "id": "mat-parement",
+    "slug": "parement",
+    "term": "parement",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "parement est un matériau ou produit de construction associé à la couche visible d'un système.",
+    "longDefinition": "parement est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir parement pour la couche visible d'un système",
+      "Comparer parement à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 62
+  },
+  {
+    "id": "mat-peinture",
+    "slug": "peinture",
+    "term": "peinture",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "peinture est un matériau ou produit de construction associé à les finitions protectrices et visuelles.",
+    "longDefinition": "peinture est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir peinture pour les finitions protectrices et visuelles",
+      "Comparer peinture à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 63
+  },
+  {
+    "id": "mat-pierre-naturelle",
+    "slug": "pierre-naturelle",
+    "term": "pierre naturelle",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "pierre naturelle est un matériau ou produit de construction associé à les parements, sols et détails durables.",
+    "longDefinition": "pierre naturelle est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir pierre naturelle pour les parements, sols et détails durables",
+      "Comparer pierre naturelle à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 64
+  },
+  {
+    "id": "mat-pise",
+    "slug": "pise",
+    "term": "pisé",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "pisé est un matériau ou produit de construction associé à les murs en terre compactée.",
+    "longDefinition": "pisé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir pisé pour les murs en terre compactée",
+      "Comparer pisé à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 65
+  },
+  {
+    "id": "mat-plancher-d-ingenierie",
+    "slug": "plancher-d-ingenierie",
+    "term": "plancher d'ingénierie",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "plancher d'ingénierie est un matériau ou produit de construction associé à les sols en bois multicouches.",
+    "longDefinition": "plancher d'ingénierie est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir plancher d'ingénierie pour les sols en bois multicouches",
+      "Comparer plancher d'ingénierie à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 66
+  },
+  {
+    "id": "mat-plaque-de-platre",
+    "slug": "plaque-de-platre",
+    "term": "plaque de plâtre",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "plaque de plâtre est un matériau ou produit de construction associé à les systèmes de cloisons sèches.",
+    "longDefinition": "plaque de plâtre est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir plaque de plâtre pour les systèmes de cloisons sèches",
+      "Comparer plaque de plâtre à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 67
+  },
+  {
+    "id": "mat-polycarbonate",
+    "slug": "polycarbonate",
+    "term": "polycarbonate",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "polycarbonate est un matériau ou produit de construction associé à les parois légères translucides.",
+    "longDefinition": "polycarbonate est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir polycarbonate pour les parois légères translucides",
+      "Comparer polycarbonate à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 68
+  },
+  {
+    "id": "mat-polystyrene-expanse",
+    "slug": "polystyrene-expanse",
+    "term": "polystyrène expansé",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "polystyrène expansé est un matériau ou produit de construction associé à l'isolation rigide légère.",
+    "longDefinition": "polystyrène expansé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir polystyrène expansé pour l'isolation rigide légère",
+      "Comparer polystyrène expansé à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 69
+  },
+  {
+    "id": "mat-polystyrene-extrude",
+    "slug": "polystyrene-extrude",
+    "term": "polystyrène extrudé",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "polystyrène extrudé est un matériau ou produit de construction associé à l'isolation rigide résistante à l'humidité.",
+    "longDefinition": "polystyrène extrudé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir polystyrène extrudé pour l'isolation rigide résistante à l'humidité",
+      "Comparer polystyrène extrudé à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 70
+  },
+  {
+    "id": "mat-polyurethane-gicle",
+    "slug": "polyurethane-gicle",
+    "term": "polyuréthane giclé",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "polyuréthane giclé est un matériau ou produit de construction associé à l'isolation projetée.",
+    "longDefinition": "polyuréthane giclé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir polyuréthane giclé pour l'isolation projetée",
+      "Comparer polyuréthane giclé à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 71
+  },
+  {
+    "id": "mat-porcelaine",
+    "slug": "porcelaine",
+    "term": "porcelaine",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "porcelaine est un matériau ou produit de construction associé à les surfaces résistantes.",
+    "longDefinition": "porcelaine est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir porcelaine pour les surfaces résistantes",
+      "Comparer porcelaine à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 72
+  },
+  {
+    "id": "mat-pvc",
+    "slug": "pvc",
+    "term": "PVC",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "PVC est un matériau ou produit de construction associé à les menuiseries et réseaux.",
+    "longDefinition": "PVC est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir PVC pour les menuiseries et réseaux",
+      "Comparer PVC à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 73
+  },
+  {
+    "id": "mat-quartz",
+    "slug": "quartz",
+    "term": "quartz",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "quartz est un matériau ou produit de construction associé à les comptoirs.",
+    "longDefinition": "quartz est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir quartz pour les comptoirs",
+      "Comparer quartz à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 74
+  },
+  {
+    "id": "mat-resine-epoxy",
+    "slug": "resine-epoxy",
+    "term": "résine époxy",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "résine époxy est un matériau ou produit de construction associé à les réparations et revêtements techniques.",
+    "longDefinition": "résine époxy est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir résine époxy pour les réparations et revêtements techniques",
+      "Comparer résine époxy à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 75
+  },
+  {
+    "id": "mat-sable",
+    "slug": "sable",
+    "term": "sable",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "sable est un matériau ou produit de construction associé à les mortiers et remblais.",
+    "longDefinition": "sable est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir sable pour les mortiers et remblais",
+      "Comparer sable à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 76
+  },
+  {
+    "id": "mat-scellant",
+    "slug": "scellant",
+    "term": "scellant",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "scellant est un matériau ou produit de construction associé à l'étanchéité des joints.",
+    "longDefinition": "scellant est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir scellant pour l'étanchéité des joints",
+      "Comparer scellant à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 77
+  },
+  {
+    "id": "mat-silicone",
+    "slug": "silicone",
+    "term": "silicone",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "silicone est un matériau ou produit de construction associé à les joints souples.",
+    "longDefinition": "silicone est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir silicone pour les joints souples",
+      "Comparer silicone à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 78
+  },
+  {
+    "id": "mat-stratifie",
+    "slug": "stratifie",
+    "term": "stratifié",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "stratifié est un matériau ou produit de construction associé à les meubles et surfaces.",
+    "longDefinition": "stratifié est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir stratifié pour les meubles et surfaces",
+      "Comparer stratifié à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 79
+  },
+  {
+    "id": "mat-substrat",
+    "slug": "substrat",
+    "term": "substrat",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "substrat est un matériau ou produit de construction associé à le support ou couche de croissance.",
+    "longDefinition": "substrat est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir substrat pour le support ou couche de croissance",
+      "Comparer substrat à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 80
+  },
+  {
+    "id": "mat-terrazzo",
+    "slug": "terrazzo",
+    "term": "terrazzo",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "terrazzo est un matériau ou produit de construction associé à les sols décoratifs durables.",
+    "longDefinition": "terrazzo est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir terrazzo pour les sols décoratifs durables",
+      "Comparer terrazzo à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 81
+  },
+  {
+    "id": "mat-terre-crue",
+    "slug": "terre-crue",
+    "term": "terre crue",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "terre crue est un matériau ou produit de construction associé à les murs et enduits biosourcés.",
+    "longDefinition": "terre crue est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir terre crue pour les murs et enduits biosourcés",
+      "Comparer terre crue à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 82
+  },
+  {
+    "id": "mat-terre-cuite",
+    "slug": "terre-cuite",
+    "term": "terre cuite",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "terre cuite est un matériau ou produit de construction associé à les briques, tuiles et parements.",
+    "longDefinition": "terre cuite est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir terre cuite pour les briques, tuiles et parements",
+      "Comparer terre cuite à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 83
+  },
+  {
+    "id": "mat-tpo",
+    "slug": "tpo",
+    "term": "TPO",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "TPO est un matériau ou produit de construction associé à les membranes de toiture synthétiques.",
+    "longDefinition": "TPO est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir TPO pour les membranes de toiture synthétiques",
+      "Comparer TPO à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 84
+  },
+  {
+    "id": "mat-treillis-metallique",
+    "slug": "treillis-metallique",
+    "term": "treillis métallique",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "treillis métallique est un matériau ou produit de construction associé à l'armature ou la protection.",
+    "longDefinition": "treillis métallique est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir treillis métallique pour l'armature ou la protection",
+      "Comparer treillis métallique à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 85
+  },
+  {
+    "id": "mat-tuile",
+    "slug": "tuile",
+    "term": "tuile",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "tuile est un matériau ou produit de construction associé à les couvertures de toiture.",
+    "longDefinition": "tuile est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir tuile pour les couvertures de toiture",
+      "Comparer tuile à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 86
+  },
+  {
+    "id": "mat-tole-profilee",
+    "slug": "tole-profilee",
+    "term": "tôle profilée",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "tôle profilée est un matériau ou produit de construction associé à les bardages et couvertures métalliques.",
+    "longDefinition": "tôle profilée est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir tôle profilée pour les bardages et couvertures métalliques",
+      "Comparer tôle profilée à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 87
+  },
+  {
+    "id": "mat-vernis",
+    "slug": "vernis",
+    "term": "vernis",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "vernis est un matériau ou produit de construction associé à la protection des surfaces.",
+    "longDefinition": "vernis est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir vernis pour la protection des surfaces",
+      "Comparer vernis à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 88
+  },
+  {
+    "id": "mat-verre",
+    "slug": "verre",
+    "term": "verre",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "verre est un matériau ou produit de construction associé à les ouvertures, cloisons et façades.",
+    "longDefinition": "verre est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir verre pour les ouvertures, cloisons et façades",
+      "Comparer verre à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 89
+  },
+  {
+    "id": "mat-verre-feuillete",
+    "slug": "verre-feuillete",
+    "term": "verre feuilleté",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "verre feuilleté est un matériau ou produit de construction associé à les vitrages de protection.",
+    "longDefinition": "verre feuilleté est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir verre feuilleté pour les vitrages de protection",
+      "Comparer verre feuilleté à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 90
+  },
+  {
+    "id": "mat-verre-isolant",
+    "slug": "verre-isolant",
+    "term": "verre isolant",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "verre isolant est un matériau ou produit de construction associé à les fenêtres performantes.",
+    "longDefinition": "verre isolant est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir verre isolant pour les fenêtres performantes",
+      "Comparer verre isolant à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 91
+  },
+  {
+    "id": "mat-verre-trempe",
+    "slug": "verre-trempe",
+    "term": "verre trempé",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "verre trempé est un matériau ou produit de construction associé à les usages de sécurité.",
+    "longDefinition": "verre trempé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir verre trempé pour les usages de sécurité",
+      "Comparer verre trempé à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 92
+  },
+  {
+    "id": "mat-vinyle",
+    "slug": "vinyle",
+    "term": "vinyle",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "vinyle est un matériau ou produit de construction associé à les revêtements souples.",
+    "longDefinition": "vinyle est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir vinyle pour les revêtements souples",
+      "Comparer vinyle à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 93
+  },
+  {
+    "id": "mat-zinc",
+    "slug": "zinc",
+    "term": "zinc",
+    "language": "fr",
+    "type": "material",
+    "domain": "construction",
+    "subdomain": "matériaux",
+    "shortDefinition": "zinc est un matériau ou produit de construction associé à les toitures et bardages métalliques.",
+    "longDefinition": "zinc est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "examples": [
+      "Choisir zinc pour les toitures et bardages métalliques",
+      "Comparer zinc à un matériau alternatif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "matériau",
+      "mise en œuvre",
+      "durabilité",
+      "entretien"
+    ],
+    "tags": [
+      "matériaux",
+      "construction"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 94
+  }
+]

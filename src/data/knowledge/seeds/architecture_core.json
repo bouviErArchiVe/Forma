@@ -1,0 +1,3916 @@
+[
+  {
+    "id": "arc-accessibilite-universelle",
+    "slug": "accessibilite-universelle",
+    "term": "accessibilité universelle",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "accessibilité universelle est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « accessibilité universelle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser accessibilité universelle dans l'analyse d'un projet",
+      "Comparer deux options selon accessibilité universelle"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 1
+  },
+  {
+    "id": "arc-adaptabilite",
+    "slug": "adaptabilite",
+    "term": "adaptabilité",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "adaptabilité est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « adaptabilité » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser adaptabilité dans l'analyse d'un projet",
+      "Comparer deux options selon adaptabilité"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 2
+  },
+  {
+    "id": "arc-alignement",
+    "slug": "alignement",
+    "term": "alignement",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "alignement est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « alignement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser alignement dans l'analyse d'un projet",
+      "Comparer deux options selon alignement"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 3
+  },
+  {
+    "id": "arc-ambiance",
+    "slug": "ambiance",
+    "term": "ambiance",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "ambiance est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « ambiance » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser ambiance dans l'analyse d'un projet",
+      "Comparer deux options selon ambiance"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 4
+  },
+  {
+    "id": "arc-asymetrie",
+    "slug": "asymetrie",
+    "term": "asymétrie",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "asymétrie est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « asymétrie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser asymétrie dans l'analyse d'un projet",
+      "Comparer deux options selon asymétrie"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 5
+  },
+  {
+    "id": "arc-atrium",
+    "slug": "atrium",
+    "term": "atrium",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "atrium est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « atrium » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser atrium dans l'analyse d'un projet",
+      "Comparer deux options selon atrium"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 6
+  },
+  {
+    "id": "arc-attique",
+    "slug": "attique",
+    "term": "attique",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "attique est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « attique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser attique dans l'analyse d'un projet",
+      "Comparer deux options selon attique"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 7
+  },
+  {
+    "id": "arc-auvent",
+    "slug": "auvent",
+    "term": "auvent",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "auvent est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « auvent » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser auvent dans l'analyse d'un projet",
+      "Comparer deux options selon auvent"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 8
+  },
+  {
+    "id": "arc-axe",
+    "slug": "axe",
+    "term": "axe",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "axe est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « axe » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser axe dans l'analyse d'un projet",
+      "Comparer deux options selon axe"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 9
+  },
+  {
+    "id": "arc-balcon",
+    "slug": "balcon",
+    "term": "balcon",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "balcon est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « balcon » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser balcon dans l'analyse d'un projet",
+      "Comparer deux options selon balcon"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 10
+  },
+  {
+    "id": "arc-brise-soleil",
+    "slug": "brise-soleil",
+    "term": "brise-soleil",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "brise-soleil est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « brise-soleil » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser brise-soleil dans l'analyse d'un projet",
+      "Comparer deux options selon brise-soleil"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 11
+  },
+  {
+    "id": "arc-charte-graphique",
+    "slug": "charte-graphique",
+    "term": "charte graphique",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "charte graphique est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « charte graphique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser charte graphique dans l'analyse d'un projet",
+      "Comparer deux options selon charte graphique"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 12
+  },
+  {
+    "id": "arc-chemin-d-evacuation",
+    "slug": "chemin-d-evacuation",
+    "term": "chemin d'évacuation",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "chemin d'évacuation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « chemin d'évacuation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser chemin d'évacuation dans l'analyse d'un projet",
+      "Comparer deux options selon chemin d'évacuation"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 13
+  },
+  {
+    "id": "arc-circulation",
+    "slug": "circulation",
+    "term": "circulation",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "circulation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « circulation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser circulation dans l'analyse d'un projet",
+      "Comparer deux options selon circulation"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 14
+  },
+  {
+    "id": "arc-claustra",
+    "slug": "claustra",
+    "term": "claustra",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "claustra est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « claustra » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser claustra dans l'analyse d'un projet",
+      "Comparer deux options selon claustra"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 15
+  },
+  {
+    "id": "arc-compartimentage",
+    "slug": "compartimentage",
+    "term": "compartimentage",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "compartimentage est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « compartimentage » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser compartimentage dans l'analyse d'un projet",
+      "Comparer deux options selon compartimentage"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 16
+  },
+  {
+    "id": "arc-composition",
+    "slug": "composition",
+    "term": "composition",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "composition est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « composition » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser composition dans l'analyse d'un projet",
+      "Comparer deux options selon composition"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 17
+  },
+  {
+    "id": "arc-concept-architectural",
+    "slug": "concept-architectural",
+    "term": "concept architectural",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "concept architectural est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « concept architectural » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser concept architectural dans l'analyse d'un projet",
+      "Comparer deux options selon concept architectural"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 18
+  },
+  {
+    "id": "arc-contraste",
+    "slug": "contraste",
+    "term": "contraste",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "contraste est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « contraste » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser contraste dans l'analyse d'un projet",
+      "Comparer deux options selon contraste"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 19
+  },
+  {
+    "id": "arc-coupe",
+    "slug": "coupe",
+    "term": "coupe",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "coupe est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « coupe » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser coupe dans l'analyse d'un projet",
+      "Comparer deux options selon coupe"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 20
+  },
+  {
+    "id": "arc-couronnement",
+    "slug": "couronnement",
+    "term": "couronnement",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "couronnement est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « couronnement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser couronnement dans l'analyse d'un projet",
+      "Comparer deux options selon couronnement"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 21
+  },
+  {
+    "id": "arc-coursive",
+    "slug": "coursive",
+    "term": "coursive",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "coursive est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « coursive » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser coursive dans l'analyse d'un projet",
+      "Comparer deux options selon coursive"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 22
+  },
+  {
+    "id": "arc-densite",
+    "slug": "densite",
+    "term": "densité",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "densité est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « densité » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser densité dans l'analyse d'un projet",
+      "Comparer deux options selon densité"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 23
+  },
+  {
+    "id": "arc-diagramme",
+    "slug": "diagramme",
+    "term": "diagramme",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "diagramme est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « diagramme » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser diagramme dans l'analyse d'un projet",
+      "Comparer deux options selon diagramme"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 24
+  },
+  {
+    "id": "arc-dossier-d-execution",
+    "slug": "dossier-d-execution",
+    "term": "dossier d'exécution",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "dossier d'exécution est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « dossier d'exécution » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser dossier d'exécution dans l'analyse d'un projet",
+      "Comparer deux options selon dossier d'exécution"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 25
+  },
+  {
+    "id": "arc-dossier-de-presentation",
+    "slug": "dossier-de-presentation",
+    "term": "dossier de présentation",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "dossier de présentation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « dossier de présentation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser dossier de présentation dans l'analyse d'un projet",
+      "Comparer deux options selon dossier de présentation"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 26
+  },
+  {
+    "id": "arc-degagement",
+    "slug": "degagement",
+    "term": "dégagement",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "dégagement est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « dégagement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser dégagement dans l'analyse d'un projet",
+      "Comparer deux options selon dégagement"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 27
+  },
+  {
+    "id": "arc-emmarchement",
+    "slug": "emmarchement",
+    "term": "emmarchement",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "emmarchement est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « emmarchement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser emmarchement dans l'analyse d'un projet",
+      "Comparer deux options selon emmarchement"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 28
+  },
+  {
+    "id": "arc-ensoleillement",
+    "slug": "ensoleillement",
+    "term": "ensoleillement",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "ensoleillement est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « ensoleillement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser ensoleillement dans l'analyse d'un projet",
+      "Comparer deux options selon ensoleillement"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 29
+  },
+  {
+    "id": "arc-ergonomie",
+    "slug": "ergonomie",
+    "term": "ergonomie",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "ergonomie est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « ergonomie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser ergonomie dans l'analyse d'un projet",
+      "Comparer deux options selon ergonomie"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 30
+  },
+  {
+    "id": "arc-escalier",
+    "slug": "escalier",
+    "term": "escalier",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "escalier est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « escalier » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser escalier dans l'analyse d'un projet",
+      "Comparer deux options selon escalier"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 31
+  },
+  {
+    "id": "arc-espace-servant",
+    "slug": "espace-servant",
+    "term": "espace servant",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "espace servant est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « espace servant » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser espace servant dans l'analyse d'un projet",
+      "Comparer deux options selon espace servant"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 32
+  },
+  {
+    "id": "arc-espace-servi",
+    "slug": "espace-servi",
+    "term": "espace servi",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "espace servi est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « espace servi » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser espace servi dans l'analyse d'un projet",
+      "Comparer deux options selon espace servi"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 33
+  },
+  {
+    "id": "arc-facade",
+    "slug": "facade",
+    "term": "façade",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "façade est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « façade » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser façade dans l'analyse d'un projet",
+      "Comparer deux options selon façade"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 34
+  },
+  {
+    "id": "arc-facade-active",
+    "slug": "facade-active",
+    "term": "façade active",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "façade active est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « façade active » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser façade active dans l'analyse d'un projet",
+      "Comparer deux options selon façade active"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 35
+  },
+  {
+    "id": "arc-flexibilite",
+    "slug": "flexibilite",
+    "term": "flexibilité",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "flexibilité est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « flexibilité » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser flexibilité dans l'analyse d'un projet",
+      "Comparer deux options selon flexibilité"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 36
+  },
+  {
+    "id": "arc-gabarit",
+    "slug": "gabarit",
+    "term": "gabarit",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "gabarit est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « gabarit » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser gabarit dans l'analyse d'un projet",
+      "Comparer deux options selon gabarit"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 37
+  },
+  {
+    "id": "arc-garde-corps",
+    "slug": "garde-corps",
+    "term": "garde-corps",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "garde-corps est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « garde-corps » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser garde-corps dans l'analyse d'un projet",
+      "Comparer deux options selon garde-corps"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 38
+  },
+  {
+    "id": "arc-hall",
+    "slug": "hall",
+    "term": "hall",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "hall est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « hall » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser hall dans l'analyse d'un projet",
+      "Comparer deux options selon hall"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 39
+  },
+  {
+    "id": "arc-hierarchie-des-espaces",
+    "slug": "hierarchie-des-espaces",
+    "term": "hiérarchie des espaces",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "hiérarchie des espaces est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « hiérarchie des espaces » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser hiérarchie des espaces dans l'analyse d'un projet",
+      "Comparer deux options selon hiérarchie des espaces"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 40
+  },
+  {
+    "id": "arc-implantation",
+    "slug": "implantation",
+    "term": "implantation",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "implantation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « implantation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser implantation dans l'analyse d'un projet",
+      "Comparer deux options selon implantation"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 41
+  },
+  {
+    "id": "arc-interface",
+    "slug": "interface",
+    "term": "interface",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "interface est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « interface » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser interface dans l'analyse d'un projet",
+      "Comparer deux options selon interface"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 42
+  },
+  {
+    "id": "arc-issue",
+    "slug": "issue",
+    "term": "issue",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "issue est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « issue » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser issue dans l'analyse d'un projet",
+      "Comparer deux options selon issue"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 43
+  },
+  {
+    "id": "arc-lanterneau",
+    "slug": "lanterneau",
+    "term": "lanterneau",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "lanterneau est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « lanterneau » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser lanterneau dans l'analyse d'un projet",
+      "Comparer deux options selon lanterneau"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 44
+  },
+  {
+    "id": "arc-limite",
+    "slug": "limite",
+    "term": "limite",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "limite est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « limite » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser limite dans l'analyse d'un projet",
+      "Comparer deux options selon limite"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 45
+  },
+  {
+    "id": "arc-loggia",
+    "slug": "loggia",
+    "term": "loggia",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "loggia est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « loggia » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser loggia dans l'analyse d'un projet",
+      "Comparer deux options selon loggia"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 46
+  },
+  {
+    "id": "arc-lucarne",
+    "slug": "lucarne",
+    "term": "lucarne",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "lucarne est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « lucarne » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser lucarne dans l'analyse d'un projet",
+      "Comparer deux options selon lucarne"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 47
+  },
+  {
+    "id": "arc-lumiere-naturelle",
+    "slug": "lumiere-naturelle",
+    "term": "lumière naturelle",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "lumière naturelle est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « lumière naturelle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser lumière naturelle dans l'analyse d'un projet",
+      "Comparer deux options selon lumière naturelle"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 48
+  },
+  {
+    "id": "arc-main-courante",
+    "slug": "main-courante",
+    "term": "main courante",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "main courante est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « main courante » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser main courante dans l'analyse d'un projet",
+      "Comparer deux options selon main courante"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 49
+  },
+  {
+    "id": "arc-maquette",
+    "slug": "maquette",
+    "term": "maquette",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "maquette est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « maquette » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser maquette dans l'analyse d'un projet",
+      "Comparer deux options selon maquette"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 50
+  },
+  {
+    "id": "arc-marquise",
+    "slug": "marquise",
+    "term": "marquise",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "marquise est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « marquise » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser marquise dans l'analyse d'un projet",
+      "Comparer deux options selon marquise"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 51
+  },
+  {
+    "id": "arc-materialite",
+    "slug": "materialite",
+    "term": "matérialité",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "matérialité est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « matérialité » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser matérialité dans l'analyse d'un projet",
+      "Comparer deux options selon matérialité"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 52
+  },
+  {
+    "id": "arc-mezzanine",
+    "slug": "mezzanine",
+    "term": "mezzanine",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "mezzanine est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « mezzanine » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser mezzanine dans l'analyse d'un projet",
+      "Comparer deux options selon mezzanine"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 53
+  },
+  {
+    "id": "arc-mixite-fonctionnelle",
+    "slug": "mixite-fonctionnelle",
+    "term": "mixité fonctionnelle",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "mixité fonctionnelle est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « mixité fonctionnelle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser mixité fonctionnelle dans l'analyse d'un projet",
+      "Comparer deux options selon mixité fonctionnelle"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 54
+  },
+  {
+    "id": "arc-module",
+    "slug": "module",
+    "term": "module",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "module est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « module » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser module dans l'analyse d'un projet",
+      "Comparer deux options selon module"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 55
+  },
+  {
+    "id": "arc-moodboard",
+    "slug": "moodboard",
+    "term": "moodboard",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "moodboard est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « moodboard » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser moodboard dans l'analyse d'un projet",
+      "Comparer deux options selon moodboard"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 56
+  },
+  {
+    "id": "arc-mur-rideau",
+    "slug": "mur-rideau",
+    "term": "mur rideau",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "mur rideau est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « mur rideau » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser mur rideau dans l'analyse d'un projet",
+      "Comparer deux options selon mur rideau"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 57
+  },
+  {
+    "id": "arc-noyau-vertical",
+    "slug": "noyau-vertical",
+    "term": "noyau vertical",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "noyau vertical est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « noyau vertical » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser noyau vertical dans l'analyse d'un projet",
+      "Comparer deux options selon noyau vertical"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 58
+  },
+  {
+    "id": "arc-occupation",
+    "slug": "occupation",
+    "term": "occupation",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "occupation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « occupation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser occupation dans l'analyse d'un projet",
+      "Comparer deux options selon occupation"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 59
+  },
+  {
+    "id": "arc-ombrage",
+    "slug": "ombrage",
+    "term": "ombrage",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "ombrage est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « ombrage » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser ombrage dans l'analyse d'un projet",
+      "Comparer deux options selon ombrage"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 60
+  },
+  {
+    "id": "arc-opacite",
+    "slug": "opacite",
+    "term": "opacité",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "opacité est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « opacité » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser opacité dans l'analyse d'un projet",
+      "Comparer deux options selon opacité"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 61
+  },
+  {
+    "id": "arc-orientation-solaire",
+    "slug": "orientation-solaire",
+    "term": "orientation solaire",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "orientation solaire est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « orientation solaire » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser orientation solaire dans l'analyse d'un projet",
+      "Comparer deux options selon orientation solaire"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 62
+  },
+  {
+    "id": "arc-palier",
+    "slug": "palier",
+    "term": "palier",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "palier est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « palier » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser palier dans l'analyse d'un projet",
+      "Comparer deux options selon palier"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 63
+  },
+  {
+    "id": "arc-parti-architectural",
+    "slug": "parti-architectural",
+    "term": "parti architectural",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "parti architectural est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « parti architectural » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser parti architectural dans l'analyse d'un projet",
+      "Comparer deux options selon parti architectural"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 64
+  },
+  {
+    "id": "arc-passerelle",
+    "slug": "passerelle",
+    "term": "passerelle",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "passerelle est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « passerelle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser passerelle dans l'analyse d'un projet",
+      "Comparer deux options selon passerelle"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 65
+  },
+  {
+    "id": "arc-patio",
+    "slug": "patio",
+    "term": "patio",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "patio est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « patio » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser patio dans l'analyse d'un projet",
+      "Comparer deux options selon patio"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 66
+  },
+  {
+    "id": "arc-perspective",
+    "slug": "perspective",
+    "term": "perspective",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "perspective est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « perspective » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser perspective dans l'analyse d'un projet",
+      "Comparer deux options selon perspective"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 67
+  },
+  {
+    "id": "arc-plan",
+    "slug": "plan",
+    "term": "plan",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "plan est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plan » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser plan dans l'analyse d'un projet",
+      "Comparer deux options selon plan"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 68
+  },
+  {
+    "id": "arc-planche-concept",
+    "slug": "planche-concept",
+    "term": "planche concept",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "planche concept est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « planche concept » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser planche concept dans l'analyse d'un projet",
+      "Comparer deux options selon planche concept"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 69
+  },
+  {
+    "id": "arc-plein-et-vide",
+    "slug": "plein-et-vide",
+    "term": "plein et vide",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "plein et vide est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « plein et vide » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser plein et vide dans l'analyse d'un projet",
+      "Comparer deux options selon plein et vide"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 70
+  },
+  {
+    "id": "arc-porche",
+    "slug": "porche",
+    "term": "porche",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "porche est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « porche » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser porche dans l'analyse d'un projet",
+      "Comparer deux options selon porche"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 71
+  },
+  {
+    "id": "arc-porte-a-faux",
+    "slug": "porte-a-faux",
+    "term": "porte-à-faux",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "porte-à-faux est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « porte-à-faux » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser porte-à-faux dans l'analyse d'un projet",
+      "Comparer deux options selon porte-à-faux"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 72
+  },
+  {
+    "id": "arc-programme",
+    "slug": "programme",
+    "term": "programme",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "programme est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « programme » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser programme dans l'analyse d'un projet",
+      "Comparer deux options selon programme"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 73
+  },
+  {
+    "id": "arc-proportion",
+    "slug": "proportion",
+    "term": "proportion",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "proportion est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « proportion » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser proportion dans l'analyse d'un projet",
+      "Comparer deux options selon proportion"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 74
+  },
+  {
+    "id": "arc-rampe",
+    "slug": "rampe",
+    "term": "rampe",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "rampe est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « rampe » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser rampe dans l'analyse d'un projet",
+      "Comparer deux options selon rampe"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 75
+  },
+  {
+    "id": "arc-rendu",
+    "slug": "rendu",
+    "term": "rendu",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "rendu est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « rendu » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser rendu dans l'analyse d'un projet",
+      "Comparer deux options selon rendu"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 76
+  },
+  {
+    "id": "arc-retrait",
+    "slug": "retrait",
+    "term": "retrait",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "retrait est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « retrait » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser retrait dans l'analyse d'un projet",
+      "Comparer deux options selon retrait"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 77
+  },
+  {
+    "id": "arc-rez-de-chaussee-actif",
+    "slug": "rez-de-chaussee-actif",
+    "term": "rez-de-chaussée actif",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "rez-de-chaussée actif est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « rez-de-chaussée actif » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser rez-de-chaussée actif dans l'analyse d'un projet",
+      "Comparer deux options selon rez-de-chaussée actif"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 78
+  },
+  {
+    "id": "arc-rythme",
+    "slug": "rythme",
+    "term": "rythme",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "rythme est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « rythme » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser rythme dans l'analyse d'un projet",
+      "Comparer deux options selon rythme"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 79
+  },
+  {
+    "id": "arc-saillie",
+    "slug": "saillie",
+    "term": "saillie",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "saillie est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « saillie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser saillie dans l'analyse d'un projet",
+      "Comparer deux options selon saillie"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 80
+  },
+  {
+    "id": "arc-seuil",
+    "slug": "seuil",
+    "term": "seuil",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "seuil est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « seuil » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser seuil dans l'analyse d'un projet",
+      "Comparer deux options selon seuil"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 81
+  },
+  {
+    "id": "arc-skylight",
+    "slug": "skylight",
+    "term": "skylight",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "skylight est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « skylight » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser skylight dans l'analyse d'un projet",
+      "Comparer deux options selon skylight"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 82
+  },
+  {
+    "id": "arc-socle",
+    "slug": "socle",
+    "term": "socle",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "socle est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « socle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser socle dans l'analyse d'un projet",
+      "Comparer deux options selon socle"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 83
+  },
+  {
+    "id": "arc-sortie",
+    "slug": "sortie",
+    "term": "sortie",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "sortie est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « sortie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser sortie dans l'analyse d'un projet",
+      "Comparer deux options selon sortie"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 84
+  },
+  {
+    "id": "arc-symetrie",
+    "slug": "symetrie",
+    "term": "symétrie",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "symétrie est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « symétrie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser symétrie dans l'analyse d'un projet",
+      "Comparer deux options selon symétrie"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 85
+  },
+  {
+    "id": "arc-sequence-spatiale",
+    "slug": "sequence-spatiale",
+    "term": "séquence spatiale",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "séquence spatiale est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « séquence spatiale » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser séquence spatiale dans l'analyse d'un projet",
+      "Comparer deux options selon séquence spatiale"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 86
+  },
+  {
+    "id": "arc-terrasse",
+    "slug": "terrasse",
+    "term": "terrasse",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "terrasse est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « terrasse » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser terrasse dans l'analyse d'un projet",
+      "Comparer deux options selon terrasse"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 87
+  },
+  {
+    "id": "arc-texture",
+    "slug": "texture",
+    "term": "texture",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "texture est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « texture » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser texture dans l'analyse d'un projet",
+      "Comparer deux options selon texture"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 88
+  },
+  {
+    "id": "arc-toit-en-pente",
+    "slug": "toit-en-pente",
+    "term": "toit en pente",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "toit en pente est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « toit en pente » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser toit en pente dans l'analyse d'un projet",
+      "Comparer deux options selon toit en pente"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 89
+  },
+  {
+    "id": "arc-toit-plat",
+    "slug": "toit-plat",
+    "term": "toit plat",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "toit plat est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « toit plat » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser toit plat dans l'analyse d'un projet",
+      "Comparer deux options selon toit plat"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 90
+  },
+  {
+    "id": "arc-toiture",
+    "slug": "toiture",
+    "term": "toiture",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "toiture est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « toiture » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser toiture dans l'analyse d'un projet",
+      "Comparer deux options selon toiture"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 91
+  },
+  {
+    "id": "arc-trame",
+    "slug": "trame",
+    "term": "trame",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "trame est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « trame » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser trame dans l'analyse d'un projet",
+      "Comparer deux options selon trame"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 92
+  },
+  {
+    "id": "arc-transition",
+    "slug": "transition",
+    "term": "transition",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "transition est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « transition » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser transition dans l'analyse d'un projet",
+      "Comparer deux options selon transition"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 93
+  },
+  {
+    "id": "arc-transparence",
+    "slug": "transparence",
+    "term": "transparence",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "transparence est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « transparence » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser transparence dans l'analyse d'un projet",
+      "Comparer deux options selon transparence"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 94
+  },
+  {
+    "id": "arc-usage",
+    "slug": "usage",
+    "term": "usage",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "usage est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « usage » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser usage dans l'analyse d'un projet",
+      "Comparer deux options selon usage"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 95
+  },
+  {
+    "id": "arc-ventilation-naturelle",
+    "slug": "ventilation-naturelle",
+    "term": "ventilation naturelle",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "ventilation naturelle est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « ventilation naturelle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser ventilation naturelle dans l'analyse d'un projet",
+      "Comparer deux options selon ventilation naturelle"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 96
+  },
+  {
+    "id": "arc-vestibule",
+    "slug": "vestibule",
+    "term": "vestibule",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "vestibule est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « vestibule » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser vestibule dans l'analyse d'un projet",
+      "Comparer deux options selon vestibule"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 97
+  },
+  {
+    "id": "arc-vide-sur-sejour",
+    "slug": "vide-sur-sejour",
+    "term": "vide sur séjour",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "vide sur séjour est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « vide sur séjour » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser vide sur séjour dans l'analyse d'un projet",
+      "Comparer deux options selon vide sur séjour"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 98
+  },
+  {
+    "id": "arc-volumetrie",
+    "slug": "volumetrie",
+    "term": "volumétrie",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "volumétrie est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « volumétrie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser volumétrie dans l'analyse d'un projet",
+      "Comparer deux options selon volumétrie"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 99
+  },
+  {
+    "id": "arc-vue",
+    "slug": "vue",
+    "term": "vue",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "vue est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « vue » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser vue dans l'analyse d'un projet",
+      "Comparer deux options selon vue"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 100
+  },
+  {
+    "id": "arc-zoning",
+    "slug": "zoning",
+    "term": "zoning",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "zoning est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « zoning » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser zoning dans l'analyse d'un projet",
+      "Comparer deux options selon zoning"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 101
+  },
+  {
+    "id": "arc-echelle",
+    "slug": "echelle",
+    "term": "échelle",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "échelle est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « échelle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser échelle dans l'analyse d'un projet",
+      "Comparer deux options selon échelle"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 102
+  },
+  {
+    "id": "arc-elevation",
+    "slug": "elevation",
+    "term": "élévation",
+    "language": "fr",
+    "type": "concept",
+    "domain": "architecture",
+    "subdomain": "conception",
+    "shortDefinition": "élévation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
+    "longDefinition": "Dans Forma, l'entrée « élévation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "examples": [
+      "Utiliser élévation dans l'analyse d'un projet",
+      "Comparer deux options selon élévation"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "plan",
+      "coupe",
+      "façade",
+      "concept architectural",
+      "échelle"
+    ],
+    "tags": [
+      "architecture",
+      "conception"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 103
+  }
+]

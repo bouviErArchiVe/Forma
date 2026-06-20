@@ -1,0 +1,3665 @@
+[
+  {
+    "id": "sys-ancrage",
+    "slug": "ancrage",
+    "term": "ancrage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "ancrage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « ancrage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de ancrage",
+      "Choix de ancrage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 1
+  },
+  {
+    "id": "sys-assemblage",
+    "slug": "assemblage",
+    "term": "assemblage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "assemblage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « assemblage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de assemblage",
+      "Choix de assemblage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 2
+  },
+  {
+    "id": "sys-assemblage-a-sec",
+    "slug": "assemblage-a-sec",
+    "term": "assemblage à sec",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "assemblage à sec est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « assemblage à sec » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de assemblage à sec",
+      "Choix de assemblage à sec selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 3
+  },
+  {
+    "id": "sys-bardage",
+    "slug": "bardage",
+    "term": "bardage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "bardage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « bardage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de bardage",
+      "Choix de bardage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 4
+  },
+  {
+    "id": "sys-bloc-de-beton",
+    "slug": "bloc-de-beton",
+    "term": "bloc de béton",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "bloc de béton est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « bloc de béton » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de bloc de béton",
+      "Choix de bloc de béton selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 5
+  },
+  {
+    "id": "sys-boulon",
+    "slug": "boulon",
+    "term": "boulon",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "boulon est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « boulon » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de boulon",
+      "Choix de boulon selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 6
+  },
+  {
+    "id": "sys-brique-porteuse",
+    "slug": "brique-porteuse",
+    "term": "brique porteuse",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "brique porteuse est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « brique porteuse » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de brique porteuse",
+      "Choix de brique porteuse selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 7
+  },
+  {
+    "id": "sys-betonnage",
+    "slug": "betonnage",
+    "term": "bétonnage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "bétonnage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « bétonnage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de bétonnage",
+      "Choix de bétonnage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 8
+  },
+  {
+    "id": "sys-cavite-drainee",
+    "slug": "cavite-drainee",
+    "term": "cavité drainée",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "cavité drainée est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « cavité drainée » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de cavité drainée",
+      "Choix de cavité drainée selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 9
+  },
+  {
+    "id": "sys-charpente",
+    "slug": "charpente",
+    "term": "charpente",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "charpente est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « charpente » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de charpente",
+      "Choix de charpente selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 10
+  },
+  {
+    "id": "sys-charpente-industrielle",
+    "slug": "charpente-industrielle",
+    "term": "charpente industrielle",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "charpente industrielle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « charpente industrielle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de charpente industrielle",
+      "Choix de charpente industrielle selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 11
+  },
+  {
+    "id": "sys-charpente-traditionnelle",
+    "slug": "charpente-traditionnelle",
+    "term": "charpente traditionnelle",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "charpente traditionnelle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « charpente traditionnelle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de charpente traditionnelle",
+      "Choix de charpente traditionnelle selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 12
+  },
+  {
+    "id": "sys-chainage",
+    "slug": "chainage",
+    "term": "chaînage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "chaînage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « chaînage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de chaînage",
+      "Choix de chaînage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 13
+  },
+  {
+    "id": "sys-chevron",
+    "slug": "chevron",
+    "term": "chevron",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "chevron est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « chevron » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de chevron",
+      "Choix de chevron selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 14
+  },
+  {
+    "id": "sys-clouage",
+    "slug": "clouage",
+    "term": "clouage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "clouage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « clouage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de clouage",
+      "Choix de clouage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 15
+  },
+  {
+    "id": "sys-coffrage",
+    "slug": "coffrage",
+    "term": "coffrage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "coffrage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « coffrage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de coffrage",
+      "Choix de coffrage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 16
+  },
+  {
+    "id": "sys-collage-structural",
+    "slug": "collage-structural",
+    "term": "collage structural",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "collage structural est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « collage structural » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de collage structural",
+      "Choix de collage structural selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 17
+  },
+  {
+    "id": "sys-connecteur",
+    "slug": "connecteur",
+    "term": "connecteur",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "connecteur est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « connecteur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de connecteur",
+      "Choix de connecteur selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 18
+  },
+  {
+    "id": "sys-construction-hors-site",
+    "slug": "construction-hors-site",
+    "term": "construction hors site",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "construction hors site est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « construction hors site » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de construction hors site",
+      "Choix de construction hors site selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 19
+  },
+  {
+    "id": "sys-construction-humide",
+    "slug": "construction-humide",
+    "term": "construction humide",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "construction humide est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « construction humide » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de construction humide",
+      "Choix de construction humide selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 20
+  },
+  {
+    "id": "sys-contreplaque-structural",
+    "slug": "contreplaque-structural",
+    "term": "contreplaqué structural",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "contreplaqué structural est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « contreplaqué structural » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de contreplaqué structural",
+      "Choix de contreplaqué structural selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 21
+  },
+  {
+    "id": "sys-contreventement",
+    "slug": "contreventement",
+    "term": "contreventement",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "contreventement est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « contreventement » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de contreventement",
+      "Choix de contreventement selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 22
+  },
+  {
+    "id": "sys-coordination-de-chantier",
+    "slug": "coordination-de-chantier",
+    "term": "coordination de chantier",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "coordination de chantier est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « coordination de chantier » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de coordination de chantier",
+      "Choix de coordination de chantier selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 23
+  },
+  {
+    "id": "sys-cure-du-beton",
+    "slug": "cure-du-beton",
+    "term": "cure du béton",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "cure du béton est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « cure du béton » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de cure du béton",
+      "Choix de cure du béton selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 24
+  },
+  {
+    "id": "sys-dalle",
+    "slug": "dalle",
+    "term": "dalle",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "dalle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « dalle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de dalle",
+      "Choix de dalle selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 25
+  },
+  {
+    "id": "sys-dalle-nervuree",
+    "slug": "dalle-nervuree",
+    "term": "dalle nervurée",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "dalle nervurée est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « dalle nervurée » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de dalle nervurée",
+      "Choix de dalle nervurée selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 26
+  },
+  {
+    "id": "sys-dalle-pleine",
+    "slug": "dalle-pleine",
+    "term": "dalle pleine",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "dalle pleine est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « dalle pleine » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de dalle pleine",
+      "Choix de dalle pleine selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 27
+  },
+  {
+    "id": "sys-dalle-sur-sol",
+    "slug": "dalle-sur-sol",
+    "term": "dalle sur sol",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "dalle sur sol est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « dalle sur sol » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de dalle sur sol",
+      "Choix de dalle sur sol selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 28
+  },
+  {
+    "id": "sys-diaphragme",
+    "slug": "diaphragme",
+    "term": "diaphragme",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "diaphragme est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « diaphragme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de diaphragme",
+      "Choix de diaphragme selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 29
+  },
+  {
+    "id": "sys-drain-francais",
+    "slug": "drain-francais",
+    "term": "drain français",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "drain français est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « drain français » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de drain français",
+      "Choix de drain français selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 30
+  },
+  {
+    "id": "sys-decoffrage",
+    "slug": "decoffrage",
+    "term": "décoffrage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "décoffrage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « décoffrage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de décoffrage",
+      "Choix de décoffrage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 31
+  },
+  {
+    "id": "sys-deficience",
+    "slug": "deficience",
+    "term": "déficience",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "déficience est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « déficience » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de déficience",
+      "Choix de déficience selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 32
+  },
+  {
+    "id": "sys-entretoise",
+    "slug": "entretoise",
+    "term": "entretoise",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "entretoise est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « entretoise » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de entretoise",
+      "Choix de entretoise selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 33
+  },
+  {
+    "id": "sys-excavation",
+    "slug": "excavation",
+    "term": "excavation",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "excavation est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « excavation » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de excavation",
+      "Choix de excavation selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 34
+  },
+  {
+    "id": "sys-facade-ventilee",
+    "slug": "facade-ventilee",
+    "term": "façade ventilée",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "façade ventilée est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « façade ventilée » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de façade ventilée",
+      "Choix de façade ventilée selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 35
+  },
+  {
+    "id": "sys-ferme-de-toit",
+    "slug": "ferme-de-toit",
+    "term": "ferme de toit",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "ferme de toit est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « ferme de toit » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de ferme de toit",
+      "Choix de ferme de toit selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 36
+  },
+  {
+    "id": "sys-ferraillage",
+    "slug": "ferraillage",
+    "term": "ferraillage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "ferraillage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « ferraillage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de ferraillage",
+      "Choix de ferraillage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 37
+  },
+  {
+    "id": "sys-fondation-profonde",
+    "slug": "fondation-profonde",
+    "term": "fondation profonde",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "fondation profonde est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « fondation profonde » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de fondation profonde",
+      "Choix de fondation profonde selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 38
+  },
+  {
+    "id": "sys-inertie-thermique",
+    "slug": "inertie-thermique",
+    "term": "inertie thermique",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "inertie thermique est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « inertie thermique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de inertie thermique",
+      "Choix de inertie thermique selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 39
+  },
+  {
+    "id": "sys-isolation-continue",
+    "slug": "isolation-continue",
+    "term": "isolation continue",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "isolation continue est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « isolation continue » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de isolation continue",
+      "Choix de isolation continue selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 40
+  },
+  {
+    "id": "sys-joint-coupe-feu",
+    "slug": "joint-coupe-feu",
+    "term": "joint coupe-feu",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "joint coupe-feu est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « joint coupe-feu » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de joint coupe-feu",
+      "Choix de joint coupe-feu selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 41
+  },
+  {
+    "id": "sys-joint-de-controle",
+    "slug": "joint-de-controle",
+    "term": "joint de contrôle",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "joint de contrôle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « joint de contrôle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de joint de contrôle",
+      "Choix de joint de contrôle selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 42
+  },
+  {
+    "id": "sys-joint-de-dilatation",
+    "slug": "joint-de-dilatation",
+    "term": "joint de dilatation",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "joint de dilatation est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « joint de dilatation » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de joint de dilatation",
+      "Choix de joint de dilatation selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 43
+  },
+  {
+    "id": "sys-linteau",
+    "slug": "linteau",
+    "term": "linteau",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "linteau est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « linteau » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de linteau",
+      "Choix de linteau selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 44
+  },
+  {
+    "id": "sys-lisse-basse",
+    "slug": "lisse-basse",
+    "term": "lisse basse",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "lisse basse est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « lisse basse » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de lisse basse",
+      "Choix de lisse basse selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 45
+  },
+  {
+    "id": "sys-longrine",
+    "slug": "longrine",
+    "term": "longrine",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "longrine est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « longrine » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de longrine",
+      "Choix de longrine selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 46
+  },
+  {
+    "id": "sys-malfacon",
+    "slug": "malfacon",
+    "term": "malfaçon",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "malfaçon est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « malfaçon » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de malfaçon",
+      "Choix de malfaçon selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 47
+  },
+  {
+    "id": "sys-masse-thermique",
+    "slug": "masse-thermique",
+    "term": "masse thermique",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "masse thermique est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « masse thermique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de masse thermique",
+      "Choix de masse thermique selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 48
+  },
+  {
+    "id": "sys-membrane-d-etancheite",
+    "slug": "membrane-d-etancheite",
+    "term": "membrane d'étanchéité",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "membrane d'étanchéité est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « membrane d'étanchéité » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de membrane d'étanchéité",
+      "Choix de membrane d'étanchéité selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 49
+  },
+  {
+    "id": "sys-mise-en-oeuvre",
+    "slug": "mise-en-oeuvre",
+    "term": "mise en œuvre",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "mise en œuvre est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « mise en œuvre » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de mise en œuvre",
+      "Choix de mise en œuvre selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 50
+  },
+  {
+    "id": "sys-modularite-constructive",
+    "slug": "modularite-constructive",
+    "term": "modularité constructive",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "modularité constructive est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « modularité constructive » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de modularité constructive",
+      "Choix de modularité constructive selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 51
+  },
+  {
+    "id": "sys-montant",
+    "slug": "montant",
+    "term": "montant",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "montant est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « montant » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de montant",
+      "Choix de montant selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 52
+  },
+  {
+    "id": "sys-mur-de-maconnerie",
+    "slug": "mur-de-maconnerie",
+    "term": "mur de maçonnerie",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "mur de maçonnerie est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « mur de maçonnerie » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de mur de maçonnerie",
+      "Choix de mur de maçonnerie selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 53
+  },
+  {
+    "id": "sys-mur-non-porteur",
+    "slug": "mur-non-porteur",
+    "term": "mur non porteur",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "mur non porteur est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « mur non porteur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de mur non porteur",
+      "Choix de mur non porteur selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 54
+  },
+  {
+    "id": "sys-mur-porteur",
+    "slug": "mur-porteur",
+    "term": "mur porteur",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "mur porteur est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « mur porteur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de mur porteur",
+      "Choix de mur porteur selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 55
+  },
+  {
+    "id": "sys-mur-ventile",
+    "slug": "mur-ventile",
+    "term": "mur ventilé",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "mur ventilé est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « mur ventilé » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de mur ventilé",
+      "Choix de mur ventilé selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 56
+  },
+  {
+    "id": "sys-mur-a-colombage",
+    "slug": "mur-a-colombage",
+    "term": "mur à colombage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "mur à colombage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « mur à colombage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de mur à colombage",
+      "Choix de mur à colombage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 57
+  },
+  {
+    "id": "sys-methode-constructive",
+    "slug": "methode-constructive",
+    "term": "méthode constructive",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "méthode constructive est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « méthode constructive » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de méthode constructive",
+      "Choix de méthode constructive selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 58
+  },
+  {
+    "id": "sys-ossature-acier",
+    "slug": "ossature-acier",
+    "term": "ossature acier",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "ossature acier est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « ossature acier » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de ossature acier",
+      "Choix de ossature acier selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 59
+  },
+  {
+    "id": "sys-ossature-bois",
+    "slug": "ossature-bois",
+    "term": "ossature bois",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "ossature bois est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « ossature bois » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de ossature bois",
+      "Choix de ossature bois selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 60
+  },
+  {
+    "id": "sys-ossature-lourde",
+    "slug": "ossature-lourde",
+    "term": "ossature lourde",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "ossature lourde est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « ossature lourde » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de ossature lourde",
+      "Choix de ossature lourde selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 61
+  },
+  {
+    "id": "sys-ossature-legere",
+    "slug": "ossature-legere",
+    "term": "ossature légère",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "ossature légère est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « ossature légère » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de ossature légère",
+      "Choix de ossature légère selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 62
+  },
+  {
+    "id": "sys-panne",
+    "slug": "panne",
+    "term": "panne",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "panne est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « panne » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de panne",
+      "Choix de panne selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 63
+  },
+  {
+    "id": "sys-panneau-osb",
+    "slug": "panneau-osb",
+    "term": "panneau OSB",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "panneau OSB est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « panneau OSB » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de panneau OSB",
+      "Choix de panneau OSB selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 64
+  },
+  {
+    "id": "sys-pare-air",
+    "slug": "pare-air",
+    "term": "pare-air",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "pare-air est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « pare-air » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de pare-air",
+      "Choix de pare-air selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 65
+  },
+  {
+    "id": "sys-pare-intemperies",
+    "slug": "pare-intemperies",
+    "term": "pare-intempéries",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "pare-intempéries est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « pare-intempéries » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de pare-intempéries",
+      "Choix de pare-intempéries selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 66
+  },
+  {
+    "id": "sys-pare-vapeur",
+    "slug": "pare-vapeur",
+    "term": "pare-vapeur",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "pare-vapeur est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « pare-vapeur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de pare-vapeur",
+      "Choix de pare-vapeur selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 67
+  },
+  {
+    "id": "sys-pieu",
+    "slug": "pieu",
+    "term": "pieu",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "pieu est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « pieu » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de pieu",
+      "Choix de pieu selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 68
+  },
+  {
+    "id": "sys-plan-de-phasage",
+    "slug": "plan-de-phasage",
+    "term": "plan de phasage",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "plan de phasage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « plan de phasage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de plan de phasage",
+      "Choix de plan de phasage selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 69
+  },
+  {
+    "id": "sys-pont-thermique",
+    "slug": "pont-thermique",
+    "term": "pont thermique",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "pont thermique est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « pont thermique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de pont thermique",
+      "Choix de pont thermique selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 70
+  },
+  {
+    "id": "sys-poteau",
+    "slug": "poteau",
+    "term": "poteau",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "poteau est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « poteau » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de poteau",
+      "Choix de poteau selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 71
+  },
+  {
+    "id": "sys-poutre",
+    "slug": "poutre",
+    "term": "poutre",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "poutre est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « poutre » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de poutre",
+      "Choix de poutre selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 72
+  },
+  {
+    "id": "sys-poutrelle",
+    "slug": "poutrelle",
+    "term": "poutrelle",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "poutrelle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « poutrelle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de poutrelle",
+      "Choix de poutrelle selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 73
+  },
+  {
+    "id": "sys-prefabrication",
+    "slug": "prefabrication",
+    "term": "préfabrication",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "préfabrication est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « préfabrication » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de préfabrication",
+      "Choix de préfabrication selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 74
+  },
+  {
+    "id": "sys-radier",
+    "slug": "radier",
+    "term": "radier",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "radier est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « radier » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de radier",
+      "Choix de radier selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 75
+  },
+  {
+    "id": "sys-refend",
+    "slug": "refend",
+    "term": "refend",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "refend est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « refend » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de refend",
+      "Choix de refend selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 76
+  },
+  {
+    "id": "sys-remblai",
+    "slug": "remblai",
+    "term": "remblai",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "remblai est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « remblai » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de remblai",
+      "Choix de remblai selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 77
+  },
+  {
+    "id": "sys-revetement-exterieur",
+    "slug": "revetement-exterieur",
+    "term": "revêtement extérieur",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "revêtement extérieur est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « revêtement extérieur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de revêtement extérieur",
+      "Choix de revêtement extérieur selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 78
+  },
+  {
+    "id": "sys-rupture-thermique",
+    "slug": "rupture-thermique",
+    "term": "rupture thermique",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "rupture thermique est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « rupture thermique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de rupture thermique",
+      "Choix de rupture thermique selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 79
+  },
+  {
+    "id": "sys-reception-des-travaux",
+    "slug": "reception-des-travaux",
+    "term": "réception des travaux",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "réception des travaux est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « réception des travaux » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de réception des travaux",
+      "Choix de réception des travaux selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 80
+  },
+  {
+    "id": "sys-sabot-de-solive",
+    "slug": "sabot-de-solive",
+    "term": "sabot de solive",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "sabot de solive est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « sabot de solive » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de sabot de solive",
+      "Choix de sabot de solive selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 81
+  },
+  {
+    "id": "sys-semelle-filante",
+    "slug": "semelle-filante",
+    "term": "semelle filante",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "semelle filante est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « semelle filante » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de semelle filante",
+      "Choix de semelle filante selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 82
+  },
+  {
+    "id": "sys-semelle-isolee",
+    "slug": "semelle-isolee",
+    "term": "semelle isolée",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "semelle isolée est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « semelle isolée » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de semelle isolée",
+      "Choix de semelle isolée selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 83
+  },
+  {
+    "id": "sys-solive",
+    "slug": "solive",
+    "term": "solive",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "solive est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « solive » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de solive",
+      "Choix de solive selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 84
+  },
+  {
+    "id": "sys-structure-mixte",
+    "slug": "structure-mixte",
+    "term": "structure mixte",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "structure mixte est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « structure mixte » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de structure mixte",
+      "Choix de structure mixte selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 85
+  },
+  {
+    "id": "sys-structure-poteau-poutre",
+    "slug": "structure-poteau-poutre",
+    "term": "structure poteau-poutre",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "structure poteau-poutre est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « structure poteau-poutre » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de structure poteau-poutre",
+      "Choix de structure poteau-poutre selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 86
+  },
+  {
+    "id": "sys-sequence-de-construction",
+    "slug": "sequence-de-construction",
+    "term": "séquence de construction",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "séquence de construction est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « séquence de construction » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de séquence de construction",
+      "Choix de séquence de construction selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 87
+  },
+  {
+    "id": "sys-tirefond",
+    "slug": "tirefond",
+    "term": "tirefond",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "tirefond est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « tirefond » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de tirefond",
+      "Choix de tirefond selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 88
+  },
+  {
+    "id": "sys-toiture-chaude",
+    "slug": "toiture-chaude",
+    "term": "toiture chaude",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "toiture chaude est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « toiture chaude » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de toiture chaude",
+      "Choix de toiture chaude selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 89
+  },
+  {
+    "id": "sys-toiture-froide",
+    "slug": "toiture-froide",
+    "term": "toiture froide",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "toiture froide est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « toiture froide » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de toiture froide",
+      "Choix de toiture froide selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 90
+  },
+  {
+    "id": "sys-toiture-inversee",
+    "slug": "toiture-inversee",
+    "term": "toiture inversée",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "toiture inversée est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « toiture inversée » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de toiture inversée",
+      "Choix de toiture inversée selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 91
+  },
+  {
+    "id": "sys-toiture-vegetalisee",
+    "slug": "toiture-vegetalisee",
+    "term": "toiture végétalisée",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "toiture végétalisée est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « toiture végétalisée » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de toiture végétalisée",
+      "Choix de toiture végétalisée selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 92
+  },
+  {
+    "id": "sys-tolerance-de-chantier",
+    "slug": "tolerance-de-chantier",
+    "term": "tolérance de chantier",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "tolérance de chantier est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « tolérance de chantier » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de tolérance de chantier",
+      "Choix de tolérance de chantier selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 93
+  },
+  {
+    "id": "sys-vis-structurale",
+    "slug": "vis-structurale",
+    "term": "vis structurale",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "vis structurale est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « vis structurale » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de vis structurale",
+      "Choix de vis structurale selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 94
+  },
+  {
+    "id": "sys-voile-structural",
+    "slug": "voile-structural",
+    "term": "voile structural",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "voile structural est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « voile structural » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de voile structural",
+      "Choix de voile structural selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 95
+  },
+  {
+    "id": "sys-ecran-pare-pluie",
+    "slug": "ecran-pare-pluie",
+    "term": "écran pare-pluie",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "écran pare-pluie est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « écran pare-pluie » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de écran pare-pluie",
+      "Choix de écran pare-pluie selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 96
+  },
+  {
+    "id": "sys-etancheite-a-l-air",
+    "slug": "etancheite-a-l-air",
+    "term": "étanchéité à l'air",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "étanchéité à l'air est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « étanchéité à l'air » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de étanchéité à l'air",
+      "Choix de étanchéité à l'air selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 97
+  },
+  {
+    "id": "sys-etancheite-a-l-eau",
+    "slug": "etancheite-a-l-eau",
+    "term": "étanchéité à l'eau",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "étanchéité à l'eau est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « étanchéité à l'eau » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de étanchéité à l'eau",
+      "Choix de étanchéité à l'eau selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 98
+  },
+  {
+    "id": "sys-etrier",
+    "slug": "etrier",
+    "term": "étrier",
+    "language": "fr",
+    "type": "construction_system",
+    "domain": "construction",
+    "subdomain": "systèmes constructifs",
+    "shortDefinition": "étrier est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
+    "longDefinition": "Le concept « étrier » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "examples": [
+      "Détail de étrier",
+      "Choix de étrier selon le projet"
+    ],
+    "synonyms": [],
+    "relatedTerms": [
+      "structure",
+      "matériau",
+      "chantier",
+      "détail de construction"
+    ],
+    "tags": [
+      "construction",
+      "structure"
+    ],
+    "sources": [
+      {
+        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
+        "type": "internal",
+        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+      }
+    ],
+    "confidence": "concept",
+    "createdAt": "2026-06-20",
+    "updatedAt": "2026-06-20",
+    "order": 99
+  }
+]
