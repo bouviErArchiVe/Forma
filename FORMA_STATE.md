@@ -292,6 +292,16 @@ Limite notée (non forcée) : le **hand-off sélection→FormAI dans l'éditeur*
 
 Dexie : **v16** (inchangé). Tests verts (**1237**), build vert, Playwright vert.
 
+### Sprint parallèle #6 (Knowledge Foundation V1 — lanes K/C/D + E ; pas de Drawing)
+- **Lane K** (`feat/knowledge-core`) : base Forma Knowledge V1 — `KnowledgeEntry` (terme/domaine/définition + **source + confidence obligatoires**), providers locaux extractifs (no hallucination, chemin « unknown » honnête), search-intent ; glossaire architecture adapté **sans modifier** `DictionaryModule`/`architecture-glossary`. `src/lib/knowledge/*` + `KnowledgeEntryCard`. Aucun changement Dexie.
+- **Lane C** (`feat/knowledge-study`) : `flashcardFromKnowledge`/`examQuestionFromKnowledge` + service + bouton « Créer une flashcard » depuis une fiche. Réutilise flashcards/exams, aucun Dexie.
+- **Lane D** (`feat/knowledge-formai-laneD`) : FormAI sur fiche — expliquer/comparer/résumer/quiz, local-first, grounding strict, source+confidence affichés (`src/lib/ai/knowledge-actions.ts`, `KnowledgeAIActions`).
+- **Lane E** : `FORMA_STATE.md`. Pas de Wikipedia/Wikidata, pas de dump offline.
+
+Dexie : **v16** (inchangé). Tests verts (**1310**), build vert, Playwright vert.
+
+Limites notées : Knowledge V1 = glossaire architecture (1 provider, confidence `indicatif`) ; pas de page/route Knowledge dédiée → Search `knowledge` **différé** (éviter un lien mort) ; C définit un contrat `KnowledgeEntry` local (compatible, à réimporter depuis `src/lib/knowledge` plus tard) ; comparer-2-fiches : sélecteur de 2ᵉ fiche à câbler.
+
 ## Tests et chiffres connus
 
 Chiffres récents vus dans les rapports :
