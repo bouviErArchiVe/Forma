@@ -232,3 +232,18 @@ main contient déjà Lane K (DB core + loader + 920 seeds `src/data/knowledge/se
 Interdits : `src/lib/knowledge/**` et `src/components/knowledge/KnowledgeEntryCard.tsx` read-only ; dictionnaire notebook existant intact ; Dexie inchangé ; `src/data/knowledge/**` final. Contraintes : import paresseux préservé (seeds jamais eager dans App/modules toujours chargés), source+confiance visibles, no-result honnête, zéro lien mort.
 
 État final : SearchKind **wiré** (import dynamique dans le corps async de `searchEcosystem`, top 5, slug encodé résolvable par DictionaryPage). Gate `tsc` / `vitest` / `build` verts. Branche non mergée, non poussée (intégrateur).
+
+---
+
+# Sprint #8 — Dictionary UI Pro (Lanes U + E)
+
+Objectif : rendre la base Knowledge (920 entrées) réellement **utilisable et pro** avant d'ajouter du volume. Sans Drawing, sans Resources, sans Dexie, sans nouvelles entrées.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| U | `/dictionary` Pro : filtres type/domaine/confiance + Favoris/Récents, tri, pagination mémoire, fiche détaillée enrichie, synonymes/termes liés cliquables (zéro clic mort) | `src/pages/DictionaryPage.tsx`, `src/components/knowledge/**`, `src/lib/dictionary-filters.ts`, `src/stores/dictionaryStore.ts` (localStorage), tests |
+| E | Search knowledge **mieux priorisé** (quota garanti sans casser les autres résultats) + docs état | `src/lib/ecosystem-search.ts` (`mergeWithKnowledgeQuota`), `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md`, test |
+
+Interdits : `src/lib/knowledge/**` lecture seule, Dexie inchangé, `src/data/knowledge/**` final, dictionnaire notebook intact, import seeds toujours lazy. Ordre : **U → E**, gate complet (`tsc`/`vitest`/`build`), Playwright final unique, push après vert final.
+
+Note d'exécution : Lane U relancée après limite de session (travail partiel récupéré) puis finalisée ; Lane E intégrée en ligne (changement contenu, faible risque). Fix notable : carte de liste en `role=button` (plus de `<button>` imbriqué).

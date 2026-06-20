@@ -396,3 +396,13 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - Search : nouveau kind `knowledge` dans `searchEcosystem` (top ~5, lien `'/dictionary?slug=…'`), import **dynamique** de `@/lib/knowledge` dans le corps async (seeds jamais en eager). Icône 📖 dans SearchPage.
 - Dexie : **inchangé** (aucune migration, aucune table).
 - Limites : pas de filtres avancés (type/confiance), pas de pagination du parcours (échantillon par domaine), recherche knowledge non débouncée côté écosystème (bornée à 5).
+
+## Sprint #8 — Dictionary UI Pro (Lanes U + E)
+
+- **UI Pro `/dictionary`** (Lane U) : filtres combinables **type / domaine / confiance** + vues rapides **Favoris / Récents** ; **tri** (A→Z, Z→A, type, confiance, pertinence) ; **pagination en mémoire** (« charger plus », page de 24) ; **fiche détaillée enrichie** (`KnowledgeDetail` : longDefinition, exemples, synonymes, termes liés, tags, **toutes** les sources + confiance). Synonymes / termes liés **cliquables** (résolus vers une entrée via `resolveTerm`, sinon bascule en recherche → **zéro clic mort**) ; exemples cliquables (pré-remplissent la recherche).
+- **Favoris / Récents** : persistés en **localStorage léger** (`useDictionaryStore`, zustand/persist, clé `forma-dictionary`) — **pas de Dexie**. Assainissement à la restauration (robuste au localStorage corrompu).
+- Logique de parcours = module **pur testé** `src/lib/dictionary-filters.ts` (filtre/tri/pagination/`resolveTerm`), `src/lib/knowledge` reste **lecture seule**.
+- Fix qualité : carte de liste rendue en `role=button` (plus de `<button>` imbriqué → console propre).
+- **Search mieux priorisé** (Lane E) : `mergeWithKnowledgeQuota` réserve **≥3 places** aux fiches Knowledge dans `searchEcosystem` **sans supprimer** les autres résultats ni changer leur ordre — corrige le « visible mais bas » du Sprint #7 sur les termes courants. Icône 📖 inchangée. Import knowledge toujours **dynamique** (seeds hors bundle principal).
+- Dexie : **inchangé**. Seeds : toujours **lazy/code-split** (920 entrées hors `index`).
+- Limites : pas de surlignage des correspondances, pas d'URL des filtres (état non partageable par lien), quota Search fixe (3).

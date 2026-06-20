@@ -43,6 +43,49 @@ function normalize(text: string): string {
 }
 
 /**
+ * Nombre minimum de résultats « knowledge » (dictionnaire) garantis dans la
+ * liste finale quand la base en renvoie : sans cette réservation, les fiches
+ * étaient systématiquement repoussées hors du `limit` par les nombreux autres
+ * résultats (tâches, normes, ressources…) sur les termes courants.
+ */
+export const KNOWLEDGE_MIN_SLOTS = 3
+
+/**
+ * Fusionne les autres résultats avec les fiches Knowledge en RÉSERVANT à ces
+ * dernières quelques places dans la limite, **sans supprimer** les autres
+ * résultats ni changer leur ordre relatif. Les places non utilisées par le
+ * quota restent disponibles pour les autres résultats (puis le surplus).
+ */
+export function mergeWithKnowledgeQuota(
+  other: readonly EcosystemHit[],
+  knowledge: readonly EcosystemHit[],
+  limit: number,
+  minKnowledge: number = KNOWLEDGE_MIN_SLOTS,
+): EcosystemHit[] {
+  if (limit <= 0) return []
+  if (knowledge.length === 0) return other.slice(0, limit)
+
+  const reserved = Math.min(knowledge.length, minKnowledge, limit)
+  const otherCount = Math.max(0, limit - reserved)
+  const result: EcosystemHit[] = [...other.slice(0, otherCount), ...knowledge.slice(0, reserved)]
+
+  // Comble la capacité restante (si peu d'« autres ») avec le surplus.
+  if (result.length < limit) {
+    const seen = new Set(result.map((h) => `${h.kind}:${h.id}`))
+    const add = (h: EcosystemHit) => {
+      const key = `${h.kind}:${h.id}`
+      if (!seen.has(key) && result.length < limit) {
+        seen.add(key)
+        result.push(h)
+      }
+    }
+    knowledge.forEach(add)
+    other.forEach(add)
+  }
+  return result.slice(0, limit)
+}
+
+/**
  * Recherche dans les tâches, projets, fiches normatives et détails.
  * `limit` borne le nombre total de résultats.
  */
@@ -162,11 +205,13 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
 
   // Base de connaissance (dictionnaire) — import dynamique : les ~920 seeds
   // restent hors du bundle principal (chargés à la demande, jamais en eager).
+  // Collectées à part puis fusionnées avec un quota garanti (priorisation).
+  const knowledgeHits: EcosystemHit[] = []
   try {
     const { searchKnowledgeBase } = await import('./knowledge')
     const known = await searchKnowledgeBase(query, { limit: 5 })
     for (const k of known) {
-      hits.push({
+      knowledgeHits.push({
         kind: 'knowledge',
         id: k.entry.id,
         title: k.entry.term,
@@ -178,5 +223,5 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
     console.warn('[Forma] Recherche dans la base de connaissance indisponible:', err)
   }
 
-  return hits.slice(0, limit)
+  return mergeWithKnowledgeQuota(hits, knowledgeHits, limit)
 }
