@@ -21,8 +21,8 @@ beforeEach(() => {
 })
 
 describe('allKnowledgeEntries', () => {
-  it('renvoie toute la base (920)', async () => {
-    expect((await allKnowledgeEntries()).length).toBe(920)
+  it('renvoie toute la base (919 après fusion doublon Sprint #10)', async () => {
+    expect((await allKnowledgeEntries()).length).toBe(919)
   })
 })
 

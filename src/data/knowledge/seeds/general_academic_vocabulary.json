@@ -1,8 +1,8 @@
 [
   {
     "id": "gen-accessibilite",
-    "slug": "accessibilite",
-    "term": "accessibilité",
+    "slug": "accessibilite-etudes",
+    "term": "accessibilité (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -38,8 +38,8 @@
   },
   {
     "id": "gen-alignement",
-    "slug": "alignement",
-    "term": "alignement",
+    "slug": "alignement-etudes",
+    "term": "alignement (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -1184,43 +1184,6 @@
     "order": 32
   },
   {
-    "id": "gen-composant-2",
-    "slug": "composant",
-    "term": "composant",
-    "language": "fr",
-    "type": "word",
-    "domain": "études",
-    "subdomain": "vocabulaire général",
-    "shortDefinition": "composant est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « composant » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
-    "examples": [
-      "Utiliser composant dans un rapport",
-      "Relier composant à un workflow Forma"
-    ],
-    "synonyms": [],
-    "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
-    ],
-    "tags": [
-      "vocabulaire",
-      "études"
-    ],
-    "sources": [
-      {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
-      }
-    ],
-    "confidence": "concept",
-    "createdAt": "2026-06-20",
-    "updatedAt": "2026-06-20",
-    "order": 33
-  },
-  {
     "id": "gen-compromis",
     "slug": "compromis",
     "term": "compromis",
@@ -1481,8 +1444,8 @@
   },
   {
     "id": "gen-contrainte",
-    "slug": "contrainte",
-    "term": "contrainte",
+    "slug": "contrainte-etudes",
+    "term": "contrainte (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -1518,8 +1481,8 @@
   },
   {
     "id": "gen-contraste",
-    "slug": "contraste",
-    "term": "contraste",
+    "slug": "contraste-etudes",
+    "term": "contraste (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -1888,8 +1851,8 @@
   },
   {
     "id": "gen-diagramme",
-    "slug": "diagramme",
-    "term": "diagramme",
+    "slug": "diagramme-etudes",
+    "term": "diagramme (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -2258,8 +2221,8 @@
   },
   {
     "id": "gen-ergonomie",
-    "slug": "ergonomie",
-    "term": "ergonomie",
+    "slug": "ergonomie-etudes",
+    "term": "ergonomie (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -2665,8 +2628,8 @@
   },
   {
     "id": "gen-gabarit",
-    "slug": "gabarit",
-    "term": "gabarit",
+    "slug": "gabarit-etudes",
+    "term": "gabarit (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -3183,8 +3146,8 @@
   },
   {
     "id": "gen-interface",
-    "slug": "interface",
-    "term": "interface",
+    "slug": "interface-etudes",
+    "term": "interface (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -3442,8 +3405,8 @@
   },
   {
     "id": "gen-livrable",
-    "slug": "livrable",
-    "term": "livrable",
+    "slug": "livrable-etudes",
+    "term": "livrable (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -4922,8 +4885,8 @@
   },
   {
     "id": "gen-restauration",
-    "slug": "restauration",
-    "term": "restauration",
+    "slug": "restauration-etudes",
+    "term": "restauration (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -6365,8 +6328,8 @@
   },
   {
     "id": "gen-typologie",
-    "slug": "typologie",
-    "term": "typologie",
+    "slug": "typologie-etudes",
+    "term": "typologie (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",
@@ -6402,8 +6365,8 @@
   },
   {
     "id": "gen-usage",
-    "slug": "usage",
-    "term": "usage",
+    "slug": "usage-etudes",
+    "term": "usage (terme général)",
     "language": "fr",
     "type": "word",
     "domain": "études",

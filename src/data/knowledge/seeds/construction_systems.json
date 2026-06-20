@@ -118,43 +118,41 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "bardage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « bardage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Revêtement extérieur rapporté protégeant la façade.",
+    "longDefinition": "Le bardage est un revêtement extérieur fixé sur une ossature devant le mur, souvent ventilé, qui protège la paroi des intempéries et compose l'aspect de la façade. Il se décline en bois, métal, fibrociment, etc.",
     "examples": [
-      "Détail de bardage",
-      "Choix de bardage selon le projet"
+      "Bardage bois ventilé",
+      "Bardage métallique sur ossature"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "revêtement extérieur",
+      "façade ventilée",
+      "pare-intempéries"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "enveloppe",
+      "façade"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 4
   },
   {
     "id": "sys-bloc-de-beton",
-    "slug": "bloc-de-beton",
-    "term": "bloc de béton",
+    "slug": "bloc-de-beton-systeme",
+    "term": "bloc de béton (système constructif)",
     "language": "fr",
     "type": "construction_system",
     "domain": "construction",
-    "subdomain": "systèmes constructifs",
+    "subdomain": "maçonnerie",
     "shortDefinition": "bloc de béton est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
     "longDefinition": "Le concept « bloc de béton » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
     "examples": [
@@ -340,31 +338,30 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "charpente est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « charpente » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Ossature qui porte la couverture d'un bâtiment.",
+    "longDefinition": "La charpente est l'ossature, le plus souvent en bois ou en acier, qui supporte la couverture et lui donne sa forme. Elle assemble fermes, pannes et chevrons pour transmettre les charges du toit aux murs porteurs.",
     "examples": [
-      "Détail de charpente",
-      "Choix de charpente selon le projet"
+      "Charpente traditionnelle en bois",
+      "Charpente industrielle à fermettes"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "ferme de toit",
+      "panne",
+      "chevron",
+      "toiture"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "couverture"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction bois (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 10
@@ -451,31 +448,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "chaînage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « chaînage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Ceinture de béton armé liaisonnant une maçonnerie.",
+    "longDefinition": "Le chaînage est un élément de béton armé, horizontal ou vertical, qui ceinture et solidarise une maçonnerie pour répartir les charges et résister aux mouvements (tassements, séisme). Il améliore le comportement d'ensemble.",
     "examples": [
-      "Détail de chaînage",
-      "Choix de chaînage selon le projet"
+      "Chaînage horizontal en tête de mur",
+      "Chaînage vertical d'angle"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "mur de maçonnerie",
+      "béton armé",
+      "contreventement"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "maçonnerie"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 13
@@ -488,31 +483,31 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "chevron est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « chevron » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Pièce inclinée de charpente portant la couverture.",
+    "longDefinition": "Le chevron est une pièce de charpente posée dans le sens de la pente, qui reçoit le support de couverture et reporte ses charges sur les pannes. Son entraxe dépend du matériau de couverture.",
     "examples": [
-      "Détail de chevron",
-      "Choix de chevron selon le projet"
+      "Chevrons d'une toiture à deux pentes",
+      "Pose des chevrons sur les pannes"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "panne",
+      "charpente",
+      "ferme de toit",
+      "toiture"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "bois",
+      "couverture"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction bois (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 14
@@ -562,31 +557,30 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "coffrage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « coffrage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Moule provisoire donnant sa forme au béton coulé.",
+    "longDefinition": "Le coffrage est le moule temporaire qui contient le béton frais jusqu'à sa prise et lui donne sa forme. Il doit être étanche, stable et résister à la poussée du béton ; on le retire au décoffrage.",
     "examples": [
-      "Détail de coffrage",
-      "Choix de coffrage selon le projet"
+      "Coffrage de poteau en bois",
+      "Coffrage métallique réutilisable"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "béton",
+      "décoffrage",
+      "ferraillage",
+      "cure du béton"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "chantier"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 16
@@ -784,31 +778,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "contreventement est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « contreventement » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Dispositif qui stabilise une structure face aux efforts horizontaux.",
+    "longDefinition": "Le contreventement reprend les efforts horizontaux (vent, séisme) et empêche la structure de se déformer latéralement, par des voiles, des palées triangulées ou des diaphragmes. Il est essentiel à la stabilité d'ensemble.",
     "examples": [
-      "Détail de contreventement",
-      "Choix de contreventement selon le projet"
+      "Palée de contreventement en croix",
+      "Voile de contreventement en béton"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "voile structural",
+      "diaphragme",
+      "mur porteur"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 22
@@ -895,31 +886,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "dalle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « dalle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Plaque structurelle horizontale formant plancher ou toiture.",
+    "longDefinition": "La dalle est un élément plan horizontal qui supporte les charges d'un plancher ou d'une toiture et les reporte vers poutres, murs ou poteaux. Elle peut être pleine, nervurée ou sur sol selon la portée et l'usage.",
     "examples": [
-      "Détail de dalle",
-      "Choix de dalle selon le projet"
+      "Dalle de plancher en béton armé",
+      "Dalle sur sol d'un rez-de-chaussée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "dalle pleine",
+      "dalle sur sol",
+      "poutre",
+      "plancher"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 25
@@ -969,31 +958,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "dalle pleine est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « dalle pleine » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Dalle de béton d'épaisseur constante, armée en deux sens.",
+    "longDefinition": "La dalle pleine est une dalle de béton d'épaisseur uniforme, armée pour porter dans une ou deux directions selon ses appuis. Simple à coffrer, elle convient aux portées modérées et offre une bonne masse acoustique.",
     "examples": [
-      "Détail de dalle pleine",
-      "Choix de dalle pleine selon le projet"
+      "Dalle pleine portée sur quatre murs",
+      "Plancher en dalle pleine de 20 cm"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "dalle",
+      "béton armé",
+      "coffrage"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 27
@@ -1339,31 +1325,30 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "ferraillage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « ferraillage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Ensemble des armatures d'acier disposées dans le béton.",
+    "longDefinition": "Le ferraillage désigne la mise en place des barres et treillis d'acier dans un élément de béton armé, pour reprendre les efforts de traction et de cisaillement. Son tracé suit les sollicitations calculées.",
     "examples": [
-      "Détail de ferraillage",
-      "Choix de ferraillage selon le projet"
+      "Ferraillage d'une poutre",
+      "Plan de ferraillage d'une dalle"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "armature",
+      "barre d'armature",
+      "béton armé",
+      "étrier"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "chantier"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 37
@@ -1376,31 +1361,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "fondation profonde est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « fondation profonde » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Fondation reportant les charges vers un sol résistant en profondeur.",
+    "longDefinition": "La fondation profonde (pieux, puits) traverse les couches de sol médiocres pour reporter les charges sur un horizon résistant en profondeur. On l'emploie quand le sol de surface est insuffisant ou les charges élevées.",
     "examples": [
-      "Détail de fondation profonde",
-      "Choix de fondation profonde selon le projet"
+      "Pieux forés sous un immeuble",
+      "Fondation profonde en sol compressible"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "pieu",
+      "semelle filante",
+      "radier"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "fondation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 38
@@ -1450,31 +1433,31 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "isolation continue est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « isolation continue » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Couche isolante ininterrompue sur l'enveloppe, limitant les ponts thermiques.",
+    "longDefinition": "L'isolation continue est une couche d'isolant posée sans interruption sur la face extérieure de la structure, ce qui supprime la plupart des ponts thermiques. Elle améliore nettement la performance énergétique de l'enveloppe.",
     "examples": [
-      "Détail de isolation continue",
-      "Choix de isolation continue selon le projet"
+      "Isolation continue extérieure d'une façade",
+      "Panneaux isolants continus sous bardage"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "ITE"
+    ],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "pont thermique",
+      "rupture thermique",
+      "bardage"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "thermique",
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Performance du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 40
@@ -1598,31 +1581,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "linteau est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « linteau » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Élément porteur au-dessus d'une ouverture, reprenant la charge.",
+    "longDefinition": "Le linteau franchit le haut d'une baie (porte, fenêtre) et reprend les charges du mur situé au-dessus pour les reporter sur les côtés de l'ouverture. Il peut être en béton, acier, bois ou pierre.",
     "examples": [
-      "Détail de linteau",
-      "Choix de linteau selon le projet"
+      "Linteau béton au-dessus d'une fenêtre",
+      "Linteau métallique d'une grande baie"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "poutre",
+      "mur porteur",
+      "baie"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 44
@@ -1968,31 +1948,31 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "mur non porteur est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « mur non porteur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Mur ou cloison ne portant que son propre poids.",
+    "longDefinition": "Le mur non porteur sépare ou ferme des espaces sans reprendre les charges de la structure ; il peut être déplacé ou supprimé sans incidence statique. Les cloisons et certains remplissages de façade en font partie.",
     "examples": [
-      "Détail de mur non porteur",
-      "Choix de mur non porteur selon le projet"
+      "Cloison non porteuse en plaques de plâtre",
+      "Remplissage de façade non porteur"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "cloison"
+    ],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "mur porteur",
+      "cloison",
+      "mur rideau"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "second œuvre"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 54
@@ -2005,31 +1985,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "mur porteur est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « mur porteur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Mur qui reprend des charges en plus de son poids propre.",
+    "longDefinition": "Le mur porteur reçoit les charges des planchers et de la toiture et les transmet aux fondations, contribuant aussi souvent au contreventement. On ne peut le percer ou le supprimer sans reprise de charge.",
     "examples": [
-      "Détail de mur porteur",
-      "Choix de mur porteur selon le projet"
+      "Mur porteur de refend",
+      "Reprise en sous-œuvre d'un mur porteur"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "mur non porteur",
+      "refend",
+      "contreventement",
+      "linteau"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 55
@@ -2153,31 +2131,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "ossature acier est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « ossature acier » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Système constructif à profilés d'acier assemblés.",
+    "longDefinition": "L'ossature acier emploie des profilés (poteaux, poutres) assemblés par boulonnage ou soudure pour former la structure porteuse. Elle autorise de grandes portées et un montage rapide, mais demande une protection au feu.",
     "examples": [
-      "Détail de ossature acier",
-      "Choix de ossature acier selon le projet"
+      "Bâtiment industriel à ossature acier",
+      "Poteaux-poutres en acier"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "acier",
+      "structure poteau-poutre",
+      "contreventement"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "métal"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 59
@@ -2190,31 +2166,30 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "ossature bois est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « ossature bois » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Système constructif à montants et lisses de bois.",
+    "longDefinition": "L'ossature bois est un système où les murs sont formés de montants verticaux et de lisses, contreventés par des panneaux et garnis d'isolant. Léger et préfabricable, il est très répandu en habitation.",
     "examples": [
-      "Détail de ossature bois",
-      "Choix de ossature bois selon le projet"
+      "Mur à ossature bois isolé",
+      "Maison à ossature bois préfabriquée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "ossature légère",
+      "montant",
+      "contreventement",
+      "bois massif"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "bois"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction bois (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 60
@@ -2264,31 +2239,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "ossature légère est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « ossature légère » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Structure de petits éléments rapprochés (bois ou acier léger).",
+    "longDefinition": "L'ossature légère est constituée d'éléments fins et rapprochés (montants, solives) qui répartissent les charges, par opposition aux ossatures lourdes. Elle est légère, isolante et adaptée à la préfabrication.",
     "examples": [
-      "Détail de ossature légère",
-      "Choix de ossature légère selon le projet"
+      "Cloison à ossature métallique légère",
+      "Plancher à ossature légère"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "ossature bois",
+      "ossature lourde",
+      "montant"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 62
@@ -2301,31 +2273,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "panne est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « panne » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Pièce horizontale de charpente portant les chevrons.",
+    "longDefinition": "La panne est une pièce horizontale de charpente, parallèle à l'égout, qui supporte les chevrons et reporte leurs charges sur les fermes ou les murs. On distingue panne sablière, intermédiaire et faîtière.",
     "examples": [
-      "Détail de panne",
-      "Choix de panne selon le projet"
+      "Panne faîtière au sommet du toit",
+      "Pannes intermédiaires d'une charpente"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "chevron",
+      "ferme de toit",
+      "charpente"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "bois"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction bois (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 63
@@ -2375,31 +2345,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "pare-air est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « pare-air » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Barrière limitant les fuites d'air à travers l'enveloppe.",
+    "longDefinition": "Le pare-air est un dispositif continu qui empêche l'air de traverser l'enveloppe, réduisant les déperditions et les risques de condensation. Il peut être intérieur ou extérieur selon le système constructif.",
     "examples": [
-      "Détail de pare-air",
-      "Choix de pare-air selon le projet"
+      "Membrane pare-air continue",
+      "Test d'infiltrométrie d'un pare-air"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "pare-vapeur",
+      "étanchéité à l'air",
+      "pare-intempéries"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "thermique",
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Performance du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 65
@@ -2449,31 +2417,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "pare-vapeur est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « pare-vapeur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Membrane freinant la migration de vapeur d'eau vers l'isolant.",
+    "longDefinition": "Le pare-vapeur est une membrane placée du côté chaud de l'isolant pour limiter le passage de la vapeur d'eau intérieure et éviter la condensation dans la paroi. Sa continuité et son étanchéité conditionnent son efficacité.",
     "examples": [
-      "Détail de pare-vapeur",
-      "Choix de pare-vapeur selon le projet"
+      "Pare-vapeur côté intérieur d'un mur isolé",
+      "Reprise d'étanchéité du pare-vapeur"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "pare-air",
+      "étanchéité à l'air",
+      "laine de verre"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "thermique",
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Performance du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 67
@@ -2486,31 +2452,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "pieu est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « pieu » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Élément vertical enfoncé ou foré reportant les charges en profondeur.",
+    "longDefinition": "Le pieu est un élément élancé battu, foré ou vissé qui transmet les charges du bâtiment à un sol résistant en profondeur, par pointe et par frottement latéral. C'est le composant de base des fondations profondes.",
     "examples": [
-      "Détail de pieu",
-      "Choix de pieu selon le projet"
+      "Pieux forés sous un pont",
+      "Pieu battu en sol meuble"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "fondation profonde",
+      "longrine",
+      "semelle isolée"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "fondation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 68
@@ -2560,31 +2524,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "pont thermique est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « pont thermique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Zone de l'enveloppe où la chaleur s'échappe plus facilement.",
+    "longDefinition": "Le pont thermique est un point faible de l'isolation, là où la chaleur traverse l'enveloppe plus vite (jonctions, balcons, nez de dalle). Il accroît les déperditions et le risque de condensation ; on le traite par rupture thermique ou isolation continue.",
     "examples": [
-      "Détail de pont thermique",
-      "Choix de pont thermique selon le projet"
+      "Pont thermique au nez de dalle",
+      "Traitement du pont thermique d'un balcon"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "rupture thermique",
+      "isolation continue",
+      "pare-vapeur"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "thermique",
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Performance du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 70
@@ -2597,31 +2559,30 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "poteau est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « poteau » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Élément structurel vertical travaillant en compression.",
+    "longDefinition": "Le poteau est un membre vertical qui reçoit les charges des poutres et planchers et les conduit aux fondations en travaillant surtout en compression. Sa section dépend de la charge et du risque de flambement.",
     "examples": [
-      "Détail de poteau",
-      "Choix de poteau selon le projet"
+      "Poteaux d'une structure poteau-poutre",
+      "Poteau de béton armé"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "colonne"
+    ],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "poutre",
+      "structure poteau-poutre",
+      "fondation profonde"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 71
@@ -2634,31 +2595,31 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "poutre est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « poutre » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Élément structurel horizontal reprenant les charges en flexion.",
+    "longDefinition": "La poutre franchit une portée entre deux appuis et transmet les charges verticales aux poteaux ou aux murs en travaillant principalement en flexion. Sa hauteur est dimensionnée selon la portée, la charge et le matériau.",
     "examples": [
-      "Détail de poutre",
-      "Choix de poutre selon le projet"
+      "Poutre en béton armé sur deux appuis",
+      "Poutre lamellé-collé d'une halle"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "sommier"
+    ],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "poteau",
+      "solive",
+      "linteau",
+      "portée"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 72
@@ -2671,31 +2632,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "poutrelle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « poutrelle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Petite poutre, souvent préfabriquée, d'un plancher.",
+    "longDefinition": "La poutrelle est une poutre de faible section, fréquemment préfabriquée en béton ou en acier, associée à des entrevous pour constituer un plancher. Le système poutrelle-hourdis est courant en habitation.",
     "examples": [
-      "Détail de poutrelle",
-      "Choix de poutrelle selon le projet"
+      "Plancher poutrelles-hourdis",
+      "Poutrelles métalliques d'un plancher"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "poutre",
+      "dalle",
+      "préfabrication"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 73
@@ -2745,31 +2703,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "radier est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « radier » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Dalle de fondation couvrant toute l'emprise du bâtiment.",
+    "longDefinition": "Le radier est une fondation superficielle en forme de grande dalle qui répartit les charges du bâtiment sur l'ensemble de sa surface d'assise. On l'utilise sur sols peu portants ou en présence d'eau.",
     "examples": [
-      "Détail de radier",
-      "Choix de radier selon le projet"
+      "Radier général sous un immeuble",
+      "Radier étanche en zone de nappe"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "semelle filante",
+      "fondation profonde",
+      "dalle"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "fondation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 75
@@ -3004,31 +2960,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "semelle filante est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « semelle filante » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Fondation continue sous un mur, répartissant la charge linéaire.",
+    "longDefinition": "La semelle filante est une fondation superficielle continue sous un mur porteur, élargie pour répartir la charge linéaire sur le sol. Sa largeur dépend de la charge et de la portance du terrain.",
     "examples": [
-      "Détail de semelle filante",
-      "Choix de semelle filante selon le projet"
+      "Semelle filante sous mur de fondation",
+      "Ferraillage d'une semelle filante"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "semelle isolée",
+      "radier",
+      "fondation profonde"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "fondation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 82
@@ -3041,31 +2995,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "semelle isolée est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « semelle isolée » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Fondation ponctuelle sous un poteau.",
+    "longDefinition": "La semelle isolée est une fondation superficielle ponctuelle placée sous un poteau pour diffuser sa charge concentrée au sol. Elle est dimensionnée selon la charge du poteau et la portance du terrain.",
     "examples": [
-      "Détail de semelle isolée",
-      "Choix de semelle isolée selon le projet"
+      "Semelle isolée sous poteau de béton",
+      "Plot de fondation isolé"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "semelle filante",
+      "poteau",
+      "radier"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "fondation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 83
@@ -3078,31 +3030,30 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "solive est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « solive » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Pièce horizontale d'un plancher portant le platelage.",
+    "longDefinition": "La solive est une pièce de bois ou de métal d'un plancher, posée à intervalles réguliers entre poutres ou murs pour porter le platelage ou le revêtement de sol. Son entraxe et sa section dépendent de la portée et des charges.",
     "examples": [
-      "Détail de solive",
-      "Choix de solive selon le projet"
+      "Solives de bois d'un plancher",
+      "Sabot de solive sur poutre"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "poutre",
+      "chevron",
+      "plancher d'ingénierie",
+      "sabot de solive"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "bois"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction bois (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 84
@@ -3152,31 +3103,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "structure poteau-poutre est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « structure poteau-poutre » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Système porteur à trame de poteaux et de poutres.",
+    "longDefinition": "La structure poteau-poutre concentre les charges sur une trame de poteaux reliés par des poutres, libérant les façades et les plans intérieurs de tout mur porteur. Elle offre une grande flexibilité d'aménagement.",
     "examples": [
-      "Détail de structure poteau-poutre",
-      "Choix de structure poteau-poutre selon le projet"
+      "Plateau libre en structure poteau-poutre",
+      "Trame poteau-poutre d'un immeuble de bureaux"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "poteau",
+      "poutre",
+      "trame",
+      "mur rideau"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 86
@@ -3485,31 +3434,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "voile structural est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « voile structural » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Mur plein de béton armé participant à la stabilité.",
+    "longDefinition": "Le voile structural est un mur mince en béton armé qui reprend des charges verticales et surtout des efforts horizontaux, assurant le contreventement. Les noyaux d'ascenseurs en sont un exemple courant.",
     "examples": [
-      "Détail de voile structural",
-      "Choix de voile structural selon le projet"
+      "Voile de contreventement en béton",
+      "Noyau central en voiles structuraux"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "contreventement",
+      "noyau vertical",
+      "béton armé"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 95

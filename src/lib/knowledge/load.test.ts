@@ -13,9 +13,9 @@ beforeEach(() => {
 })
 
 describe('loadKnowledgeBase', () => {
-  it('charge les 920 entrées des seeds', async () => {
+  it('charge les 919 entrées des seeds (920 − 1 doublon fusionné Sprint #10)', async () => {
     const entries = await loadKnowledgeBase()
-    expect(entries.length).toBe(920)
+    expect(entries.length).toBe(919)
   })
 
   it('toutes les entrées chargées sont valides (source + confidence)', async () => {

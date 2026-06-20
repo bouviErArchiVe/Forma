@@ -1,0 +1,18 @@
+[
+  { "action": "merge", "keep": "gen-composant", "drop": ["gen-composant-2"], "reason": "Vrai doublon : même terme, domaine (études) et type (word)." },
+
+  { "action": "distinguish", "id": "gen-alignement", "slug": "alignement-etudes", "term": "alignement (terme général)", "reason": "Homographe : « alignement » concept d'architecture vs vocabulaire d'études." },
+  { "action": "distinguish", "id": "gen-contraste", "slug": "contraste-etudes", "term": "contraste (terme général)", "reason": "Homographe avec le concept d'architecture." },
+  { "action": "distinguish", "id": "gen-diagramme", "slug": "diagramme-etudes", "term": "diagramme (terme général)", "reason": "Homographe avec le concept d'architecture." },
+  { "action": "distinguish", "id": "gen-ergonomie", "slug": "ergonomie-etudes", "term": "ergonomie (terme général)", "reason": "Homographe avec le concept d'architecture." },
+  { "action": "distinguish", "id": "gen-gabarit", "slug": "gabarit-etudes", "term": "gabarit (terme général)", "reason": "Homographe avec le concept d'architecture." },
+  { "action": "distinguish", "id": "gen-interface", "slug": "interface-etudes", "term": "interface (terme général)", "reason": "Homographe avec le concept d'architecture." },
+  { "action": "distinguish", "id": "gen-usage", "slug": "usage-etudes", "term": "usage (terme général)", "reason": "Homographe avec le concept d'architecture." },
+  { "action": "distinguish", "id": "gen-accessibilite", "slug": "accessibilite-etudes", "term": "accessibilité (terme général)", "reason": "Homographe : vocabulaire d'études vs norme d'architecture (accessibilité du bâtiment)." },
+  { "action": "distinguish", "id": "gen-contrainte", "slug": "contrainte-etudes", "term": "contrainte (terme général)", "reason": "Homographe : vocabulaire d'études vs méthode/norme d'architecture." },
+  { "action": "distinguish", "id": "gen-livrable", "slug": "livrable-etudes", "term": "livrable (terme général)", "reason": "Homographe : vocabulaire d'études vs méthode de projet d'architecture." },
+  { "action": "distinguish", "id": "gen-restauration", "slug": "restauration-etudes", "term": "restauration (terme général)", "reason": "Homographe : vocabulaire d'études vs concept d'histoire de l'architecture." },
+  { "action": "distinguish", "id": "gen-typologie", "slug": "typologie-etudes", "term": "typologie (terme général)", "reason": "Homographe : vocabulaire d'études vs concept d'histoire de l'architecture." },
+
+  { "action": "distinguish", "id": "sys-bloc-de-beton", "slug": "bloc-de-beton-systeme", "term": "bloc de béton (système constructif)", "subdomain": "maçonnerie", "reason": "Homographe : système constructif (maçonnerie de blocs) vs matériau « bloc de béton »." }
+]

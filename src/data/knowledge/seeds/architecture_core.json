@@ -197,32 +197,29 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "atrium est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « atrium » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Espace central vertical éclairé par le haut.",
+    "longDefinition": "L'atrium est un vide intérieur traversant plusieurs niveaux, souvent couvert d'une verrière, qui apporte lumière naturelle et ventilation au cœur d'un bâtiment profond. Il structure les circulations et la vie sociale.",
     "examples": [
-      "Utiliser atrium dans l'analyse d'un projet",
-      "Comparer deux options selon atrium"
+      "Atrium vitré d'un immeuble de bureaux",
+      "Atrium central d'un musée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "patio",
+      "lumière naturelle",
+      "vide sur séjour"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 6
@@ -349,32 +346,30 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "balcon est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « balcon » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Plateforme en saillie accessible depuis l'intérieur.",
+    "longDefinition": "Le balcon est une plateforme en saillie sur la façade, bordée d'un garde-corps et accessible depuis une pièce. Il prolonge l'espace habité vers l'extérieur et participe à la composition de la façade.",
     "examples": [
-      "Utiliser balcon dans l'analyse d'un projet",
-      "Comparer deux options selon balcon"
+      "Balcon filant sur une façade",
+      "Balcon en porte-à-faux"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "loggia",
+      "garde-corps",
+      "porte-à-faux",
+      "terrasse"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 10
@@ -501,32 +496,30 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "circulation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « circulation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Espaces de déplacement reliant les pièces d'un bâtiment.",
+    "longDefinition": "La circulation désigne les espaces (couloirs, escaliers, halls) qui permettent de se déplacer dans un bâtiment et d'en relier les fonctions. Sa clarté et son dimensionnement conditionnent l'usage et la sécurité.",
     "examples": [
-      "Utiliser circulation dans l'analyse d'un projet",
-      "Comparer deux options selon circulation"
+      "Circulation horizontale d'un étage",
+      "Noyau de circulation verticale"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "dégagement",
+      "hall",
+      "escalier",
+      "chemin d'évacuation"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "circulation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 14
@@ -729,32 +722,29 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "coupe est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « coupe » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Dessin d'une section verticale du bâtiment.",
+    "longDefinition": "La coupe représente le bâtiment sectionné par un plan vertical, révélant les hauteurs, les niveaux, l'épaisseur des planchers et les relations verticales entre espaces. Elle complète le plan pour comprendre le volume.",
     "examples": [
-      "Utiliser coupe dans l'analyse d'un projet",
-      "Comparer deux options selon coupe"
+      "Coupe longitudinale d'une maison",
+      "Coupe de détail sur une façade"
     ],
     "synonyms": [],
     "relatedTerms": [
       "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "élévation",
+      "séquence spatiale"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "représentation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Représentation (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 20
@@ -1147,32 +1137,30 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "escalier est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « escalier » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Ouvrage de circulation verticale par marches successives.",
+    "longDefinition": "L'escalier relie deux niveaux par une suite de marches ; son confort dépend du rapport giron/hauteur de marche et de la présence de paliers. Il est aussi un élément de sécurité (évacuation) et de composition spatiale.",
     "examples": [
-      "Utiliser escalier dans l'analyse d'un projet",
-      "Comparer deux options selon escalier"
+      "Escalier droit à une volée",
+      "Escalier hélicoïdal d'un atrium"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "palier",
+      "garde-corps",
+      "main courante",
+      "emmarchement"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "circulation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 31
@@ -1261,32 +1249,30 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "façade est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « façade » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Face extérieure d'un bâtiment, interface entre dedans et dehors.",
+    "longDefinition": "La façade est l'enveloppe verticale visible d'un bâtiment ; elle exprime son architecture et gère lumière, vues, intempéries et performance thermique. Elle peut être porteuse, ventilée ou rapportée (mur rideau).",
     "examples": [
-      "Utiliser façade dans l'analyse d'un projet",
-      "Comparer deux options selon façade"
+      "Façade principale sur rue",
+      "Composition rythmée d'une façade"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "mur rideau",
+      "bardage",
+      "élévation",
+      "enveloppe"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 34
@@ -1413,32 +1399,31 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "garde-corps est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « garde-corps » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Barrière de protection contre les chutes en bordure de vide.",
+    "longDefinition": "Le garde-corps protège des chutes le long d'un escalier, d'un balcon ou d'une mezzanine. Sa hauteur et son remplissage sont réglementés ; les valeurs exactes sont à vérifier dans le code du bâtiment applicable.",
     "examples": [
-      "Utiliser garde-corps dans l'analyse d'un projet",
-      "Comparer deux options selon garde-corps"
+      "Garde-corps de balcon en verre feuilleté",
+      "Garde-corps d'escalier avec main courante"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "main courante",
+      "balcon",
+      "escalier",
+      "verre feuilleté"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "sécurité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Sécurité du bâtiment (cours Forma)",
+        "type": "course",
+        "note": "Hauteurs réglementaires à vérifier dans le code applicable."
       }
     ],
-    "confidence": "concept",
+    "confidence": "à-vérifier",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 38
@@ -1717,32 +1702,29 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "loggia est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « loggia » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Espace extérieur en retrait, intégré au volume bâti.",
+    "longDefinition": "La loggia est un espace extérieur couvert et en retrait dans le volume du bâtiment, contrairement au balcon en saillie. Abritée, elle offre un extérieur protégé du soleil et de la pluie.",
     "examples": [
-      "Utiliser loggia dans l'analyse d'un projet",
-      "Comparer deux options selon loggia"
+      "Loggia abritée d'un logement",
+      "Loggia en angle de façade"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "balcon",
+      "terrasse",
+      "façade"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 46
@@ -1983,32 +1965,29 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "mezzanine est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « mezzanine » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Niveau intermédiaire partiel ouvert sur l'espace inférieur.",
+    "longDefinition": "La mezzanine est un plancher intermédiaire qui ne couvre qu'une partie de la hauteur d'un volume, restant ouvert sur l'espace situé en dessous. Elle densifie l'usage tout en conservant la perception du grand volume.",
     "examples": [
-      "Utiliser mezzanine dans l'analyse d'un projet",
-      "Comparer deux options selon mezzanine"
+      "Mezzanine de couchage dans un loft",
+      "Mezzanine ouverte sur le séjour"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "vide sur séjour",
+      "atrium",
+      "garde-corps"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 53
@@ -2135,32 +2114,29 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "mur rideau est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « mur rideau » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Façade légère non porteuse suspendue à la structure.",
+    "longDefinition": "Le mur rideau est une façade légère, généralement vitrée, fixée devant la structure et ne portant que son propre poids et les actions du vent. Il libère totalement les plans intérieurs et caractérise l'architecture moderne.",
     "examples": [
-      "Utiliser mur rideau dans l'analyse d'un projet",
-      "Comparer deux options selon mur rideau"
+      "Mur rideau vitré d'une tour",
+      "Trame d'un mur rideau aluminium-verre"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
       "façade",
-      "concept architectural",
-      "échelle"
+      "verre",
+      "structure poteau-poutre"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 57
@@ -2401,19 +2377,19 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "parti architectural est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « parti architectural » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Idée directrice qui structure tout le projet.",
+    "longDefinition": "Le parti architectural est le choix conceptuel fondateur qui donne sa cohérence au projet et arbitre les décisions de conception. Il relie le programme, le site et l'intention à une organisation spatiale claire.",
     "examples": [
-      "Utiliser parti architectural dans l'analyse d'un projet",
-      "Comparer deux options selon parti architectural"
+      "Parti d'une barre traversante",
+      "Parti autour d'un patio central"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "parti pris"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
       "concept architectural",
-      "échelle"
+      "programme",
+      "volumétrie"
     ],
     "tags": [
       "architecture",
@@ -2421,9 +2397,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2477,32 +2452,31 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "patio est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « patio » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Cour intérieure à ciel ouvert au sein du bâtiment.",
+    "longDefinition": "Le patio est un espace extérieur à ciel ouvert enserré par le bâti, qui apporte lumière, air et intimité aux pièces qui l'entourent. Hérité des architectures méditerranéennes, il régule aussi le climat intérieur.",
     "examples": [
-      "Utiliser patio dans l'analyse d'un projet",
-      "Comparer deux options selon patio"
+      "Maison organisée autour d'un patio",
+      "Patio planté d'un immeuble"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "cour intérieure"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "atrium",
+      "lumière naturelle",
+      "ventilation naturelle"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 66
@@ -2553,32 +2527,29 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "plan est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « plan » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Représentation en coupe horizontale vue de dessus.",
+    "longDefinition": "Le plan est un dessin représentant une coupe horizontale du bâtiment vue de dessus, montrant l'organisation des espaces, murs, ouvertures et circulations à un niveau donné. C'est le document de base de la conception.",
     "examples": [
-      "Utiliser plan dans l'analyse d'un projet",
-      "Comparer deux options selon plan"
+      "Plan d'étage courant",
+      "Plan de rez-de-chaussée coté"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
       "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "élévation",
+      "programme"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "représentation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Représentation (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 68
@@ -2705,32 +2676,31 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "porte-à-faux est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « porte-à-faux » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Partie en saillie sans appui vertical à son extrémité.",
+    "longDefinition": "Le porte-à-faux est une partie de structure qui avance au-delà de son dernier appui, tenue uniquement par l'encastrement à sa base. Il crée des effets spectaculaires mais sollicite fortement la structure en flexion.",
     "examples": [
-      "Utiliser porte-à-faux dans l'analyse d'un projet",
-      "Comparer deux options selon porte-à-faux"
+      "Balcon en porte-à-faux",
+      "Avancée de toiture en porte-à-faux"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "encorbellement"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "balcon",
+      "poutre",
+      "saillie"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 72
@@ -2743,19 +2713,19 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "programme est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « programme » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Énoncé des besoins et espaces attendus d'un projet.",
+    "longDefinition": "Le programme définit les fonctions, surfaces, relations et exigences que le bâtiment doit satisfaire ; il précède et oriente la conception. Le travail de l'architecte transforme ce programme en organisation spatiale.",
     "examples": [
-      "Utiliser programme dans l'analyse d'un projet",
-      "Comparer deux options selon programme"
+      "Programme d'une école",
+      "Tableau des surfaces du programme"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "cahier des charges"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "parti architectural",
+      "mixité fonctionnelle",
+      "plan"
     ],
     "tags": [
       "architecture",
@@ -2763,9 +2733,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2781,29 +2750,27 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "proportion est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « proportion » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Rapport de dimensions entre les parties d'une composition.",
+    "longDefinition": "La proportion est le rapport entre les dimensions des éléments d'un projet (hauteur/largeur, plein/vide). Maîtrisée, elle donne harmonie et hiérarchie ; certains systèmes (nombre d'or, tracés régulateurs) la formalisent.",
     "examples": [
-      "Utiliser proportion dans l'analyse d'un projet",
-      "Comparer deux options selon proportion"
+      "Proportions d'une façade classique",
+      "Tracé régulateur d'un plan"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "échelle",
+      "rythme",
+      "composition",
+      "trame"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "composition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Composition (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2819,32 +2786,30 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "rampe est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « rampe » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Plan incliné assurant un franchissement accessible.",
+    "longDefinition": "La rampe est un plan incliné qui permet de franchir une différence de niveau sans marches, essentielle à l'accessibilité. Sa pente et ses paliers de repos sont encadrés par la réglementation, à vérifier selon le code applicable.",
     "examples": [
-      "Utiliser rampe dans l'analyse d'un projet",
-      "Comparer deux options selon rampe"
+      "Rampe d'accès accessible",
+      "Rampe douce vers une entrée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "accessibilité universelle",
+      "escalier",
+      "palier"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "accessibilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Accessibilité (cours Forma)",
+        "type": "course",
+        "note": "Pente maximale et paliers à vérifier dans le code applicable."
       }
     ],
-    "confidence": "concept",
+    "confidence": "à-vérifier",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 75
@@ -3047,29 +3012,27 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "seuil est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « seuil » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Limite et passage entre deux espaces.",
+    "longDefinition": "Le seuil est le point de passage qui marque la transition entre deux espaces (dehors/dedans, public/privé). Au-delà de la pièce technique, c'est une notion de composition qui qualifie l'expérience de l'entrée.",
     "examples": [
-      "Utiliser seuil dans l'analyse d'un projet",
-      "Comparer deux options selon seuil"
+      "Seuil d'entrée abrité",
+      "Séquence de seuils vers l'intime"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "transition",
+      "vestibule",
+      "séquence spatiale",
+      "limite"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Composition (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3351,32 +3314,30 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "toit en pente est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « toit en pente » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Toiture inclinée évacuant l'eau par gravité.",
+    "longDefinition": "Le toit en pente évacue rapidement l'eau et la neige par gravité grâce à une ou plusieurs versants inclinés portés par une charpente. Sa pente dépend du matériau de couverture et du climat.",
     "examples": [
-      "Utiliser toit en pente dans l'analyse d'un projet",
-      "Comparer deux options selon toit en pente"
+      "Toit à deux versants en tuiles",
+      "Toit en pente couvert d'ardoises"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "toiture",
+      "toit plat",
+      "charpente",
+      "tuile"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 89
@@ -3389,32 +3350,31 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "toit plat est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « toit plat » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Toiture à pente très faible, support possible d'usages.",
+    "longDefinition": "Le toit plat présente une pente minimale juste suffisante à l'écoulement de l'eau vers des évacuations. Son étanchéité est continue ; il peut accueillir terrasse, végétalisation ou équipements techniques.",
     "examples": [
-      "Utiliser toit plat dans l'analyse d'un projet",
-      "Comparer deux options selon toit plat"
+      "Toit plat accessible en terrasse",
+      "Toit plat végétalisé"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "toiture-terrasse"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "toiture",
+      "toit en pente",
+      "membrane d'étanchéité"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 90
@@ -3427,32 +3387,32 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "toiture est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « toiture » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Partie supérieure du bâtiment qui le protège des intempéries.",
+    "longDefinition": "La toiture couvre le bâtiment et le protège de la pluie, de la neige et du soleil tout en participant à l'isolation. Sa forme (plate, en pente) dépend du climat, de la structure et de l'expression architecturale.",
     "examples": [
-      "Utiliser toiture dans l'analyse d'un projet",
-      "Comparer deux options selon toiture"
+      "Toiture en pente couverte de tuiles",
+      "Toiture-terrasse végétalisée"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "toit"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "toit plat",
+      "toit en pente",
+      "charpente",
+      "couverture"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 91
@@ -3465,29 +3425,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "trame est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « trame » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Réseau régulier de lignes structurant le plan.",
+    "longDefinition": "La trame est un quadrillage régulier servant de référence pour positionner structure, façades et cloisons. Elle coordonne la construction, facilite la préfabrication et donne sa cohérence dimensionnelle au projet.",
     "examples": [
-      "Utiliser trame dans l'analyse d'un projet",
-      "Comparer deux options selon trame"
+      "Trame structurelle de 7,20 m",
+      "Trame de façade régulière"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "grille"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "module",
+      "structure poteau-poutre",
+      "proportion"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "composition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Composition (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3731,29 +3690,27 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "volumétrie est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « volumétrie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Composition des volumes formant la masse du bâtiment.",
+    "longDefinition": "La volumétrie est l'organisation des volumes qui constituent le bâtiment et définissent sa silhouette dans le site. Elle résulte du programme, des contraintes et du parti, et s'étudie tôt par la maquette.",
     "examples": [
-      "Utiliser volumétrie dans l'analyse d'un projet",
-      "Comparer deux options selon volumétrie"
+      "Volumétrie en plots reliés",
+      "Étude de volumétrie en maquette"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "maquette",
+      "parti architectural",
+      "implantation",
+      "gabarit"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "composition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Composition (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3845,32 +3802,29 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "échelle est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « échelle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Rapport entre les dimensions du dessin et celles du réel.",
+    "longDefinition": "L'échelle exprime le rapport entre une longueur mesurée sur un dessin et la longueur réelle correspondante (p. ex. 1:100). En conception, parler d'échelle renvoie aussi à la juste relation entre le bâtiment et l'humain ou le contexte.",
     "examples": [
-      "Utiliser échelle dans l'analyse d'un projet",
-      "Comparer deux options selon échelle"
+      "Plan dessiné à l'échelle 1:50",
+      "Échelle humaine d'un espace public"
     ],
     "synonyms": [],
     "relatedTerms": [
+      "proportion",
       "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "module"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "représentation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Représentation (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 102
@@ -3883,32 +3837,30 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "élévation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « élévation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Vue orthogonale d'une façade, sans perspective.",
+    "longDefinition": "L'élévation est la projection orthogonale d'une face du bâtiment sur un plan vertical, qui en restitue les proportions et la composition sans déformation perspective. Elle sert à étudier et communiquer l'aspect des façades.",
     "examples": [
-      "Utiliser élévation dans l'analyse d'un projet",
-      "Comparer deux options selon élévation"
+      "Élévation de la façade sud",
+      "Élévations cotées d'un projet"
     ],
     "synonyms": [],
     "relatedTerms": [
+      "façade",
       "plan",
       "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "proportion"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "représentation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Représentation (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 103
