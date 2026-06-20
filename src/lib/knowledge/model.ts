@@ -72,6 +72,32 @@ export type KnowledgeSourceType =
   | 'book'
   | 'user'
 
+/**
+ * Provenance d'une ENTRÉE (origine du contenu), distincte de la confiance et du
+ * type de source. Additif/optionnel (Sprint #9) : si absent, on le dérive de
+ * `sources[].type` via `entryProvenance`.
+ *  - 'forma'      → contenu original Forma (sources internal/course).
+ *  - 'external'   → repris/adapté de sources externes (standard/web/book/user).
+ *  - 'generated'  → produit par un pipeline (à relire), marqué explicitement.
+ *  - 'à-vérifier' → origine inconnue / non fiable tant que non confirmée.
+ */
+export type KnowledgeProvenance = 'forma' | 'external' | 'generated' | 'à-vérifier'
+
+export const KNOWLEDGE_PROVENANCES: readonly KnowledgeProvenance[] = [
+  'forma',
+  'external',
+  'generated',
+  'à-vérifier',
+] as const
+
+/** Vrai si la valeur est une provenance reconnue. */
+export function isKnowledgeProvenance(value: unknown): value is KnowledgeProvenance {
+  return (
+    typeof value === 'string'
+    && (KNOWLEDGE_PROVENANCES as readonly string[]).includes(value)
+  )
+}
+
 /** Source / citation d'une entrée. `label` est obligatoire et non vide. */
 export interface KnowledgeSource {
   label: string
@@ -118,6 +144,8 @@ export interface KnowledgeEntry {
   updatedAt: string
   /** Ordre d'affichage optionnel. */
   order?: number
+  /** Provenance optionnelle (Sprint #9). Si absente, dérivée de `sources[].type`. */
+  provenance?: KnowledgeProvenance
 }
 
 /** Libellés humains des niveaux de confiance. */
@@ -223,6 +251,7 @@ export function normalizeKnowledgeEntry(raw: Partial<KnowledgeEntry>): Knowledge
     createdAt: raw.createdAt ?? '',
     updatedAt: raw.updatedAt ?? raw.createdAt ?? '',
     ...(raw.order !== undefined ? { order: raw.order } : {}),
+    ...(isKnowledgeProvenance(raw.provenance) ? { provenance: raw.provenance } : {}),
   }
 }
 
@@ -259,4 +288,28 @@ export function entryDefinition(entry: Pick<KnowledgeEntry, 'longDefinition' | '
  */
 export function entrySourceLabel(entry: Pick<KnowledgeEntry, 'sources'>): string {
   return entry.sources?.[0]?.label ?? ''
+}
+
+/**
+ * Provenance effective d'une entrée : `entry.provenance` si défini, sinon
+ * dérivée de la première source exploitable (`internal`/`course` → 'forma' ;
+ * `standard`/`web`/`book`/`user` → 'external'). Sans source exploitable →
+ * 'à-vérifier'. Ne devine jamais 'generated' (marquage explicite uniquement).
+ */
+export function entryProvenance(entry: Pick<KnowledgeEntry, 'provenance' | 'sources'>): KnowledgeProvenance {
+  if (isKnowledgeProvenance(entry.provenance)) return entry.provenance
+  const first = entry.sources?.find((s) => typeof s?.label === 'string' && s.label.trim() !== '')
+  if (!first) return 'à-vérifier'
+  switch (first.type) {
+    case 'internal':
+    case 'course':
+      return 'forma'
+    case 'standard':
+    case 'web':
+    case 'book':
+    case 'user':
+      return 'external'
+    default:
+      return 'à-vérifier'
+  }
 }

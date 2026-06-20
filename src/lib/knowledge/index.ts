@@ -20,13 +20,16 @@ export type {
   KnowledgeLanguage,
   KnowledgeSource,
   KnowledgeSourceType,
+  KnowledgeProvenance,
 } from './model'
 export {
   KNOWLEDGE_CONFIDENCE_LEVELS,
   KNOWLEDGE_CONFIDENCE_LABEL,
   KNOWLEDGE_ENTRY_TYPES,
+  KNOWLEDGE_PROVENANCES,
   isKnowledgeConfidence,
   isKnowledgeEntryType,
+  isKnowledgeProvenance,
   hasUsableSource,
   isValidKnowledgeEntry,
   validateKnowledgeEntry,
@@ -34,6 +37,7 @@ export {
   makeKnowledgeEntry,
   entryDefinition,
   entrySourceLabel,
+  entryProvenance,
 } from './model'
 
 // Loader paresseux des seeds (≈ 920 entrées, hors bundle principal)
