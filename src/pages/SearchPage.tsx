@@ -246,6 +246,7 @@ export function SearchPage() {
                         : h.kind === 'session' ? '📅'
                         : h.kind === 'flashcard' ? '🃏'
                         : h.kind === 'exam' ? '📝'
+                        : h.kind === 'knowledge' ? '📖'
                         : '📐'}
                     </span>
                     <span className="text-sm text-forma-text truncate flex-1">{h.title}</span>

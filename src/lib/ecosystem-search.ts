@@ -27,6 +27,7 @@ export type EcosystemHitKind =
   | 'session'
   | 'flashcard'
   | 'exam'
+  | 'knowledge'
 
 export interface EcosystemHit {
   kind: EcosystemHitKind
@@ -157,6 +158,24 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
   // Vérifications de conformité (catalogue statique)
   for (const c of searchChecks(query)) {
     hits.push({ kind: 'compliance', id: c.id, title: c.name, subtitle: `Conformité · ${COMPLIANCE_CATEGORY_LABELS[c.category]}`, to: '/compliance' })
+  }
+
+  // Base de connaissance (dictionnaire) — import dynamique : les ~920 seeds
+  // restent hors du bundle principal (chargés à la demande, jamais en eager).
+  try {
+    const { searchKnowledgeBase } = await import('./knowledge')
+    const known = await searchKnowledgeBase(query, { limit: 5 })
+    for (const k of known) {
+      hits.push({
+        kind: 'knowledge',
+        id: k.entry.id,
+        title: k.entry.term,
+        subtitle: `Définition · ${k.entry.domain}`,
+        to: `/dictionary?slug=${encodeURIComponent(k.entry.slug)}`,
+      })
+    }
+  } catch (err) {
+    console.warn('[Forma] Recherche dans la base de connaissance indisponible:', err)
   }
 
   return hits.slice(0, limit)

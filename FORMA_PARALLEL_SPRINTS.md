@@ -218,3 +218,17 @@ Sprint #5 validé/mergé (`a45caaec`, Dexie v16). Transformer le dictionnaire en
 Interdits transverses : seule K touche `src/modules/dictionary/*` et `src/lib/knowledge/*` ; C/D importent les types Knowledge en read-only (K mergé en premier) ; pas de Wikipedia/Wikidata complet, pas de gros dump offline ; source + confidence obligatoires ; local-first ; no hallucination. Dexie additif uniquement si indispensable.
 
 Séquencement : **K mergé d'abord** (C/D dépendent de ses types) → puis C, D. Ordre : `chore/integration-sprint-6`(base) → `feat/knowledge-core` → `feat/knowledge-study` → `feat/knowledge-formai`. Gate complet après chaque merge ; push après vert final.
+
+---
+
+# Sprint #7 — Knowledge route / Search / State (Lane E)
+
+main contient déjà Lane K (DB core + loader + 920 seeds `src/data/knowledge/seeds/`). Lane E expose la base : route, navigateur, recherche, reachability — `src/lib/knowledge/**` en **lecture seule**.
+
+| Lane | Branche | Objectif | Propriété |
+|---|---|---|---|
+| E | `feat/knowledge-route-search` | `/dictionary` (page Knowledge lazy : recherche + parcours + `?slug=`/`?q=`, source+confiance toujours visibles, no-result honnête) ; kind `knowledge` dans Search (lien `/dictionary?slug=…`) ; lien nav LibraryPage ; gate | `src/pages/DictionaryPage.tsx` (NEW), `src/App.tsx` (1 route lazy), `src/pages/SearchPage.tsx`, `src/lib/ecosystem-search.ts`, `src/pages/LibraryPage.tsx` (1 lien), docs, 1 test |
+
+Interdits : `src/lib/knowledge/**` et `src/components/knowledge/KnowledgeEntryCard.tsx` read-only ; dictionnaire notebook existant intact ; Dexie inchangé ; `src/data/knowledge/**` final. Contraintes : import paresseux préservé (seeds jamais eager dans App/modules toujours chargés), source+confiance visibles, no-result honnête, zéro lien mort.
+
+État final : SearchKind **wiré** (import dynamique dans le corps async de `searchEcosystem`, top 5, slug encodé résolvable par DictionaryPage). Gate `tsc` / `vitest` / `build` verts. Branche non mergée, non poussée (intégrateur).

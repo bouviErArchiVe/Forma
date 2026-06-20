@@ -983,6 +983,7 @@ export function LibraryPage() {
                       { icon: 'book', label: 'Ressources architecture', action: () => navigate('/resources') },
                       { icon: 'check', label: 'Vérif. conformité', action: () => navigate('/compliance') },
                       { icon: 'book', label: 'Étude (hub)', action: () => navigate('/study') },
+                      { icon: 'book', label: 'Dictionnaire', action: () => navigate('/dictionary') },
                       { icon: 'layout', label: 'Statistiques d’étude', action: () => navigate('/study/stats') },
                       { icon: 'layout', label: 'Modèles de page', action: () => navigate('/templates') },
                       { icon: 'search', label: 'Recherche globale', action: () => navigate('/search') },
