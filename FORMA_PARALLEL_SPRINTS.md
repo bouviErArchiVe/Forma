@@ -247,3 +247,19 @@ Objectif : rendre la base Knowledge (920 entrées) réellement **utilisable et p
 Interdits : `src/lib/knowledge/**` lecture seule, Dexie inchangé, `src/data/knowledge/**` final, dictionnaire notebook intact, import seeds toujours lazy. Ordre : **U → E**, gate complet (`tsc`/`vitest`/`build`), Playwright final unique, push après vert final.
 
 Note d'exécution : Lane U relancée après limite de session (travail partiel récupéré) puis finalisée ; Lane E intégrée en ligne (changement contenu, faible risque). Fix notable : carte de liste en `role=button` (plus de `<button>` imbriqué).
+
+---
+
+# Sprint #9 — Dictionary Expansion / Quality Pipeline (Lanes Q + I + E)
+
+Objectif : préparer l'enrichissement massif du dictionnaire **sans salir la base**. Sans Drawing, sans Resources, sans Dexie, sans dump externe, sans refonte UI, scripts dev hors bundle.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| Q | Validation stricte de pack + qualityScore/Status + détection doublons + rapport agrégé | `src/lib/knowledge/{pack-schema,quality,dedup,quality-report}.ts` (+ provenance dans `model.ts`), tests |
+| I | Pipeline d'import (validate→dedup→provenance→quality, candidats non promus), CLIs dev, pack test isolé | `src/lib/knowledge/import-pack.ts`, `scripts/knowledge-{quality,import}.ts`, `src/data/knowledge/test-packs/`, `package.json`, tests |
+| E | Docs d'état (surface = CLI uniquement, pas d'UI) | `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Décisions : surface rapport = **script CLI uniquement** (pas de panneau dev) ; `/dictionary` inchangé ; `provenance` optionnel/additif (dérivé de `sources[].type` si absent) ; jamais de suppression auto d'une entrée weak (marquer/rapporter/classer seulement) ; pack test autorisé car **isolé** (dossier `test-packs/`, non globé par le loader).
+
+Ordre : **Q → I → E**, full gate (`tsc -b`/`vitest`/`build`) à chaque palier, Playwright final unique, push après vert final. Lanes intégrées en ligne (lib + scripts, très testables, faible risque) après les blocages répétés de limite de session sur sous-agents.

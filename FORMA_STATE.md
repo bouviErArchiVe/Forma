@@ -406,3 +406,13 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - **Search mieux priorisé** (Lane E) : `mergeWithKnowledgeQuota` réserve **≥3 places** aux fiches Knowledge dans `searchEcosystem` **sans supprimer** les autres résultats ni changer leur ordre — corrige le « visible mais bas » du Sprint #7 sur les termes courants. Icône 📖 inchangée. Import knowledge toujours **dynamique** (seeds hors bundle principal).
 - Dexie : **inchangé**. Seeds : toujours **lazy/code-split** (920 entrées hors `index`).
 - Limites : pas de surlignage des correspondances, pas d'URL des filtres (état non partageable par lien), quota Search fixe (3).
+
+## Sprint #9 — Dictionary Expansion / Quality Pipeline (Lanes Q + I + E)
+
+- **Quality & Validation Core** (Lane Q, lib pure) : `pack-schema` (validation STRICTE : schéma, source+confidence obligatoires, slug kebab, types de source légaux, collisions id/slug internes) ; `quality` (qualityScore 0..1 + qualityStatus ok/weak/review + flags traçables, **détection des définitions « gabarit »**) ; `dedup` (doublons exacts id/slug/term + quasi : synonyme croisé, Jaccard de tokens par domaine) ; `quality-report` (agrégat statut/domaine/type/confidence/provenance + échantillon faible).
+- **Provenance** (additif/optionnel) : champ `provenance` ('forma'|'external'|'generated'|'à-vérifier') + `entryProvenance` qui **dérive de `sources[].type`** si absent. Ne casse pas les 920 entrées.
+- **Import Pipeline** (Lane I) : `importPack(pack, base)` → validate → dedup **vs base** → provenance → quality → rapport `accepted (candidats) / rejected / duplicatesAgainstBase`. **Ne mute jamais la base** ; promotion manuelle uniquement.
+- **CLIs dev** (hors bundle, `vite-node`) : `npm run knowledge:quality` (rapport base réelle) et `npm run knowledge:import [pack.json]` (simulation, défaut = pack test isolé). Pack test `src/data/knowledge/test-packs/sprint9-smoke.json` **non chargé** par le loader (glob `seeds/*.json` uniquement).
+- **Constat qualité de la base actuelle** (via CLI) : 920/920 `templated` + `no-synonyms`, 811 weak / 109 review / 0 ok, provenance 920 `forma`, **28 doublons exacts + 1 quasi** (30 entrées impliquées). → feuille de route d'enrichissement avant gros pack.
+- Garanties : `/dictionary` et Search knowledge **inchangés** (aucun fichier UI/Search modifié) ; Dexie inchangé ; pipeline + pack test **absents du bundle principal** (index 314 KB inchangé) ; source+confidence obligatoires, aucune suppression automatique.
+- Limites : qualité = heuristique indicative (pas de NLP) ; near-dup bucketé par domaine ; provenance 'generated' jamais devinée (marquage explicite) ; candidats non persistés (fichiers/mémoire dev).
