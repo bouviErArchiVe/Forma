@@ -27,6 +27,8 @@
  *   • quiz-from-entry  → questions de révision tirées d'UNE fiche.
  */
 import {
+  entryDefinition,
+  entrySourceLabel,
   KNOWLEDGE_CONFIDENCE_LABEL,
   type KnowledgeEntry,
 } from '../knowledge'
@@ -95,8 +97,8 @@ export function renderEntryBlock(entry: KnowledgeEntry, index?: number): string 
   const heading = index !== undefined ? `Fiche ${index} — « ${entry.term} »` : `Fiche — « ${entry.term} »`
   const lines = [
     `${heading} (domaine : ${entry.domain})`,
-    `Définition : ${entry.definition}`,
-    `Source : ${entry.source}`,
+    `Définition : ${entryDefinition(entry)}`,
+    `Source : ${entrySourceLabel(entry)}`,
     `Niveau de confiance : ${confidenceLabel(entry)}`,
   ]
   if (entry.tags && entry.tags.length > 0) {

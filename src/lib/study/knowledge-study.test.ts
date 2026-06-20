@@ -6,16 +6,27 @@ import {
   examQuestionFromKnowledge,
   flashcardFromKnowledge,
   tagsFromKnowledge,
-  type KnowledgeEntry,
 } from './knowledge-study'
+import { KNOWLEDGE_CONFIDENCE_LABEL, type KnowledgeEntry } from '../knowledge'
 
 function entry(p: Partial<KnowledgeEntry> = {}): KnowledgeEntry {
   return {
+    id: 'structure:poutre',
+    slug: 'poutre',
     term: 'Poutre',
+    language: 'fr',
+    type: 'concept',
     domain: 'Structure',
-    definition: 'Élément structural horizontal travaillant en flexion.',
-    source: 'glossaire-local',
-    confidence: 0.9,
+    shortDefinition: 'Élément structural horizontal travaillant en flexion.',
+    longDefinition: 'Élément structural horizontal travaillant en flexion.',
+    examples: [],
+    synonyms: [],
+    relatedTerms: [],
+    tags: [],
+    sources: [{ label: 'glossaire-local', type: 'internal' }],
+    confidence: 'indicatif',
+    createdAt: '2026-06-20',
+    updatedAt: '2026-06-20',
     ...p,
   }
 }
@@ -33,7 +44,7 @@ describe('tagsFromKnowledge', () => {
   })
 
   it('ignore les valeurs vides', () => {
-    const tags = tagsFromKnowledge(entry({ synonyms: ['', '   '], source: '' }))
+    const tags = tagsFromKnowledge(entry({ synonyms: ['', '   '], sources: [{ label: '', type: 'internal' }] }))
     expect(tags).toEqual(['knowledge', 'structure'])
   })
 })
@@ -55,14 +66,16 @@ describe('flashcardFromKnowledge', () => {
   })
 
   it('trim le recto/verso', () => {
-    const input = flashcardFromKnowledge(entry({ term: '  Dalle  ', definition: '  Plancher.  ' }))
+    const input = flashcardFromKnowledge(
+      entry({ term: '  Dalle  ', shortDefinition: '  Plancher.  ', longDefinition: '  Plancher.  ' }),
+    )
     expect(input!.front).toBe('Dalle')
     expect(input!.back).toBe('Plancher.')
   })
 
   it('renvoie null si terme ou définition vide', () => {
     expect(flashcardFromKnowledge(entry({ term: '   ' }))).toBeNull()
-    expect(flashcardFromKnowledge(entry({ definition: '' }))).toBeNull()
+    expect(flashcardFromKnowledge(entry({ shortDefinition: '', longDefinition: '' }))).toBeNull()
   })
 })
 
@@ -78,24 +91,21 @@ describe('examQuestionFromKnowledge', () => {
     expect(q!.source).toBe('flashcard')
   })
 
-  it('porte la source et la confidence dans les notes (traçabilité)', () => {
-    const q = examQuestionFromKnowledge(entry({ source: 'wiki-extract', confidence: 0.42 }), {
-      idFn: () => 'q-2',
-    })
+  it('porte la source et le libellé de confiance dans les notes (traçabilité)', () => {
+    const q = examQuestionFromKnowledge(
+      entry({ sources: [{ label: 'wiki-extract', type: 'web' }], confidence: 'à-vérifier' }),
+      { idFn: () => 'q-2' },
+    )
     expect(q!.notes).toContain('source: wiki-extract')
-    expect(q!.notes).toContain('confiance: 0.42')
+    expect(q!.notes).toContain(`confiance: ${KNOWLEDGE_CONFIDENCE_LABEL['à-vérifier']}`)
   })
 
-  it('borne la confidence hors [0,1] et tolère NaN', () => {
-    expect(examQuestionFromKnowledge(entry({ confidence: 5 }), { idFn: () => 'a' })!.notes).toContain(
-      'confiance: 1.00',
+  it('indique « inconnue » quand la source est vide', () => {
+    const q = examQuestionFromKnowledge(
+      entry({ sources: [{ label: '', type: 'internal' }] }),
+      { idFn: () => 'a' },
     )
-    expect(
-      examQuestionFromKnowledge(entry({ confidence: -2 }), { idFn: () => 'b' })!.notes,
-    ).toContain('confiance: 0.00')
-    expect(
-      examQuestionFromKnowledge(entry({ confidence: Number.NaN }), { idFn: () => 'c' })!.notes,
-    ).toContain('confiance: 0.00')
+    expect(q!.notes).toContain('source: inconnue')
   })
 
   it('respecte points custom et renvoie null si vide', () => {

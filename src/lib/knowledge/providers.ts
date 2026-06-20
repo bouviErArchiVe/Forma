@@ -7,15 +7,19 @@
  * que de fabriquer une définition.
  *
  * Le provider de référence (`architectureGlossaryProvider`) adapte le
- * glossaire existant du module Dictionnaire en `KnowledgeEntry`, en lecture
- * seule, sans modifier son comportement.
+ * glossaire existant du module Dictionnaire en `KnowledgeEntry` (schéma
+ * canonique), en lecture seule, sans modifier son comportement.
  */
 import {
   ARCHITECTURE_GLOSSARY,
   normalizeQuery,
   type GlossaryEntry,
 } from '../../modules/dictionary/architecture-glossary'
-import { makeKnowledgeEntry, type KnowledgeEntry } from './model'
+import {
+  entryDefinition,
+  makeKnowledgeEntry,
+  type KnowledgeEntry,
+} from './model'
 import { parseSearchIntent } from './search-intent'
 
 export interface KnowledgeProvider {
@@ -32,28 +36,46 @@ export interface KnowledgeProvider {
 }
 
 const ARCH_DOMAIN = 'architecture'
-const ARCH_SOURCE = 'Base intégrée — Glossaire d’architecture Forma'
+const ARCH_SOURCE_LABEL = 'Base intégrée — Glossaire d’architecture Forma'
+
+/** Slug normalisé (a-z0-9 + tirets) pour un terme. */
+function termSlug(term: string): string {
+  return normalizeQuery(term).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
 
 /** Slug stable pour l'`id` d'une entrée (domaine:terme normalisé). */
 function entryId(domain: string, term: string): string {
-  return `${domain}:${normalizeQuery(term).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}`
+  return `${domain}:${termSlug(term)}`
 }
 
+const GLOSSARY_TIMESTAMP = '2026-06-20'
+
 /**
- * Adapte une `GlossaryEntry` du Dictionnaire en `KnowledgeEntry`.
- * Source et confiance sont systématiquement attribuées (jamais inventées) :
- * une définition de terminologie usuelle relève de la confiance « indicatif ».
+ * Adapte une `GlossaryEntry` du Dictionnaire en `KnowledgeEntry` (schéma
+ * canonique). Source et confiance sont systématiquement attribuées (jamais
+ * inventées) : une définition de terminologie usuelle relève de la confiance
+ * « indicatif ».
  */
 export function glossaryEntryToKnowledge(entry: GlossaryEntry): KnowledgeEntry {
   const tags = [entry.category, ...entry.synonyms].filter((t) => t.trim() !== '')
   return makeKnowledgeEntry({
     id: entryId(ARCH_DOMAIN, entry.term),
+    slug: termSlug(entry.term),
     term: entry.term,
+    language: 'fr',
+    type: 'concept',
     domain: ARCH_DOMAIN,
-    definition: entry.definition,
-    source: ARCH_SOURCE,
-    confidence: 'indicatif',
+    subdomain: entry.category,
+    shortDefinition: entry.definition,
+    longDefinition: entry.definition,
+    examples: entry.example ? [entry.example] : [],
+    synonyms: entry.synonyms,
+    relatedTerms: [],
     tags,
+    sources: [{ label: ARCH_SOURCE_LABEL, type: 'internal' }],
+    confidence: 'indicatif',
+    createdAt: GLOSSARY_TIMESTAMP,
+    updatedAt: GLOSSARY_TIMESTAMP,
   })
 }
 
@@ -101,8 +123,9 @@ export function scoreEntries(entries: KnowledgeEntry[], query: string): Knowledg
     if (term === q) score = 5
     else if (term.startsWith(q)) score = 4
     else if (term.includes(q)) score = 3
-    else if ((entry.tags ?? []).some((t) => normalizeQuery(t).includes(q))) score = 2
-    else if (normalizeQuery(entry.definition).includes(q)) score = 1
+    else if (entry.synonyms.some((s) => normalizeQuery(s).includes(q))) score = 2
+    else if (entry.tags.some((t) => normalizeQuery(t).includes(q))) score = 2
+    else if (normalizeQuery(entryDefinition(entry)).includes(q)) score = 1
     if (score > 0) scored.push({ entry, score })
   }
 

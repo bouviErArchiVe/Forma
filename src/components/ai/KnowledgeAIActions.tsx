@@ -28,7 +28,7 @@ import {
   type KnowledgeActionKind,
   type KnowledgeActionResult,
 } from '../../lib/ai/knowledge-actions'
-import type { KnowledgeEntry } from '../../lib/knowledge'
+import { entrySourceLabel, type KnowledgeEntry } from '../../lib/knowledge'
 import { getProvider, resolveProviderSettings } from '../../services/ai/providers'
 import { useToastStore } from '../../stores/toastStore'
 
@@ -57,7 +57,7 @@ function EntrySource({ entry }: { entry: KnowledgeEntry }) {
     <p className="text-[10px] text-forma-muted leading-snug">
       <span className="font-medium text-forma-text">{entry.term}</span>
       {' — '}
-      <span>Source : {entry.source}</span>
+      <span>Source : {entrySourceLabel(entry)}</span>
       {' · '}
       <span>Confiance : {confidenceLabel(entry)}</span>
     </p>

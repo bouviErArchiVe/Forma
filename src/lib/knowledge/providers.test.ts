@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import { ARCHITECTURE_GLOSSARY } from '../../modules/dictionary/architecture-glossary'
-import { isValidKnowledgeEntry } from './model'
+import { entryDefinition, entrySourceLabel, isValidKnowledgeEntry } from './model'
 import {
   allKnowledge,
   answerKnowledge,
@@ -20,9 +20,10 @@ describe('architectureGlossaryProvider', () => {
     expect(entries.length).toBe(ARCHITECTURE_GLOSSARY.length)
     for (const e of entries) {
       expect(isValidKnowledgeEntry(e), e.term).toBe(true)
-      expect(e.source.trim().length).toBeGreaterThan(0)
+      expect(entrySourceLabel(e).trim().length).toBeGreaterThan(0)
       expect(e.confidence).toBe('indicatif')
       expect(e.domain).toBe('architecture')
+      expect(e.type).toBe('concept')
     }
   })
 
@@ -34,9 +35,9 @@ describe('architectureGlossaryProvider', () => {
   it('glossaryEntryToKnowledge préserve la définition et indexe synonymes/catégorie', () => {
     const src = ARCHITECTURE_GLOSSARY.find((e) => e.term === 'poutre')!
     const k = glossaryEntryToKnowledge(src)
-    expect(k.definition).toBe(src.definition)
+    expect(entryDefinition(k)).toBe(src.definition)
     expect(k.tags).toContain(src.category)
-    for (const syn of src.synonyms) expect(k.tags).toContain(syn)
+    for (const syn of src.synonyms) expect(k.synonyms).toContain(syn)
   })
 })
 
@@ -54,7 +55,7 @@ describe('lookup (honnêteté)', () => {
   it('answerKnowledge signale l’inconnu sans inventer', () => {
     const known = answerKnowledge('poteau')
     expect(known.found).toBe(true)
-    if (known.found) expect(known.entry.source.trim()).not.toBe('')
+    if (known.found) expect(entrySourceLabel(known.entry).trim()).not.toBe('')
 
     const unknown = answerKnowledge('terme totalement absent')
     expect(unknown).toEqual({ found: false, term: 'terme totalement absent', reason: 'unknown' })
@@ -72,7 +73,7 @@ describe('search / scoreEntries', () => {
     expect(hits[0]?.term).toBe('élévation')
   })
 
-  it('trouve par tag (synonyme indexé)', () => {
+  it('trouve par synonyme/tag indexé', () => {
     const hits = searchKnowledge('placoplatre')
     expect(hits.some((e) => e.term === 'panneau de gypse')).toBe(true)
   })

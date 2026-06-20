@@ -11,7 +11,7 @@
 import { useState } from 'react'
 import { Icon } from '../ui/Icon'
 import { createFlashcardFromKnowledge } from '../../services/knowledge-study'
-import type { KnowledgeEntry } from '../../lib/study/knowledge-study'
+import type { KnowledgeEntry } from '../../lib/knowledge'
 import { useToastStore } from '../../stores/toastStore'
 
 export function CreateFlashcardFromKnowledgeButton({
