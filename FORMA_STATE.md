@@ -387,3 +387,12 @@ Search indexe beaucoup de systèmes. Les nouveaux modules doivent être ajoutés
 Ne jamais inventer d’articles officiels. Toujours afficher :
 
 > À vérifier dans le texte officiel. Résultat indicatif.
+
+## Sprint #7 — Knowledge route / search / state (Lane E)
+
+- Données : base de connaissance **920 entrées sourcées** intégrée (seeds Lane K, chargées paresseusement, hors bundle principal).
+- Route : `/dictionary` (lazy) — navigateur Knowledge réel : recherche (`searchKnowledgeBase`), parcours par domaine, fiche via `?slug=`, deep link `?q=`. Source + confiance **toujours visibles** (badge « À vérifier »). No-result **honnête** (aucune définition inventée), slug introuvable → message, pas de crash.
+- Reachability : 1 entrée « Dictionnaire » dans le menu overflow de LibraryPage (aucune page orpheline).
+- Search : nouveau kind `knowledge` dans `searchEcosystem` (top ~5, lien `'/dictionary?slug=…'`), import **dynamique** de `@/lib/knowledge` dans le corps async (seeds jamais en eager). Icône 📖 dans SearchPage.
+- Dexie : **inchangé** (aucune migration, aucune table).
+- Limites : pas de filtres avancés (type/confiance), pas de pagination du parcours (échantillon par domaine), recherche knowledge non débouncée côté écosystème (bornée à 5).
