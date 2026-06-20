@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "icons": "node scripts/generate-pwa-icons.mjs",
     "knowledge:quality": "vite-node scripts/knowledge-quality.ts",
-    "knowledge:import": "vite-node scripts/knowledge-import.ts"
+    "knowledge:import": "vite-node scripts/knowledge-import.ts",
+    "knowledge:upgrade": "vite-node scripts/knowledge-upgrade.ts"
   },
   "dependencies": {
     "dexie": "^4.4.3",
