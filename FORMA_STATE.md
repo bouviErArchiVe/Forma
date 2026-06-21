@@ -443,6 +443,14 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - Garanties : `/dictionary` + Search + bridge inchangés ; Dexie inchangé ; seeds toujours lazy/code-split (index ~314 KB, seedToken=0) ; source+confidence obligatoires ; pas de suppression auto.
 - Limites : 221/919 « ok » (≈ 700 restent weak/review) ; quasi-dup = synonymies à revoir ; pas d'UI de promotion (pipeline CLI).
 
+## Sprint #15 — Content Upgrade Pack #3 (Lanes U3 + E)
+
+- **upgrade-pack-03.json** : ~140 entrées EXISTANTES enrichies — surtout le vocabulaire général (méthodes d'étude/travail, UX, numérique) + concepts restants (matériaux, systèmes, architecture, intérieur, histoire/durabilité). Toutes : short/longDefinition réelle, examples, synonyms, relatedTerms, tags, source honnête, confidence (concept/indicatif).
+- **Preuve mesurée** : **ok 221 → 372** (cible 350+ dépassée), weak 585 → 434, review 113 inchangé, score moyen 0.59 → 0.66. Doublons **exacts = 0** ; quasi 6 → 11 (synonymies réelles : synonyme~antonyme, résumé~synthèse, modèle~maquette, habitude~routine… — à arbitrer humainement). Base inchangée à **919**.
+- Pipeline multi-packs : applique `upgrade-pack-01/02/03`. Seeds réécrits par pipeline uniquement.
+- Garanties : `/dictionary` + Search + bridge inchangés ; Dexie inchangé ; seeds lazy/code-split (index 314 KB, seedToken=0).
+- Limites : 372/919 « ok » (≈ 547 restent weak/review — surtout normatif/biographique honnêtement à-vérifier → review, et entrées non encore traitées) ; quasi-dup = synonymies à revoir.
+
 ## Sprint #12 — Local AI Provider (LM Studio / Ollama) (Lanes P + G + E)
 
 - **Provider `localmodel`** (`src/services/ai/providers/localmodel.ts`) : OpenAI-compatible `POST {baseUrl}/chat/completions` via **fetch** (aucun SDK), **clé optionnelle**, **timeout** configurable. `fromCloud:false` / `fromLocalModel:true`. Cible **LM Studio** (`http://localhost:1234/v1`) et **Ollama** (`http://localhost:11434/v1`). `testLocalModelConnection` (GET `/models`).

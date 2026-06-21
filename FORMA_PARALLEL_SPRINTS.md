@@ -310,6 +310,19 @@ Résultat : **ok 79 → 221** (cible dépassée), weak 729 → 585, doublons exa
 
 ---
 
+# Sprint #15 — Content Upgrade Pack #3 (Lanes U3 + E)
+
+Objectif : ok 221 → 350+ via le pipeline, sans volume sale, sans refonte UI.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| U3 | `upgrade-pack-03.json` : ~140 entrées existantes enrichies (vocabulaire général d'étude/méthode/UX + concepts archi/constr/intérieur/histoire restants) | `src/data/knowledge/upgrades/upgrade-pack-03.json` (+ seeds réécrits) |
+| E | Apply (pipeline multi-packs), état/docs, QA | `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Résultat : **ok 221 → 372** (cible dépassée), weak 585 → 434, doublons exacts = 0, base 919. `/dictionary`/Search/bridge intacts, Dexie inchangé, seeds lazy/code-split. Full gate vert ; lanes en ligne.
+
+---
+
 # Sprint #12 — Local AI Provider LM Studio / Ollama (Lanes P + G + E)
 
 Objectif : un vrai provider IA **local** OpenAI-compatible, sans cloud ni clé obligatoire, avec **grounding Knowledge**. Sans SDK lourd (fetch only), strictement opt-in, sans appel réseau si non configuré.
