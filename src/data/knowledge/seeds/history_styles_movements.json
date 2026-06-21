@@ -44,28 +44,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "albédo est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « albédo » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Capacité d'une surface à réfléchir le soleil.",
+    "longDefinition": "L'albédo mesure la part du rayonnement solaire qu'une surface réfléchit. Des surfaces claires à fort albédo limitent l'échauffement et l'îlot de chaleur urbain.",
     "examples": [
-      "Identifier albédo dans une étude de cas",
-      "Relier albédo à un projet contemporain"
+      "Toiture à fort albédo",
+      "Surfaces claires anti-chaleur"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "toiture blanche",
+      "îlot de chaleur",
+      "ensoleillement"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -116,28 +114,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture bioclimatique est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture bioclimatique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Conception tirant parti du climat local.",
+    "longDefinition": "L'architecture bioclimatique conçoit le bâtiment en tirant parti du climat (soleil, vent, inertie) pour le confort, en minimisant les besoins techniques. Orientation, protections solaires et ventilation naturelle en sont des leviers.",
     "examples": [
-      "Identifier architecture bioclimatique dans une étude de cas",
-      "Relier architecture bioclimatique à un projet contemporain"
+      "Maison bioclimatique",
+      "Apports solaires passifs"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "orientation solaire",
+      "ventilation naturelle",
+      "masse thermique"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception bioclimatique (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -369,28 +365,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture industrielle est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture industrielle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Bâti et esthétique nés de l'industrie.",
+    "longDefinition": "L'architecture industrielle désigne les bâtiments de production et l'esthétique qui en découle : grandes portées, structure apparente acier/béton, matériaux bruts. Sa reconversion nourrit de nombreux projets contemporains.",
     "examples": [
-      "Identifier architecture industrielle dans une étude de cas",
-      "Relier architecture industrielle à un projet contemporain"
+      "Halle industrielle reconvertie",
+      "Structure métallique apparente"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "reconversion",
+      "brutalisme",
+      "high-tech"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -480,28 +474,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture japonaise est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture japonaise » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Tradition bâtie japonaise, bois, modularité et nature.",
+    "longDefinition": "L'architecture japonaise traditionnelle privilégie le bois, une trame modulaire (tatami), des cloisons légères et un rapport étroit au jardin et à la nature. Elle inspire épure et flexibilité.",
     "examples": [
-      "Identifier architecture japonaise dans une étude de cas",
-      "Relier architecture japonaise à un projet contemporain"
+      "Maison à cloisons coulissantes",
+      "Trame de tatamis"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture vernaculaire",
+      "minimalisme",
+      "métabolisme japonais"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -517,28 +509,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture méditerranéenne est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture méditerranéenne » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Bâti du pourtour méditerranéen adapté à la chaleur.",
+    "longDefinition": "L'architecture méditerranéenne répond à la chaleur et au soleil par des murs épais à forte inertie, de petites ouvertures, patios et toitures en tuiles. Elle illustre une réponse vernaculaire au climat.",
     "examples": [
-      "Identifier architecture méditerranéenne dans une étude de cas",
-      "Relier architecture méditerranéenne à un projet contemporain"
+      "Maison à patio méditerranéen",
+      "Murs blancs et petites baies"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture vernaculaire",
+      "patio",
+      "inertie thermique"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -589,28 +579,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture paramétrique est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture paramétrique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Conception pilotée par des règles et paramètres.",
+    "longDefinition": "L'architecture paramétrique génère des formes à partir de règles et de paramètres ajustables, à l'aide d'outils numériques. Elle permet des géométries complexes et l'optimisation.",
     "examples": [
-      "Identifier architecture paramétrique dans une étude de cas",
-      "Relier architecture paramétrique à un projet contemporain"
+      "Façade paramétrique",
+      "Optimisation par paramètres"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "déconstructivisme",
+      "high-tech",
+      "modèle"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "concept"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -735,28 +723,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture scandinave est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture scandinave » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Approche nordique, lumière, bois et fonctionnalité.",
+    "longDefinition": "L'architecture scandinave conjugue formes sobres, matériaux naturels (bois), recherche de lumière et fonctionnalité chaleureuse, en réponse aux longs hivers. Elle a fortement influencé le design moderne.",
     "examples": [
-      "Identifier architecture scandinave dans une étude de cas",
-      "Relier architecture scandinave à un projet contemporain"
+      "Intérieur scandinave lumineux",
+      "Bois clair et lignes sobres"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "minimalisme",
+      "fonctionnalisme",
+      "architecture durable"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1093,28 +1079,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "carbone incorporé est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « carbone incorporé » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Carbone émis par la fabrication des matériaux.",
+    "longDefinition": "Le carbone incorporé regroupe les émissions liées à l'extraction, la fabrication et le transport des matériaux d'un bâtiment, hors usage. Le réduire passe par des matériaux bas carbone et le réemploi.",
     "examples": [
-      "Identifier carbone incorporé dans une étude de cas",
-      "Relier carbone incorporé à un projet contemporain"
+      "Réduire le carbone incorporé",
+      "Matériaux bas carbone"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "carbone gris"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "empreinte carbone",
+      "cycle de vie",
+      "réemploi"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1204,28 +1190,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "confort adaptatif est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « confort adaptatif » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Confort tenant compte de l'adaptation des occupants.",
+    "longDefinition": "Le confort adaptatif reconnaît que les occupants s'ajustent au climat (vêtements, ouvertures) et acceptent une plage de températures plus large en ventilation naturelle. Il élargit la notion de confort au-delà d'une consigne fixe.",
     "examples": [
-      "Identifier confort adaptatif dans une étude de cas",
-      "Relier confort adaptatif à un projet contemporain"
+      "Plage de confort élargie",
+      "Confort en ventilation naturelle"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "ventilation naturelle",
+      "inertie thermique",
+      "architecture bioclimatique"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1241,28 +1225,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "conservation est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « conservation » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Préservation d'un bâti ou d'un site dans son état.",
+    "longDefinition": "La conservation vise à préserver un bâtiment ou un site dans son état et sa matérialité, en limitant les interventions. Elle est centrale dans le traitement du patrimoine.",
     "examples": [
-      "Identifier conservation dans une étude de cas",
-      "Relier conservation à un projet contemporain"
+      "Conservation d'un monument",
+      "Mesures de conservation"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "patrimoine bâti",
+      "restauration",
+      "site historique"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "patrimoine"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Patrimoine (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1387,28 +1369,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "design universel est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « design universel » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Concevoir pour le plus grand nombre sans adaptation.",
+    "longDefinition": "Le design universel vise des espaces et produits utilisables par tous, quels que soient l'âge ou les capacités, sans adaptation spécifique. Il dépasse la mise aux normes en intégrant l'inclusion dès la conception.",
     "examples": [
-      "Identifier design universel dans une étude de cas",
-      "Relier design universel à un projet contemporain"
+      "Accès de plain-pied pour tous",
+      "Conception inclusive"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "conception inclusive"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "accessibilité universelle",
+      "ergonomie (terme général)",
+      "rampe"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "concept"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception inclusive (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1601,28 +1583,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "front bâti est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « front bâti » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Alignement des façades sur la rue.",
+    "longDefinition": "Le front bâti est la ligne formée par les façades qui bordent une rue ou un espace public. Continu ou discontinu, il définit le caractère de la rue.",
     "examples": [
-      "Identifier front bâti dans une étude de cas",
-      "Relier front bâti à un projet contemporain"
+      "Front bâti continu",
+      "Aligner sur le front bâti"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "alignement",
+      "espace public",
+      "morphologie urbaine"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Urbanisme (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1712,28 +1692,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "high-tech est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « high-tech » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style exhibant structure et technique.",
+    "longDefinition": "Le high-tech met en scène la structure, les réseaux et la technologie comme expression architecturale, souvent en acier et verre. Il célèbre la performance et la légèreté.",
     "examples": [
-      "Identifier high-tech dans une étude de cas",
-      "Relier high-tech à un projet contemporain"
+      "Réseaux exposés en façade",
+      "Structure exhibée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture industrielle",
+      "architecture paramétrique",
+      "modernisme"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "concept"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1970,28 +1948,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "monument est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « monument » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Édifice de valeur mémorielle ou symbolique.",
+    "longDefinition": "Un monument est un édifice ou ouvrage marquant par sa valeur historique, artistique ou symbolique, souvent protégé. Il structure la mémoire et l'espace collectifs.",
     "examples": [
-      "Identifier monument dans une étude de cas",
-      "Relier monument à un projet contemporain"
+      "Monument historique",
+      "Monument commémoratif"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "patrimoine bâti",
+      "site historique",
+      "conservation"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "patrimoine"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Patrimoine (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2007,28 +1983,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "morphologie urbaine est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « morphologie urbaine » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Forme et structure du tissu urbain.",
+    "longDefinition": "La morphologie urbaine étudie la forme du tissu bâti : trame des rues, découpage parcellaire, gabarits et rapports pleins/vides. Elle éclaire la lecture et la transformation de la ville.",
     "examples": [
-      "Identifier morphologie urbaine dans une étude de cas",
-      "Relier morphologie urbaine à un projet contemporain"
+      "Morphologie d'un quartier",
+      "Analyse morphologique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "tracé urbain",
+      "front bâti",
+      "parcelle"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Urbanisme (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2155,31 +2129,32 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "net zéro est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « net zéro » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Bilan énergétique ou carbone net nul.",
+    "longDefinition": "Le net zéro désigne un bâtiment dont la consommation d'énergie (ou les émissions de carbone) est compensée sur l'année par une production ou des compensations équivalentes. Les périmètres exacts varient selon les référentiels.",
     "examples": [
-      "Identifier net zéro dans une étude de cas",
-      "Relier net zéro à un projet contemporain"
+      "Bâtiment net zéro énergie",
+      "Objectif net zéro carbone"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "zéro net"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "maison passive",
+      "empreinte carbone",
+      "sobriété énergétique"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course",
+        "note": "Définition et périmètre à préciser selon le référentiel applicable."
       }
     ],
-    "confidence": "concept",
+    "confidence": "à-vérifier",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 60
@@ -2369,28 +2344,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "parcelle est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « parcelle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Unité foncière de base d'un terrain.",
+    "longDefinition": "La parcelle est l'unité foncière de base, délimitée et appartenant à un propriétaire, sur laquelle s'implante le projet. Sa forme et ses règles conditionnent l'implantation.",
     "examples": [
-      "Identifier parcelle dans une étude de cas",
-      "Relier parcelle à un projet contemporain"
+      "Parcelle constructible",
+      "Découpage parcellaire"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "lot"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "implantation",
+      "morphologie urbaine",
+      "front bâti"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Urbanisme (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2443,28 +2418,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "patrimoine bâti est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « patrimoine bâti » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Ensemble des constructions de valeur héritées.",
+    "longDefinition": "Le patrimoine bâti regroupe les constructions héritées ayant une valeur historique, architecturale ou culturelle. Sa protection encadre les interventions possibles.",
     "examples": [
-      "Identifier patrimoine bâti dans une étude de cas",
-      "Relier patrimoine bâti à un projet contemporain"
+      "Inventaire du patrimoine bâti",
+      "Bâtiment patrimonial"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "conservation",
+      "site historique",
+      "monument"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "patrimoine"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Patrimoine (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2554,28 +2527,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "place publique est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « place publique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Espace public ouvert de rassemblement.",
+    "longDefinition": "La place publique est un espace ouvert de la ville dédié au rassemblement, au marché ou à la circulation. Sa forme, ses bordures et ses usages en font un lieu de vie collective.",
     "examples": [
-      "Identifier place publique dans une étude de cas",
-      "Relier place publique à un projet contemporain"
+      "Place de marché",
+      "Réaménager une place"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "espace public",
+      "placemaking",
+      "front bâti"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Urbanisme (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2663,28 +2634,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "reconversion est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « reconversion » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Changement d'usage d'un bâtiment existant.",
+    "longDefinition": "La reconversion (ou adaptive reuse) transforme un bâtiment pour un nouvel usage, préservant sa structure et sa mémoire. Elle valorise l'existant et économise des ressources.",
     "examples": [
-      "Identifier reconversion dans une étude de cas",
-      "Relier reconversion à un projet contemporain"
+      "Friche industrielle reconvertie en logements",
+      "Reconversion d'une église"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "adaptive reuse"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "réhabilitation",
+      "patrimoine bâti",
+      "réemploi"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2844,28 +2815,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "réemploi est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « réemploi » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Réutilisation de matériaux ou éléments existants.",
+    "longDefinition": "Le réemploi consiste à réutiliser des matériaux ou éléments de construction existants plutôt que de les jeter, réduisant déchets et carbone incorporé. Il demande dépose soignée et requalification.",
     "examples": [
-      "Identifier réemploi dans une étude de cas",
-      "Relier réemploi à un projet contemporain"
+      "Réemploi de briques",
+      "Matériaux de réemploi"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "économie circulaire",
+      "carbone incorporé",
+      "réhabilitation"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2918,28 +2887,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "réhabilitation est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « réhabilitation » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Remise à niveau d'un bâtiment existant.",
+    "longDefinition": "La réhabilitation rénove et met à niveau un bâtiment existant (confort, performance, sécurité) tout en conservant sa structure. Elle prolonge la vie du bâti.",
     "examples": [
-      "Identifier réhabilitation dans une étude de cas",
-      "Relier réhabilitation à un projet contemporain"
+      "Réhabilitation énergétique",
+      "Réhabiliter un immeuble ancien"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "reconversion",
+      "conservation",
+      "patrimoine bâti"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3029,28 +2996,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "sobriété énergétique est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « sobriété énergétique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Réduction des besoins énergétiques à la source.",
+    "longDefinition": "La sobriété énergétique vise à réduire les besoins en énergie par la conception et les usages, avant même d'améliorer l'efficacité ou de produire. C'est le premier levier de la performance.",
     "examples": [
-      "Identifier sobriété énergétique dans une étude de cas",
-      "Relier sobriété énergétique à un projet contemporain"
+      "Sobriété avant technique",
+      "Réduire les besoins de chauffage"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture durable",
+      "maison passive",
+      "performance"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3249,28 +3214,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "trame verte est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « trame verte » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Réseau d'espaces végétalisés reliés.",
+    "longDefinition": "La trame verte est un réseau continu d'espaces végétalisés (parcs, alignements, corridors) qui soutient la biodiversité et le confort urbain. Reliée à la trame bleue (eau), elle structure la ville durable.",
     "examples": [
-      "Identifier trame verte dans une étude de cas",
-      "Relier trame verte à un projet contemporain"
+      "Trame verte d'un quartier",
+      "Corridors végétalisés"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "corridor écologique",
+      "îlot de chaleur",
+      "espace public"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Urbanisme durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3360,28 +3323,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "ville compacte est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « ville compacte » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Modèle urbain dense limitant l'étalement.",
+    "longDefinition": "La ville compacte regroupe les fonctions et densifie le bâti pour limiter l'étalement, économiser le sol et soutenir transports et services de proximité. Elle s'oppose à l'étalement pavillonnaire.",
     "examples": [
-      "Identifier ville compacte dans une étude de cas",
-      "Relier ville compacte à un projet contemporain"
+      "Densifier en ville compacte",
+      "Limiter l'étalement urbain"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "densité",
+      "mixité fonctionnelle",
+      "ville marchable"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Urbanisme durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3397,28 +3358,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "ville marchable est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « ville marchable » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Ville pensée pour les déplacements à pied.",
+    "longDefinition": "La ville marchable favorise les déplacements à pied par des distances courtes, des trottoirs confortables et une mixité des usages. Elle améliore santé, lien social et sobriété.",
     "examples": [
-      "Identifier ville marchable dans une étude de cas",
-      "Relier ville marchable à un projet contemporain"
+      "Quartier marchable",
+      "Distances à pied réduites"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "mobilité active",
+      "ville compacte",
+      "rue complète"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Urbanisme durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3506,28 +3465,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "éclectisme est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « éclectisme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Mélange assumé de styles historiques.",
+    "longDefinition": "L'éclectisme combine des éléments empruntés à plusieurs styles historiques dans un même édifice, courant au XIXᵉ siècle. Il témoigne d'un rapport libre aux références du passé.",
     "examples": [
-      "Identifier éclectisme dans une étude de cas",
-      "Relier éclectisme à un projet contemporain"
+      "Façade éclectique",
+      "Mélange de références"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "néoclassicisme",
+      "Art nouveau",
+      "postmodernisme"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",

@@ -79,31 +79,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "applique murale est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « applique murale » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Luminaire fixé au mur.",
+    "longDefinition": "L'applique murale est un luminaire fixé au mur qui diffuse une lumière d'appoint ou d'ambiance, souvent indirecte. Elle libère les plans et souligne une paroi.",
     "examples": [
-      "Identifier applique murale sur un plan",
-      "Décrire applique murale dans une fiche de projet"
+      "Applique de chevet",
+      "Applique d'éclairage indirect"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "suspension",
+      "éclairage encastré",
+      "ambiance"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "éclairage"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 3
@@ -153,31 +151,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "armoire est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « armoire » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Meuble de rangement vertical fermé.",
+    "longDefinition": "L'armoire est un meuble haut et fermé servant à ranger vêtements ou objets. Posée ou intégrée, elle structure le rangement d'une pièce.",
     "examples": [
-      "Identifier armoire sur un plan",
-      "Décrire armoire dans une fiche de projet"
+      "Armoire de chambre",
+      "Armoire intégrée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "placard",
+      "rangement",
+      "walk-in"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "mobilier"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 5
@@ -264,31 +260,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "baignoire est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « baignoire » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Cuve sanitaire pour se baigner.",
+    "longDefinition": "La baignoire est une cuve destinée au bain, installée le long d'un mur ou en îlot. Son poids en eau et son raccordement guident son emplacement.",
     "examples": [
-      "Identifier baignoire sur un plan",
-      "Décrire baignoire dans une fiche de projet"
+      "Baignoire îlot",
+      "Tablier de baignoire"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "douche",
+      "salle de bain",
+      "robinet"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "sanitaire"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 8
@@ -338,31 +332,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "buanderie est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « buanderie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Local dédié au lavage et au séchage du linge.",
+    "longDefinition": "La buanderie est le local équipé pour laver et sécher le linge, raccordé à la plomberie et à la ventilation. Sa position près des chambres ou de la cuisine optimise les trajets.",
     "examples": [
-      "Identifier buanderie sur un plan",
-      "Décrire buanderie dans une fiche de projet"
+      "Buanderie à l'étage",
+      "Coin buanderie"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "plomberie",
+      "ventilation",
+      "rangement"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 10
@@ -486,31 +478,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "chambre est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « chambre » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Pièce de repos et de sommeil.",
+    "longDefinition": "La chambre est l'espace privé dédié au sommeil et au repos. Son calme, son obscurité possible et ses rangements en font la qualité.",
     "examples": [
-      "Identifier chambre sur un plan",
-      "Décrire chambre dans une fiche de projet"
+      "Chambre d'enfant",
+      "Chambre avec placard"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "chambre principale",
+      "rangement",
+      "walk-in"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 14
@@ -523,31 +513,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "chambre principale est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « chambre principale » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Chambre maître, souvent avec salle de bain attenante.",
+    "longDefinition": "La chambre principale est la plus grande chambre, fréquemment dotée d'une salle de bain et d'un walk-in attenants. Elle offre une suite privée aux occupants principaux.",
     "examples": [
-      "Identifier chambre principale sur un plan",
-      "Décrire chambre principale dans une fiche de projet"
+      "Suite parentale",
+      "Chambre principale avec walk-in"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "suite parentale"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "chambre",
+      "walk-in",
+      "salle de bain"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 15
@@ -560,31 +550,32 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "charnière est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « charnière » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Pièce articulant un ouvrant sur son cadre.",
+    "longDefinition": "La charnière (ou penture) est l'articulation métallique qui relie un ouvrant à son cadre et lui permet de pivoter. Son réglage assure l'aplomb et la fermeture.",
     "examples": [
-      "Identifier charnière sur un plan",
-      "Décrire charnière dans une fiche de projet"
+      "Charnières d'une porte",
+      "Charnière invisible de meuble"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "penture",
+      "gond"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "penture",
+      "quincaillerie",
+      "porte"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "quincaillerie"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 16
@@ -782,31 +773,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "conduit est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « conduit » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Gaine acheminant fluide, air ou câbles.",
+    "longDefinition": "Un conduit est une gaine qui achemine un fluide, de l'air ou des câbles à travers le bâtiment. Son dimensionnement et son tracé sont coordonnés avec la structure.",
     "examples": [
-      "Identifier conduit sur un plan",
-      "Décrire conduit dans une fiche de projet"
+      "Conduit de ventilation",
+      "Conduit technique"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "gaine"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "ventilation",
+      "plomberie",
+      "local mécanique"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "réseaux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 22
@@ -891,31 +882,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "corridor est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « corridor » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Couloir de circulation intérieure.",
+    "longDefinition": "Le corridor est un couloir étroit reliant les pièces d'un étage. Sa largeur et son éclairage conditionnent le confort et l'accessibilité.",
     "examples": [
-      "Identifier corridor sur un plan",
-      "Décrire corridor dans une fiche de projet"
+      "Corridor desservant les chambres",
+      "Corridor accessible"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "couloir"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "circulation intérieure",
+      "dégagement fonctionnel",
+      "vestibule"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "circulation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 25
@@ -1037,31 +1028,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "dosseret est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « dosseret » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Relevé protégeant le mur derrière un comptoir.",
+    "longDefinition": "Le dosseret est la bande verticale, prolongeant un comptoir contre le mur, qui protège la paroi des projections. En cuisine, la crédence en est une forme étendue.",
     "examples": [
-      "Identifier dosseret sur un plan",
-      "Décrire dosseret dans une fiche de projet"
+      "Dosseret de comptoir",
+      "Crédence et dosseret"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "crédence"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "comptoir",
+      "céramique",
+      "cuisine"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "cuisine"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 29
@@ -1074,31 +1065,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "douche est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « douche » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Équipement d'hygiène à jet d'eau, debout.",
+    "longDefinition": "La douche est un équipement sanitaire où l'on se lave sous un jet d'eau, dans un receveur ou à l'italienne de plain-pied. Son étanchéité et son évacuation demandent un soin particulier.",
     "examples": [
-      "Identifier douche sur un plan",
-      "Décrire douche dans une fiche de projet"
+      "Douche à l'italienne",
+      "Niche de douche"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "baignoire",
+      "salle de bain",
+      "niche de douche"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "sanitaire"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 30
@@ -1368,31 +1357,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "entrée est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « entrée » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Espace d'accueil au seuil du logement.",
+    "longDefinition": "L'entrée est le premier espace du logement, qui accueille, distribue et fait transition avec l'extérieur. Rangements et assise y améliorent l'usage.",
     "examples": [
-      "Identifier entrée sur un plan",
-      "Décrire entrée dans une fiche de projet"
+      "Entrée avec placard",
+      "Hall d'entrée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "vestibule",
+      "seuil",
+      "mudroom"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 38
@@ -1514,31 +1501,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "garage est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « garage » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Espace abrité pour véhicules.",
+    "longDefinition": "Le garage est un espace, intégré ou séparé, destiné à abriter des véhicules et souvent du rangement. Ses dimensions et son accès suivent l'usage et la réglementation.",
     "examples": [
-      "Identifier garage sur un plan",
-      "Décrire garage dans une fiche de projet"
+      "Garage attenant",
+      "Garage double"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "local mécanique",
+      "rangement",
+      "entrée"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 42
@@ -1662,31 +1647,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "interrupteur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « interrupteur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Commande d'ouverture-fermeture d'un circuit électrique.",
+    "longDefinition": "L'interrupteur commande l'allumage d'un éclairage ou d'un appareil en ouvrant ou fermant le circuit. Sa position (près des portes, à hauteur accessible) suit l'usage.",
     "examples": [
-      "Identifier interrupteur sur un plan",
-      "Décrire interrupteur dans une fiche de projet"
+      "Interrupteur va-et-vient",
+      "Interrupteur à l'entrée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "prise électrique",
+      "panneau électrique",
+      "gradation"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "électricité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 46
@@ -1769,31 +1752,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "lavabo est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « lavabo » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Vasque sanitaire pour la toilette des mains et du visage.",
+    "longDefinition": "Le lavabo est une vasque alimentée en eau pour la toilette quotidienne, fixée au mur ou posée sur un meuble. Sa hauteur suit l'ergonomie de l'usager.",
     "examples": [
-      "Identifier lavabo sur un plan",
-      "Décrire lavabo dans une fiche de projet"
+      "Lavabo sur meuble",
+      "Double lavabo"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "évier",
+      "robinet",
+      "salle de bain"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "sanitaire"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 49
@@ -2063,31 +2044,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "mur intérieur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « mur intérieur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Paroi délimitant les espaces intérieurs.",
+    "longDefinition": "Le mur intérieur délimite et sépare les espaces d'un bâtiment ; porteur ou simple cloison, il porte aussi finitions et réseaux. Sa nature détermine ce qu'on peut y faire.",
     "examples": [
-      "Identifier mur intérieur sur un plan",
-      "Décrire mur intérieur dans une fiche de projet"
+      "Mur intérieur porteur",
+      "Abattre un mur intérieur"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "cloison",
+      "mur porteur",
+      "refend"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 57
@@ -2174,31 +2153,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "panneau électrique est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « panneau électrique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Tableau de distribution et de protection électrique.",
+    "longDefinition": "Le panneau électrique répartit l'électricité dans les circuits du bâtiment et les protège par disjoncteurs. Il se place dans un local accessible.",
     "examples": [
-      "Identifier panneau électrique sur un plan",
-      "Décrire panneau électrique dans une fiche de projet"
+      "Panneau électrique principal",
+      "Disjoncteurs du panneau"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "tableau électrique"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "prise électrique",
+      "local mécanique",
+      "interrupteur"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "électricité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 60
@@ -2248,31 +2227,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "placard est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « placard » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Rangement fermé intégré à une paroi.",
+    "longDefinition": "Le placard est un rangement fermé, souvent intégré dans l'épaisseur d'un mur ou sur mesure, optimisant l'espace. Ses aménagements intérieurs s'adaptent aux objets rangés.",
     "examples": [
-      "Identifier placard sur un plan",
-      "Décrire placard dans une fiche de projet"
+      "Placard d'entrée",
+      "Placard intégré"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "rangement",
+      "mobilier intégré",
+      "armoire"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "rangement"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 62
@@ -2542,31 +2519,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "plomberie est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « plomberie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Réseaux d'eau et d'évacuation d'un bâtiment.",
+    "longDefinition": "La plomberie regroupe les réseaux d'alimentation en eau et d'évacuation des eaux usées, ainsi que les appareils raccordés. Son tracé influence fortement l'implantation des pièces humides.",
     "examples": [
-      "Identifier plomberie sur un plan",
-      "Décrire plomberie dans une fiche de projet"
+      "Réseau de plomberie",
+      "Plan de plomberie"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "conduit",
+      "robinet",
+      "salle de bain"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "réseaux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 70
@@ -2579,31 +2554,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "poignée est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « poignée » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Pièce préhensible pour ouvrir porte ou tiroir.",
+    "longDefinition": "La poignée est la pièce que l'on saisit pour ouvrir une porte, une fenêtre ou un tiroir. Forme et ergonomie influent sur le confort et l'accessibilité.",
     "examples": [
-      "Identifier poignée sur un plan",
-      "Décrire poignée dans une fiche de projet"
+      "Poignée de porte",
+      "Poignée de meuble"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "serrure",
+      "quincaillerie",
+      "porte"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "quincaillerie"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 71
@@ -2688,31 +2661,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "prise électrique est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « prise électrique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Point de raccordement au réseau électrique.",
+    "longDefinition": "La prise électrique permet de brancher un appareil au réseau du bâtiment. Leur nombre et leur répartition se planifient selon les usages de chaque pièce.",
     "examples": [
-      "Identifier prise électrique sur un plan",
-      "Décrire prise électrique dans une fiche de projet"
+      "Prises de plan de travail",
+      "Prévoir des prises"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "interrupteur",
+      "panneau électrique",
+      "plan d'éclairage"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "électricité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 74
@@ -2760,31 +2731,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "radiateur est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « radiateur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Émetteur de chaleur par convection et rayonnement.",
+    "longDefinition": "Le radiateur diffuse dans une pièce la chaleur d'un fluide chaud ou d'une résistance, par convection et rayonnement. Son emplacement (sous fenêtre) optimise le confort.",
     "examples": [
-      "Identifier radiateur sur un plan",
-      "Décrire radiateur dans une fiche de projet"
+      "Radiateur sous fenêtre",
+      "Radiateur à eau chaude"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "convecteur",
+      "thermopompe",
+      "thermostat"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "chauffage"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Confort et systèmes (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 76
@@ -2797,31 +2766,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "rangement est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « rangement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Espace ou meuble destiné à ranger.",
+    "longDefinition": "Le rangement désigne les espaces et meubles dédiés à stocker objets et affaires. Bien dimensionné et réparti, il est déterminant pour l'usage quotidien d'un logement.",
     "examples": [
-      "Identifier rangement sur un plan",
-      "Décrire rangement dans une fiche de projet"
+      "Rangements intégrés",
+      "Optimiser le rangement"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "placard",
+      "armoire",
+      "mobilier intégré"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "rangement"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 77
@@ -2869,31 +2836,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "robinet est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « robinet » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Organe réglant l'écoulement de l'eau.",
+    "longDefinition": "Le robinet contrôle le débit et souvent la température de l'eau à un point de puisage (évier, lavabo, douche). Mitigeur ou mélangeur, il combine confort et économie d'eau.",
     "examples": [
-      "Identifier robinet sur un plan",
-      "Décrire robinet dans une fiche de projet"
+      "Robinet mitigeur",
+      "Robinet de cuisine"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "mitigeur"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "évier",
+      "lavabo",
+      "plomberie"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "plomberie"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 79
@@ -3015,31 +2982,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "salle à manger est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « salle à manger » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Espace dédié aux repas.",
+    "longDefinition": "La salle à manger est l'espace organisé autour de la table pour prendre les repas. Reliée à la cuisine et au salon, elle articule la vie commune.",
     "examples": [
-      "Identifier salle à manger sur un plan",
-      "Décrire salle à manger dans une fiche de projet"
+      "Salle à manger attenante à la cuisine",
+      "Table de salle à manger"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "salon",
+      "cuisine",
+      "îlot de cuisine"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 83
@@ -3052,31 +3017,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "salon est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « salon » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Pièce de vie et de réception.",
+    "longDefinition": "Le salon est l'espace de vie commun dédié à la détente et à la réception. Souvent ouvert sur la salle à manger, il structure le séjour.",
     "examples": [
-      "Identifier salon sur un plan",
-      "Décrire salon dans une fiche de projet"
+      "Salon ouvert sur la cuisine",
+      "Coin salon"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "séjour"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "salle à manger",
+      "vide sur séjour",
+      "ambiance"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 84
@@ -3089,31 +3054,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "serrure est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « serrure » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Mécanisme verrouillant une ouverture.",
+    "longDefinition": "La serrure est le mécanisme qui verrouille une porte pour la sécurité et l'intimité. Son niveau de sûreté se choisit selon l'usage et l'exposition.",
     "examples": [
-      "Identifier serrure sur un plan",
-      "Décrire serrure dans une fiche de projet"
+      "Serrure de porte d'entrée",
+      "Serrure à pêne"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "poignée",
+      "quincaillerie",
+      "porte"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "quincaillerie"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 85
@@ -3200,31 +3163,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "suspension est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « suspension » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Luminaire suspendu au plafond.",
+    "longDefinition": "La suspension est un luminaire pendu au plafond par un câble ou une tige, qui éclaire et marque un point fort (table, îlot). Sa hauteur de pose suit l'usage et l'échelle.",
     "examples": [
-      "Identifier suspension sur un plan",
-      "Décrire suspension dans une fiche de projet"
+      "Suspension au-dessus d'une table",
+      "Suspensions d'îlot"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "luminaire suspendu"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "applique murale",
+      "éclairage encastré",
+      "ambiance"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "éclairage"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 88
@@ -3348,31 +3311,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "thermostat est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « thermostat » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Dispositif réglant la température de consigne.",
+    "longDefinition": "Le thermostat mesure la température et commande le chauffage ou la climatisation pour maintenir une consigne. Programmable, il optimise confort et consommation.",
     "examples": [
-      "Identifier thermostat sur un plan",
-      "Décrire thermostat dans une fiche de projet"
+      "Thermostat programmable",
+      "Régler le thermostat"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "radiateur",
+      "thermopompe",
+      "climatisation"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "chauffage"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Confort et systèmes (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 92
@@ -3385,31 +3346,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "tiroir est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « tiroir » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Casier coulissant d'un meuble.",
+    "longDefinition": "Le tiroir est un casier qui coulisse hors d'un meuble pour accéder facilement à son contenu. Ses coulisses conditionnent confort et durabilité.",
     "examples": [
-      "Identifier tiroir sur un plan",
-      "Décrire tiroir dans une fiche de projet"
+      "Tiroir à fermeture amortie",
+      "Bloc de tiroirs"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "coulisse",
+      "quincaillerie",
+      "rangement"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "mobilier"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 93
@@ -3422,31 +3381,32 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "toilette est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « toilette » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Appareil sanitaire d'évacuation des eaux usées.",
+    "longDefinition": "La toilette (cuvette de WC) est l'appareil sanitaire d'évacuation des matières, raccordé à la chute et alimenté par une chasse d'eau. Son implantation suit les contraintes de plomberie.",
     "examples": [
-      "Identifier toilette sur un plan",
-      "Décrire toilette dans une fiche de projet"
+      "Toilette suspendue",
+      "Salle d'eau avec toilette"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "WC",
+      "cuvette"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "salle d'eau",
+      "plomberie",
+      "lavabo"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "sanitaire"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 94
@@ -3531,31 +3491,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "walk-in est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « walk-in » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Garde-robe accessible où l'on pénètre.",
+    "longDefinition": "Le walk-in est une garde-robe dans laquelle on entre, offrant rangement et habillage en un même espace. Il accompagne souvent la chambre principale.",
     "examples": [
-      "Identifier walk-in sur un plan",
-      "Décrire walk-in dans une fiche de projet"
+      "Walk-in de la chambre principale",
+      "Aménagement d'un walk-in"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "garde-robe"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "chambre principale",
+      "rangement",
+      "placard"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "rangement"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 97
@@ -3605,31 +3565,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "éclairage encastré est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « éclairage encastré » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Luminaire intégré dans un plafond ou un mur.",
+    "longDefinition": "L'éclairage encastré loge le luminaire à fleur de paroi pour un rendu discret et homogène. Sa répartition se planifie sur un plan de plafond réfléchi.",
     "examples": [
-      "Identifier éclairage encastré sur un plan",
-      "Décrire éclairage encastré dans une fiche de projet"
+      "Spots encastrés au plafond",
+      "Éclairage encastré de couloir"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "spot encastré"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "plan de plafond réfléchi",
+      "plan d'éclairage",
+      "plafond suspendu"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "éclairage"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 99
@@ -3642,31 +3602,31 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "étagère est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « étagère » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Plan horizontal de rangement ouvert.",
+    "longDefinition": "Une étagère est une planche horizontale fixée ou posée servant à ranger ou exposer. Ouverte, elle allège visuellement le rangement.",
     "examples": [
-      "Identifier étagère sur un plan",
-      "Décrire étagère dans une fiche de projet"
+      "Étagères murales",
+      "Étagère de bibliothèque"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "tablette"
+    ],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "rangement",
+      "mobilier intégré",
+      "placard"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "mobilier"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 100
@@ -3716,31 +3676,29 @@
     "type": "concept",
     "domain": "architecture intérieure",
     "subdomain": "espaces et équipements",
-    "shortDefinition": "évier est une notion utilisée en architecture intérieure pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « évier » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Bac de cuisine pour la vaisselle et la préparation.",
+    "longDefinition": "L'évier est le bac d'eau de la cuisine, dédié à la vaisselle et à la préparation des aliments. Il forme un des trois pôles du triangle de travail.",
     "examples": [
-      "Identifier évier sur un plan",
-      "Décrire évier dans une fiche de projet"
+      "Évier sous fenêtre",
+      "Évier double bac"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "intérieur",
-      "équipement",
-      "détail",
-      "usage"
+      "robinet",
+      "triangle de travail",
+      "cuisine"
     ],
     "tags": [
       "intérieur",
-      "équipement"
+      "cuisine"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 102

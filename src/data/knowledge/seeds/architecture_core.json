@@ -45,19 +45,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "adaptabilité est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « adaptabilité » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Aptitude d'un espace à changer d'usage.",
+    "longDefinition": "L'adaptabilité est la capacité d'un bâtiment à évoluer pour accueillir de nouveaux usages avec un minimum de transformations. Elle allonge la vie utile et la valeur de l'ouvrage.",
     "examples": [
-      "Utiliser adaptabilité dans l'analyse d'un projet",
-      "Comparer deux options selon adaptabilité"
+      "Plateaux adaptables",
+      "Bâtiment évolutif"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "flexibilité",
+      "modularité constructive",
+      "reconversion"
     ],
     "tags": [
       "architecture",
@@ -65,9 +63,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -446,32 +443,30 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "chemin d'évacuation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « chemin d'évacuation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Parcours sécurisé vers une sortie en cas d'urgence.",
+    "longDefinition": "Le chemin d'évacuation est l'itinéraire protégé menant les occupants vers une sortie sûre en cas d'urgence. Sa longueur, sa largeur et son désenfumage sont strictement réglementés (à vérifier selon le code).",
     "examples": [
-      "Utiliser chemin d'évacuation dans l'analyse d'un projet",
-      "Comparer deux options selon chemin d'évacuation"
+      "Chemin d'évacuation balisé",
+      "Distance d'évacuation"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "issue",
+      "sortie",
+      "sécurité"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "sécurité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Sécurité du bâtiment (cours Forma)",
+        "type": "course",
+        "note": "Longueurs et largeurs réglementaires à vérifier dans le code applicable."
       }
     ],
-    "confidence": "concept",
+    "confidence": "à-vérifier",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 13
@@ -959,29 +954,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "dégagement est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « dégagement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Espace de circulation libre desservant des pièces.",
+    "longDefinition": "Le dégagement est un espace de circulation qui distribue les pièces et assure les déplacements et l'évacuation. Son dimensionnement répond au confort et à la sécurité.",
     "examples": [
-      "Utiliser dégagement dans l'analyse d'un projet",
-      "Comparer deux options selon dégagement"
+      "Dégagement desservant les chambres",
+      "Largeur de dégagement"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "couloir"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "circulation",
+      "corridor",
+      "chemin d'évacuation"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "circulation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1291,19 +1285,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "flexibilité est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « flexibilité » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Capacité d'un espace à se reconfigurer.",
+    "longDefinition": "La flexibilité est l'aptitude d'un espace à être réorganisé facilement selon les besoins (cloisons mobiles, plan libre). Elle répond à l'incertitude des usages dans le temps.",
     "examples": [
-      "Utiliser flexibilité dans l'analyse d'un projet",
-      "Comparer deux options selon flexibilité"
+      "Espace flexible",
+      "Cloisons mobiles"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "adaptabilité",
+      "structure poteau-poutre",
+      "module"
     ],
     "tags": [
       "architecture",
@@ -1311,9 +1303,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1547,32 +1538,32 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "issue est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « issue » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Ouverture d'évacuation vers l'extérieur ou un lieu sûr.",
+    "longDefinition": "Une issue est une sortie destinée à l'évacuation des personnes vers l'extérieur ou un lieu sûr. Leur nombre, leur largeur et leur signalisation sont réglementés (à vérifier selon le code).",
     "examples": [
-      "Utiliser issue dans l'analyse d'un projet",
-      "Comparer deux options selon issue"
+      "Issue de secours",
+      "Signalisation d'issue"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "sortie de secours"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "sortie",
+      "chemin d'évacuation",
+      "sécurité"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "sécurité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Sécurité du bâtiment (cours Forma)",
+        "type": "course",
+        "note": "Nombre et largeur d'issues à vérifier dans le code applicable."
       }
     ],
-    "confidence": "concept",
+    "confidence": "à-vérifier",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 43
@@ -1622,29 +1613,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "limite est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « limite » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Ligne délimitant un terrain ou un espace.",
+    "longDefinition": "La limite définit le contour d'un terrain ou d'un espace et conditionne implantation, retraits et vis-à-vis. La travailler (seuil, clôture, transition) qualifie le rapport entre dedans et dehors.",
     "examples": [
-      "Utiliser limite dans l'analyse d'un projet",
-      "Comparer deux options selon limite"
+      "Limite de propriété",
+      "Travailler la limite"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "frontière"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "retrait",
+      "seuil",
+      "implantation"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2016,29 +2006,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "moodboard est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « moodboard » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Planche d'images réunissant une intention.",
+    "longDefinition": "Le moodboard (planche d'ambiance) rassemble images, matières et couleurs pour fixer une intention et la partager en début de projet. Il aligne le regard avant de dessiner.",
     "examples": [
-      "Utiliser moodboard dans l'analyse d'un projet",
-      "Comparer deux options selon moodboard"
+      "Moodboard d'ambiance",
+      "Planche d'inspiration"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "planche d'ambiance"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "palette de matériaux",
+      "ambiance",
+      "planche concept"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "représentation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2124,19 +2113,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "occupation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « occupation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Manière dont un espace est utilisé et rempli.",
+    "longDefinition": "L'occupation décrit la façon dont un espace est utilisé, par qui et avec quelle densité. L'analyser oriente le dimensionnement et l'organisation des lieux.",
     "examples": [
-      "Utiliser occupation dans l'analyse d'un projet",
-      "Comparer deux options selon occupation"
+      "Taux d'occupation",
+      "Occupation d'un plateau"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "densité",
+      "programme",
+      "zoning"
     ],
     "tags": [
       "architecture",
@@ -2144,9 +2131,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2735,29 +2721,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "rendu est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « rendu » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Image réaliste représentant un projet.",
+    "longDefinition": "Le rendu est une représentation, souvent réaliste, destinée à communiquer l'aspect et l'ambiance d'un projet. Il sert la décision et la présentation plus que la précision technique.",
     "examples": [
-      "Utiliser rendu dans l'analyse d'un projet",
-      "Comparer deux options selon rendu"
+      "Rendu d'ambiance",
+      "Rendu de concours"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "perspective"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "perspective",
+      "maquette",
+      "moodboard"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "représentation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Représentation (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2773,29 +2758,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "retrait est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « retrait » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Recul du bâti par rapport à une limite.",
+    "longDefinition": "Le retrait est la distance imposée ou choisie entre la construction et les limites du terrain ou la rue. Il gère vues, ensoleillement, intimité et respect des règles d'urbanisme.",
     "examples": [
-      "Utiliser retrait dans l'analyse d'un projet",
-      "Comparer deux options selon retrait"
+      "Retrait sur rue",
+      "Marge de retrait réglementaire"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "recul"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "implantation",
+      "limite",
+      "attique"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2884,29 +2868,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "saillie est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « saillie » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Élément en avancée sur un plan de façade.",
+    "longDefinition": "Une saillie est un élément qui avance par rapport au nu de la façade (balcon, corniche, auvent). Elle anime la façade et protège, dans les limites réglementaires sur l'espace public.",
     "examples": [
-      "Utiliser saillie dans l'analyse d'un projet",
-      "Comparer deux options selon saillie"
+      "Saillie d'un balcon",
+      "Corniche en saillie"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "porte-à-faux",
+      "balcon",
+      "couronnement"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "composition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2996,29 +2977,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "socle est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « socle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Base d'un bâtiment, traitée spécifiquement.",
+    "longDefinition": "Le socle est la partie basse du bâtiment qui ancre la construction au sol et fait transition avec l'espace public. Souvent traité différemment, il accueille l'entrée et les usages actifs.",
     "examples": [
-      "Utiliser socle dans l'analyse d'un projet",
-      "Comparer deux options selon socle"
+      "Socle commercial actif",
+      "Traitement du socle"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "rez-de-chaussée actif",
+      "couronnement",
+      "façade"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "composition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Composition (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3541,29 +3519,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "vide sur séjour est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « vide sur séjour » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Double hauteur ouverte au-dessus du séjour.",
+    "longDefinition": "Le vide sur séjour est une double hauteur qui ouvre l'étage sur la pièce de vie en contrebas, apportant lumière et générosité spatiale. Il relie visuellement les niveaux.",
     "examples": [
-      "Utiliser vide sur séjour dans l'analyse d'un projet",
-      "Comparer deux options selon vide sur séjour"
+      "Vide sur séjour éclairé",
+      "Mezzanine sur vide sur séjour"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "double hauteur"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "mezzanine",
+      "atrium",
+      "lumière naturelle"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "espace"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire d'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3615,19 +3592,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "vue est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « vue » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Perspective offerte depuis ou vers un lieu.",
+    "longDefinition": "La vue est ce que l'on perçoit depuis un espace vers l'extérieur ou l'inverse. La cadrer et la hiérarchiser est un levier puissant de qualité spatiale.",
     "examples": [
-      "Utiliser vue dans l'analyse d'un projet",
-      "Comparer deux options selon vue"
+      "Cadrer une vue",
+      "Vue dégagée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "transparence",
+      "orientation solaire",
+      "séquence spatiale"
     ],
     "tags": [
       "architecture",
@@ -3635,9 +3610,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",

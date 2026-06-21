@@ -7,31 +7,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "ancrage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « ancrage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Liaison fixant un élément à son support.",
+    "longDefinition": "L'ancrage est le dispositif qui fixe solidement un élément à son support pour transmettre les efforts (arrachement, cisaillement). Tiges, chevilles et platines en sont des exemples courants.",
     "examples": [
-      "Détail de ancrage",
-      "Choix de ancrage selon le projet"
+      "Ancrage d'une lisse basse",
+      "Ancrage chimique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "assemblage",
+      "lisse basse",
+      "fondation profonde"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 1
@@ -369,31 +366,31 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "charpente industrielle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « charpente industrielle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Charpente de fermettes préfabriquées en série.",
+    "longDefinition": "La charpente industrielle emploie des fermettes légères préfabriquées et assemblées par connecteurs, économiques et rapides à poser. Elles encombrent en revanche les combles.",
     "examples": [
-      "Détail de charpente industrielle",
-      "Choix de charpente industrielle selon le projet"
+      "Fermettes industrielles",
+      "Charpente à connecteurs"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "fermettes"
+    ],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "ferme de toit",
+      "charpente traditionnelle",
+      "connecteur"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "bois"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction bois (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 11
@@ -406,31 +403,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "charpente traditionnelle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « charpente traditionnelle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Charpente assemblée sur mesure en grosses pièces.",
+    "longDefinition": "La charpente traditionnelle assemble de fortes pièces de bois taillées et liaisonnées (tenons, mortaises) pour porter la toiture, libérant les combles. Elle s'oppose aux fermettes industrielles.",
     "examples": [
-      "Détail de charpente traditionnelle",
-      "Choix de charpente traditionnelle selon le projet"
+      "Charpente traditionnelle à pannes",
+      "Combles aménageables"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "charpente industrielle",
+      "ferme de toit",
+      "panne"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "bois"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction bois (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 12
@@ -1017,31 +1012,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "diaphragme est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « diaphragme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Plancher ou toiture raidissant un bâtiment dans son plan.",
+    "longDefinition": "Le diaphragme est un plancher ou une toiture rigide dans son plan qui distribue les efforts horizontaux vers les éléments de contreventement. Il solidarise la structure face au vent et au séisme.",
     "examples": [
-      "Détail de diaphragme",
-      "Choix de diaphragme selon le projet"
+      "Plancher faisant office de diaphragme",
+      "Diaphragme de toiture"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "contreventement",
+      "voile structural",
+      "dalle"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 29
@@ -1490,31 +1482,30 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "joint de contrôle est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « joint de contrôle » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Rainure orientant la fissuration du béton.",
+    "longDefinition": "Le joint de contrôle est une rainure pratiquée dans une dalle ou un enduit pour localiser la fissuration de retrait à un endroit maîtrisé. Il préserve l'aspect et la durabilité.",
     "examples": [
-      "Détail de joint de contrôle",
-      "Choix de joint de contrôle selon le projet"
+      "Joints de contrôle d'une dalle sur sol",
+      "Sciage de joints de contrôle"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "joint de retrait"
+    ],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "joint de dilatation",
+      "dalle sur sol",
+      "béton"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 42
@@ -1527,31 +1518,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "joint de dilatation est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « joint de dilatation » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Coupure absorbant les mouvements de la structure.",
+    "longDefinition": "Le joint de dilatation est une coupure ménagée dans la structure pour absorber les variations dimensionnelles (température, retrait) sans fissuration. Il fractionne les grands ouvrages.",
     "examples": [
-      "Détail de joint de dilatation",
-      "Choix de joint de dilatation selon le projet"
+      "Joint de dilatation d'une dalle",
+      "Couvre-joint de dilatation"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "joint de contrôle",
+      "béton",
+      "scellant"
     ],
     "tags": [
-      "construction",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 43
@@ -2027,31 +2015,31 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "mur à colombage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « mur à colombage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Mur à ossature de bois apparente remplie.",
+    "longDefinition": "Le mur à colombage est constitué d'une ossature de bois apparente dont les vides sont remplis (torchis, brique). Traditionnel, il illustre une construction mixte bois-remplissage.",
     "examples": [
-      "Détail de mur à colombage",
-      "Choix de mur à colombage selon le projet"
+      "Maison à colombages",
+      "Remplissage d'un colombage"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "pan de bois"
+    ],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "ossature bois",
+      "brique",
+      "architecture vernaculaire"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "structure",
+      "bois"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction bois (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 57
@@ -2064,28 +2052,26 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "méthode constructive est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « méthode constructive » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Manière d'organiser la construction d'un ouvrage.",
+    "longDefinition": "La méthode constructive est la manière dont on choisit de bâtir (humide/sèche, in situ/préfabriquée), avec ses conséquences sur coûts, délais et qualité. Elle se décide tôt et oriente la conception.",
     "examples": [
-      "Détail de méthode constructive",
-      "Choix de méthode constructive selon le projet"
+      "Méthode constructive sèche",
+      "Choisir une méthode constructive"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "préfabrication",
+      "construction hors site",
+      "séquence de construction"
     ],
     "tags": [
       "construction",
-      "structure"
+      "méthode"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3238,31 +3224,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "toiture inversée est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « toiture inversée » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Toit plat dont l'isolant est au-dessus de l'étanchéité.",
+    "longDefinition": "Dans la toiture inversée, l'isolant (XPS) est posé au-dessus de la membrane d'étanchéité, qu'il protège des chocs thermiques et mécaniques. Un lestage maintient l'ensemble.",
     "examples": [
-      "Détail de toiture inversée",
-      "Choix de toiture inversée selon le projet"
+      "Toiture inversée lestée",
+      "XPS sur étanchéité"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "toiture chaude",
+      "polystyrène extrudé",
+      "membrane d'étanchéité"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 91
@@ -3455,31 +3438,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "étanchéité à l'air est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « étanchéité à l'air » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Continuité limitant les fuites d'air parasites.",
+    "longDefinition": "L'étanchéité à l'air est la continuité de l'enveloppe qui empêche les fuites d'air parasites, sources de déperditions et de condensation. Elle se mesure par un test d'infiltrométrie.",
     "examples": [
-      "Détail de étanchéité à l'air",
-      "Choix de étanchéité à l'air selon le projet"
+      "Test d'étanchéité à l'air",
+      "Continuité du pare-air"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "pare-air",
+      "pare-vapeur",
+      "maison passive"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "thermique",
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Performance du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 97

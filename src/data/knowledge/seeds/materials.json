@@ -43,31 +43,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "acier corten est un matériau ou produit de construction associé à les façades oxydées contrôlées.",
-    "longDefinition": "acier corten est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Acier à patine rouille protectrice.",
+    "longDefinition": "L'acier Corten développe en surface une patine d'oxydation stable qui le protège de la corrosion profonde, offrant un aspect rouille caractéristique. On l'emploie en bardage et éléments extérieurs.",
     "examples": [
-      "Choisir acier corten pour les façades oxydées contrôlées",
-      "Comparer acier corten à un matériau alternatif"
+      "Bardage en acier Corten",
+      "Façade patinée Corten"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "acier patinable"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "acier",
+      "bardage",
+      "revêtement extérieur"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "métal"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 2
@@ -80,31 +80,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "acier galvanisé est un matériau ou produit de construction associé à la protection contre la corrosion.",
-    "longDefinition": "acier galvanisé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Acier protégé par un revêtement de zinc.",
+    "longDefinition": "L'acier galvanisé est recouvert d'une couche de zinc qui le protège de la corrosion par effet barrière et sacrificiel. Il sert aux ossatures légères, platelages et pièces exposées.",
     "examples": [
-      "Choisir acier galvanisé pour la protection contre la corrosion",
-      "Comparer acier galvanisé à un matériau alternatif"
+      "Ossature en acier galvanisé",
+      "Caillebotis galvanisé"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "acier",
+      "acier inoxydable",
+      "caillebotis"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "métal"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 3
@@ -741,31 +739,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "béton apparent est un matériau ou produit de construction associé à la finition architecturale visible.",
-    "longDefinition": "béton apparent est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Béton laissé brut comme finition.",
+    "longDefinition": "Le béton apparent est un béton dont la surface, soignée au coffrage, reste visible comme finition. Il exige une mise en œuvre rigoureuse car les défauts ne se rattrapent pas.",
     "examples": [
-      "Choisir béton apparent pour la finition architecturale visible",
-      "Comparer béton apparent à un matériau alternatif"
+      "Mur en béton apparent",
+      "Coffrage soigné pour béton apparent"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "béton brut"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "béton",
+      "brutalisme",
+      "coffrage"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 21
@@ -816,31 +814,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "béton léger est un matériau ou produit de construction associé à les ouvrages nécessitant une masse réduite.",
-    "longDefinition": "béton léger est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Béton allégé par des granulats ou de l'air.",
+    "longDefinition": "Le béton léger réduit sa densité par des granulats légers ou un entraînement d'air, améliorant l'isolation et allégeant les charges. Il est moins résistant qu'un béton ordinaire.",
     "examples": [
-      "Choisir béton léger pour les ouvrages nécessitant une masse réduite",
-      "Comparer béton léger à un matériau alternatif"
+      "Chape en béton léger",
+      "Béton léger isolant"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "béton",
+      "granulat",
+      "inertie thermique"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 23
@@ -853,31 +849,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "béton préfabriqué est un matériau ou produit de construction associé à les éléments fabriqués hors site.",
-    "longDefinition": "béton préfabriqué est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Élément de béton coulé en usine.",
+    "longDefinition": "Le béton préfabriqué est coulé et mûri en usine sous conditions contrôlées, puis transporté et assemblé sur chantier. Il offre qualité et rapidité, au prix d'une logistique adaptée.",
     "examples": [
-      "Choisir béton préfabriqué pour les éléments fabriqués hors site",
-      "Comparer béton préfabriqué à un matériau alternatif"
+      "Prédalles préfabriquées",
+      "Panneaux de béton préfabriqué"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "préfabriqué"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "préfabrication",
+      "béton",
+      "modularité constructive"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 24
@@ -927,31 +923,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "caoutchouc est un matériau ou produit de construction associé à les sols techniques.",
-    "longDefinition": "caoutchouc est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Matériau élastique pour sols et étanchéité.",
+    "longDefinition": "Le caoutchouc, naturel ou synthétique, est un matériau élastique employé en revêtement de sol résilient, joints et membranes (EPDM). Il amortit et résiste à l'usure.",
     "examples": [
-      "Choisir caoutchouc pour les sols techniques",
-      "Comparer caoutchouc à un matériau alternatif"
+      "Sol en caoutchouc d'une salle de sport",
+      "Joint en caoutchouc"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "EPDM",
+      "revêtement de sol",
+      "isolant acoustique"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 26
@@ -1365,31 +1359,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "fibre de carbone est un matériau ou produit de construction associé à les renforcements spécialisés.",
-    "longDefinition": "fibre de carbone est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Fibres très résistantes pour renforts légers.",
+    "longDefinition": "La fibre de carbone offre une très haute résistance pour un poids minime, utilisée en renfort de composites et en renforcement d'ouvrages existants. Son coût la réserve à des usages ciblés.",
     "examples": [
-      "Choisir fibre de carbone pour les renforcements spécialisés",
-      "Comparer fibre de carbone à un matériau alternatif"
+      "Renfort de poutre en fibre de carbone",
+      "Composite carbone"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "fibre de verre",
+      "armature",
+      "résine époxy"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 38
@@ -1402,31 +1394,28 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "fibre de verre est un matériau ou produit de construction associé à les renforts et isolants.",
-    "longDefinition": "fibre de verre est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Fibres de verre renforçant des composites.",
+    "longDefinition": "La fibre de verre renforce des résines pour former des composites légers et résistants, et entre dans des isolants et panneaux. Elle combine résistance et faible coût.",
     "examples": [
-      "Choisir fibre de verre pour les renforts et isolants",
-      "Comparer fibre de verre à un matériau alternatif"
+      "Composite en fibre de verre",
+      "Panneau renforcé de fibre de verre"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "fibre de carbone",
+      "laine de verre",
+      "polycarbonate"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 39
@@ -1724,31 +1713,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "laine minérale est un matériau ou produit de construction associé à l'isolation thermique et acoustique.",
-    "longDefinition": "laine minérale est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Famille d'isolants fibreux minéraux.",
+    "longDefinition": "La laine minérale regroupe les isolants fibreux issus de roche ou de verre, performants en thermique et acoustique et résistants au feu. C'est l'isolant le plus répandu en bâtiment.",
     "examples": [
-      "Choisir laine minérale pour l'isolation thermique et acoustique",
-      "Comparer laine minérale à un matériau alternatif"
+      "Isolation en laine minérale",
+      "Laine minérale en cloison"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "laine de roche",
+      "laine de verre",
+      "isolant acoustique"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "isolation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 48
@@ -1977,31 +1964,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "moquette est un matériau ou produit de construction associé à les sols souples.",
-    "longDefinition": "moquette est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Revêtement de sol textile.",
+    "longDefinition": "La moquette est un revêtement de sol textile qui apporte confort acoustique et thermique, en lés ou en dalles. Elle demande un entretien régulier et se prête mal aux pièces humides.",
     "examples": [
-      "Choisir moquette pour les sols souples",
-      "Comparer moquette à un matériau alternatif"
+      "Moquette de bureau",
+      "Dalles de moquette"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "revêtement de sol",
+      "isolant acoustique",
+      "vinyle"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 55
@@ -2233,31 +2218,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "parement est un matériau ou produit de construction associé à la couche visible d'un système.",
-    "longDefinition": "parement est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Face vue d'un mur ou revêtement de finition.",
+    "longDefinition": "Le parement est la face visible d'un mur ou le revêtement mince qui l'habille (briquettes, pierre, panneaux). Il donne l'aspect sans assurer la structure.",
     "examples": [
-      "Choisir parement pour la couche visible d'un système",
-      "Comparer parement à un matériau alternatif"
+      "Parement de briques",
+      "Mur de parement en pierre"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "bardage",
+      "pierre naturelle",
+      "brique"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 62
@@ -2601,31 +2584,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "porcelaine est un matériau ou produit de construction associé à les surfaces résistantes.",
-    "longDefinition": "porcelaine est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Céramique fine, dense et peu poreuse.",
+    "longDefinition": "La porcelaine est une céramique cuite à haute température, dense et peu poreuse, utilisée en carreaux de sol et appareils sanitaires. Elle résiste bien à l'eau, aux taches et à l'usure.",
     "examples": [
-      "Choisir porcelaine pour les surfaces résistantes",
-      "Comparer porcelaine à un matériau alternatif"
+      "Carreaux de grès porcelaine",
+      "Lavabo en porcelaine"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "grès cérame"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "céramique",
+      "revêtement de sol",
+      "lavabo"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 72
@@ -2966,31 +2949,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "terre crue est un matériau ou produit de construction associé à les murs et enduits biosourcés.",
-    "longDefinition": "terre crue est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Terre non cuite utilisée en construction.",
+    "longDefinition": "La terre crue est un matériau de construction non cuit (pisé, adobe, bauge) à très faible impact, à bonne inertie et régulation hygrométrique. Elle exige une protection contre l'eau.",
     "examples": [
-      "Choisir terre crue pour les murs et enduits biosourcés",
-      "Comparer terre crue à un matériau alternatif"
+      "Mur en pisé de terre crue",
+      "Brique d'adobe"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "adobe",
+      "pisé",
+      "architecture vernaculaire"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "maçonnerie"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 82
@@ -3292,31 +3273,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "verre isolant est un matériau ou produit de construction associé à les fenêtres performantes.",
-    "longDefinition": "verre isolant est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Double ou triple vitrage à lame isolante.",
+    "longDefinition": "Le verre isolant assemble plusieurs feuilles de verre séparées par une lame de gaz, réduisant les déperditions thermiques. C'est le vitrage standard des fenêtres performantes.",
     "examples": [
-      "Choisir verre isolant pour les fenêtres performantes",
-      "Comparer verre isolant à un matériau alternatif"
+      "Double vitrage isolant",
+      "Triple vitrage"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "vitrage isolant"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "verre",
+      "fenêtre",
+      "châssis"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 91

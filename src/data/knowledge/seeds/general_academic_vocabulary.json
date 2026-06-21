@@ -188,28 +188,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "annexe est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « annexe » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Document complémentaire joint à un dossier.",
+    "longDefinition": "Une annexe regroupe en fin de dossier les éléments complémentaires (tableaux, plans, justificatifs) qui appuient le corps du texte sans l'alourdir. Elle se référence depuis le texte.",
     "examples": [
-      "Utiliser annexe dans un rapport",
-      "Relier annexe à un workflow Forma"
+      "Annexe d'un rapport",
+      "Renvoyer en annexe"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
       "documentation",
-      "workflow"
+      "référence",
+      "bibliographie"
     ],
     "tags": [
-      "vocabulaire",
+      "méthode",
       "études"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -225,28 +223,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "annotation est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « annotation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Note ajoutée en marge d'un contenu.",
+    "longDefinition": "Une annotation est une note ajoutée à un document pour commenter, préciser ou corriger un point. Les annotations enrichissent la relecture et la collaboration.",
     "examples": [
-      "Utiliser annotation dans un rapport",
-      "Relier annotation à un workflow Forma"
+      "Annoter un plan",
+      "Annotations de relecture"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "note"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "commentaire",
+      "révision croisée",
+      "feedback"
     ],
     "tags": [
-      "vocabulaire",
+      "méthode",
       "études"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -977,28 +975,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "commentaire est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « commentaire » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Remarque ajoutée à un contenu.",
+    "longDefinition": "Un commentaire est une remarque rattachée à un contenu pour l'expliquer, le discuter ou le faire évoluer. En travail collaboratif, il porte le dialogue autour d'un document.",
     "examples": [
-      "Utiliser commentaire dans un rapport",
-      "Relier commentaire à un workflow Forma"
+      "Commentaire sur une maquette",
+      "Fil de commentaires"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "annotation",
+      "feedback",
+      "collaboration"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "collaboration"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1121,28 +1117,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "composant est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « composant » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Élément constitutif d'un ensemble.",
+    "longDefinition": "Un composant est une partie identifiable d'un ensemble, réutilisable et combinable avec d'autres. Décomposer en composants facilite la conception, la fabrication et la maintenance.",
     "examples": [
-      "Utiliser composant dans un rapport",
-      "Relier composant à un workflow Forma"
+      "Composant préfabriqué",
+      "Bibliothèque de composants"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "élément"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "système",
+      "modularité constructive",
+      "préfabrication"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "conception"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1615,28 +1611,25 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "cycle est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « cycle » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Suite d'étapes qui se répète.",
+    "longDefinition": "Un cycle est une succession d'étapes qui revient à son point de départ pour recommencer. Penser en cycles éclaire les processus itératifs et les saisons d'un projet.",
     "examples": [
-      "Utiliser cycle dans un rapport",
-      "Relier cycle à un workflow Forma"
+      "Cycle de conception",
+      "Cycle de révision"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "itération",
+      "processus",
+      "cycle de vie"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1652,28 +1645,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "design system est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « design system » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Bibliothèque cohérente de composants et règles.",
+    "longDefinition": "Un design system rassemble composants, styles et règles réutilisables pour concevoir des interfaces cohérentes et rapides à produire. Il aligne équipes et qualité.",
     "examples": [
-      "Utiliser design system dans un rapport",
-      "Relier design system à un workflow Forma"
+      "Composants d'un design system",
+      "Documenter un design system"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "composant",
+      "standard",
+      "thème"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "numérique",
+      "ux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire numérique (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2049,28 +2040,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "développement est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « développement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Élaboration progressive d'un travail.",
+    "longDefinition": "Le développement est la partie où l'on élabore et approfondit, étape par étape, un raisonnement ou un projet entre l'esquisse et la finalisation. Il déploie l'idée en détails maîtrisés.",
     "examples": [
-      "Utiliser développement dans un rapport",
-      "Relier développement à un workflow Forma"
+      "Développement d'un projet",
+      "Phase de développement"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "phase",
+      "itération",
+      "conception"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "projet"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2193,28 +2182,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "espacement est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « espacement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Distance ménagée entre des éléments.",
+    "longDefinition": "L'espacement est la distance ménagée entre des éléments d'une composition, qui crée du rythme et de la respiration. Un espacement maîtrisé améliore la lisibilité et la hiérarchie.",
     "examples": [
-      "Utiliser espacement dans un rapport",
-      "Relier espacement à un workflow Forma"
+      "Espacement entre paragraphes",
+      "Régler l'espacement"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "interligne"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "grille",
+      "lisibilité",
+      "hiérarchie visuelle"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "ux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2266,28 +2255,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "exploitation est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « exploitation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Phase d'usage et de gestion d'un ouvrage.",
+    "longDefinition": "L'exploitation est la phase de vie où un bâtiment est utilisé et géré au quotidien (énergie, entretien, usages). Elle pèse lourd dans le coût global et l'impact d'un ouvrage.",
     "examples": [
-      "Utiliser exploitation dans un rapport",
-      "Relier exploitation à un workflow Forma"
+      "Coûts d'exploitation",
+      "Phase d'exploitation"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "maintenance",
+      "cycle de vie",
+      "performance"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "exploitation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2486,28 +2473,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "flashcard est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « flashcard » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Carte question-réponse pour réviser.",
+    "longDefinition": "Une flashcard présente une question d'un côté et la réponse de l'autre, pour s'auto-tester. Couplée au rappel espacé, c'est un outil de mémorisation très efficace.",
     "examples": [
-      "Utiliser flashcard dans un rapport",
-      "Relier flashcard à un workflow Forma"
+      "Réviser avec des flashcards",
+      "Paquet de flashcards"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "carte mémoire"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "rappel espacé",
+      "révision",
+      "question d'examen"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "études",
+      "méthode"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2523,28 +2510,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "fonction est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « fonction » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Rôle ou usage assuré par un élément.",
+    "longDefinition": "La fonction est le rôle ou l'usage qu'un élément assure au sein d'un ensemble. En conception, distinguer les fonctions des formes aide à répondre vraiment aux besoins.",
     "examples": [
-      "Utiliser fonction dans un rapport",
-      "Relier fonction à un workflow Forma"
+      "Fonction d'un espace",
+      "Analyse fonctionnelle"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "rôle"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "besoin",
+      "programme",
+      "système"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "conception"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2667,28 +2654,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "grille est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « grille » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Réseau de lignes structurant une mise en page.",
+    "longDefinition": "Une grille est un réseau régulier de repères qui aligne et proportionne les éléments d'une page ou d'un écran. Elle apporte ordre, cohérence et lisibilité.",
     "examples": [
-      "Utiliser grille dans un rapport",
-      "Relier grille à un workflow Forma"
+      "Grille de mise en page",
+      "Aligner sur une grille"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "trame",
+      "hiérarchie visuelle",
+      "responsive"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "ux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2741,28 +2726,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "historique est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « historique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Trace ordonnée des événements passés.",
+    "longDefinition": "Un historique est l'enregistrement ordonné des actions ou versions passées d'un élément. Il sert à comprendre l'évolution, revenir en arrière et tracer les décisions.",
     "examples": [
-      "Utiliser historique dans un rapport",
-      "Relier historique à un workflow Forma"
+      "Historique des modifications",
+      "Consulter l'historique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "traçabilité",
+      "version",
+      "trace"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "numérique",
+      "méthode"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire numérique (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3213,28 +3196,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "journal est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « journal » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Registre chronologique d'événements.",
+    "longDefinition": "Un journal est un registre où les événements sont consignés dans l'ordre chronologique. Il aide au suivi, au diagnostic et à la mémoire d'un projet.",
     "examples": [
-      "Utiliser journal dans un rapport",
-      "Relier journal à un workflow Forma"
+      "Journal de chantier",
+      "Journal des décisions"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "log"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "trace",
+      "historique",
+      "suivi"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "projet"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3357,28 +3340,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "maintenance est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « maintenance » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Entretien préservant le bon fonctionnement.",
+    "longDefinition": "La maintenance regroupe les actions d'entretien qui préservent ou rétablissent le bon fonctionnement d'un ouvrage ou d'un système. Préventive, elle évite des pannes coûteuses.",
     "examples": [
-      "Utiliser maintenance dans un rapport",
-      "Relier maintenance à un workflow Forma"
+      "Maintenance préventive",
+      "Plan de maintenance"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "entretien"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "durabilité",
+      "cycle de vie",
+      "diagnostic"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "exploitation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3646,28 +3629,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "mémoire est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « mémoire » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Capacité à retenir et restituer l'information.",
+    "longDefinition": "La mémoire est la capacité à encoder, conserver et restituer des informations. La renforcer passe par l'engagement actif, la répétition espacée et le sommeil.",
     "examples": [
-      "Utiliser mémoire dans un rapport",
-      "Relier mémoire à un workflow Forma"
+      "Mémoire à long terme",
+      "Soutenir la mémoire"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "rappel espacé",
+      "apprentissage",
+      "résumé actif"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "études",
+      "méthode"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3792,28 +3773,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "option est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « option » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Choix possible parmi un ensemble.",
+    "longDefinition": "Une option est une possibilité offerte parmi plusieurs, qu'on retient ou écarte selon des critères. Multiplier raisonnablement les options enrichit la décision.",
     "examples": [
-      "Utiliser option dans un rapport",
-      "Relier option à un workflow Forma"
+      "Options d'aménagement",
+      "Comparer les options"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "choix"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "variante",
+      "paramètre",
+      "préférence"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "ux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3829,28 +3810,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "paramètre est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « paramètre » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Valeur de réglage influençant un résultat.",
+    "longDefinition": "Un paramètre est une valeur de réglage qui conditionne le comportement d'un système ou d'un calcul sans en être le résultat. Ajuster les paramètres permet d'explorer des variantes.",
     "examples": [
-      "Utiliser paramètre dans un rapport",
-      "Relier paramètre à un workflow Forma"
+      "Paramètres d'un modèle",
+      "Régler un paramètre"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "réglage"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "variable",
+      "option",
+      "configuration"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "numérique"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -4331,28 +4312,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "profil est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « profil » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Ensemble des caractéristiques d'un utilisateur.",
+    "longDefinition": "Un profil regroupe les caractéristiques, droits et préférences d'un utilisateur. Il personnalise l'expérience et gère les accès.",
     "examples": [
-      "Utiliser profil dans un rapport",
-      "Relier profil à un workflow Forma"
+      "Profil utilisateur",
+      "Modifier son profil"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "utilisateur",
+      "préférence",
+      "permission"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "numérique",
+      "ux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire numérique (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -4438,28 +4417,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "préférence est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « préférence » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Choix personnel parmi des options équivalentes.",
+    "longDefinition": "Une préférence est un choix individuel entre des options acceptables, reflétant goût ou habitude. En interface, respecter les préférences personnalise l'usage.",
     "examples": [
-      "Utiliser préférence dans un rapport",
-      "Relier préférence à un workflow Forma"
+      "Préférences d'affichage",
+      "Enregistrer ses préférences"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "option",
+      "paramètre",
+      "profil"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "ux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception centrée usager (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -4579,28 +4556,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "question d'examen est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « question d'examen » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Question type préparant à une évaluation.",
+    "longDefinition": "Une question d'examen est un énoncé d'entraînement reproduisant le format d'une évaluation. S'y exercer révèle les lacunes et améliore la performance le jour J.",
     "examples": [
-      "Utiliser question d'examen dans un rapport",
-      "Relier question d'examen à un workflow Forma"
+      "Banque de questions d'examen",
+      "S'entraîner sur des questions d'examen"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "flashcard",
+      "révision",
+      "évaluation"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "études",
+      "méthode"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -4902,28 +4877,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "rubrique est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « rubrique » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Section thématique d'un document.",
+    "longDefinition": "Une rubrique est une section identifiée d'un document ou d'une interface regroupant un thème. Des rubriques claires facilitent la navigation et la recherche.",
     "examples": [
-      "Utiliser rubrique dans un rapport",
-      "Relier rubrique à un workflow Forma"
+      "Rubrique d'aide",
+      "Classer par rubrique"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "section"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "catégorie",
+      "index",
+      "documentation"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "ux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -5011,28 +4986,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "résilience est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « résilience » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Capacité à absorber un choc et à se rétablir.",
+    "longDefinition": "La résilience est la capacité d'un système, d'un bâtiment ou d'une personne à encaisser une perturbation puis à retrouver son fonctionnement. Elle se conçoit en anticipant les aléas.",
     "examples": [
-      "Utiliser résilience dans un rapport",
-      "Relier résilience à un workflow Forma"
+      "Résilience face aux aléas",
+      "Conception résiliente"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "risque",
+      "durabilité",
+      "résilience urbaine"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -5367,28 +5340,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "solution est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « solution » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Réponse résolvant un problème.",
+    "longDefinition": "Une solution est la réponse apportée à un problème, qui en lève les difficultés tout en respectant les contraintes. On en compare souvent plusieurs avant d'en retenir une.",
     "examples": [
-      "Utiliser solution dans un rapport",
-      "Relier solution à un workflow Forma"
+      "Solution technique retenue",
+      "Comparer des solutions"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "problématique",
+      "variante",
+      "décision"
     ],
     "tags": [
-      "vocabulaire",
+      "méthode",
       "études"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -5404,28 +5375,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "source est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « source » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Origine vérifiable d'une information.",
+    "longDefinition": "Une source est l'origine d'une information, qu'on cite pour en garantir la traçabilité et la fiabilité. Sans source vérifiable, une affirmation reste une opinion.",
     "examples": [
-      "Utiliser source dans un rapport",
-      "Relier source à un workflow Forma"
+      "Citer ses sources",
+      "Source fiable"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "référence",
+      "source primaire",
+      "preuve"
     ],
     "tags": [
-      "vocabulaire",
+      "méthode",
       "études"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -5511,28 +5480,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "standard est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « standard » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Référence commune servant de norme d'usage.",
+    "longDefinition": "Un standard est une référence partagée qui harmonise pratiques, formats ou dimensions pour assurer compatibilité et qualité. Distinct d'une norme officielle, il facilite l'interopérabilité.",
     "examples": [
-      "Utiliser standard dans un rapport",
-      "Relier standard à un workflow Forma"
+      "Format standard",
+      "Respecter un standard"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "référence",
+      "design system",
+      "modularité constructive"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "qualité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -5724,28 +5691,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "système est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « système » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Ensemble d'éléments en interaction formant un tout.",
+    "longDefinition": "Un système est un ensemble d'éléments reliés qui interagissent pour remplir une fonction d'ensemble. Penser « système » aide à saisir les dépendances plutôt que les parties isolées.",
     "examples": [
-      "Utiliser système dans un rapport",
-      "Relier système à un workflow Forma"
+      "Système constructif",
+      "Approche systémique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "composant",
+      "processus",
+      "fonction"
     ],
     "tags": [
-      "vocabulaire",
+      "méthode",
       "études"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -5761,28 +5726,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "sécurité est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « sécurité » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Protection contre les risques et menaces.",
+    "longDefinition": "La sécurité regroupe les mesures qui protègent les personnes, les biens et les données contre les risques et les menaces. En bâtiment, elle couvre l'incendie, l'évacuation et la solidité.",
     "examples": [
-      "Utiliser sécurité dans un rapport",
-      "Relier sécurité à un workflow Forma"
+      "Sécurité incendie",
+      "Sécurité des données"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "risque",
+      "confidentialité",
+      "prévention d'erreur"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "sécurité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -5798,28 +5761,27 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "séquence est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « séquence » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Ordre déterminé d'éléments ou d'actions.",
+    "longDefinition": "Une séquence est une suite ordonnée d'éléments ou d'actions où l'ordre a un sens. La maîtriser est clé en chantier comme en parcours d'usage.",
     "examples": [
-      "Utiliser séquence dans un rapport",
-      "Relier séquence à un workflow Forma"
+      "Séquence de montage",
+      "Respecter la séquence"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "enchaînement"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "processus",
+      "phase",
+      "séquence de construction"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -5835,28 +5797,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "tableau est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « tableau » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Présentation de données en lignes et colonnes.",
+    "longDefinition": "Un tableau organise des données en lignes et colonnes pour les comparer et les lire rapidement. Bien structuré, il clarifie ; surchargé, il perd en lisibilité.",
     "examples": [
-      "Utiliser tableau dans un rapport",
-      "Relier tableau à un workflow Forma"
+      "Tableau comparatif",
+      "Tableau des surfaces"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "comparaison",
+      "donnée",
+      "graphique"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "représentation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -5983,28 +5943,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "thème est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « thème » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Ensemble cohérent de styles visuels.",
+    "longDefinition": "Un thème est un ensemble cohérent de couleurs, typographies et styles appliqués à une interface ou un document. Il assure l'unité visuelle et peut s'adapter (clair/sombre).",
     "examples": [
-      "Utiliser thème dans un rapport",
-      "Relier thème à un workflow Forma"
+      "Thème clair et thème sombre",
+      "Appliquer un thème"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "mode sombre",
+      "design system",
+      "charte graphique"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "numérique",
+      "ux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire numérique (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -6057,28 +6015,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "trace est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « trace » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Enregistrement d'une action ou d'un passage.",
+    "longDefinition": "Une trace est l'enregistrement laissé par une action, utile pour comprendre, auditer ou déboguer. Conserver des traces fonde la traçabilité.",
     "examples": [
-      "Utiliser trace dans un rapport",
-      "Relier trace à un workflow Forma"
+      "Trace d'une opération",
+      "Garder une trace écrite"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "traçabilité",
+      "historique",
+      "journal"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "numérique",
+      "méthode"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire numérique (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -6240,28 +6196,28 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "utilisateur est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « utilisateur » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Personne qui se sert d'un produit ou service.",
+    "longDefinition": "L'utilisateur est la personne qui emploie un produit, un espace ou un service. Partir de ses besoins réels est le fondement de la conception centrée usager.",
     "examples": [
-      "Utiliser utilisateur dans un rapport",
-      "Relier utilisateur à un workflow Forma"
+      "Besoins de l'utilisateur",
+      "Tester avec des utilisateurs"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "usager"
+    ],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "expérience utilisateur",
+      "profil",
+      "parcours utilisateur"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "numérique",
+      "ux"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception centrée usager (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -6277,28 +6233,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "valeur ajoutée est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « valeur ajoutée » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Bénéfice supplémentaire apporté par une action.",
+    "longDefinition": "La valeur ajoutée est le bénéfice supplémentaire qu'une action ou un élément apporte par rapport à son coût ou à l'existant. La rechercher concentre l'effort sur ce qui compte.",
     "examples": [
-      "Utiliser valeur ajoutée dans un rapport",
-      "Relier valeur ajoutée à un workflow Forma"
+      "Valeur ajoutée d'un service",
+      "Prioriser la valeur ajoutée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "priorité",
+      "impact",
+      "efficacité"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "méthode",
+      "projet"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -6349,28 +6303,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "variable est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « variable » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Grandeur susceptible de changer de valeur.",
+    "longDefinition": "Une variable est une grandeur qui peut prendre différentes valeurs et influer sur un résultat. Identifier les variables clés aide à comprendre et à piloter un système.",
     "examples": [
-      "Utiliser variable dans un rapport",
-      "Relier variable à un workflow Forma"
+      "Variable d'un calcul",
+      "Faire varier un paramètre"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "paramètre",
+      "donnée",
+      "simulation"
     ],
     "tags": [
-      "vocabulaire",
+      "méthode",
       "études"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Méthodes de travail (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -6423,28 +6375,26 @@
     "type": "word",
     "domain": "études",
     "subdomain": "vocabulaire général",
-    "shortDefinition": "version est une notion utilisée en études et productivité pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « version » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "État daté et identifié d'un document ou produit.",
+    "longDefinition": "Une version est un état identifié d'un document ou d'un logiciel à un moment donné. Versionner permet de suivre l'évolution, comparer et revenir à un état antérieur.",
     "examples": [
-      "Utiliser version dans un rapport",
-      "Relier version à un workflow Forma"
+      "Version d'un plan",
+      "Numéro de version"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "étude",
-      "méthode",
-      "documentation",
-      "workflow"
+      "historique",
+      "variante",
+      "traçabilité"
     ],
     "tags": [
-      "vocabulaire",
-      "études"
+      "numérique",
+      "méthode"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Vocabulaire numérique (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
