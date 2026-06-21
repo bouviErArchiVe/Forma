@@ -294,3 +294,19 @@ Objectif : faire consulter la base Knowledge locale par FormAI en mode local **a
 Règles respectées : Knowledge branché avant le fallback ; réutilise `searchKnowledgeBase`/`lookupBySlug`/`extractKeywords` ; jamais d'invention (null → no-result honnête) ; jamais de prétention IA cloud ; fallback fournisseur cloud conservé si configuré ; message « mode local » mis à jour (mentionne la base Knowledge). Import dynamique → bundle principal inchangé.
 
 Résultat : 7 tests bridge verts contre la base réelle, `localProvider` répond « poutre » avec source/confiance/lien, no-result honnête sur requête inconnue. Lanes intégrées en ligne.
+
+---
+
+# Sprint #12 — Local AI Provider LM Studio / Ollama (Lanes P + G + E)
+
+Objectif : un vrai provider IA **local** OpenAI-compatible, sans cloud ni clé obligatoire, avec **grounding Knowledge**. Sans SDK lourd (fetch only), strictement opt-in, sans appel réseau si non configuré.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| P | Provider `localmodel` (fetch OpenAI-compatible, baseUrl/model/timeout, clé optionnelle, test connexion, fallback auto vers #11) | `providers/localmodel.ts`, `providers/index.ts`, `types.ts`, `stores/aiStore.ts`, tests |
+| G | Grounding Knowledge dans le prompt système des providers génératifs (fiche + anti-hallucination + source/confidence + lien) | `knowledge-grounding.ts`, `knowledge-bridge.ts` (findRelevantEntry), `chat.ts`, tests |
+| E | UI Réglages minimale (localmodel : baseUrl, model, timeout, test, état) + badge local FormAI + docs | `AISettingsSection.tsx`, `FormAIPage.tsx`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Règles respectées : compatible LM Studio (1234/v1) + Ollama (11434/v1) ; clé optionnelle ; gestion réseau/CORS/timeout ; **jamais bloquant** (fallback #11) ; pas de streaming ; grounding obligatoire pour le génératif, no-result honnête conservé ; import Knowledge dynamique (bundle inchangé).
+
+Ordre : **P → G → E**, full gate vert (tsc -b / vitest 1442 / build), Playwright final unique. Tests : provider non configuré/serveur indisponible → fallback #11 ; réponse mockée → fromLocalModel ; grounding injecte source/confidence/lien ; settings sauvegardés. Lanes intégrées en ligne.
