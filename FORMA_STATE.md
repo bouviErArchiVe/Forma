@@ -451,6 +451,14 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - Garanties : `/dictionary` + Search + bridge inchangés ; Dexie inchangé ; seeds lazy/code-split (index 314 KB, seedToken=0).
 - Limites : 372/919 « ok » (≈ 547 restent weak/review — surtout normatif/biographique honnêtement à-vérifier → review, et entrées non encore traitées) ; quasi-dup = synonymies à revoir.
 
+## Sprint #16 — Content Upgrade Pack #4 (Lanes U4 + E)
+
+- **upgrade-pack-04.json** : ~134 entrées EXISTANTES enrichies — vocabulaire général/UX/numérique restant, équipements d'intérieur (sanitaire, électricité, mobilier), concepts histoire/urbanisme/durabilité, et reliquats architecture/systèmes/matériaux. Toutes sourcées, non gabarit.
+- **Preuve mesurée** : **ok 372 → 505** (cible 500+ atteinte), weak 434 → 298, review 113 → 116, score moyen 0.66 → 0.72. Doublons **exacts = 0** ; quasi 11 → 15 (synonymies réelles). Base inchangée à **919**.
+- Honnêteté : entrées d'évacuation/normatives (`chemin d'évacuation`, `issue`, `net zéro`) gardées `à-vérifier` → review, PAS forcées en ok.
+- Garanties : `/dictionary` + Search + bridge + grounding inchangés ; Dexie inchangé ; seeds lazy/code-split (index 314 KB, seedToken=0).
+- Note stratégique : fin probable du cycle « content pack » à fort rendement — le weak restant (~298) est désormais surtout normatif/biographique (people/buildings/norms) honnêtement à-vérifier. Prochain pivot conseillé : Streaming localmodel ou Real Local Model QA.
+
 ## Sprint #12 — Local AI Provider (LM Studio / Ollama) (Lanes P + G + E)
 
 - **Provider `localmodel`** (`src/services/ai/providers/localmodel.ts`) : OpenAI-compatible `POST {baseUrl}/chat/completions` via **fetch** (aucun SDK), **clé optionnelle**, **timeout** configurable. `fromCloud:false` / `fromLocalModel:true`. Cible **LM Studio** (`http://localhost:1234/v1`) et **Ollama** (`http://localhost:11434/v1`). `testLocalModelConnection` (GET `/models`).
