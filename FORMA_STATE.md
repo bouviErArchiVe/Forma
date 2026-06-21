@@ -442,3 +442,10 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - **UI Réglages** (`AISettingsSection`) : option « Modèle local », URL de base, modèle, **timeout**, **bouton test** + état connecté/non connecté — visible sans activer le cloud. Badge FormAI traite `localmodel` comme local (pas cloud).
 - Garanties : `import` Knowledge dynamique (seeds hors bundle, index ~314 KB), pas de SDK lourd, clé jamais requise pour le local, `/dictionary` + Search inchangés, Dexie inchangé (sauf champ localStorage `localTimeoutMs` dans aiStore).
 - Limites : pas de streaming ce sprint ; qualité de génération dépend du modèle local installé ; CORS à autoriser côté serveur local si besoin.
+
+## Sprint #13 — Local Model Real-World Setup (Lanes D + S + E)
+
+- **Diagnostic classé** (`diagnoseLocalModelConnection`) : `ok` / `no-models` / `model-missing` / `endpoint-invalid` (404) / `unreachable-or-cors` / `timeout` / `invalid-response` / `http-error`. Le navigateur masquant la cause d'un échec réseau (CORS vs serveur down sont indistinguables), le statut `unreachable-or-cors` reste **prudent** (n'affirme aucune cause unique) ; chaque statut porte un **message actionnable**. Liste les modèles via GET `/models`. `testLocalModelConnection` conservé (connectivité seule).
+- **Setup UX** (`AISettingsSection`) : presets **LM Studio** (`:1234/v1`) / **Ollama** (`:11434/v1`) ; **sélection du modèle** depuis la liste détectée + saisie libre ; état connecté / non connecté / CORS probable / modèle introuvable ; **guide intégré** (lancer le serveur, URL de base, CORS `OLLAMA_ORIGINS`/LM Studio, modèle léger) + modèles conseillés (Phi-3 mini, Qwen2 0.5–1.5B, Gemma 2B, Mistral 7B Q4).
+- Garanties : **aucun appel réseau hors action explicite** (test/usage) ; fallback #11 et grounding Knowledge **intacts** ; `localmodel` ne s'active jamais automatiquement (opt-in par sélection) ; pas de dépendance lourde (fetch) ; bundle inchangé (index ~314 KB).
+- Limites : la cause exacte d'un échec réseau reste indéterminable depuis le navigateur (par conception) ; pas de test avec un vrai serveur LM Studio/Ollama en CI (couvert par mocks + fallback) ; pas de streaming.

@@ -310,3 +310,17 @@ Objectif : un vrai provider IA **local** OpenAI-compatible, sans cloud ni clé o
 Règles respectées : compatible LM Studio (1234/v1) + Ollama (11434/v1) ; clé optionnelle ; gestion réseau/CORS/timeout ; **jamais bloquant** (fallback #11) ; pas de streaming ; grounding obligatoire pour le génératif, no-result honnête conservé ; import Knowledge dynamique (bundle inchangé).
 
 Ordre : **P → G → E**, full gate vert (tsc -b / vitest 1442 / build), Playwright final unique. Tests : provider non configuré/serveur indisponible → fallback #11 ; réponse mockée → fromLocalModel ; grounding injecte source/confidence/lien ; settings sauvegardés. Lanes intégrées en ligne.
+
+---
+
+# Sprint #13 — Local Model Real-World Setup (Lanes D + S + E)
+
+Objectif : rendre `localmodel` réellement branchable par un utilisateur (LM Studio/Ollama). Sans streaming, sans dépendance lourde, aucun appel réseau hors action explicite.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| D | Diagnostic classé (ok/no-models/model-missing/endpoint-invalid/unreachable-or-cors/timeout/invalid-response/http-error), messages actionnables, prudent sur CORS | `providers/localmodel.ts`, tests |
+| S | Presets LM Studio/Ollama, sélection modèle depuis `/models`, états, guide intégré + modèles conseillés | `components/settings/AISettingsSection.tsx` |
+| E | Docs setup + état + QA + Playwright | `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Règles respectées : ne jamais affirmer une cause masquée par le navigateur ; fallback #11 + grounding intacts ; opt-in (pas d'activation auto) ; pas d'appel réseau automatique ; pas de dépendance lourde. Ordre **D → S → E**, full gate (tsc -b / vitest 1450 / build), Playwright final unique. Lanes en ligne.
