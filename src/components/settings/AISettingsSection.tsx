@@ -16,21 +16,24 @@ import {
   type AIProvider,
 } from '../../stores/aiStore'
 import { testAIConnection } from '../../lib/ai-service'
+import { testLocalModelConnection } from '../../services/ai/providers/localmodel'
 
-const PROVIDERS: AIProvider[] = ['local', 'openai', 'anthropic', 'ollama']
+const PROVIDERS: AIProvider[] = ['local', 'localmodel', 'openai', 'anthropic', 'ollama']
 
 export function AISettingsSection() {
   const {
     provider, apiKey, model, endpoint, cloudEnabled,
-    maxTokens, temperature,
+    maxTokens, temperature, localTimeoutMs,
     setApiKey, setModel, setEndpoint,
-    setCloudEnabled, setMaxTokens, setTemperature,
+    setCloudEnabled, setMaxTokens, setTemperature, setLocalTimeoutMs,
     applyProviderDefaults, isCloudReady,
   } = useAIStore()
 
   const [testing, setTesting] = useState(false)
-  const [testResult, setTestResult] = useState<{ ok: boolean; latencyMs: number; error?: string } | null>(null)
+  const [testResult, setTestResult] = useState<{ ok: boolean; detail?: string; error?: string } | null>(null)
   const [showKey, setShowKey] = useState(false)
+
+  const isLocalModel = provider === 'localmodel'
 
   const handleProviderChange = (p: AIProvider) => {
     applyProviderDefaults(p)
@@ -40,14 +43,29 @@ export function AISettingsSection() {
   const handleTest = async () => {
     setTesting(true)
     setTestResult(null)
-    const config = useAIStore.getState()
-    const result = await testAIConnection(config)
-    setTestResult(result)
+    const cfg = useAIStore.getState()
+    if (cfg.provider === 'localmodel') {
+      const r = await testLocalModelConnection({
+        providerId: 'localmodel', apiKey: cfg.apiKey, model: cfg.model,
+        endpoint: cfg.endpoint || DEFAULT_ENDPOINTS.localmodel,
+        maxTokens: cfg.maxTokens, temperature: cfg.temperature, timeoutMs: cfg.localTimeoutMs,
+      })
+      setTestResult({
+        ok: r.ok,
+        detail: r.ok ? (r.models && r.models.length > 0 ? `${r.models.length} modèle(s)` : 'connecté') : undefined,
+        error: r.error,
+      })
+    } else {
+      const result = await testAIConnection(cfg)
+      setTestResult({ ok: result.ok, detail: result.ok ? `${result.latencyMs} ms` : undefined, error: result.error })
+    }
     setTesting(false)
   }
 
   const needsKey = provider === 'openai' || provider === 'anthropic'
   const needsEndpoint = provider === 'ollama'
+  // localmodel : configurable SANS activer le cloud (opt-in = la sélection).
+  const showConfig = isLocalModel || (cloudEnabled && provider !== 'local')
   const ready = isCloudReady()
 
   return (
@@ -118,10 +136,10 @@ export function AISettingsSection() {
         </label>
       )}
 
-      {/* Endpoint (Ollama / custom) */}
-      {cloudEnabled && (needsEndpoint || provider === 'openai') && (
+      {/* Endpoint (localmodel / Ollama / custom) */}
+      {(isLocalModel || (cloudEnabled && (needsEndpoint || provider === 'openai'))) && (
         <label className="block text-sm">
-          URL de l'API
+          URL de base {isLocalModel && <span className="text-[10px] text-forma-muted">(LM Studio : http://localhost:1234/v1 · Ollama : http://localhost:11434/v1)</span>}
           <input
             type="url"
             value={endpoint}
@@ -133,7 +151,7 @@ export function AISettingsSection() {
       )}
 
       {/* Model */}
-      {cloudEnabled && provider !== 'local' && (
+      {showConfig && (
         <label className="block text-sm">
           Modèle
           <input
@@ -146,8 +164,24 @@ export function AISettingsSection() {
         </label>
       )}
 
+      {/* Timeout (localmodel — serveurs locaux parfois lents) */}
+      {isLocalModel && (
+        <label className="block text-sm">
+          Délai max ({(localTimeoutMs / 1000).toFixed(0)} s)
+          <input
+            type="range"
+            min={5000}
+            max={120000}
+            step={5000}
+            value={localTimeoutMs}
+            onChange={(e) => setLocalTimeoutMs(Number(e.target.value))}
+            className="w-full mt-0.5"
+          />
+        </label>
+      )}
+
       {/* Advanced */}
-      {cloudEnabled && provider !== 'local' && (
+      {showConfig && (
         <details className="text-sm">
           <summary className="cursor-pointer text-forma-muted hover:text-forma-text text-xs">Paramètres avancés</summary>
           <div className="mt-2 space-y-2 pl-2 border-l border-forma-border">
@@ -180,7 +214,7 @@ export function AISettingsSection() {
       )}
 
       {/* Test connection */}
-      {cloudEnabled && provider !== 'local' && (
+      {showConfig && (
         <div className="space-y-1">
           <button
             type="button"
@@ -193,8 +227,8 @@ export function AISettingsSection() {
           {testResult && (
             <p className={`text-xs ${testResult.ok ? 'text-green-600' : 'text-red-500'}`}>
               {testResult.ok
-                ? `✓ Connexion OK (${testResult.latencyMs} ms)`
-                : `✗ Erreur : ${testResult.error ?? 'Inconnu'}`}
+                ? `✓ ${isLocalModel ? 'Serveur local connecté' : 'Connexion OK'}${testResult.detail ? ` (${testResult.detail})` : ''}`
+                : `✗ Non connecté : ${testResult.error ?? 'Inconnu'}`}
             </p>
           )}
         </div>
@@ -203,7 +237,16 @@ export function AISettingsSection() {
       {/* Info local mode */}
       {provider === 'local' && (
         <p className="text-xs text-forma-muted">
-          💻 Mode local : résumé, mots-clés, reformulation et Q&R sur vos notes — sans réseau, sans cloud.
+          💻 Mode local : résumé, mots-clés, reformulation et Q&R sur vos notes et la base Knowledge — sans réseau, sans cloud.
+        </p>
+      )}
+
+      {/* Info local model */}
+      {isLocalModel && (
+        <p className="text-xs text-forma-muted">
+          🖥️ Modèle local : génération via votre serveur LM Studio ou Ollama (OpenAI-compatible), sans cloud ni clé.
+          Les fiches Knowledge pertinentes sont injectées en contexte (réponses ancrées + source). Si le serveur ne
+          répond pas, Forma bascule automatiquement sur le mode local extractif.
         </p>
       )}
 

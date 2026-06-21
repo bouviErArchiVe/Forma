@@ -59,7 +59,7 @@ export function FormAIPage() {
   // Provider actif (affichage local/cloud)
   const settings = resolveProviderSettings()
   const provider = getProvider(settings.providerId)
-  const fromCloud = settings.providerId !== 'local' && settings.providerId !== 'mock' && settings.providerId !== 'ollama'
+  const fromCloud = settings.providerId !== 'local' && settings.providerId !== 'mock' && settings.providerId !== 'ollama' && settings.providerId !== 'localmodel'
 
   // ── Chargements ─────────────────────────────────────────────────────────────
 
