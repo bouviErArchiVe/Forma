@@ -373,31 +373,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "asphalte est un matériau ou produit de construction associé à les revêtements et toitures.",
-    "longDefinition": "asphalte est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Mélange de bitume et de granulats, utilisé en revêtement et étanchéité.",
+    "longDefinition": "L'asphalte associe un liant bitumineux à des granulats pour former un revêtement souple et imperméable. On l'emploie pour les chaussées, les stationnements et certaines membranes d'étanchéité de toiture.",
     "examples": [
-      "Choisir asphalte pour les revêtements et toitures",
-      "Comparer asphalte à un matériau alternatif"
+      "Revêtement de stationnement en asphalte",
+      "Membrane d'étanchéité bitumineuse"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "enrobé bitumineux"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "membrane bitumineuse",
+      "bitume",
+      "toiture"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "revêtement"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 11
@@ -410,31 +410,28 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "bambou est un matériau ou produit de construction associé à les revêtements et panneaux.",
-    "longDefinition": "bambou est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Matériau végétal résistant, renouvelable.",
+    "longDefinition": "Le bambou est une graminée ligneuse à croissance rapide, employée en structure légère, revêtement et mobilier, souvent sous forme lamellée. Léger et résistant, il est valorisé pour son faible impact.",
     "examples": [
-      "Choisir bambou pour les revêtements et panneaux",
-      "Comparer bambou à un matériau alternatif"
+      "Plancher en lamellé de bambou",
+      "Structure légère en bambou"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "bois massif",
+      "revêtement de sol"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "bois"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 12
@@ -969,31 +966,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "cellulose est un matériau ou produit de construction associé à l'isolation biosourcée.",
-    "longDefinition": "cellulose est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Isolant biosourcé en fibres de papier recyclé.",
+    "longDefinition": "La cellulose est un isolant biosourcé fait de papier recyclé traité, soufflé ou insufflé dans les combles et les murs. Économique et à bonne inertie, elle doit être protégée de l'humidité.",
     "examples": [
-      "Choisir cellulose pour l'isolation biosourcée",
-      "Comparer cellulose à un matériau alternatif"
+      "Cellulose soufflée dans des combles",
+      "Insufflation de cellulose en mur"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "ouate de cellulose"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "laine minérale",
+      "chanvre",
+      "isolation continue"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "isolation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 27
@@ -1006,31 +1003,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "chanvre est un matériau ou produit de construction associé à les matériaux biosourcés.",
-    "longDefinition": "chanvre est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Isolant et matériau biosourcé à base de chanvre.",
+    "longDefinition": "Le chanvre sert d'isolant (laine de chanvre) et, mélangé à la chaux, de béton de chanvre pour murs et enduits. Biosourcé et perspirant, il régule l'humidité mais n'est pas porteur.",
     "examples": [
-      "Choisir chanvre pour les matériaux biosourcés",
-      "Comparer chanvre à un matériau alternatif"
+      "Laine de chanvre en cloison",
+      "Béton de chanvre en remplissage"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "cellulose",
+      "paille",
+      "terre crue"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "isolation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 28
@@ -1117,31 +1112,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "contreplaqué est un matériau ou produit de construction associé à les panneaux structuraux ou de finition.",
-    "longDefinition": "contreplaqué est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Panneau de plis de bois collés à fils croisés.",
+    "longDefinition": "Le contreplaqué est formé de minces plis de bois collés en croisant le fil d'un pli à l'autre, ce qui lui donne stabilité et résistance dans les deux sens. Il sert de support, de coffrage et de panneau de structure.",
     "examples": [
-      "Choisir contreplaqué pour les panneaux structuraux ou de finition",
-      "Comparer contreplaqué à un matériau alternatif"
+      "Support de toiture en contreplaqué",
+      "Coffrage en contreplaqué"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "plywood"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "OSB",
+      "panneau",
+      "coffrage"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "bois"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 31
@@ -1264,31 +1259,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "céramique est un matériau ou produit de construction associé à les sols et murs humides.",
-    "longDefinition": "céramique est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Matériau d'argile cuite émaillée, en carreaux.",
+    "longDefinition": "La céramique regroupe les carreaux d'argile cuite, souvent émaillés, employés en revêtement de sol et de mur. Dure, étanche et facile d'entretien, elle convient aux pièces humides.",
     "examples": [
-      "Choisir céramique pour les sols et murs humides",
-      "Comparer céramique à un matériau alternatif"
+      "Carrelage céramique de salle de bain",
+      "Crédence en céramique"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "carrelage"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "porcelaine",
+      "terre cuite",
+      "revêtement de sol"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 35
@@ -1339,31 +1334,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "EPDM est un matériau ou produit de construction associé à les membranes de toiture.",
-    "longDefinition": "EPDM est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Membrane d'étanchéité synthétique en caoutchouc.",
+    "longDefinition": "L'EPDM est une membrane monocouche en caoutchouc synthétique très durable et élastique, utilisée pour l'étanchéité des toits plats. Elle se pose en grandes lés avec peu de joints.",
     "examples": [
-      "Choisir EPDM pour les membranes de toiture",
-      "Comparer EPDM à un matériau alternatif"
+      "Toit plat étanché en EPDM",
+      "Bassin étanché à l'EPDM"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "TPO",
+      "membrane d'étanchéité",
+      "toit plat"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "étanchéité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 37
@@ -1450,31 +1443,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "fibrociment est un matériau ou produit de construction associé à les panneaux et bardages.",
-    "longDefinition": "fibrociment est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Panneau de ciment renforcé de fibres, pour façade.",
+    "longDefinition": "Le fibrociment est un matériau composite de ciment renforcé de fibres, moulé en panneaux ou ardoises. Durable, incombustible et stable, il sert de bardage et de couverture.",
     "examples": [
-      "Choisir fibrociment pour les panneaux et bardages",
-      "Comparer fibrociment à un matériau alternatif"
+      "Bardage en panneaux de fibrociment",
+      "Ardoises de fibrociment"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "bardage",
+      "revêtement extérieur",
+      "ardoise"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 40
@@ -1521,31 +1512,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "granulat est un matériau ou produit de construction associé à la composition du béton.",
-    "longDefinition": "granulat est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Fragments minéraux (sable, gravier) constituant le béton.",
+    "longDefinition": "Les granulats sont des fragments minéraux — sable, gravier, pierre concassée — liés par un ciment pour former le béton ou répandus en couches drainantes. Leur granulométrie influe sur la résistance et l'ouvrabilité.",
     "examples": [
-      "Choisir granulat pour la composition du béton",
-      "Comparer granulat à un matériau alternatif"
+      "Granulats d'un béton",
+      "Lit de granulats drainant"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "agrégat"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "béton",
+      "sable",
+      "gravier"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 42
@@ -1632,31 +1623,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "géotextile est un matériau ou produit de construction associé à la séparation et filtration des sols.",
-    "longDefinition": "géotextile est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Textile technique séparant et filtrant les sols.",
+    "longDefinition": "Le géotextile est un textile perméable placé dans le sol pour séparer des couches, filtrer l'eau, drainer ou renforcer. Il évite le mélange des granulats et la migration des fines.",
     "examples": [
-      "Choisir géotextile pour la séparation et filtration des sols",
-      "Comparer géotextile à un matériau alternatif"
+      "Géotextile sous un drain français",
+      "Séparation de couches en remblai"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "drain français",
+      "remblai",
+      "granulat"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "fondation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 45
@@ -1776,31 +1765,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "linoléum est un matériau ou produit de construction associé à les revêtements de sol.",
-    "longDefinition": "linoléum est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Revêtement de sol souple à base d'huile de lin et de liège.",
+    "longDefinition": "Le linoléum est un revêtement de sol naturel fabriqué à partir d'huile de lin, de farine de liège et de résines sur une toile de jute. Durable et biosourcé, on le confond souvent à tort avec le vinyle.",
     "examples": [
-      "Choisir linoléum pour les revêtements de sol",
-      "Comparer linoléum à un matériau alternatif"
+      "Sol de classe en linoléum",
+      "Linoléum en lés"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "vinyle",
+      "revêtement de sol",
+      "liège"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 49
@@ -1813,31 +1800,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "liège est un matériau ou produit de construction associé à l'isolation et les finitions.",
-    "longDefinition": "liège est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Matériau naturel isolant thermique et acoustique.",
+    "longDefinition": "Le liège, écorce du chêne-liège, est un isolant naturel imputrescible utilisé en panneaux ou en granulats. Il isole thermiquement et acoustiquement et sert aussi de revêtement de sol.",
     "examples": [
-      "Choisir liège pour l'isolation et les finitions",
-      "Comparer liège à un matériau alternatif"
+      "Panneaux de liège isolant",
+      "Sol en liège"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "linoléum",
+      "isolant acoustique",
+      "revêtement de sol"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "isolation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 50
@@ -1885,31 +1870,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "MDF est un matériau ou produit de construction associé à les aménagements intérieurs.",
-    "longDefinition": "MDF est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Panneau de fibres de bois de densité moyenne.",
+    "longDefinition": "Le MDF est un panneau de fibres de bois agglomérées sous pression, à surface lisse et homogène. Très usiné en ébénisterie et mobilier, il craint l'humidité et n'est pas structurel.",
     "examples": [
-      "Choisir MDF pour les aménagements intérieurs",
-      "Comparer MDF à un matériau alternatif"
+      "Façade de meuble en MDF laqué",
+      "Moulures en MDF"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "panneau de fibres"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "contreplaqué",
+      "stratifié",
+      "mobilier intégré"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "second œuvre"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 52
@@ -1922,31 +1907,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "membrane bitumineuse est un matériau ou produit de construction associé à l'étanchéité des toitures.",
-    "longDefinition": "membrane bitumineuse est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Membrane d'étanchéité à base de bitume.",
+    "longDefinition": "La membrane bitumineuse est une feuille d'étanchéité à base de bitume modifié, posée en une ou deux couches sur les toitures-terrasses et les fondations. Elle se soude ou se colle pour former une barrière continue à l'eau.",
     "examples": [
-      "Choisir membrane bitumineuse pour l'étanchéité des toitures",
-      "Comparer membrane bitumineuse à un matériau alternatif"
+      "Étanchéité de toit plat en membrane bitumineuse",
+      "Membrane de fondation"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "bitume modifié"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "membrane d'étanchéité",
+      "toit plat",
+      "asphalte"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "étanchéité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 53
@@ -2106,31 +2091,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "OSB est un matériau ou produit de construction associé à les panneaux de contreventement ou support.",
-    "longDefinition": "OSB est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Panneau de lamelles de bois orientées et collées.",
+    "longDefinition": "L'OSB (oriented strand board) est composé de lamelles de bois orientées par couches puis pressées avec une résine. Économique et résistant, il sert de voile travaillant, de support de revêtement et de plancher.",
     "examples": [
-      "Choisir OSB pour les panneaux de contreventement ou support",
-      "Comparer OSB à un matériau alternatif"
+      "Voile de contreventement en OSB",
+      "Support de plancher en OSB"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "panneau à lamelles orientées"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "contreplaqué",
+      "ossature bois",
+      "contreventement"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "bois"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 58
@@ -2143,31 +2128,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "paille est un matériau ou produit de construction associé à l'isolation et la construction biosourcée.",
-    "longDefinition": "paille est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Matériau isolant biosourcé en bottes.",
+    "longDefinition": "La paille, en bottes, sert de remplissage isolant entre une ossature porteuse, généralement protégée par un enduit. Biosourcée et très isolante, elle exige une protection rigoureuse contre l'humidité et le feu.",
     "examples": [
-      "Choisir paille pour l'isolation et la construction biosourcée",
-      "Comparer paille à un matériau alternatif"
+      "Mur en bottes de paille enduites",
+      "Caisson ossature-paille préfabriqué"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "chanvre",
+      "terre crue",
+      "ossature bois"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "isolation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 59
@@ -2291,31 +2274,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "peinture est un matériau ou produit de construction associé à les finitions protectrices et visuelles.",
-    "longDefinition": "peinture est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Revêtement liquide protecteur et décoratif appliqué en couches.",
+    "longDefinition": "La peinture est une dispersion de pigments et de liants appliquée en couches minces pour protéger et décorer une surface. Son choix (acrylique, alkyde, époxy) dépend du support et de l'exposition.",
     "examples": [
-      "Choisir peinture pour les finitions protectrices et visuelles",
-      "Comparer peinture à un matériau alternatif"
+      "Peinture acrylique de murs intérieurs",
+      "Peinture époxy de sol technique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "vernis",
+      "enduit",
+      "finition"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 63
@@ -2476,31 +2457,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "polycarbonate est un matériau ou produit de construction associé à les parois légères translucides.",
-    "longDefinition": "polycarbonate est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Plastique translucide rigide et résistant aux chocs.",
+    "longDefinition": "Le polycarbonate est un plastique translucide très résistant aux chocs, plus léger que le verre, souvent en plaques alvéolaires isolantes. Il couvre verrières, vérandas et bardages translucides.",
     "examples": [
-      "Choisir polycarbonate pour les parois légères translucides",
-      "Comparer polycarbonate à un matériau alternatif"
+      "Couverture de véranda en polycarbonate alvéolaire",
+      "Bardage translucide"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "verre",
+      "lanterneau",
+      "bardage"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "enveloppe"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 68
@@ -2513,31 +2492,32 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "polystyrène expansé est un matériau ou produit de construction associé à l'isolation rigide légère.",
-    "longDefinition": "polystyrène expansé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Isolant rigide en billes de polystyrène expansé.",
+    "longDefinition": "Le polystyrène expansé (PSE) est un isolant rigide léger formé de billes expansées soudées, à coût modéré. On l'emploie en isolation de murs, toitures et sous dalle ; il craint les solvants et le feu.",
     "examples": [
-      "Choisir polystyrène expansé pour l'isolation rigide légère",
-      "Comparer polystyrène expansé à un matériau alternatif"
+      "Isolation sous dalle en PSE",
+      "Panneaux de PSE en façade"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "PSE",
+      "styromousse"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "polystyrène extrudé",
+      "isolation continue",
+      "laine minérale"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "isolation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 69
@@ -2550,31 +2530,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "polystyrène extrudé est un matériau ou produit de construction associé à l'isolation rigide résistante à l'humidité.",
-    "longDefinition": "polystyrène extrudé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Isolant rigide extrudé, résistant à l'humidité.",
+    "longDefinition": "Le polystyrène extrudé (XPS) est un isolant rigide à structure fermée, plus dense et résistant à l'eau que le PSE. Il convient aux situations humides : sous dalle, périmètre de fondation, toiture inversée.",
     "examples": [
-      "Choisir polystyrène extrudé pour l'isolation rigide résistante à l'humidité",
-      "Comparer polystyrène extrudé à un matériau alternatif"
+      "Isolation de fondation en XPS",
+      "Toiture inversée sur XPS"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "XPS"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "polystyrène expansé",
+      "toiture inversée",
+      "isolation continue"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "isolation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 70
@@ -2587,31 +2567,32 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "polyuréthane giclé est un matériau ou produit de construction associé à l'isolation projetée.",
-    "longDefinition": "polyuréthane giclé est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Isolant projeté formant aussi pare-air.",
+    "longDefinition": "Le polyuréthane giclé est une mousse isolante projetée qui se dilate et durcit en place, isolant et étanchéifiant à l'air en une seule opération. Il épouse les formes complexes mais demande une mise en œuvre soignée.",
     "examples": [
-      "Choisir polyuréthane giclé pour l'isolation projetée",
-      "Comparer polyuréthane giclé à un matériau alternatif"
+      "Isolation de rive de toit en uréthane giclé",
+      "Calfeutrement de pénétrations"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "uréthane giclé",
+      "mousse projetée"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "pare-air",
+      "isolation continue",
+      "pont thermique"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "isolation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 71
@@ -2661,31 +2642,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "PVC est un matériau ou produit de construction associé à les menuiseries et réseaux.",
-    "longDefinition": "PVC est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Plastique rigide courant en menuiserie et plomberie.",
+    "longDefinition": "Le PVC (polychlorure de vinyle) est un plastique économique et durable utilisé pour les profilés de fenêtres, les canalisations et les revêtements. Bon isolant, il supporte mal les fortes chaleurs.",
     "examples": [
-      "Choisir PVC pour les menuiseries et réseaux",
-      "Comparer PVC à un matériau alternatif"
+      "Fenêtre en PVC",
+      "Tuyau d'évacuation en PVC"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "vinyle",
+      "fenêtre",
+      "plomberie"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "menuiserie"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 73
@@ -2809,31 +2788,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "scellant est un matériau ou produit de construction associé à l'étanchéité des joints.",
-    "longDefinition": "scellant est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Produit de calfeutrage des joints.",
+    "longDefinition": "Le scellant (ou calfeutrant) est un produit pâteux appliqué dans un joint pour l'étancher à l'air et à l'eau tout en absorbant les mouvements. On choisit sa nature (silicone, polyuréthane) selon le support et l'exposition.",
     "examples": [
-      "Choisir scellant pour l'étanchéité des joints",
-      "Comparer scellant à un matériau alternatif"
+      "Scellant de joint de fenêtre",
+      "Calfeutrage périphérique d'une porte"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "calfeutrant"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "silicone",
+      "étanchéité à l'air",
+      "joint de dilatation"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "étanchéité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 77
@@ -2846,31 +2825,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "silicone est un matériau ou produit de construction associé à les joints souples.",
-    "longDefinition": "silicone est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Mastic élastomère étanche et durable.",
+    "longDefinition": "Le silicone est un mastic élastomère souple utilisé pour réaliser des joints étanches autour des baies, sanitaires et vitrages. Il reste souple, résiste à l'eau et aux UV, mais ne se peint pas.",
     "examples": [
-      "Choisir silicone pour les joints souples",
-      "Comparer silicone à un matériau alternatif"
+      "Joint de silicone d'une baignoire",
+      "Étanchéité de vitrage au silicone"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "scellant",
+      "joint de dilatation",
+      "verre"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "étanchéité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 78
@@ -2883,31 +2860,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "stratifié est un matériau ou produit de construction associé à les meubles et surfaces.",
-    "longDefinition": "stratifié est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Revêtement de surface en feuilles imprégnées pressées.",
+    "longDefinition": "Le stratifié est constitué de feuilles de papier imprégné de résine pressées à chaud, collées sur un panneau support. Résistant et économique, il habille plans de travail, mobilier et sols (stratifié flottant).",
     "examples": [
-      "Choisir stratifié pour les meubles et surfaces",
-      "Comparer stratifié à un matériau alternatif"
+      "Comptoir en stratifié",
+      "Plancher stratifié flottant"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "laminé"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "MDF",
+      "comptoir",
+      "revêtement de sol"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 79
@@ -2957,31 +2934,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "terrazzo est un matériau ou produit de construction associé à les sols décoratifs durables.",
-    "longDefinition": "terrazzo est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Revêtement de granulats noyés dans un liant, poli.",
+    "longDefinition": "Le terrazzo est composé d'éclats de marbre, de verre ou de pierre noyés dans un liant ciment ou résine, puis poncé et poli. Durable et décoratif, il sert de sol continu dans les lieux publics.",
     "examples": [
-      "Choisir terrazzo pour les sols décoratifs durables",
-      "Comparer terrazzo à un matériau alternatif"
+      "Sol en terrazzo d'un hall",
+      "Terrazzo à liant résine"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "granito"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "marbre",
+      "revêtement de sol",
+      "béton"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 81
@@ -3031,31 +3008,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "terre cuite est un matériau ou produit de construction associé à les briques, tuiles et parements.",
-    "longDefinition": "terre cuite est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Argile cuite : briques, tuiles, carreaux.",
+    "longDefinition": "La terre cuite est une argile façonnée puis cuite, base des briques, tuiles et carreaux. Durable, inerte et à bonne inertie thermique, elle est l'un des plus anciens matériaux de construction.",
     "examples": [
-      "Choisir terre cuite pour les briques, tuiles et parements",
-      "Comparer terre cuite à un matériau alternatif"
+      "Carreaux de terre cuite",
+      "Brique de terre cuite"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "brique",
+      "tuile",
+      "céramique"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "maçonnerie"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 83
@@ -3105,31 +3080,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "treillis métallique est un matériau ou produit de construction associé à l'armature ou la protection.",
-    "longDefinition": "treillis métallique est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Grille d'acier renforçant dalles et enduits.",
+    "longDefinition": "Le treillis métallique est une grille d'acier soudé utilisée pour armer les dalles, chapes et enduits, en répartissant les efforts et en limitant la fissuration. Il se place dans la zone tendue de l'élément.",
     "examples": [
-      "Choisir treillis métallique pour l'armature ou la protection",
-      "Comparer treillis métallique à un matériau alternatif"
+      "Treillis dans une dalle sur sol",
+      "Treillis d'accrochage d'un enduit"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "treillis soudé"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "armature",
+      "ferraillage",
+      "dalle sur sol"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 85
@@ -3215,31 +3190,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "vernis est un matériau ou produit de construction associé à la protection des surfaces.",
-    "longDefinition": "vernis est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Finition transparente protégeant le bois.",
+    "longDefinition": "Le vernis est une finition transparente filmogène qui protège et met en valeur le bois tout en laissant voir son veinage. Il existe en versions mates à brillantes, intérieures ou extérieures.",
     "examples": [
-      "Choisir vernis pour la protection des surfaces",
-      "Comparer vernis à un matériau alternatif"
+      "Vernis sur un plancher de bois",
+      "Vernis marin sur menuiserie extérieure"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "peinture",
+      "bois massif",
+      "finition"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 88
@@ -3396,31 +3369,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "vinyle est un matériau ou produit de construction associé à les revêtements souples.",
-    "longDefinition": "vinyle est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Revêtement de sol souple en PVC.",
+    "longDefinition": "Le vinyle est un revêtement de sol souple à base de PVC, posé en lés, dalles ou lames. Étanche et facile d'entretien, il imite souvent le bois ou la pierre et s'emploie dans les pièces humides.",
     "examples": [
-      "Choisir vinyle pour les revêtements souples",
-      "Comparer vinyle à un matériau alternatif"
+      "Lames de vinyle imitation bois",
+      "Vinyle de salle d'eau"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "PVC de sol"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "linoléum",
+      "PVC",
+      "revêtement de sol"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 93

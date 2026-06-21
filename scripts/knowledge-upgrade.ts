@@ -25,11 +25,20 @@ import { applyUpgradePack, type UpgradePatch } from '../src/lib/knowledge/upgrad
 const SEEDS_DIR = 'src/data/knowledge/seeds'
 const UP_DIR = 'src/data/knowledge/upgrades'
 const PLAN_PATH = `${UP_DIR}/dedup-plan.json`
-const PACK_PATH = `${UP_DIR}/upgrade-pack-01.json`
-
 function readJson<T>(path: string, fallback: T): T {
   if (!existsSync(resolve(path))) return fallback
   return JSON.parse(readFileSync(resolve(path), 'utf8')) as T
+}
+
+/** Tous les packs `upgrade-pack-*.json` (ordre alphabétique = ordre d'application). */
+function readAllPacks(): { files: string[]; patches: UpgradePatch[] } {
+  if (!existsSync(resolve(UP_DIR))) return { files: [], patches: [] }
+  const files = readdirSync(resolve(UP_DIR))
+    .filter((f) => /^upgrade-pack-.*\.json$/.test(f))
+    .sort()
+  const patches: UpgradePatch[] = []
+  for (const f of files) patches.push(...readJson<UpgradePatch[]>(`${UP_DIR}/${f}`, []))
+  return { files, patches }
 }
 
 function statusLine(label: string, r: { ok: number; weak: number; review: number }) {
@@ -49,7 +58,7 @@ function main() {
   }
 
   const plan = readJson<DedupResolution[]>(PLAN_PATH, [])
-  const pack = readJson<UpgradePatch[]>(PACK_PATH, [])
+  const { files: packFiles, patches: pack } = readAllPacks()
 
   // 2) Rapport AVANT.
   const before = buildQualityReport(flat)
@@ -65,7 +74,7 @@ function main() {
   const dupAfter = findDuplicates(finalBase)
 
   console.log(`\n=== knowledge:upgrade ${dry ? '(DRY)' : ''} ===`)
-  console.log(`Seeds : ${flat.length} entrées · plan : ${plan.length} résolutions · upgrade : ${pack.length} patchs`)
+  console.log(`Seeds : ${flat.length} entrées · plan : ${plan.length} résolutions · packs : ${packFiles.join(', ')} (${pack.length} patchs)`)
 
   console.log('\n— Doublons —')
   console.log(`  avant : exacts=${dupBefore.exact.length} quasi=${dupBefore.near.length} impliquées=${dupBefore.involved}`)

@@ -81,28 +81,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "arc-boutant est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « arc-boutant » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Arc extérieur reportant la poussée des voûtes.",
+    "longDefinition": "L'arc-boutant est un arc extérieur qui transmet la poussée des voûtes vers des culées, permettant d'élever des murs minces et de larges baies. C'est une innovation majeure du gothique.",
     "examples": [
-      "Identifier arc-boutant dans une étude de cas",
-      "Relier arc-boutant à un projet contemporain"
+      "Arcs-boutants d'une cathédrale",
+      "Report de poussée par arc-boutant"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture gothique",
+      "voûte d'ogives",
+      "contreventement"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -155,28 +153,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture classique est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture classique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style inspiré des ordres et de la symétrie antiques.",
+    "longDefinition": "L'architecture classique reprend les principes gréco-romains — ordres, symétrie, proportions et composition régulière. Elle exprime ordre et permanence et inspire le néoclassicisme.",
     "examples": [
-      "Identifier architecture classique dans une étude de cas",
-      "Relier architecture classique à un projet contemporain"
+      "Façade classique à colonnes",
+      "Composition symétrique classique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "néoclassicisme",
+      "ordre dorique",
+      "symétrie"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -303,28 +299,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture gothique est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture gothique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style médiéval de l'arc brisé et de la lumière.",
+    "longDefinition": "L'architecture gothique (XIIᵉ–XVᵉ s.) développe l'arc brisé, la croisée d'ogives et l'arc-boutant pour élever des voûtes hautes percées de larges baies et de vitraux. Elle privilégie la verticalité et la lumière.",
     "examples": [
-      "Identifier architecture gothique dans une étude de cas",
-      "Relier architecture gothique à un projet contemporain"
+      "Cathédrale gothique à arcs-boutants",
+      "Voûte d'ogives gothique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "arc-boutant",
+      "voûte d'ogives",
+      "vitrail"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -562,28 +556,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture organique est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture organique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Architecture en harmonie avec la nature et le site.",
+    "longDefinition": "L'architecture organique recherche l'harmonie entre le bâtiment, l'humain et la nature, avec des formes inspirées du vivant et une intégration au site. Frank Lloyd Wright en est une figure majeure.",
     "examples": [
-      "Identifier architecture organique dans une étude de cas",
-      "Relier architecture organique à un projet contemporain"
+      "Maison intégrée à son site naturel",
+      "Formes organiques inspirées du vivant"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture bioclimatique",
+      "architecture vernaculaire",
+      "matérialité"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -636,28 +628,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture romane est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture romane » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style médiéval aux murs épais et voûtes en plein cintre.",
+    "longDefinition": "L'architecture romane (XIᵉ–XIIᵉ s.) se caractérise par des murs épais, de petites ouvertures et des voûtes en plein cintre, donnant des édifices massifs et sobres. Elle précède le gothique.",
     "examples": [
-      "Identifier architecture romane dans une étude de cas",
-      "Relier architecture romane à un projet contemporain"
+      "Église romane à plein cintre",
+      "Nef romane massive"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture gothique",
+      "voûte",
+      "arc"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -858,28 +848,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture vernaculaire est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture vernaculaire » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Architecture locale issue des savoir-faire et du climat.",
+    "longDefinition": "L'architecture vernaculaire est bâtie selon les traditions, matériaux et savoir-faire locaux, en réponse au climat et au mode de vie, sans architecte. Elle inspire les approches durables et régionalistes.",
     "examples": [
-      "Identifier architecture vernaculaire dans une étude de cas",
-      "Relier architecture vernaculaire à un projet contemporain"
+      "Maison vernaculaire en pierre locale",
+      "Toiture vernaculaire adaptée au climat"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "régionalisme critique",
+      "architecture méditerranéenne",
+      "terre crue"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -895,28 +883,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "Art déco est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « Art déco » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style des années 1920–30, géométrie ornée et luxe.",
+    "longDefinition": "L'Art déco conjugue lignes géométriques, symétrie et matériaux raffinés pour un effet à la fois moderne et décoratif. Il marque architecture, mobilier et arts graphiques de l'entre-deux-guerres.",
     "examples": [
-      "Identifier Art déco dans une étude de cas",
-      "Relier Art déco à un projet contemporain"
+      "Gratte-ciel Art déco",
+      "Hall Art déco géométrique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "Art nouveau",
+      "modernisme",
+      "éclectisme"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -932,28 +918,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "Art nouveau est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « Art nouveau » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style 1900 inspiré des lignes organiques de la nature.",
+    "longDefinition": "L'Art nouveau (vers 1900) puise dans les formes végétales et les courbes organiques, intégrant ferronnerie, vitrail et décor à l'architecture. Il célèbre l'unité des arts et l'artisanat.",
     "examples": [
-      "Identifier Art nouveau dans une étude de cas",
-      "Relier Art nouveau à un projet contemporain"
+      "Entrée Art nouveau en ferronnerie",
+      "Courbes végétales d'une façade 1900"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "Art déco",
+      "vitrail",
+      "éclectisme"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -969,28 +953,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "baroque est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « baroque » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style des XVIIᵉ–XVIIIᵉ s., mouvement et théâtralité.",
+    "longDefinition": "Le baroque privilégie le mouvement, les courbes, les effets de lumière et la profusion décorative pour saisir et émouvoir. Il met en scène l'espace de façon dynamique et théâtrale.",
     "examples": [
-      "Identifier baroque dans une étude de cas",
-      "Relier baroque à un projet contemporain"
+      "Église baroque à façade ondulée",
+      "Décor baroque foisonnant"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "rococo",
+      "architecture classique",
+      "Renaissance"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1006,28 +988,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "Bauhaus est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « Bauhaus » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "École allemande unifiant art, artisanat et industrie.",
+    "longDefinition": "Le Bauhaus (1919–1933) est une école et un mouvement qui réunit art, artisanat et production industrielle autour de formes épurées et fonctionnelles. Il a profondément marqué le design et l'architecture modernes.",
     "examples": [
-      "Identifier Bauhaus dans une étude de cas",
-      "Relier Bauhaus à un projet contemporain"
+      "Bâtiment du Bauhaus à Dessau",
+      "Mobilier d'inspiration Bauhaus"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "modernisme",
+      "fonctionnalisme",
+      "Style international"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1080,28 +1060,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "brutalisme est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « brutalisme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style du béton brut et des masses sculpturales.",
+    "longDefinition": "Le brutalisme (années 1950–70) expose le béton brut de décoffrage et des volumes massifs et sculpturaux, exprimant franchement structure et matériau. Son nom vient du « béton brut ».",
     "examples": [
-      "Identifier brutalisme dans une étude de cas",
-      "Relier brutalisme à un projet contemporain"
+      "Bâtiment brutaliste en béton brut",
+      "Façade sculpturale brutaliste"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "modernisme",
+      "béton",
+      "béton apparent"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1450,28 +1428,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "déconstructivisme est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « déconstructivisme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style des formes fragmentées et instables.",
+    "longDefinition": "Le déconstructivisme (fin XXᵉ s.) explore la fragmentation, les géométries non orthogonales et l'apparente instabilité, remettant en cause l'harmonie attendue. Il produit des formes dynamiques et complexes.",
     "examples": [
-      "Identifier déconstructivisme dans une étude de cas",
-      "Relier déconstructivisme à un projet contemporain"
+      "Volumes fragmentés déconstructivistes",
+      "Façade aux angles éclatés"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "postmodernisme",
+      "architecture paramétrique",
+      "modernisme"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1598,28 +1574,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "fonctionnalisme est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « fonctionnalisme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Doctrine où la forme découle de la fonction.",
+    "longDefinition": "Le fonctionnalisme affirme que la forme d'un bâtiment doit découler de son usage et de sa structure, en rejetant l'ornement superflu. Il est au cœur de la pensée moderniste.",
     "examples": [
-      "Identifier fonctionnalisme dans une étude de cas",
-      "Relier fonctionnalisme à un projet contemporain"
+      "Plan fonctionnaliste optimisé",
+      "« La forme suit la fonction »"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "modernisme",
+      "Bauhaus",
+      "Style international"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "concept"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1783,31 +1757,32 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "maison passive est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « maison passive » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Bâtiment à très faible besoin de chauffage.",
+    "longDefinition": "La maison passive vise un besoin de chauffage très faible grâce à une isolation renforcée, une grande étanchéité à l'air, des apports solaires maîtrisés et une ventilation à récupération de chaleur. Les seuils précis sont normés (à vérifier).",
     "examples": [
-      "Identifier maison passive dans une étude de cas",
-      "Relier maison passive à un projet contemporain"
+      "Maison passive très isolée",
+      "VMC double flux d'une maison passive"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "passivhaus"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture durable",
+      "isolation continue",
+      "étanchéité à l'air"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course",
+        "note": "Seuils de performance à vérifier selon le référentiel applicable."
       }
     ],
-    "confidence": "concept",
+    "confidence": "à-vérifier",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 49
@@ -1857,28 +1832,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "minimalisme est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « minimalisme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Esthétique de l'épure et de l'essentiel.",
+    "longDefinition": "Le minimalisme recherche l'essentiel par la réduction des formes, des matériaux et des détails, valorisant l'espace, la lumière et les surfaces nettes. « Less is more » en résume l'esprit.",
     "examples": [
-      "Identifier minimalisme dans une étude de cas",
-      "Relier minimalisme à un projet contemporain"
+      "Intérieur minimaliste épuré",
+      "Détails réduits au minimum"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "modernisme",
+      "matérialité",
+      "composition"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1968,28 +1941,28 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "modernisme est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « modernisme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Mouvement du XXᵉ s. : fonction, abstraction, technique.",
+    "longDefinition": "Le modernisme rompt avec l'ornement historique au profit de la fonction, des volumes purs et des matériaux industriels (béton, acier, verre). Il promeut « la forme suit la fonction » et l'espace libre.",
     "examples": [
-      "Identifier modernisme dans une étude de cas",
-      "Relier modernisme à un projet contemporain"
+      "Villa moderniste sur pilotis",
+      "Toit-terrasse et plan libre"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "mouvement moderne"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "fonctionnalisme",
+      "Style international",
+      "Bauhaus"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2079,28 +2052,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "mouvement moderne est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « mouvement moderne » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Courant fondateur de l'architecture du XXᵉ siècle.",
+    "longDefinition": "Le mouvement moderne désigne l'ensemble des courants du début du XXᵉ s. qui refondent l'architecture sur la fonction, la technique et l'abstraction, abandonnant les styles historiques. Il englobe Bauhaus et Style international.",
     "examples": [
-      "Identifier mouvement moderne dans une étude de cas",
-      "Relier mouvement moderne à un projet contemporain"
+      "Principes du mouvement moderne",
+      "Plan libre et pilotis"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "modernisme"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "modernisme",
+      "fonctionnalisme",
+      "Style international"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "concept"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2264,28 +2237,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "néoclassicisme est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « néoclassicisme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Retour aux modèles antiques aux XVIIIᵉ–XIXᵉ s.",
+    "longDefinition": "Le néoclassicisme réactive le vocabulaire antique — colonnes, frontons, symétrie — pour exprimer rigueur et autorité, souvent dans l'architecture publique. Il s'oppose à l'exubérance baroque.",
     "examples": [
-      "Identifier néoclassicisme dans une étude de cas",
-      "Relier néoclassicisme à un projet contemporain"
+      "Édifice public néoclassique à fronton",
+      "Colonnade néoclassique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture classique",
+      "ordre corinthien",
+      "symétrie"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "concept"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2301,28 +2272,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "ordre corinthien est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « ordre corinthien » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Ordre grec orné à chapiteau de feuilles d'acanthe.",
+    "longDefinition": "L'ordre corinthien est le plus orné des ordres classiques, distingué par son chapiteau à feuilles d'acanthe. Élancé et riche, il fut très repris par les Romains et le néoclassicisme.",
     "examples": [
-      "Identifier ordre corinthien dans une étude de cas",
-      "Relier ordre corinthien à un projet contemporain"
+      "Chapiteau corinthien à acanthe",
+      "Colonnes corinthiennes"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "ordre dorique",
+      "ordre ionique",
+      "néoclassicisme"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "concept"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2338,28 +2307,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "ordre dorique est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « ordre dorique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Ordre grec sobre, sans base, à chapiteau simple.",
+    "longDefinition": "L'ordre dorique est le plus sobre des ordres grecs : colonne robuste sans base, chapiteau simple, frise à triglyphes. Il exprime force et austérité.",
     "examples": [
-      "Identifier ordre dorique dans une étude de cas",
-      "Relier ordre dorique à un projet contemporain"
+      "Colonnes doriques d'un temple",
+      "Chapiteau dorique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "ordre ionique",
+      "ordre corinthien",
+      "architecture classique"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "concept"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2375,28 +2342,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "ordre ionique est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « ordre ionique » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Ordre grec élancé à chapiteau à volutes.",
+    "longDefinition": "L'ordre ionique est plus élancé et élégant que le dorique, reconnaissable à son chapiteau à volutes et à sa colonne cannelée sur base. Il exprime équilibre et grâce.",
     "examples": [
-      "Identifier ordre ionique dans une étude de cas",
-      "Relier ordre ionique à un projet contemporain"
+      "Chapiteau ionique à volutes",
+      "Colonnade ionique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "ordre dorique",
+      "ordre corinthien",
+      "architecture classique"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "concept"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2671,28 +2636,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "postmodernisme est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « postmodernisme » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Réaction au modernisme, retour à l'ornement et au sens.",
+    "longDefinition": "Le postmodernisme (dès les années 1970) réintroduit ornement, citation historique, couleur et ironie en réaction à l'austérité moderniste. Il revendique pluralité et référence culturelle.",
     "examples": [
-      "Identifier postmodernisme dans une étude de cas",
-      "Relier postmodernisme à un projet contemporain"
+      "Façade postmoderne citant des ordres",
+      "Couleurs et symboles postmodernes"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "modernisme",
+      "déconstructivisme",
+      "éclectisme"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2745,28 +2708,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "Renaissance est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « Renaissance » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Renouveau des principes antiques aux XVᵉ–XVIᵉ s.",
+    "longDefinition": "La Renaissance redécouvre les principes antiques — proportion, symétrie, ordres et perspective — portés par l'humanisme. Elle réintroduit la rigueur géométrique et la mesure dans l'architecture.",
     "examples": [
-      "Identifier Renaissance dans une étude de cas",
-      "Relier Renaissance à un projet contemporain"
+      "Palais Renaissance proportionné",
+      "Coupole de la Renaissance"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture classique",
+      "proportion",
+      "baroque"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2819,28 +2780,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "rococo est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « rococo » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Style décoratif léger et raffiné du XVIIIᵉ s.",
+    "longDefinition": "Le rococo prolonge le baroque dans un registre plus léger, intime et raffiné, avec des décors courbes, asymétriques et délicats. Il s'épanouit surtout dans les intérieurs.",
     "examples": [
-      "Identifier rococo dans une étude de cas",
-      "Relier rococo à un projet contemporain"
+      "Salon rococo ornementé",
+      "Décor rococo asymétrique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "baroque",
+      "moulure",
+      "éclectisme"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3115,28 +3074,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "Style international est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « Style international » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Modernisme épuré et universel des années 1930+.",
+    "longDefinition": "Le Style international diffuse mondialement un modernisme épuré : volumes légers, façades vitrées, absence d'ornement et plan libre. Il devient le langage des tours de bureaux du XXᵉ s.",
     "examples": [
-      "Identifier Style international dans une étude de cas",
-      "Relier Style international à un projet contemporain"
+      "Tour de bureaux du Style international",
+      "Façade rideau épurée"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "modernisme",
+      "mur rideau",
+      "Bauhaus"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "style"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3485,28 +3442,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "vitrail est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « vitrail » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Composition de verres colorés assemblés au plomb.",
+    "longDefinition": "Le vitrail assemble des pièces de verre coloré par des résilles de plomb pour former des images lumineuses. Il habille les baies, notamment gothiques, et filtre une lumière colorée.",
     "examples": [
-      "Identifier vitrail dans une étude de cas",
-      "Relier vitrail à un projet contemporain"
+      "Vitrail d'une rosace gothique",
+      "Vitrail contemporain"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture gothique",
+      "verre",
+      "lumière naturelle"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "matériau"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3522,28 +3477,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "voûte d'ogives est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « voûte d'ogives » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Voûte nervurée sur croisée d'arcs.",
+    "longDefinition": "La voûte d'ogives répartit les charges sur des nervures diagonales (les ogives) qui les conduisent aux piliers, allégeant les remplissages. Elle est emblématique de l'architecture gothique.",
     "examples": [
-      "Identifier voûte d'ogives dans une étude de cas",
-      "Relier voûte d'ogives à un projet contemporain"
+      "Voûte d'ogives d'une nef gothique",
+      "Croisée d'ogives"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "croisée d'ogives"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "architecture gothique",
+      "arc-boutant",
+      "voûte"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Histoire de l'architecture (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
