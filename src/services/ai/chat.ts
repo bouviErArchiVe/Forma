@@ -10,6 +10,7 @@
 import { buildRagContext } from '../../lib/rag/knowledge-base'
 import { getAgent } from './agents'
 import { appendMessage, getConversation } from './conversations'
+import { buildKnowledgeGrounding } from './knowledge-grounding'
 import { buildMemoryContext, getRelevantMemories } from './memory'
 import { getProvider, resolveProviderSettings } from './providers'
 import type { AICitation, AIChatMessage, AIConversation } from './types'
@@ -109,8 +110,21 @@ export async function sendFormAIMessage(
   if (agent.temperature !== undefined) settings.temperature = agent.temperature
   const provider = getProvider(settings.providerId)
 
+  // Grounding Knowledge : pour un provider GÉNÉRATIF (modèle local ou cloud),
+  // on injecte la fiche pertinente + consigne anti-hallucination en contexte.
+  // Le provider 'local' (extractif) garde son propre pont Knowledge (#11).
+  const grounding: AIChatMessage[] = []
+  if (settings.providerId !== 'local' && settings.providerId !== 'mock') {
+    try {
+      const g = await buildKnowledgeGrounding(trimmed)
+      if (g) grounding.push({ role: 'system', content: g.block })
+    } catch {
+      // base indisponible : on continue sans grounding (jamais bloquant).
+    }
+  }
+
   const result = await provider.chat({
-    messages: [{ role: 'system', content: prompt }, ...history],
+    messages: [{ role: 'system', content: prompt }, ...grounding, ...history],
     settings,
     signal: options.signal,
   })

@@ -76,7 +76,12 @@ function formatAnswer(entry: KnowledgeEntry): string {
  * `null` si aucune fiche pertinente (le mode local enchaînera son message
  * honnête « non trouvé »).
  */
-export async function knowledgeAnswer(question: string): Promise<KnowledgeBridgeAnswer | null> {
+/**
+ * Trouve la fiche Knowledge la plus pertinente pour une question, ou `null`
+ * (honnête). Logique partagée par la réponse extractive (#11) et le grounding
+ * du modèle local (#12). Import dynamique des seeds.
+ */
+export async function findRelevantEntry(question: string): Promise<KnowledgeEntry | null> {
   const keywords = extractKeywords(question)
   if (keywords.length === 0) return null
   const kwSet = new Set(keywords)
@@ -91,9 +96,7 @@ export async function knowledgeAnswer(question: string): Promise<KnowledgeBridge
   // 1) Tentative directe par slug (kebab des mots-clés) → couvre les termes à
   //    trait d'union comme « garde-corps » que l'index ne scinde pas.
   const direct = await lookupBySlug(keywords.join('-'))
-  if (direct && isRelevant(direct, kwSet)) {
-    return { text: formatAnswer(direct), slug: direct.slug, term: direct.term, confidence: direct.confidence }
-  }
+  if (direct && isRelevant(direct, kwSet)) return direct
 
   // 2) Recherche large : plusieurs formes de requête (phrase, kebab, mots) —
   //    on prend la première qui produit au moins une fiche pertinente.
@@ -110,6 +113,11 @@ export async function knowledgeAnswer(question: string): Promise<KnowledgeBridge
   // pas répondre par une fiche plus longue mieux classée (ex. « hauteur de
   // garde-corps » au lieu de « garde-corps »).
   const exact = relevant.find((h) => sameTokens(h.entry.term))
-  const e = (exact ?? relevant[0]).entry
+  return (exact ?? relevant[0]).entry
+}
+
+export async function knowledgeAnswer(question: string): Promise<KnowledgeBridgeAnswer | null> {
+  const e = await findRelevantEntry(question)
+  if (!e) return null
   return { text: formatAnswer(e), slug: e.slug, term: e.term, confidence: e.confidence }
 }
