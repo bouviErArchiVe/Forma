@@ -262,28 +262,26 @@
     "type": "style",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "architecture durable est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « architecture durable » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Conception réduisant l'impact environnemental.",
+    "longDefinition": "L'architecture durable cherche à réduire l'impact environnemental des bâtiments sur tout leur cycle de vie : sobriété énergétique, matériaux responsables, confort et adaptabilité. Elle articule performance et qualité d'usage.",
     "examples": [
-      "Identifier architecture durable dans une étude de cas",
-      "Relier architecture durable à un projet contemporain"
+      "Bâtiment à architecture durable",
+      "Conception sobre en énergie"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "maison passive",
+      "cycle de vie",
+      "sobriété énergétique"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1317,28 +1315,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "cycle de vie est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « cycle de vie » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Ensemble des étapes de vie d'un produit ou ouvrage.",
+    "longDefinition": "Le cycle de vie englobe toutes les étapes, de l'extraction des matières à la fin de vie, en passant par la construction et l'usage. L'analyser éclaire les impacts réels d'un choix.",
     "examples": [
-      "Identifier cycle de vie dans une étude de cas",
-      "Relier cycle de vie à un projet contemporain"
+      "Analyse de cycle de vie",
+      "Coût sur le cycle de vie"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "durabilité",
+      "empreinte carbone",
+      "économie circulaire"
     ],
     "tags": [
-      "histoire",
-      "théorie"
+      "méthode",
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1463,28 +1459,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "empreinte carbone est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « empreinte carbone » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Quantité de gaz à effet de serre attribuée à un objet.",
+    "longDefinition": "L'empreinte carbone mesure les émissions de gaz à effet de serre associées à un produit, un bâtiment ou une activité, souvent sur le cycle de vie. La réduire est un objectif central de la construction durable.",
     "examples": [
-      "Identifier empreinte carbone dans une étude de cas",
-      "Relier empreinte carbone à un projet contemporain"
+      "Empreinte carbone d'un matériau",
+      "Réduire l'empreinte carbone"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "carbone incorporé",
+      "cycle de vie",
+      "architecture durable"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1500,28 +1494,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "espace public est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « espace public » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Espace ouvert accessible à tous.",
+    "longDefinition": "L'espace public est l'ensemble des lieux ouverts et accessibles à tous (rues, places, parcs) qui structurent la ville et la vie collective. Sa qualité conditionne l'usage et le lien social.",
     "examples": [
-      "Identifier espace public dans une étude de cas",
-      "Relier espace public à un projet contemporain"
+      "Aménagement d'un espace public",
+      "Place comme espace public"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "place publique",
+      "front bâti",
+      "morphologie urbaine"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Urbanisme (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2089,28 +2081,28 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "mur végétal est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « mur végétal » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Paroi couverte de végétation.",
+    "longDefinition": "Le mur végétal est une paroi, intérieure ou extérieure, couverte de plantes sur un support et un système d'irrigation. Il améliore le confort, la qualité de l'air et l'ambiance, au prix d'un entretien.",
     "examples": [
-      "Identifier mur végétal dans une étude de cas",
-      "Relier mur végétal à un projet contemporain"
+      "Mur végétal en façade",
+      "Mur végétalisé intérieur"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "mur végétalisé"
+    ],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "toiture végétalisée",
+      "îlot de chaleur",
+      "ambiance"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3551,28 +3543,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "économie circulaire est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « économie circulaire » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Modèle limitant le gaspillage par réemploi et recyclage.",
+    "longDefinition": "L'économie circulaire vise à limiter le gaspillage des ressources en privilégiant durabilité, réemploi, réparation et recyclage, par opposition au modèle linéaire « extraire-produire-jeter ». En bâtiment, elle valorise le réemploi des matériaux.",
     "examples": [
-      "Identifier économie circulaire dans une étude de cas",
-      "Relier économie circulaire à un projet contemporain"
+      "Réemploi de matériaux",
+      "Conception pour le démontage"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "réemploi",
+      "cycle de vie",
+      "empreinte carbone"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "durabilité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3625,28 +3615,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "histoire et théorie",
-    "shortDefinition": "îlot de chaleur est un concept lié à l’histoire, les styles, l’urbanisme ou la durabilité dans la conception ou la construction.",
-    "longDefinition": "Le concept « îlot de chaleur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Surchauffe urbaine locale par rapport à la campagne.",
+    "longDefinition": "L'îlot de chaleur urbain est l'élévation de température observée en ville par rapport aux zones rurales, due aux surfaces minérales sombres et au manque de végétation. On l'atténue par la végétalisation et des surfaces claires.",
     "examples": [
-      "Identifier îlot de chaleur dans une étude de cas",
-      "Relier îlot de chaleur à un projet contemporain"
+      "Atténuer l'îlot de chaleur",
+      "Toiture blanche contre l'îlot de chaleur"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "histoire",
-      "style",
-      "urbanisme",
-      "durabilité"
+      "toiture végétalisée",
+      "albédo",
+      "trame verte"
     ],
     "tags": [
       "histoire",
-      "théorie"
+      "urbanisme"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Urbanisme durable (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",

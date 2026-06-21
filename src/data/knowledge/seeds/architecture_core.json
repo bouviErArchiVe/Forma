@@ -121,19 +121,19 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "ambiance est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « ambiance » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Atmosphère sensible d'un espace.",
+    "longDefinition": "L'ambiance est l'atmosphère ressentie dans un espace, née de la lumière, des matières, des couleurs, du son et de l'échelle. Elle est un objectif de conception autant qu'une conséquence.",
     "examples": [
-      "Utiliser ambiance dans l'analyse d'un projet",
-      "Comparer deux options selon ambiance"
+      "Ambiance chaleureuse d'un séjour",
+      "Travailler l'ambiance lumineuse"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "atmosphère"
+    ],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "lumière naturelle",
+      "matérialité",
+      "texture"
     ],
     "tags": [
       "architecture",
@@ -141,9 +141,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -631,19 +630,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "concept architectural est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « concept architectural » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Idée fondatrice donnant sens au projet.",
+    "longDefinition": "Le concept architectural est l'idée fondatrice qui donne sens et cohérence au projet et guide les choix de conception. Il relie l'intention, le site et le programme à une forme.",
     "examples": [
-      "Utiliser concept architectural dans l'analyse d'un projet",
-      "Comparer deux options selon concept architectural"
+      "Concept d'un projet de musée",
+      "Schéma de concept"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "parti architectural",
+      "composition",
+      "diagramme (terme général)"
     ],
     "tags": [
       "architecture",
@@ -651,9 +648,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1036,29 +1032,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "ensoleillement est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « ensoleillement » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Quantité de soleil reçue par un espace.",
+    "longDefinition": "L'ensoleillement est la quantité et la durée de soleil qu'un espace ou une façade reçoit selon l'orientation, la saison et les masques. Il conditionne confort, énergie et qualité de vie.",
     "examples": [
-      "Utiliser ensoleillement dans l'analyse d'un projet",
-      "Comparer deux options selon ensoleillement"
+      "Étude d'ensoleillement",
+      "Ensoleillement d'une cour"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "orientation solaire",
+      "ombrage",
+      "lumière naturelle"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "bioclimatique"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception bioclimatique (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1481,19 +1474,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "implantation est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « implantation » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Position et orientation du bâti sur son terrain.",
+    "longDefinition": "L'implantation définit la position, l'orientation et l'emprise du bâtiment sur son terrain, en réponse au site, au soleil, aux vues et aux règles d'urbanisme. C'est une décision fondatrice du projet.",
     "examples": [
-      "Utiliser implantation dans l'analyse d'un projet",
-      "Comparer deux options selon implantation"
+      "Implantation sur une parcelle",
+      "Étudier l'implantation"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "orientation solaire",
+      "retrait",
+      "contexte"
     ],
     "tags": [
       "architecture",
@@ -1501,9 +1492,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1813,29 +1803,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "maquette est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « maquette » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Modèle physique ou numérique d'un projet.",
+    "longDefinition": "La maquette est une représentation, physique ou numérique, d'un projet à une échelle réduite, pour étudier volumes, espaces et lumière. Outil de conception et de communication, elle se manipule pour comprendre.",
     "examples": [
-      "Utiliser maquette dans l'analyse d'un projet",
-      "Comparer deux options selon maquette"
+      "Maquette d'étude en carton",
+      "Maquette numérique"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "modèle",
+      "volumétrie",
+      "prototype"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "représentation"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Représentation (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -1889,19 +1876,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "matérialité est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « matérialité » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Choix et expression des matériaux d'un projet.",
+    "longDefinition": "La matérialité est l'ensemble des matériaux choisis et la manière dont leur texture, couleur et mise en œuvre expriment l'architecture. Elle porte une part essentielle de l'ambiance et du sens.",
     "examples": [
-      "Utiliser matérialité dans l'analyse d'un projet",
-      "Comparer deux options selon matérialité"
+      "Matérialité d'une façade",
+      "Palette de matérialité"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "texture",
+      "ambiance",
+      "palette de matériaux"
     ],
     "tags": [
       "architecture",
@@ -1909,9 +1894,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -2178,29 +2162,26 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "ombrage est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « ombrage » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Protection contre le soleil par des masques.",
+    "longDefinition": "L'ombrage est la protection d'un espace ou d'une baie contre le rayonnement solaire, par des éléments fixes ou mobiles (brise-soleil, végétation, débords). Il limite la surchauffe estivale.",
     "examples": [
-      "Utiliser ombrage dans l'analyse d'un projet",
-      "Comparer deux options selon ombrage"
+      "Ombrage d'une terrasse",
+      "Calcul d'ombrage"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "brise-soleil",
+      "ensoleillement",
+      "orientation solaire"
     ],
     "tags": [
       "architecture",
-      "conception"
+      "bioclimatique"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception bioclimatique (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3126,19 +3107,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "séquence spatiale est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « séquence spatiale » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Enchaînement vécu des espaces dans un parcours.",
+    "longDefinition": "La séquence spatiale est l'enchaînement des espaces tel qu'on le vit en se déplaçant : compressions et dilatations, vues cadrées, transitions. Elle met en scène l'expérience architecturale.",
     "examples": [
-      "Utiliser séquence spatiale dans l'analyse d'un projet",
-      "Comparer deux options selon séquence spatiale"
+      "Séquence d'entrée d'un musée",
+      "Compression puis dilatation"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "transition",
+      "seuil",
+      "circulation"
     ],
     "tags": [
       "architecture",
@@ -3146,9 +3125,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3199,19 +3177,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "texture est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « texture » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Qualité de surface perçue d'un matériau.",
+    "longDefinition": "La texture est la qualité de surface d'un matériau, perçue par la vue et le toucher (lisse, rugueux, mat, brillant). Elle influe sur la lumière, l'échelle et l'ambiance.",
     "examples": [
-      "Utiliser texture dans l'analyse d'un projet",
-      "Comparer deux options selon texture"
+      "Texture d'un béton brut",
+      "Jeu de textures"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "matérialité",
+      "ambiance",
+      "lumière naturelle"
     ],
     "tags": [
       "architecture",
@@ -3219,9 +3195,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",
@@ -3385,19 +3360,17 @@
     "type": "concept",
     "domain": "architecture",
     "subdomain": "conception",
-    "shortDefinition": "transition est une notion utilisée en architecture pour décrire, qualifier ou organiser un élément du projet.",
-    "longDefinition": "Dans Forma, l'entrée « transition » sert de repère de vocabulaire pour comprendre un document, préparer un cours ou relier une notion à un détail de construction. La définition doit rester pédagogique : elle explique le sens général, les usages courants et les liens possibles avec d'autres termes, sans remplacer une norme, un devis ou un cours spécialisé.",
+    "shortDefinition": "Passage ménagé entre deux espaces ou ambiances.",
+    "longDefinition": "La transition est le passage ménagé entre deux espaces, ambiances ou niveaux, qui adoucit le changement (sas, dégradé de lumière, palier). Elle structure le parcours et le confort.",
     "examples": [
-      "Utiliser transition dans l'analyse d'un projet",
-      "Comparer deux options selon transition"
+      "Transition intérieur-extérieur",
+      "Espace de transition"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "plan",
-      "coupe",
-      "façade",
-      "concept architectural",
-      "échelle"
+      "seuil",
+      "séquence spatiale",
+      "circulation"
     ],
     "tags": [
       "architecture",
@@ -3405,9 +3378,8 @@
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Conception (cours Forma)",
+        "type": "course"
       }
     ],
     "confidence": "concept",

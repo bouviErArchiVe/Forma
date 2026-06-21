@@ -259,31 +259,31 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "bétonnage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « bétonnage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Mise en œuvre du béton frais dans un coffrage.",
+    "longDefinition": "Le bétonnage est l'opération de coulage et de mise en place du béton frais dans le coffrage, suivie de sa vibration pour le compacter. Sa qualité conditionne la résistance finale.",
     "examples": [
-      "Détail de bétonnage",
-      "Choix de bétonnage selon le projet"
+      "Bétonnage d'une dalle",
+      "Vibration lors du bétonnage"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "coulage"
+    ],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "coffrage",
+      "cure du béton",
+      "béton"
     ],
     "tags": [
-      "construction",
+      "chantier",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 8
@@ -839,31 +839,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "cure du béton est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « cure du béton » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Maintien de l'humidité du béton pendant sa prise.",
+    "longDefinition": "La cure du béton maintient une humidité suffisante pendant la prise et le durcissement pour éviter une dessiccation prématurée et la fissuration. Elle est essentielle aux premières journées.",
     "examples": [
-      "Détail de cure du béton",
-      "Choix de cure du béton selon le projet"
+      "Cure humide d'une dalle",
+      "Produit de cure"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "bétonnage",
+      "coffrage",
+      "béton"
     ],
     "tags": [
-      "construction",
+      "chantier",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 24
@@ -1093,31 +1091,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "décoffrage est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « décoffrage » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Retrait du coffrage après prise du béton.",
+    "longDefinition": "Le décoffrage est le retrait du coffrage une fois que le béton a acquis une résistance suffisante. Effectué trop tôt, il risque de déformer ou fissurer l'élément.",
     "examples": [
-      "Détail de décoffrage",
-      "Choix de décoffrage selon le projet"
+      "Décoffrage d'un poteau",
+      "Délai de décoffrage"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "coffrage",
+      "cure du béton",
+      "bétonnage"
     ],
     "tags": [
-      "construction",
+      "chantier",
       "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 31
@@ -1745,31 +1741,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "membrane d'étanchéité est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « membrane d'étanchéité » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Couche continue empêchant le passage de l'eau.",
+    "longDefinition": "La membrane d'étanchéité est une couche continue (bitumineuse ou synthétique) qui empêche l'eau de pénétrer dans une toiture ou une fondation. Sa continuité et ses relevés sont déterminants.",
     "examples": [
-      "Détail de membrane d'étanchéité",
-      "Choix de membrane d'étanchéité selon le projet"
+      "Membrane d'étanchéité d'un toit plat",
+      "Relevés d'étanchéité"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "membrane bitumineuse",
+      "EPDM",
+      "toit plat"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "enveloppe",
+      "étanchéité"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 49
@@ -1782,31 +1776,28 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "mise en œuvre est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « mise en œuvre » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Façon de poser et d'assembler sur chantier.",
+    "longDefinition": "La mise en œuvre désigne la manière dont un matériau ou un ouvrage est posé et assemblé sur le chantier, selon les règles de l'art. Une bonne mise en œuvre conditionne la performance réelle.",
     "examples": [
-      "Détail de mise en œuvre",
-      "Choix de mise en œuvre selon le projet"
+      "Mise en œuvre d'une étanchéité",
+      "Soin de mise en œuvre"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "séquence de construction",
+      "tolérance de chantier",
+      "coordination de chantier"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "chantier"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 50
@@ -2784,31 +2775,29 @@
     "type": "construction_system",
     "domain": "construction",
     "subdomain": "systèmes constructifs",
-    "shortDefinition": "revêtement extérieur est un concept lié à la structure, l’enveloppe ou la mise en œuvre dans la conception ou la construction.",
-    "longDefinition": "Le concept « revêtement extérieur » aide à analyser un projet, expliquer un choix technique ou structurer un raisonnement. Dans une fiche Forma, il doit être relié à des exemples concrets, des termes voisins et des usages typiques. La fiche peut être utilisée par FormAI pour expliquer, résumer, comparer ou générer une question de révision, tout en affichant une source et un niveau de confiance.",
+    "shortDefinition": "Couche de finition extérieure d'une façade.",
+    "longDefinition": "Le revêtement extérieur est la couche de finition qui habille et protège la façade (bardage, enduit, brique de parement). Il assure l'esthétique et la première protection contre les intempéries.",
     "examples": [
-      "Détail de revêtement extérieur",
-      "Choix de revêtement extérieur selon le projet"
+      "Revêtement extérieur en bardage",
+      "Choix d'un revêtement extérieur"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "structure",
-      "matériau",
-      "chantier",
-      "détail de construction"
+      "bardage",
+      "façade ventilée",
+      "crépi"
     ],
     "tags": [
-      "construction",
-      "structure"
+      "enveloppe",
+      "façade"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 78

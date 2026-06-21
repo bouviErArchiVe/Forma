@@ -336,31 +336,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "armature est un matériau ou produit de construction associé à le renforcement du béton.",
-    "longDefinition": "armature est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Acier noyé renforçant le béton.",
+    "longDefinition": "L'armature est l'ensemble des aciers (barres, treillis) noyés dans le béton pour reprendre les efforts de traction. Sa nuance, son diamètre et son enrobage sont déterminants pour la durabilité.",
     "examples": [
-      "Choisir armature pour le renforcement du béton",
-      "Comparer armature à un matériau alternatif"
+      "Armature d'une poutre",
+      "Plan d'armature"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "barre d'armature",
+      "ferraillage",
+      "béton armé"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 10
@@ -481,31 +479,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "barre d'armature est un matériau ou produit de construction associé à le ferraillage.",
-    "longDefinition": "barre d'armature est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Barre d'acier crantée pour béton armé.",
+    "longDefinition": "La barre d'armature est une barre d'acier nervurée, dont les crans assurent l'adhérence au béton. Disposée dans les zones tendues, elle reprend les efforts de traction.",
     "examples": [
-      "Choisir barre d'armature pour le ferraillage",
-      "Comparer barre d'armature à un matériau alternatif"
+      "Barres d'armature d'une dalle",
+      "Diamètre d'une barre d'armature"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "fer à béton"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "armature",
+      "ferraillage",
+      "étrier"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "structure"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Structures (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 14
@@ -1149,31 +1147,29 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "coulis est un matériau ou produit de construction associé à le remplissage fin et l'injection.",
-    "longDefinition": "coulis est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Mélange fluide à base de ciment pour remplir des vides.",
+    "longDefinition": "Le coulis est un mélange fluide de ciment et d'eau (parfois de sable) utilisé pour remplir des joints, sceller des armatures ou injecter des vides. Sa fluidité lui permet d'atteindre les interstices.",
     "examples": [
-      "Choisir coulis pour le remplissage fin et l'injection",
-      "Comparer coulis à un matériau alternatif"
+      "Coulis de jointoiement",
+      "Injection de coulis"
     ],
     "synonyms": [],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "mortier",
+      "ciment",
+      "scellant"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "maçonnerie"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 32
@@ -1186,31 +1182,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "crépi est un matériau ou produit de construction associé à les parements extérieurs.",
-    "longDefinition": "crépi est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Enduit de finition extérieure projeté ou taloché.",
+    "longDefinition": "Le crépi est un enduit de finition appliqué sur une façade, à l'aspect taloché, gratté ou projeté. Il protège la maçonnerie des intempéries et donne sa texture à la façade.",
     "examples": [
-      "Choisir crépi pour les parements extérieurs",
-      "Comparer crépi à un matériau alternatif"
+      "Crépi de façade gratté",
+      "Crépi sur maçonnerie"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "enduit de façade"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "enduit",
+      "mortier",
+      "façade"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Enveloppe du bâtiment (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 33
@@ -2382,31 +2378,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "plancher d'ingénierie est un matériau ou produit de construction associé à les sols en bois multicouches.",
-    "longDefinition": "plancher d'ingénierie est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Plancher de bois multicouche stable.",
+    "longDefinition": "Le plancher d'ingénierie superpose une couche d'usure en bois noble sur un support multicouche stable, plus résistant aux variations d'humidité que le bois massif. Il se pose collé, cloué ou flottant.",
     "examples": [
-      "Choisir plancher d'ingénierie pour les sols en bois multicouches",
-      "Comparer plancher d'ingénierie à un matériau alternatif"
+      "Plancher d'ingénierie en chêne",
+      "Pose flottante d'un plancher d'ingénierie"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "parquet contrecollé"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "bois massif",
+      "revêtement de sol",
+      "contreplaqué"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Architecture intérieure (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 66
@@ -2677,31 +2673,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "quartz est un matériau ou produit de construction associé à les comptoirs.",
-    "longDefinition": "quartz est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Surface composite à base de quartz aggloméré.",
+    "longDefinition": "Le quartz, comme matériau de surface, est un composite de granulats de quartz liés par une résine, très dur et peu poreux. Il sert de plan de travail résistant aux taches et rayures.",
     "examples": [
-      "Choisir quartz pour les comptoirs",
-      "Comparer quartz à un matériau alternatif"
+      "Comptoir en quartz",
+      "Plan de travail en quartz"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "quartz aggloméré"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "comptoir",
+      "granit",
+      "terrazzo"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 74
@@ -2714,31 +2710,31 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "résine époxy est un matériau ou produit de construction associé à les réparations et revêtements techniques.",
-    "longDefinition": "résine époxy est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Résine dure utilisée en revêtement et collage.",
+    "longDefinition": "La résine époxy est un polymère qui durcit en une surface très résistante et étanche, employée en revêtement de sol technique, scellement et collage structural. Elle exige une application soignée.",
     "examples": [
-      "Choisir résine époxy pour les réparations et revêtements techniques",
-      "Comparer résine époxy à un matériau alternatif"
+      "Sol industriel en résine époxy",
+      "Scellement à l'époxy"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "époxy"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "collage structural",
+      "revêtement de sol",
+      "scellant"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau",
+      "finition"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 75
@@ -2897,31 +2893,30 @@
     "type": "material",
     "domain": "construction",
     "subdomain": "matériaux",
-    "shortDefinition": "substrat est un matériau ou produit de construction associé à le support ou couche de croissance.",
-    "longDefinition": "substrat est décrit dans la base Forma comme une entrée de matériau : on doit pouvoir y retrouver son rôle dans le bâtiment, ses usages fréquents, ses points d'attention et ses liens avec les systèmes constructifs. Cette fiche sert à comparer les choix de conception, préparer un détail ou réviser le vocabulaire technique. Les performances exactes, dimensions et prescriptions doivent être validées avec les fiches fabricants, les normes et le contexte du projet.",
+    "shortDefinition": "Couche support recevant un revêtement ou la végétation.",
+    "longDefinition": "Le substrat est la couche support sur laquelle on applique un revêtement ou dans laquelle pousse la végétation (toiture végétalisée). Sa préparation conditionne la tenue de ce qui le recouvre.",
     "examples": [
-      "Choisir substrat pour le support ou couche de croissance",
-      "Comparer substrat à un matériau alternatif"
+      "Substrat d'une toiture végétalisée",
+      "Préparer le substrat"
     ],
-    "synonyms": [],
+    "synonyms": [
+      "support"
+    ],
     "relatedTerms": [
-      "matériau",
-      "mise en œuvre",
-      "durabilité",
-      "entretien"
+      "toiture végétalisée",
+      "revêtement de sol",
+      "géotextile"
     ],
     "tags": [
-      "matériaux",
-      "construction"
+      "matériau"
     ],
     "sources": [
       {
-        "label": "Base Forma Knowledge — contenu original généré pour intégration locale",
-        "type": "internal",
-        "note": "Définition pédagogique originale à valider/enrichir selon les sources de cours et normes applicables."
+        "label": "Matériaux de construction (cours Forma)",
+        "type": "course"
       }
     ],
-    "confidence": "concept",
+    "confidence": "indicatif",
     "createdAt": "2026-06-20",
     "updatedAt": "2026-06-20",
     "order": 80
