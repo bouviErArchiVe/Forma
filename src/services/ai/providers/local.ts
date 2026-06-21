@@ -13,6 +13,7 @@ import {
   reformulate,
   summarizeText,
 } from '../../../lib/ai-local'
+import { knowledgeAnswer } from '../knowledge-bridge'
 import type {
   AIProviderAdapter,
   ProviderChatRequest,
@@ -32,9 +33,23 @@ const EMPTY_FALLBACK =
 /** Message expliquant les limites du mode local (pas de génération). */
 const LOCAL_LIMITS_MESSAGE =
   'Mode local : je fonctionne sans réseau, par analyse du texte que vous me donnez '
-  + '(résumé, mots-clés, reformulation, recherche dans vos notes et documents).\n\n'
+  + '(résumé, mots-clés, reformulation) et par recherche dans vos notes, vos documents '
+  + 'et la base Knowledge locale.\n\n'
   + 'Pour une vraie réponse de connaissance générale à cette question, configurez un '
   + 'fournisseur IA dans Paramètres › IA, ou collez ici le texte à analyser.'
+
+/** No-result honnête après échec de l'extraction ET de la base Knowledge. */
+export const NO_KNOWLEDGE_MESSAGE =
+  "Je n'ai pas trouvé cette information dans vos notes ni dans la base Knowledge locale. "
+  + 'Ajoutez une source (collez le texte à analyser) ou activez un fournisseur IA dans '
+  + 'Paramètres › IA.'
+
+/** Vrai si le message demande une opération de texte (résumé, mots-clés, reformulation). */
+function isTextOperation(text: string): boolean {
+  return /r[ée]sum|synth[èe]s|mots[- ]?cl[ée]s|keywords?|raccourci|plus court|reformul|ton formel|plus formel/.test(
+    text.toLowerCase(),
+  )
+}
 
 /**
  * Retire l'instruction de tête (« Résume ce texte : … ») pour ne traiter
@@ -99,11 +114,11 @@ function localAnswer(request: ProviderChatRequest): string {
     || normalize(answer) === normalize(payload)
   ) {
     // Pour un résumé d'un texte déjà court, répéter est acceptable ;
-    // dans tous les autres cas on explique.
+    // dans tous les autres cas on renvoie '' (le caller décide : Knowledge ou message).
     if (/r[ée]sum|synth[èe]s/.test(intent) && payload !== lastUser && answer.trim() !== '') {
       return `Texte déjà concis — phrase clé : ${summarizeText(payload, 1)}`
     }
-    return LOCAL_LIMITS_MESSAGE
+    return ''
   }
   return answer
 }
@@ -117,11 +132,27 @@ export const localProvider: AIProviderAdapter = {
   },
 
   async chat(request: ProviderChatRequest): Promise<ProviderChatResult> {
-    const text = localAnswer(request).trim()
-    return {
-      text: text !== '' ? text : EMPTY_FALLBACK,
-      providerId: 'local',
-      fromCloud: false,
+    const done = (text: string): ProviderChatResult => ({ text, providerId: 'local', fromCloud: false })
+
+    // 1) Heuristiques locales (résumé, mots-clés, reformulation, extractif).
+    const heuristic = localAnswer(request).trim()
+    if (heuristic !== '') return done(heuristic)
+
+    const lastUser = [...request.messages].reverse().find((m) => m.role === 'user')?.content ?? ''
+
+    // 2) Pour une opération de texte sans contenu exploitable : message d'aide.
+    if (isTextOperation(lastUser)) return done(LOCAL_LIMITS_MESSAGE)
+
+    // 3) Question de connaissance : consulter la base Knowledge LOCALE avant
+    //    d'abandonner. Réponse ancrée (source + confiance + lien) ou null.
+    try {
+      const kb = await knowledgeAnswer(lastUser)
+      if (kb) return done(kb.text)
+    } catch {
+      // Base indisponible : on retombe sur le message honnête ci-dessous.
     }
+
+    // 4) Rien trouvé nulle part : no-result honnête (jamais d'invention).
+    return done(lastUser.trim() !== '' ? NO_KNOWLEDGE_MESSAGE : EMPTY_FALLBACK)
   },
 }
