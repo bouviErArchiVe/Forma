@@ -16,50 +16,74 @@ import {
   type AIProvider,
 } from '../../stores/aiStore'
 import { testAIConnection } from '../../lib/ai-service'
-import { testLocalModelConnection } from '../../services/ai/providers/localmodel'
+import { diagnoseLocalModelConnection, type LocalModelDiagnosis } from '../../services/ai/providers/localmodel'
 
 const PROVIDERS: AIProvider[] = ['local', 'localmodel', 'openai', 'anthropic', 'ollama']
+
+/** Presets de serveur local OpenAI-compatible. */
+const LOCAL_PRESETS: { label: string; endpoint: string; model: string }[] = [
+  { label: 'LM Studio', endpoint: 'http://localhost:1234/v1', model: 'local-model' },
+  { label: 'Ollama', endpoint: 'http://localhost:11434/v1', model: 'llama3.2' },
+]
+
+/** Modèles légers conseillés pour une machine de bureau standard. */
+const RECOMMENDED_MODELS = ['Phi-3 mini', 'Qwen2 0.5–1.5B', 'Gemma 2B', 'Mistral 7B (Q4) si machine puissante']
 
 export function AISettingsSection() {
   const {
     provider, apiKey, model, endpoint, cloudEnabled,
     maxTokens, temperature, localTimeoutMs,
-    setApiKey, setModel, setEndpoint,
+    setProvider, setApiKey, setModel, setEndpoint,
     setCloudEnabled, setMaxTokens, setTemperature, setLocalTimeoutMs,
     applyProviderDefaults, isCloudReady,
   } = useAIStore()
 
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState<{ ok: boolean; detail?: string; error?: string } | null>(null)
+  const [diag, setDiag] = useState<LocalModelDiagnosis | null>(null)
   const [showKey, setShowKey] = useState(false)
 
   const isLocalModel = provider === 'localmodel'
+  const detectedModels = diag?.models ?? []
 
   const handleProviderChange = (p: AIProvider) => {
     applyProviderDefaults(p)
     setTestResult(null)
+    setDiag(null)
+  }
+
+  const applyPreset = (preset: { endpoint: string; model: string }) => {
+    setProvider('localmodel')
+    setEndpoint(preset.endpoint)
+    setModel(preset.model)
+    setTestResult(null)
+    setDiag(null)
   }
 
   const handleTest = async () => {
     setTesting(true)
     setTestResult(null)
+    setDiag(null)
     const cfg = useAIStore.getState()
     if (cfg.provider === 'localmodel') {
-      const r = await testLocalModelConnection({
+      const d = await diagnoseLocalModelConnection({
         providerId: 'localmodel', apiKey: cfg.apiKey, model: cfg.model,
         endpoint: cfg.endpoint || DEFAULT_ENDPOINTS.localmodel,
         maxTokens: cfg.maxTokens, temperature: cfg.temperature, timeoutMs: cfg.localTimeoutMs,
       })
-      setTestResult({
-        ok: r.ok,
-        detail: r.ok ? (r.models && r.models.length > 0 ? `${r.models.length} modèle(s)` : 'connecté') : undefined,
-        error: r.error,
-      })
+      setDiag(d)
     } else {
       const result = await testAIConnection(cfg)
       setTestResult({ ok: result.ok, detail: result.ok ? `${result.latencyMs} ms` : undefined, error: result.error })
     }
     setTesting(false)
+  }
+
+  /** Apparence du badge d'état localmodel selon le diagnostic. */
+  const diagTone = (status: LocalModelDiagnosis['status']): string => {
+    if (status === 'ok' || status === 'no-models') return 'text-green-600'
+    if (status === 'model-missing') return 'text-amber-600'
+    return 'text-red-500'
   }
 
   const needsKey = provider === 'openai' || provider === 'anthropic'
@@ -136,6 +160,27 @@ export function AISettingsSection() {
         </label>
       )}
 
+      {/* Presets serveur local (LM Studio / Ollama) */}
+      {isLocalModel && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-forma-muted">Presets :</span>
+          {LOCAL_PRESETS.map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              onClick={() => applyPreset(p)}
+              className={`text-xs px-2 py-1 rounded-lg border transition-colors ${
+                endpoint === p.endpoint
+                  ? 'border-forma-accent/60 bg-forma-accent/10 text-forma-accent'
+                  : 'border-forma-border text-forma-muted hover:text-forma-text'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Endpoint (localmodel / Ollama / custom) */}
       {(isLocalModel || (cloudEnabled && (needsEndpoint || provider === 'openai'))) && (
         <label className="block text-sm">
@@ -150,10 +195,21 @@ export function AISettingsSection() {
         </label>
       )}
 
-      {/* Model */}
+      {/* Model — sélection depuis la liste détectée (si dispo) + saisie libre */}
       {showConfig && (
         <label className="block text-sm">
           Modèle
+          {isLocalModel && detectedModels.length > 0 && (
+            <select
+              value={detectedModels.includes(model) ? model : ''}
+              onChange={(e) => { if (e.target.value) setModel(e.target.value) }}
+              className="forma-input w-full mt-1"
+              aria-label="Modèles détectés"
+            >
+              <option value="">— Modèles détectés ({detectedModels.length}) —</option>
+              {detectedModels.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+          )}
           <input
             type="text"
             value={model}
@@ -224,10 +280,17 @@ export function AISettingsSection() {
           >
             {testing ? 'Test en cours…' : 'Tester la connexion'}
           </button>
-          {testResult && (
+          {/* Diagnostic localmodel (statut classé + message actionnable) */}
+          {isLocalModel && diag && (
+            <p className={`text-xs ${diagTone(diag.status)}`}>
+              {diag.ok ? '✓ ' : (diag.status === 'model-missing' ? '⚠ ' : '✗ ')}{diag.message}
+            </p>
+          )}
+          {/* Résultat test cloud */}
+          {!isLocalModel && testResult && (
             <p className={`text-xs ${testResult.ok ? 'text-green-600' : 'text-red-500'}`}>
               {testResult.ok
-                ? `✓ ${isLocalModel ? 'Serveur local connecté' : 'Connexion OK'}${testResult.detail ? ` (${testResult.detail})` : ''}`
+                ? `✓ Connexion OK${testResult.detail ? ` (${testResult.detail})` : ''}`
                 : `✗ Non connecté : ${testResult.error ?? 'Inconnu'}`}
             </p>
           )}
@@ -241,13 +304,26 @@ export function AISettingsSection() {
         </p>
       )}
 
-      {/* Info local model */}
+      {/* Info + guide local model */}
       {isLocalModel && (
-        <p className="text-xs text-forma-muted">
-          🖥️ Modèle local : génération via votre serveur LM Studio ou Ollama (OpenAI-compatible), sans cloud ni clé.
-          Les fiches Knowledge pertinentes sont injectées en contexte (réponses ancrées + source). Si le serveur ne
-          répond pas, Forma bascule automatiquement sur le mode local extractif.
-        </p>
+        <div className="text-xs text-forma-muted space-y-2">
+          <p>
+            🖥️ Modèle local : génération via votre serveur LM Studio ou Ollama (OpenAI-compatible), sans cloud ni clé.
+            Les fiches Knowledge pertinentes sont injectées en contexte (réponses ancrées + source). Si le serveur ne
+            répond pas, Forma bascule automatiquement sur le mode local extractif.
+          </p>
+          <details>
+            <summary className="cursor-pointer hover:text-forma-text">Guide de configuration</summary>
+            <ol className="list-decimal pl-5 mt-1 space-y-0.5">
+              <li>Installez et lancez <strong>LM Studio</strong> ou <strong>Ollama</strong>.</li>
+              <li>Activez le <strong>serveur local</strong> (LM Studio : onglet « Local Server » ; Ollama : <code>ollama serve</code>).</li>
+              <li>Vérifiez l'<strong>URL de base</strong> (preset ci-dessus) et testez la connexion.</li>
+              <li>Autorisez l'origine si besoin (<strong>CORS</strong>) — Ollama : variable <code>OLLAMA_ORIGINS</code> ; LM Studio : activer CORS dans les options du serveur.</li>
+              <li>Chargez un <strong>modèle léger</strong> et sélectionnez-le ci-dessus.</li>
+            </ol>
+            <p className="mt-1">Modèles conseillés : {RECOMMENDED_MODELS.join(' · ')}.</p>
+          </details>
+        </div>
       )}
 
       {/* Prompts référence */}
