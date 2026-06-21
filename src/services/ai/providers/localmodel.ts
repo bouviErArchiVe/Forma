@@ -51,24 +51,98 @@ export interface LocalModelTestResult {
 
 /**
  * Teste la connexion au serveur local (GET {baseUrl}/models). Ne throw jamais.
- * Renvoie la liste des modèles disponibles si possible.
+ * Renvoie la liste des modèles disponibles si possible. (Compat #12.)
  */
 export async function testLocalModelConnection(settings: ProviderSettings): Promise<LocalModelTestResult> {
+  const d = await diagnoseLocalModelConnection(settings)
+  // Connectivité : un serveur qui répond (même si le modèle ciblé manque) est
+  // « joignable ». Le détail fin (model-missing) est porté par le diagnostic.
+  const connected = d.ok || d.status === 'model-missing'
+  return { ok: connected, models: d.models, error: connected ? undefined : d.message }
+}
+
+/**
+ * Statuts de diagnostic du serveur local. Le navigateur masque souvent la cause
+ * exacte d'un échec réseau (CORS vs serveur down sont indistinguables) → on
+ * reste PRUDENT : `unreachable-or-cors` n'affirme aucune cause unique.
+ */
+export type LocalModelStatus =
+  | 'ok'
+  | 'no-models'
+  | 'model-missing'
+  | 'endpoint-invalid'
+  | 'unreachable-or-cors'
+  | 'timeout'
+  | 'invalid-response'
+  | 'http-error'
+
+export interface LocalModelDiagnosis {
+  status: LocalModelStatus
+  /** true seulement si réellement exploitable (ok / no-models). */
+  ok: boolean
+  /** Message clair et ACTIONNABLE pour l'utilisateur. */
+  message: string
+  models?: string[]
+  httpStatus?: number
+}
+
+/**
+ * Diagnostic enrichi de la connexion au serveur local (GET {baseUrl}/models).
+ * Ne throw jamais ; classe le résultat et fournit un message actionnable.
+ * Aucun appel hors action explicite (test/usage).
+ */
+export async function diagnoseLocalModelConnection(settings: ProviderSettings): Promise<LocalModelDiagnosis> {
   const url = `${baseUrl(settings)}/models`
+  let res: Response
   try {
-    const res = await fetch(url, {
+    res = await fetch(url, {
       method: 'GET',
       headers: { ...authHeaders(settings) },
       signal: AbortSignal.timeout(settings.timeoutMs && settings.timeoutMs > 0 ? settings.timeoutMs : 10_000),
     })
-    if (!res.ok) return { ok: false, error: `HTTP ${res.status}` }
-    const data = (await res.json().catch(() => ({}))) as OpenAIModelsResponse
-    const models = (data.data ?? []).map((m) => m.id).filter((id): id is string => typeof id === 'string')
-    return { ok: true, models }
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
-    return { ok: false, error: msg }
+    const name = err instanceof Error ? err.name : ''
+    if (name === 'TimeoutError') {
+      return {
+        status: 'timeout', ok: false,
+        message: 'Délai dépassé : le serveur local n\'a pas répondu à temps. Vérifiez qu\'il tourne et augmentez le délai si le modèle est lourd.',
+      }
+    }
+    // « Failed to fetch » : cause masquée par le navigateur (CORS OU serveur down).
+    return {
+      status: 'unreachable-or-cors', ok: false,
+      message: 'Serveur injoignable ou origine non autorisée (CORS). Vérifiez que LM Studio/Ollama est lancé avec le serveur local activé, que l\'URL de base est correcte, et autorisez l\'origine (CORS) côté serveur.',
+    }
   }
+
+  if (res.status === 404) {
+    return { status: 'endpoint-invalid', ok: false, httpStatus: 404, message: 'Endpoint introuvable (404). Vérifiez l\'URL de base (elle doit se terminer par « /v1 »).' }
+  }
+  if (!res.ok) {
+    return { status: 'http-error', ok: false, httpStatus: res.status, message: `Le serveur a répondu HTTP ${res.status}. Vérifiez l\'URL de base et la configuration du serveur local.` }
+  }
+
+  let data: OpenAIModelsResponse
+  try {
+    data = (await res.json()) as OpenAIModelsResponse
+  } catch {
+    return { status: 'invalid-response', ok: false, message: 'Réponse inattendue (non-JSON). L\'URL pointe peut-être vers un service non compatible OpenAI.' }
+  }
+
+  const models = (data.data ?? []).map((m) => m.id).filter((id): id is string => typeof id === 'string')
+  if (models.length === 0) {
+    return { status: 'no-models', ok: true, models: [], message: 'Connecté, mais aucun modèle n\'est chargé. Chargez un modèle dans LM Studio / Ollama puis réessayez.' }
+  }
+
+  const target = settings.model.trim()
+  if (target !== '' && !models.includes(target)) {
+    return {
+      status: 'model-missing', ok: false, models,
+      message: `Connecté, mais le modèle « ${target} » n\'est pas disponible. Modèles détectés : ${models.slice(0, 6).join(', ')}.`,
+    }
+  }
+
+  return { status: 'ok', ok: true, models, message: `Connecté · ${models.length} modèle(s) disponible(s).` }
 }
 
 export const localModelProvider: AIProviderAdapter = {
