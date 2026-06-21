@@ -279,3 +279,18 @@ Objectif : faire passer un lot réel d'entrées de weak/review → ok, et résou
 Règles respectées : Q2 fige le contrat avant C/U ; C ne supprime rien automatiquement (merge = décision explicite tracée) ; chaque entrée U a shortDefinition/longDefinition/examples/synonyms/relatedTerms/tags/sources/confidence ; source obligatoire ; confidence ajustée honnêtement (à-vérifier pour le normatif) ; qualityScore avant/après obligatoire.
 
 Résultat : **ok 0 → 79**, doublons slug 28 → 0, base 920 → 919. `/dictionary` + Search intacts, Dexie inchangé, seeds lazy/code-split, full gate vert à chaque palier. Lanes intégrées en ligne (data + lib + scripts).
+
+---
+
+# Sprint #11 — FormAI Local Knowledge Bridge (Lanes B + E)
+
+Objectif : faire consulter la base Knowledge locale par FormAI en mode local **avant** le message « je ne sais pas ». Sans Local AI Provider, sans Drawing/Resources, sans Dexie, sans réseau, sans refonte UI.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| B | Pont Knowledge dans le provider local : réponse ancrée (déf + source + confidence + lien `/dictionary?slug=`), avertissement « à-vérifier », no-result honnête, import dynamique | `src/services/ai/knowledge-bridge.ts`, `src/services/ai/providers/local.ts`, tests |
+| E | Docs d'état + non-régression FormAI/`/dictionary`/Search | `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Règles respectées : Knowledge branché avant le fallback ; réutilise `searchKnowledgeBase`/`lookupBySlug`/`extractKeywords` ; jamais d'invention (null → no-result honnête) ; jamais de prétention IA cloud ; fallback fournisseur cloud conservé si configuré ; message « mode local » mis à jour (mentionne la base Knowledge). Import dynamique → bundle principal inchangé.
+
+Résultat : 7 tests bridge verts contre la base réelle, `localProvider` répond « poutre » avec source/confiance/lien, no-result honnête sur requête inconnue. Lanes intégrées en ligne.
