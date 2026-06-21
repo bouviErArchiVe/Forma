@@ -8,10 +8,11 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type AIProvider = 'local' | 'openai' | 'anthropic' | 'ollama'
+export type AIProvider = 'local' | 'localmodel' | 'openai' | 'anthropic' | 'ollama'
 
 export const PROVIDER_LABELS: Record<AIProvider, string> = {
   local: 'Local (sans cloud)',
+  localmodel: 'Modèle local (LM Studio / Ollama)',
   openai: 'OpenAI',
   anthropic: 'Anthropic (Claude)',
   ollama: 'Ollama (local LLM)',
@@ -19,6 +20,7 @@ export const PROVIDER_LABELS: Record<AIProvider, string> = {
 
 export const DEFAULT_MODELS: Record<AIProvider, string> = {
   local: '',
+  localmodel: 'local-model',
   openai: 'gpt-4o-mini',
   anthropic: 'claude-haiku-4-5',
   ollama: 'llama3',
@@ -26,6 +28,7 @@ export const DEFAULT_MODELS: Record<AIProvider, string> = {
 
 export const DEFAULT_ENDPOINTS: Record<AIProvider, string> = {
   local: '',
+  localmodel: 'http://localhost:1234/v1',
   openai: 'https://api.openai.com/v1',
   anthropic: 'https://api.anthropic.com',
   ollama: 'http://localhost:11434/v1',
@@ -44,6 +47,8 @@ export interface AIConfig {
   maxTokens: number
   /** Temperature (0–2). */
   temperature: number
+  /** Timeout (ms) for local model servers (LM Studio/Ollama). */
+  localTimeoutMs: number
 }
 
 interface AIState extends AIConfig {
@@ -54,6 +59,7 @@ interface AIState extends AIConfig {
   setCloudEnabled: (v: boolean) => void
   setMaxTokens: (v: number) => void
   setTemperature: (v: number) => void
+  setLocalTimeoutMs: (v: number) => void
   /** Reset to defaults for the given provider (model + endpoint). */
   applyProviderDefaults: (p: AIProvider) => void
   /** True if a cloud provider is configured with a non-empty key. */
@@ -70,6 +76,7 @@ export const useAIStore = create<AIState>()(
       cloudEnabled: false,
       maxTokens: 1024,
       temperature: 0.7,
+      localTimeoutMs: 45000,
 
       setProvider: (p) => set({ provider: p }),
       setApiKey: (k) => set({ apiKey: k }),
@@ -78,6 +85,7 @@ export const useAIStore = create<AIState>()(
       setCloudEnabled: (v) => set({ cloudEnabled: v }),
       setMaxTokens: (v) => set({ maxTokens: Math.max(64, Math.min(8192, v)) }),
       setTemperature: (v) => set({ temperature: Math.max(0, Math.min(2, v)) }),
+      setLocalTimeoutMs: (v) => set({ localTimeoutMs: Math.max(5000, Math.min(300000, v)) }),
 
       applyProviderDefaults: (p) => set({
         provider: p,

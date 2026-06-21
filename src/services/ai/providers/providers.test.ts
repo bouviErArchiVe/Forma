@@ -36,12 +36,12 @@ afterEach(() => {
 // ─── Registre ─────────────────────────────────────────────────────────────────
 
 describe('registre des providers', () => {
-  it('expose les 6 providers', () => {
+  it('expose les 7 providers', () => {
     const ids = listProviders().map((p) => p.id)
     expect(ids).toEqual(
-      expect.arrayContaining(['mock', 'local', 'openai', 'anthropic', 'gemini', 'ollama']),
+      expect.arrayContaining(['mock', 'local', 'localmodel', 'openai', 'anthropic', 'gemini', 'ollama']),
     )
-    expect(ids).toHaveLength(6)
+    expect(ids).toHaveLength(7)
   })
 
   it('getProvider retourne le bon adapter', () => {

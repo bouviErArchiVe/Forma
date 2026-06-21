@@ -101,6 +101,7 @@ export interface AgentDefinition {
 export type AIProviderId =
   | 'mock'
   | 'local'
+  | 'localmodel'
   | 'openai'
   | 'anthropic'
   | 'gemini'
@@ -116,6 +117,8 @@ export interface ProviderSettings {
   endpoint: string
   maxTokens: number
   temperature: number
+  /** Délai max (ms) pour les serveurs locaux lents. Optionnel. */
+  timeoutMs?: number
 }
 
 export interface ProviderChatRequest {
@@ -129,6 +132,8 @@ export interface ProviderChatResult {
   providerId: AIProviderId
   /** true si la réponse vient d'un service distant. */
   fromCloud: boolean
+  /** true si la réponse vient d'un modèle local (LM Studio/Ollama via localmodel). */
+  fromLocalModel?: boolean
   error?: string
 }
 

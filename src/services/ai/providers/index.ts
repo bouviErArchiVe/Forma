@@ -14,6 +14,7 @@ import type { AIProviderAdapter, AIProviderId, ProviderSettings } from '../types
 import { anthropicProvider } from './anthropic'
 import { geminiProvider } from './gemini'
 import { localProvider } from './local'
+import { localModelProvider } from './localmodel'
 import { mockProvider } from './mock'
 import { ollamaProvider } from './ollama'
 import { openAIProvider } from './openai'
@@ -21,11 +22,18 @@ import { openAIProvider } from './openai'
 const PROVIDERS: Record<AIProviderId, AIProviderAdapter> = {
   mock: mockProvider,
   local: localProvider,
+  localmodel: localModelProvider,
   openai: openAIProvider,
   anthropic: anthropicProvider,
   gemini: geminiProvider,
   ollama: ollamaProvider,
 }
+
+/**
+ * Providers LOCAUX (réseau localhost, sans cloud) activables par simple
+ * sélection — sans avoir à cocher « fournisseur cloud » (opt-in = la sélection).
+ */
+const LOCAL_NETWORK_PROVIDERS = new Set<AIProviderId>(['localmodel'])
 
 export function getProvider(id: AIProviderId): AIProviderAdapter {
   return PROVIDERS[id] ?? localProvider
@@ -53,8 +61,11 @@ function envApiKey(id: AIProviderId): string {
  */
 export function resolveProviderSettings(): ProviderSettings {
   const cfg = useAIStore.getState()
-  // aiStore.provider ∈ 'local' | 'openai' | 'anthropic' | 'ollama' — sous-ensemble d'AIProviderId
-  const requested: AIProviderId = cfg.cloudEnabled ? cfg.provider : 'local'
+  // Un provider local (localmodel) s'active par sa seule sélection ; le cloud
+  // exige la case « fournisseur cloud ». 'local' = fallback universel.
+  const localActivatable = LOCAL_NETWORK_PROVIDERS.has(cfg.provider as AIProviderId)
+  const requested: AIProviderId =
+    cfg.provider !== 'local' && (cfg.cloudEnabled || localActivatable) ? cfg.provider : 'local'
 
   const settings: ProviderSettings = {
     providerId: requested,
@@ -63,6 +74,7 @@ export function resolveProviderSettings(): ProviderSettings {
     endpoint: cfg.endpoint,
     maxTokens: cfg.maxTokens,
     temperature: cfg.temperature,
+    timeoutMs: cfg.localTimeoutMs,
   }
 
   if (requested !== 'local' && !getProvider(requested).isConfigured(settings)) {
