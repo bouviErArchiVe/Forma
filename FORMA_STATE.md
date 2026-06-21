@@ -434,6 +434,15 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - Garanties : aucune invention (null si pas de fiche fiable) ; source+confidence toujours présentes ; `/dictionary` + Search **inchangés** ; Dexie inchangé ; pas de réseau.
 - Limites : le pont sert des extraits de fiches (pas de génération) ; qualité des réponses bornée par la qualité des fiches (79 ok) ; pas de provider local LLM (LM Studio/Ollama) dans ce sprint.
 
+## Sprint #14 — Content Upgrade Pack #2 (Lanes U2 + E)
+
+- **upgrade-pack-02.json** : ~144 entrées EXISTANTES prioritaires enrichies (matériaux, systèmes constructifs, architecture générale, design intérieur, histoire/styles) — shortDefinition + longDefinition réelle (non gabarit) + examples + synonyms + relatedTerms + tags + source honnête + confidence ajustée. `main courante` et `maison passive` passés `à-vérifier` (normatif).
+- **Pipeline** : `knowledge:upgrade` applique désormais **tous** les `upgrade-pack-*.json` (ordre alphabétique). Seeds réécrits par pipeline uniquement (aucune mutation manuelle).
+- **Preuve mesurée** : **ok 79 → 221** (cible 200+ atteinte), weak 729 → 585, review 111 → 113, score moyen 0.52 → 0.59. Doublons **exacts = 0** (inchangé) ; quasi 2 → 6 (synonymies réelles signalées, ex. auvent~marquise, cloison~mur non porteur, modernisme~mouvement moderne — à arbitrer humainement, pas des collisions). Base inchangée à **919**.
+- Bénéfice transverse : améliore simultanément le bridge #11, le grounding #12 et les réponses localmodel #13 (matière plus riche).
+- Garanties : `/dictionary` + Search + bridge inchangés ; Dexie inchangé ; seeds toujours lazy/code-split (index ~314 KB, seedToken=0) ; source+confidence obligatoires ; pas de suppression auto.
+- Limites : 221/919 « ok » (≈ 700 restent weak/review) ; quasi-dup = synonymies à revoir ; pas d'UI de promotion (pipeline CLI).
+
 ## Sprint #12 — Local AI Provider (LM Studio / Ollama) (Lanes P + G + E)
 
 - **Provider `localmodel`** (`src/services/ai/providers/localmodel.ts`) : OpenAI-compatible `POST {baseUrl}/chat/completions` via **fetch** (aucun SDK), **clé optionnelle**, **timeout** configurable. `fromCloud:false` / `fromLocalModel:true`. Cible **LM Studio** (`http://localhost:1234/v1`) et **Ollama** (`http://localhost:11434/v1`). `testLocalModelConnection` (GET `/models`).

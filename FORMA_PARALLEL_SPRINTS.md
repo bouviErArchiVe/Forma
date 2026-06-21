@@ -297,6 +297,19 @@ Résultat : 7 tests bridge verts contre la base réelle, `localProvider` répond
 
 ---
 
+# Sprint #14 — Content Upgrade Pack #2 (Lanes U2 + E)
+
+Objectif : faire passer ok 79 → 200+ via le pipeline #10, sans volume sale, sans refonte UI.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| U2 | `upgrade-pack-02.json` : ~144 entrées existantes enrichies (matériaux/systèmes/architecture/intérieur/histoire), ciblées par le rapport qualité | `src/data/knowledge/upgrades/upgrade-pack-02.json` (+ seeds réécrits) |
+| E | Pipeline multi-packs, apply, état/docs, QA | `scripts/knowledge-upgrade.ts` (applique tous les `upgrade-pack-*.json`), `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Résultat : **ok 79 → 221** (cible dépassée), weak 729 → 585, doublons exacts = 0, base 919. Chaque entrée : short/longDefinition réelle, examples, synonyms, relatedTerms, tags, source, confidence honnête (à-vérifier pour le normatif). `/dictionary`/Search/bridge intacts, Dexie inchangé, seeds lazy/code-split. Full gate vert ; lanes en ligne.
+
+---
+
 # Sprint #12 — Local AI Provider LM Studio / Ollama (Lanes P + G + E)
 
 Objectif : un vrai provider IA **local** OpenAI-compatible, sans cloud ni clé obligatoire, avec **grounding Knowledge**. Sans SDK lourd (fetch only), strictement opt-in, sans appel réseau si non configuré.
