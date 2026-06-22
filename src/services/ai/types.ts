@@ -134,8 +134,13 @@ export interface ProviderChatResult {
   fromCloud: boolean
   /** true si la réponse vient d'un modèle local (LM Studio/Ollama via localmodel). */
   fromLocalModel?: boolean
+  /** true si la génération en streaming a été interrompue (stop/abort utilisateur). */
+  interrupted?: boolean
   error?: string
 }
+
+/** Reçoit chaque fragment de texte au fil d'un streaming (delta OpenAI-compatible). */
+export type StreamChunkHandler = (delta: string) => void
 
 /** Couche abstraite provider — chaque implémentation est sans état. */
 export interface AIProviderAdapter {

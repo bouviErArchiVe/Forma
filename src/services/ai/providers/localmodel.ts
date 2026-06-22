@@ -19,6 +19,7 @@ import type {
   ProviderChatRequest,
   ProviderChatResult,
   ProviderSettings,
+  StreamChunkHandler,
 } from '../types'
 import { localProvider } from './local'
 
@@ -198,4 +199,122 @@ export const localModelProvider: AIProviderAdapter = {
 async function fallback(request: ProviderChatRequest, error: string): Promise<ProviderChatResult> {
   const res = await localProvider.chat(request)
   return { ...res, error }
+}
+
+// ─── Streaming (Sprint #17) ─────────────────────────────────────────────────
+
+/**
+ * Extrait le delta de contenu d'une ligne SSE OpenAI-compatible
+ * (`data: {json}`). Renvoie '' si la ligne est vide, non-`data:`, `[DONE]`,
+ * ou un JSON malformé (tolérant : on ignore les fragments invalides).
+ */
+export function extractSSEDelta(line: string): string {
+  const trimmed = line.trim()
+  if (trimmed === '' || !trimmed.startsWith('data:')) return ''
+  const payload = trimmed.slice('data:'.length).trim()
+  if (payload === '' || payload === '[DONE]') return ''
+  try {
+    const json = JSON.parse(payload) as { choices?: Array<{ delta?: { content?: string } }> }
+    const delta = json.choices?.[0]?.delta?.content
+    return typeof delta === 'string' ? delta : ''
+  } catch {
+    return '' // SSE malformé : on ignore ce fragment plutôt que d'échouer.
+  }
+}
+
+/** Vrai si la ligne SSE signale la fin du flux (`data: [DONE]`). */
+function isSSEDone(line: string): boolean {
+  return line.trim() === 'data: [DONE]' || line.trim() === 'data:[DONE]'
+}
+
+/**
+ * Chat en STREAMING contre le modèle local (OpenAI-compatible, `stream: true`).
+ * Parse le SSE, appelle `onChunk(delta)` au fil de l'eau, et renvoie le résultat
+ * final. JAMAIS bloquant :
+ *  - erreur réseau/HTTP/timeout/flux vide → **fallback non-stream** (qui retombe
+ *    lui-même sur le mode local #11) ;
+ *  - abort UTILISATEUR (stop) → réponse partielle finalisée, `interrupted: true`
+ *    (PAS de fallback : l'utilisateur a choisi d'arrêter) ;
+ *  - SSE malformé → fragments ignorés, le reste est conservé.
+ *
+ * `fromLocalModel: true` seulement si le modèle local a produit du texte.
+ * Aucun appel automatique : n'est invoqué que sur action explicite.
+ */
+export async function streamLocalModelChat(
+  request: ProviderChatRequest,
+  onChunk: StreamChunkHandler,
+): Promise<ProviderChatResult> {
+  const { settings } = request
+  const timeout = settings.timeoutMs && settings.timeoutMs > 0 ? settings.timeoutMs : DEFAULT_TIMEOUT_MS
+  const userSignal = request.signal
+  const timeoutSignal = AbortSignal.timeout(timeout)
+  // Combine abort utilisateur + timeout quand c'est possible.
+  const signal =
+    userSignal && typeof AbortSignal.any === 'function'
+      ? AbortSignal.any([userSignal, timeoutSignal])
+      : (userSignal ?? timeoutSignal)
+
+  let acc = ''
+  try {
+    const res = await fetch(`${baseUrl(settings)}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders(settings) },
+      body: JSON.stringify({
+        model: settings.model || DEFAULT_MODEL,
+        messages: request.messages.map((m) => ({ role: m.role, content: m.content })),
+        max_tokens: settings.maxTokens > 0 ? settings.maxTokens : 1024,
+        temperature: settings.temperature,
+        stream: true,
+      }),
+      signal,
+    })
+
+    if (!res.ok || !res.body) {
+      const body = res.ok ? '' : await res.text().catch(() => '')
+      return fallback(request, res.ok ? 'Flux indisponible (pas de corps).' : `Serveur local ${res.status} : ${body.slice(0, 160)}`)
+    }
+
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+    let done = false
+    while (!done) {
+      const { value, done: streamDone } = await reader.read()
+      if (streamDone) break
+      buffer += decoder.decode(value, { stream: true })
+      // Découpe en lignes complètes ; conserve le reste partiel dans `buffer`.
+      const lines = buffer.split('\n')
+      buffer = lines.pop() ?? ''
+      for (const line of lines) {
+        if (isSSEDone(line)) { done = true; break }
+        const delta = extractSSEDelta(line)
+        if (delta !== '') { acc += delta; onChunk(delta) }
+      }
+    }
+    // Traite un éventuel reliquat (dernière ligne sans \n final).
+    if (!done && buffer.trim() !== '' && !isSSEDone(buffer)) {
+      const delta = extractSSEDelta(buffer)
+      if (delta !== '') { acc += delta; onChunk(delta) }
+    }
+
+    if (acc.trim() === '') {
+      return fallback(request, 'Réponse vide du modèle local (stream).')
+    }
+    return { text: acc, providerId: 'localmodel', fromCloud: false, fromLocalModel: true }
+  } catch (err) {
+    // Abort explicite de l'utilisateur (stop) : finaliser le partiel, ne pas replier.
+    if (userSignal?.aborted) {
+      return {
+        text: acc,
+        providerId: 'localmodel',
+        fromCloud: false,
+        fromLocalModel: acc.trim() !== '',
+        interrupted: true,
+        error: 'Génération interrompue.',
+      }
+    }
+    // Timeout ou erreur réseau/CORS : repli non-stream (puis #11).
+    const msg = err instanceof Error ? err.message : String(err)
+    return fallback(request, `Streaming modèle local indisponible : ${msg}`)
+  }
 }
