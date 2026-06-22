@@ -495,3 +495,12 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - Garanties : aucun gros JSON dans le bundle (`packInBundle=0`, index ~314 KB) ; pas de SDK lourd (fetch) ; `/dictionary` Base Forma, Search seeds, FormAI #11 et Dexie existant **intacts** ; aucune suppression de données existantes.
 - Tests : +44 (schéma pack, import idempotent/force/quarantine/échec, query gates/historique, RAG clean-first/quarantine/citation/warning/no-result) ; schema.test v17.
 - Limites : import initial ~70 s en navigateur (64 MB, une fois) ; Search/RAG pack n'opèrent qu'après le 1er import (déclenché par /dictionary Documents ou une question FormAI hors-seeds) ; `review_priority` (8 MB) non embarqué (redondant) ; quasi-doublons inter-sources non dédupliqués entre pack et seeds.
+
+## Sprint #18 — Pack RAG Grounding pour providers génératifs
+
+- **`buildPackGrounding`** (`src/services/ai/pack-grounding.ts`) : récupère les meilleurs chunks pack via `retrievePackChunks` (clean d'abord ; review seulement si aucun clean, avec avertissement ; **quarantine jamais**) et construit un bloc système BORNÉ (≤ 3 extraits, ~500 car. chacun) avec citations **document + page**.
+- **`prepareTurn`** (chat.ts) injecte désormais, pour un provider GÉNÉRATIF (localmodel/cloud) : (1) grounding seeds Knowledge (#12) PUIS (2) grounding pack RAG clean (#18). Le modèle vif en streaming peut donc **citer les documents PDF**, plus seulement les seeds. Provider `local` extractif conserve sa chaîne pont→RAG.
+- Sécurité : sujet normatif/technique force la phrase officielle « …à vérifier dans la version officielle/applicable… » ; aucune invention ; import pack paresseux ; fetch natif ; **aucun changement de schéma Dexie** ; prompt borné.
+- Ordre FormAI génératif : heuristiques → seeds #11 → **pack RAG clean (grounding)** → streaming localmodel (contexte combiné) → si indisponible, repli extractif seeds+pack → no-result honnête.
+- Vérifié (runtime) : prompt localmodel streaming contient `CONTEXTE DOCUMENTAIRE FORMA` + citation `*.pdf · p. N` + contexte seeds, quarantine absente ; streaming/Stop/fallback/Search/dictionary intacts.
+- Tests : +6 (pack-grounding) ; vitest 1500 ; tsc -b + build verts ; pack hors bundle (packDataInBundle=0).
