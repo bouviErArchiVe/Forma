@@ -11,6 +11,7 @@ import { buildRagContext } from '../../lib/rag/knowledge-base'
 import { getAgent } from './agents'
 import { appendMessage, getConversation } from './conversations'
 import { buildKnowledgeGrounding } from './knowledge-grounding'
+import { buildPackGrounding } from './pack-grounding'
 import { buildMemoryContext, getRelevantMemories } from './memory'
 import { getProvider, resolveProviderSettings } from './providers'
 import { streamLocalModelChat } from './providers/localmodel'
@@ -115,16 +116,24 @@ async function prepareTurn(
   const agent = getAgent(agentId)
   if (agent.temperature !== undefined) settings.temperature = agent.temperature
 
-  // Grounding Knowledge : pour un provider GÉNÉRATIF (modèle local ou cloud),
-  // on injecte la fiche pertinente + consigne anti-hallucination en contexte.
-  // Le provider 'local' (extractif) garde son propre pont Knowledge (#11).
+  // Grounding pour un provider GÉNÉRATIF (modèle local ou cloud) : on injecte
+  // (1) la fiche Knowledge seeds pertinente (#11/#12) puis (2) les meilleurs
+  // extraits `clean` du pack PDF (#18) — pour que le modèle vif cite aussi les
+  // documents (document + page). Le provider 'local' (extractif) garde sa propre
+  // chaîne pont Knowledge → RAG pack. Jamais bloquant.
   const grounding: AIChatMessage[] = []
   if (settings.providerId !== 'local' && settings.providerId !== 'mock') {
     try {
       const g = await buildKnowledgeGrounding(trimmed)
       if (g) grounding.push({ role: 'system', content: g.block })
     } catch {
-      // base indisponible : on continue sans grounding (jamais bloquant).
+      // base seeds indisponible : on continue (jamais bloquant).
+    }
+    try {
+      const p = await buildPackGrounding(trimmed)
+      if (p) grounding.push({ role: 'system', content: p.block })
+    } catch {
+      // pack indisponible : on continue sans contexte pack (jamais bloquant).
     }
   }
 
