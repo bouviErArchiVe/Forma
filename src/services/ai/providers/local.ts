@@ -143,16 +143,26 @@ export const localProvider: AIProviderAdapter = {
     // 2) Pour une opération de texte sans contenu exploitable : message d'aide.
     if (isTextOperation(lastUser)) return done(LOCAL_LIMITS_MESSAGE)
 
-    // 3) Question de connaissance : consulter la base Knowledge LOCALE avant
-    //    d'abandonner. Réponse ancrée (source + confiance + lien) ou null.
+    // 3) Question de connaissance : consulter la base Knowledge LOCALE (seeds #11)
+    //    avant d'abandonner. Réponse ancrée (source + confiance + lien) ou null.
     try {
       const kb = await knowledgeAnswer(lastUser)
       if (kb) return done(kb.text)
     } catch {
-      // Base indisponible : on retombe sur le message honnête ci-dessous.
+      // Base indisponible : on retombe sur le pont suivant ci-dessous.
     }
 
-    // 4) Rien trouvé nulle part : no-result honnête (jamais d'invention).
+    // 4) RAG pack documentaire PDF (Part 10) : extraits sourcés (document + page),
+    //    clean > review (avec avertissement), quarantine jamais. Import paresseux.
+    try {
+      const { ragAnswer } = await import('../../knowledge-pack/rag')
+      const rag = await ragAnswer(lastUser)
+      if (rag.found) return done(rag.answer)
+    } catch {
+      // Pack indisponible : on retombe sur le message honnête ci-dessous.
+    }
+
+    // 5) Rien trouvé nulle part : no-result honnête (jamais d'invention).
     return done(lastUser.trim() !== '' ? NO_KNOWLEDGE_MESSAGE : EMPTY_FALLBACK)
   },
 }
