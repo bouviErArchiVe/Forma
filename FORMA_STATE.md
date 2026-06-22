@@ -459,6 +459,16 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - Garanties : `/dictionary` + Search + bridge + grounding inchangés ; Dexie inchangé ; seeds lazy/code-split (index 314 KB, seedToken=0).
 - Note stratégique : fin probable du cycle « content pack » à fort rendement — le weak restant (~298) est désormais surtout normatif/biographique (people/buildings/norms) honnêtement à-vérifier. Prochain pivot conseillé : Streaming localmodel ou Real Local Model QA.
 
+## Sprint #17 — Streaming Local Model (Agents S + U + Q)
+
+- **Streaming core** (`streamLocalModelChat`, providers/localmodel.ts) : SSE OpenAI-compatible (`stream: true`), `fetch` natif (aucun SDK), parse des deltas + `[DONE]`, `extractSSEDelta` tolérant au JSON malformé. Streaming **uniquement** pour `localmodel`.
+- **Fallbacks** : abort utilisateur (Stop) → réponse partielle finalisée, `interrupted: true`, PAS de repli ; erreur réseau/CORS/HTTP/timeout/flux vide → repli **non-stream** → pont Knowledge **#11**. `fromLocalModel: true` seulement si le modèle a produit du texte ; `fromCloud: false`.
+- **UI** (`sendFormAIMessageStream`, ChatView, FormAIPage) : affichage progressif (bulle live + curseur), bouton **Stop** (rouge) pendant la génération, message d'erreur conservé, citations/source/confidence/lien préservés. `prepareTurn`/`persistAssistant` partagés → chemin non-stream et grounding #12 intacts. Stop n'efface pas la conversation.
+- **Grounding** : inchangé (#12) — fiche injectée en contexte pour provider génératif ; jamais de source inventée si aucune fiche.
+- Garanties : aucun appel réseau auto au chargement (streaming opt-in via provider localmodel) ; aucun crash si serveur absent ; `/dictionary` + Search + bridge intacts ; Dexie inchangé ; **bundle principal inchangé** (314 KB, seeds code-split, 0 SDK).
+- Tests : +13 (10 stream core : succès/partiel/abort/réseau/HTTP/SSE malformé/vide ; 3 orchestration). QA navigateur runtime : stream mocké 3 chunks + texte assemblé (fromLocalModel) ; abort → partiel interrompu ; réseau → fallback #11 ; localmodel sans serveur → fallback grounded silencieux.
+- Limites : connexion réelle LM Studio/Ollama toujours non testable ici (mocks + fallback couvrent) ; pas de streaming pour les providers cloud ce sprint.
+
 ## Sprint #12 — Local AI Provider (LM Studio / Ollama) (Lanes P + G + E)
 
 - **Provider `localmodel`** (`src/services/ai/providers/localmodel.ts`) : OpenAI-compatible `POST {baseUrl}/chat/completions` via **fetch** (aucun SDK), **clé optionnelle**, **timeout** configurable. `fromCloud:false` / `fromLocalModel:true`. Cible **LM Studio** (`http://localhost:1234/v1`) et **Ollama** (`http://localhost:11434/v1`). `testLocalModelConnection` (GET `/models`).

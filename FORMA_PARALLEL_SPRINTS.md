@@ -363,3 +363,17 @@ Objectif : rendre `localmodel` réellement branchable par un utilisateur (LM Stu
 | E | Docs setup + état + QA + Playwright | `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
 
 Règles respectées : ne jamais affirmer une cause masquée par le navigateur ; fallback #11 + grounding intacts ; opt-in (pas d'activation auto) ; pas d'appel réseau automatique ; pas de dépendance lourde. Ordre **D → S → E**, full gate (tsc -b / vitest 1450 / build), Playwright final unique. Lanes en ligne.
+
+---
+
+# Sprint #17 — Streaming Local Model (Agents S + U + Q)
+
+Objectif : streaming SSE pour `localmodel`, avec fallback non-stream + fallback Knowledge #11. `fetch` natif, parser SSE léger, pas de SDK.
+
+| Agent | Objectif | Propriété |
+|---|---|---|
+| S | `streamLocalModelChat` : SSE OpenAI-compatible, deltas/[DONE], AbortController+timeout, abort→partiel interrompu, erreurs→fallback non-stream→#11 | `providers/localmodel.ts`, `types.ts`, `localmodel-stream.test.ts` |
+| U | `sendFormAIMessageStream` (stream localmodel, one-shot autres) + UI affichage progressif + bouton Stop | `chat.ts`, `chat-stream.test.ts`, `FormAIPage.tsx`, `ChatView.tsx` |
+| Q | QA runtime (stream/abort/fallback) + non-régression /dictionary/Search/FormAI + docs + Playwright | `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Résultat : streaming progressif + Stop opérationnels ; `fromLocalModel` seulement si le modèle répond ; `fromCloud:false` pour le local ; abort finalise le partiel sans effacer la conversation ; serveur absent → fallback grounded silencieux. +13 tests, vitest 1463, build OK, bundle inchangé (0 SDK). Ordre **S → U → Q**, gate à chaque palier, Playwright final unique. Agents intégrés en ligne (limite session sous-agents).
