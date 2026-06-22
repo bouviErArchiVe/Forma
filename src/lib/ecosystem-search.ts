@@ -28,6 +28,7 @@ export type EcosystemHitKind =
   | 'flashcard'
   | 'exam'
   | 'knowledge'
+  | 'docpack'
 
 export interface EcosystemHit {
   kind: EcosystemHitKind
@@ -221,6 +222,28 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
     }
   } catch (err) {
     console.warn('[Forma] Recherche dans la base de connaissance indisponible:', err)
+  }
+
+  // Pack documentaire PDF (Part 10) — UNIQUEMENT s'il est déjà importé en Dexie.
+  // On ne déclenche jamais l'import (lourd) depuis la recherche globale.
+  // quarantine exclu par défaut ; clean priorisé > review (warning) côté query.
+  try {
+    const { isPackImported } = await import('../services/knowledge-pack/import')
+    if (await isPackImported()) {
+      const { searchPackEntries, entrySourceLabel } = await import('../services/knowledge-pack/query')
+      const res = await searchPackEntries({ text: query, limit: 5 })
+      for (const e of res.items) {
+        hits.push({
+          kind: 'docpack',
+          id: e.id,
+          title: e.title,
+          subtitle: `Document · ${entrySourceLabel(e)}${e.importGate === 'review' ? ' · À vérifier' : ''}`,
+          to: `/dictionary?source=pack&q=${encodeURIComponent(query)}`,
+        })
+      }
+    }
+  } catch (err) {
+    console.warn('[Forma] Recherche dans le pack documentaire indisponible:', err)
   }
 
   return mergeWithKnowledgeQuota(hits, knowledgeHits, limit)

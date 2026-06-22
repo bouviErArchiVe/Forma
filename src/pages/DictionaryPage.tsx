@@ -24,6 +24,7 @@ import { Icon } from '../components/ui/Icon'
 import { KnowledgeEntryCard } from '../components/knowledge/KnowledgeEntryCard'
 import { KnowledgeDetail } from '../components/knowledge/KnowledgeDetail'
 import { KnowledgeFilters } from '../components/knowledge/KnowledgeFilters'
+import { KnowledgePackBrowser } from '../components/knowledge/KnowledgePackBrowser'
 import {
   applyFilter,
   distinctDomains,
@@ -204,6 +205,14 @@ export function DictionaryPage() {
   const paged = useMemo(() => paginate(filtered, page, DICTIONARY_PAGE_SIZE, true), [filtered, page])
 
   const showSlugView = Boolean(slugParam)
+  // Source active : base Forma (seeds) ou pack documentaire PDF (Dexie).
+  const source: 'forma' | 'pack' = searchParams.get('source') === 'pack' ? 'pack' : 'forma'
+  const setSource = (s: 'forma' | 'pack') => {
+    const next: Record<string, string> = {}
+    if (s === 'pack') next.source = 'pack'
+    if (query.trim()) next.q = query
+    setSearchParams(next, { replace: true })
+  }
 
   return (
     <div className="min-h-screen bg-forma-bg text-forma-text flex flex-col">
@@ -218,37 +227,49 @@ export function DictionaryPage() {
           <Icon name="chevron-left" className="w-4 h-4" />
         </button>
         <span className="text-forma-muted shrink-0 text-sm">📖</span>
-        <input
-          ref={inputRef}
-          type="search"
-          value={query}
-          onChange={(e) => handleQueryChange(e.target.value)}
-          placeholder="Rechercher un terme (architecture, construction, matériaux…)"
-          className="flex-1 bg-transparent outline-none text-sm"
-          autoComplete="off"
-          spellCheck={false}
-          disabled={status !== 'ready'}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') navigate('/')
-            if (e.key === 'Enter' && query.trim().length >= 2) {
-              if (debounceRef.current) clearTimeout(debounceRef.current)
-              void runSearch(query)
-            }
-          }}
-        />
-        {searching && <span className="text-xs text-forma-muted shrink-0 animate-pulse">Recherche…</span>}
+        {source === 'forma' ? (
+          <input
+            ref={inputRef}
+            type="search"
+            value={query}
+            onChange={(e) => handleQueryChange(e.target.value)}
+            placeholder="Rechercher un terme (architecture, construction, matériaux…)"
+            className="flex-1 bg-transparent outline-none text-sm"
+            autoComplete="off"
+            spellCheck={false}
+            disabled={status !== 'ready'}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') navigate('/')
+              if (e.key === 'Enter' && query.trim().length >= 2) {
+                if (debounceRef.current) clearTimeout(debounceRef.current)
+                void runSearch(query)
+              }
+            }}
+          />
+        ) : (
+          <span className="flex-1 text-sm text-forma-muted">Documents sourcés (PDF)</span>
+        )}
+        {source === 'forma' && searching && <span className="text-xs text-forma-muted shrink-0 animate-pulse">Recherche…</span>}
+        {/* Bascule de source */}
+        <div className="flex rounded-lg border border-forma-border overflow-hidden text-[11px] shrink-0">
+          <button type="button" onClick={() => setSource('forma')} className={`px-2 py-1 transition-colors ${source === 'forma' ? 'bg-forma-accent text-white' : 'text-forma-muted hover:text-forma-text'}`}>Base Forma</button>
+          <button type="button" onClick={() => setSource('pack')} className={`px-2 py-1 transition-colors ${source === 'pack' ? 'bg-forma-accent text-white' : 'text-forma-muted hover:text-forma-text'}`}>Documents</button>
+        </div>
       </header>
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6">
+        {/* ── Onglet Documents (pack PDF, Dexie) ───────────────────────────── */}
+        {source === 'pack' && <KnowledgePackBrowser initialQuery={initialQ} />}
+
         {/* ── Chargement de la base ────────────────────────────────────────── */}
-        {status === 'loading' && (
+        {source === 'forma' && status === 'loading' && (
           <div className="text-center text-forma-muted mt-20">
             <div className="text-4xl mb-4 animate-pulse">📚</div>
             <p className="text-sm">Chargement du dictionnaire…</p>
           </div>
         )}
 
-        {status === 'error' && (
+        {source === 'forma' && status === 'error' && (
           <div className="text-center text-forma-muted mt-20">
             <div className="text-4xl mb-4">⚠️</div>
             <p className="text-sm">Impossible de charger la base de connaissance.</p>
@@ -262,7 +283,7 @@ export function DictionaryPage() {
           </div>
         )}
 
-        {status === 'ready' && (
+        {source === 'forma' && status === 'ready' && (
           <>
             {/* ── Vue lien profond ?slug= ─────────────────────────────────── */}
             {showSlugView && slugEntry === 'missing' && (
