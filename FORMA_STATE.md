@@ -504,3 +504,12 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - Ordre FormAI génératif : heuristiques → seeds #11 → **pack RAG clean (grounding)** → streaming localmodel (contexte combiné) → si indisponible, repli extractif seeds+pack → no-result honnête.
 - Vérifié (runtime) : prompt localmodel streaming contient `CONTEXTE DOCUMENTAIRE FORMA` + citation `*.pdf · p. N` + contexte seeds, quarantine absente ; streaming/Stop/fallback/Search/dictionary intacts.
 - Tests : +6 (pack-grounding) ; vitest 1500 ; tsc -b + build verts ; pack hors bundle (packDataInBundle=0).
+
+## Sprint #19 — FormAI Source Chips / Citations UI
+
+- **Contrat** (Lane E) : type `AssistantSource` { kind: 'seed'|'pack', label, document?, page?, gate?, toVerify?, slug? } sur `StoredChatMessage` + `ProviderChatResult`. Issu UNIQUEMENT des données structurées (fiche seeds, chunk pack) — JAMAIS d'un parsing du texte du modèle.
+- **Pipe** : provider extractif `local` renvoie les sources (seed via `knowledgeAnswer` slug+toVerify ; pack via `ragAnswer` chunks → document/page/gate, dédoublonnés, jamais quarantine). `prepareTurn` (génératif localmodel/cloud) construit les sources depuis le grounding seeds + pack (citations), dédoublonnées et bornées (5). `persistAssistant` attache `result.sources` (extractif) sinon `prep.sources` (génératif).
+- **UI** (Lane U, ChatView) : chips sous la bulle assistant — 📖 seed (lien `/dictionary?slug=`) / 📄 pack (« document · p. N », non-lien = zéro dead link) ; badges « Sourcé » (clean) vs « À vérifier » (review/toVerify) + note d'avertissement officielle si une source est à vérifier. Streaming/Stop, citations RAG existantes et anciens messages sans sources inchangés.
+- Vérifié (runtime) : chip seed lié → `/dictionary?slug=poutre` résout (pas de dead link) ; chip pack `CCQ.pdf · p. 120` + badge « À vérifier » + note ; message sans source ne casse pas ; console propre.
+- Sécurité : quarantine jamais affichée ; review → badge + avertissement ; aucune citation inventée (si aucune source structurée → pas de chip).
+- Tests : +5 (citations contract/pipe) ; vitest 1505 ; tsc -b + build verts ; pas de Dexie, pas de SDK, pack hors bundle.
