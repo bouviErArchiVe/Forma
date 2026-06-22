@@ -4,6 +4,12 @@ import { runDexieDataUrlMigrationTx, runDexiePdfSourceMigrationTx } from '../lib
 import type { AIConversation, AIMemoryEntry } from '../services/ai/types'
 import type { KnowledgeChunk, KnowledgeDocument } from '../lib/rag/types'
 import type {
+  PackImportBatch,
+  PackKnowledgeEntry,
+  PackRagChunk,
+  PackSearchKeyword,
+} from '../services/knowledge-pack/types'
+import type {
   AcademicGoal,
   AcademicSession,
   AudioRecording,
@@ -48,6 +54,8 @@ export interface ThumbnailEntry {
  * v14 : study — flashcards (répétition espacée SM-2, état SRS embarqué)
  * v15 : study — examens blancs (exams) + historique de passages (examAttempts)
  * v16 : study — objectifs académiques (academicGoals)
+ * v17 : pack PDF (Part 10) — formaKnowledgeEntries, formaRagChunks,
+ *       formaSearchKeywords, formaImportBatches (import lazy depuis public/)
  *
  * Champs temporels (gaps connus, non bloquants pour l’index Dexie) :
  * - Page : id ✓ — pas de createdAt/updatedAt (ordre via `order`, pas d’historique row)
@@ -79,6 +87,11 @@ export class FormaDatabase extends Dexie {
   exams!: Table<Exam, string>
   examAttempts!: Table<ExamAttempt, string>
   academicGoals!: Table<AcademicGoal, string>
+  // Pack de connaissance PDF (Part 10) — v17, importé depuis public/ vers Dexie.
+  formaKnowledgeEntries!: Table<PackKnowledgeEntry, string>
+  formaRagChunks!: Table<PackRagChunk, string>
+  formaSearchKeywords!: Table<PackSearchKeyword, string>
+  formaImportBatches!: Table<PackImportBatch, string>
 
   constructor() {
     super('forma')
@@ -341,11 +354,21 @@ export class FormaDatabase extends Dexie {
       examAttempts: 'id, examId, subjectId, createdAt',
       academicGoals: 'id, subjectId, dueDate, updatedAt',
     })
+
+    // v17 : pack de connaissance PDF (Part 10) — tables additives, importées
+    // depuis public/knowledge-pack/part10/ vers Dexie (jamais dans le bundle).
+    // Clés primaires string (id/keyword/packName) → bulkPut idempotent.
+    this.version(17).stores({
+      formaKnowledgeEntries: 'id, title, kind, sourceDocument, sourcePage, importGate, qualityStatus, confidence, formaUsefulnessScore, *tags',
+      formaRagChunks: 'id, document_name, page_start, importGate, safeForDefaultRag, confidence, *tags',
+      formaSearchKeywords: 'keyword, count',
+      formaImportBatches: 'packName, version, status, createdAt',
+    })
   }
 }
 
 /** Version Dexie courante (tests / diagnostics). */
-export const FORMA_DB_VERSION = 16
+export const FORMA_DB_VERSION = 17
 
 export const db = new FormaDatabase()
 

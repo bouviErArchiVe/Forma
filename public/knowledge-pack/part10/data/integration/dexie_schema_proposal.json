@@ -1,0 +1,7 @@
+{
+  "formaKnowledgeEntries": "++localPk, id, title, kind, sourceDocument, sourcePage, importGate, qualityStatus, confidence, formaUsefulnessScore, *tags, createdAt",
+  "formaRagChunks": "++localPk, id, document_name, page_start, page_end, importGate, safeForDefaultRag, confidence, *tags",
+  "formaSearchKeywords": "++localPk, keyword, count",
+  "formaSourceMap": "++localPk, document, page, section, gate, entryIds",
+  "formaImportBatches": "++id, packName, version, createdAt, status, counts, checksum"
+}

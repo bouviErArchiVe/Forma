@@ -1,0 +1,25 @@
+{
+  "pack": "FORMA_RESOURCE_PACK_FROM_PDFS_PART_10_FORMA_INTEGRATION_MASTER",
+  "createdAt": "2026-06-21T22:46:22.103983+00:00",
+  "recommendedLoadOrder": [
+    "data/app/forma_search_index_light.json",
+    "data/app/subject_tags_compact.json",
+    "data/app/forma_dictionary_green_clean.json",
+    "data/app/forma_dictionary_core.json",
+    "data/app/formai_rag_core_chunks.json",
+    "data/app/formai_rag_review_chunks.json"
+  ],
+  "doNotLoadByDefault": [
+    "raw_pages",
+    "quarantine",
+    "full_safe_import"
+  ],
+  "storageRecommendation": "Dexie IndexedDB, lazy-loaded by document/domain/gate, not one huge JS bundle.",
+  "counts": {
+    "knowledge_total": 55616,
+    "knowledge_core_app": 9738,
+    "chunks_core_app": 6770,
+    "keywords_light": 2500,
+    "tags_light": 1800
+  }
+}

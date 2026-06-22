@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "defaultOrder": [
+    "clean",
+    "review_with_warning"
+  ],
+  "neverDefault": [
+    "quarantine"
+  ],
+  "rules": [
+    {
+      "when": "source.importGate == clean",
+      "action": "answer with citation and normal confidence, but still expose source."
+    },
+    {
+      "when": "source.importGate == review",
+      "action": "answer with citation and visible warning: A verifier dans la source officielle/applicable."
+    },
+    {
+      "when": "source.importGate == quarantine",
+      "action": "do not use unless user explicitly asks to inspect quarantined/raw material."
+    },
+    {
+      "when": "question touches code/regulation/conformity/numeric requirement",
+      "action": "force review mode, cite page, never present as official legal advice."
+    },
+    {
+      "when": "sources conflict",
+      "action": "show both sources and do not decide without official verification."
+    },
+    {
+      "when": "retrieval score low or no source",
+      "action": "say that Forma does not have enough sourced information."
+    }
+  ]
+}

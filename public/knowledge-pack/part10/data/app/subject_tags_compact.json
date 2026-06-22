@@ -1,0 +1,164 @@
+{
+  "architecture_construction": [
+    {
+      "tag": "architecture",
+      "count": 244
+    },
+    {
+      "tag": "construction",
+      "count": 1644
+    },
+    {
+      "tag": "ching",
+      "count": 718
+    },
+    {
+      "tag": "fondation",
+      "count": 49
+    },
+    {
+      "tag": "murs",
+      "count": 1403
+    },
+    {
+      "tag": "planchers",
+      "count": 711
+    },
+    {
+      "tag": "toiture",
+      "count": 61
+    },
+    {
+      "tag": "structure",
+      "count": 31
+    },
+    {
+      "tag": "enveloppe",
+      "count": 458
+    }
+  ],
+  "normes_codes": [
+    {
+      "tag": "ccq",
+      "count": 14108
+    },
+    {
+      "tag": "cneb",
+      "count": 2391
+    },
+    {
+      "tag": "accessibilite",
+      "count": 341
+    },
+    {
+      "tag": "accessibilité",
+      "count": 330
+    },
+    {
+      "tag": "code",
+      "count": 26
+    },
+    {
+      "tag": "norme",
+      "count": 18
+    },
+    {
+      "tag": "rbq",
+      "count": 0
+    },
+    {
+      "tag": "cnb",
+      "count": 845
+    }
+  ],
+  "materiaux": [
+    {
+      "tag": "acier",
+      "count": 1100
+    },
+    {
+      "tag": "bois",
+      "count": 3508
+    },
+    {
+      "tag": "béton",
+      "count": 1147
+    },
+    {
+      "tag": "beton",
+      "count": 0
+    },
+    {
+      "tag": "isolation",
+      "count": 73
+    },
+    {
+      "tag": "profil",
+      "count": 0
+    },
+    {
+      "tag": "hss",
+      "count": 19
+    },
+    {
+      "tag": "tube",
+      "count": 44
+    },
+    {
+      "tag": "plaque",
+      "count": 169
+    }
+  ],
+  "lexique": [
+    {
+      "tag": "dictionnaire",
+      "count": 25498
+    },
+    {
+      "tag": "academie",
+      "count": 0
+    },
+    {
+      "tag": "académie",
+      "count": 0
+    },
+    {
+      "tag": "lexique",
+      "count": 22027
+    },
+    {
+      "tag": "historique",
+      "count": 22027
+    }
+  ],
+  "pedagogie": [
+    {
+      "tag": "capacité",
+      "count": 33
+    },
+    {
+      "tag": "ecole",
+      "count": 0
+    },
+    {
+      "tag": "école",
+      "count": 14
+    },
+    {
+      "tag": "bulles",
+      "count": 0
+    },
+    {
+      "tag": "echelle",
+      "count": 0
+    },
+    {
+      "tag": "échelle",
+      "count": 0
+    },
+    {
+      "tag": "autocad",
+      "count": 0
+    }
+  ]
+}

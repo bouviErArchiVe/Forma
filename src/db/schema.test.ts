@@ -140,13 +140,17 @@ describe('Dexie schema', () => {
         'exams',
         'examAttempts',
         'academicGoals',
+        'formaKnowledgeEntries',
+        'formaRagChunks',
+        'formaSearchKeywords',
+        'formaImportBatches',
       ].sort(),
     )
   })
 
   it('bumps to v15 and exposes the flashcards store', async () => {
-    expect(FORMA_DB_VERSION).toBe(16)
-    expect(db.verno).toBe(16)
+    expect(FORMA_DB_VERSION).toBe(17)
+    expect(db.verno).toBe(17)
     const now = Date.now()
     await db.flashcards.put({
       id: 'fc-schema-1',
@@ -202,7 +206,7 @@ describe('Dexie schema', () => {
   })
 
   it('v16 exposes the academicGoals store with queryable indexes', async () => {
-    expect(FORMA_DB_VERSION).toBe(16)
+    expect(FORMA_DB_VERSION).toBe(17)
     const now = Date.now()
     await db.academicGoals.put({
       id: 'goal-schema-1',

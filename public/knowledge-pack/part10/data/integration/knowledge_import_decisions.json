@@ -1,0 +1,20 @@
+{
+  "importTargets": {
+    "dictionaryCore": "data/app/forma_dictionary_core.json",
+    "dictionaryClean": "data/app/forma_dictionary_green_clean.json",
+    "dictionaryReviewPriority": "data/app/forma_dictionary_yellow_review_priority.json",
+    "ragCore": "data/app/formai_rag_core_chunks.json",
+    "ragReview": "data/app/formai_rag_review_chunks.json",
+    "searchLight": "data/app/forma_search_index_light.json"
+  },
+  "gates": {
+    "clean": "visible by default, no blocking warning, source still visible",
+    "review": "visible with badge A verifier and source required",
+    "quarantine": "hidden by default, admin/debug only"
+  },
+  "doNotImportDirectly": [
+    "data/raw/*",
+    "full dictionary historical as default modern dictionary",
+    "quarantine into default RAG"
+  ]
+}
