@@ -19,6 +19,7 @@ import type {
   AICitation,
   AIChatMessage,
   AIConversation,
+  AssistantSource,
   ProviderChatResult,
   ProviderSettings,
 } from './types'
@@ -82,6 +83,8 @@ interface PreparedTurn {
   settings: ProviderSettings
   memoryUsed: string[]
   citations: AICitation[]
+  /** Sources structurées issues du grounding génératif (seeds + pack). */
+  sources: AssistantSource[]
   agentId: string
 }
 
@@ -122,16 +125,33 @@ async function prepareTurn(
   // documents (document + page). Le provider 'local' (extractif) garde sa propre
   // chaîne pont Knowledge → RAG pack. Jamais bloquant.
   const grounding: AIChatMessage[] = []
+  const sources: AssistantSource[] = []
   if (settings.providerId !== 'local' && settings.providerId !== 'mock') {
     try {
       const g = await buildKnowledgeGrounding(trimmed)
-      if (g) grounding.push({ role: 'system', content: g.block })
+      if (g) {
+        grounding.push({ role: 'system', content: g.block })
+        sources.push({ kind: 'seed', label: g.term, slug: g.slug, toVerify: g.toVerify })
+      }
     } catch {
       // base seeds indisponible : on continue (jamais bloquant).
     }
     try {
       const p = await buildPackGrounding(trimmed)
-      if (p) grounding.push({ role: 'system', content: p.block })
+      if (p) {
+        grounding.push({ role: 'system', content: p.block })
+        const gate: 'clean' | 'review' = p.usedReview ? 'review' : 'clean'
+        for (const cit of p.citations) {
+          sources.push({
+            kind: 'pack',
+            label: cit.document || 'Document Forma',
+            ...(cit.document ? { document: cit.document } : {}),
+            ...(cit.page !== undefined ? { page: cit.page } : {}),
+            gate,
+            toVerify: p.warn,
+          })
+        }
+      }
     } catch {
       // pack indisponible : on continue sans contexte pack (jamais bloquant).
     }
@@ -142,8 +162,23 @@ async function prepareTurn(
     settings,
     memoryUsed,
     citations,
+    sources: dedupeSources(sources),
     agentId,
   }
+}
+
+/** Dédoublonne les sources (par kind+document+page+slug) et borne le nombre. */
+function dedupeSources(sources: AssistantSource[], max = 5): AssistantSource[] {
+  const out: AssistantSource[] = []
+  const seen = new Set<string>()
+  for (const s of sources) {
+    const key = `${s.kind}|${s.document ?? ''}|${s.page ?? ''}|${s.slug ?? ''}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(s)
+    if (out.length >= max) break
+  }
+  return out
 }
 
 /** Persiste le message assistant et renvoie le résultat d'envoi. */
@@ -152,6 +187,9 @@ async function persistAssistant(
   result: ProviderChatResult,
   prep: PreparedTurn,
 ): Promise<SendMessageResult | undefined> {
+  // Sources : celles renvoyées par le provider extractif (local) priment ;
+  // sinon celles du grounding génératif (seeds + pack) calculées en amont.
+  const sources = result.sources && result.sources.length > 0 ? result.sources : prep.sources
   const updated = await appendMessage(conversationId, {
     role: 'assistant',
     content: result.text !== '' ? result.text : `⚠ ${result.error ?? 'Réponse vide.'}`,
@@ -159,6 +197,7 @@ async function persistAssistant(
     agentId: prep.agentId,
     providerId: result.providerId,
     ...(prep.citations.length > 0 ? { citations: prep.citations } : {}),
+    ...(sources.length > 0 ? { sources } : {}),
     ...(prep.memoryUsed.length > 0 ? { memoryUsed: prep.memoryUsed } : {}),
     ...(result.error !== undefined ? { error: result.error } : {}),
   })

@@ -29,6 +29,28 @@ export interface AICitation {
   score?: number
 }
 
+/**
+ * Source STRUCTURÉE d'une réponse assistant (Sprint #19), issue UNIQUEMENT des
+ * données de grounding/retrieval connues (fiche seeds, chunk pack), JAMAIS d'un
+ * parsing du texte généré. Sert à afficher des chips de provenance.
+ */
+export interface AssistantSource {
+  /** Origine : fiche Knowledge seeds ou extrait du pack documentaire PDF. */
+  kind: 'seed' | 'pack'
+  /** Libellé court (terme de la fiche, ou nom du document). */
+  label: string
+  /** Document PDF (sources pack). */
+  document?: string
+  /** Page (sources pack). */
+  page?: number
+  /** Gate de la source — jamais 'quarantine' (exclue en amont). */
+  gate?: 'clean' | 'review'
+  /** true si à vérifier (review / confidence à-vérifier / normatif). */
+  toVerify?: boolean
+  /** Slug de fiche seeds → lien /dictionary?slug=… (sources seed). */
+  slug?: string
+}
+
 /** Message persisté dans une conversation FormAI. */
 export interface StoredChatMessage {
   id: string
@@ -41,6 +63,8 @@ export interface StoredChatMessage {
   providerId?: string
   /** Citations documentaires utilisées pour produire la réponse. */
   citations?: AICitation[]
+  /** Sources structurées (seeds/pack) pour l'affichage en chips (#19). */
+  sources?: AssistantSource[]
   /** Extraits de mémoire injectés dans le contexte de cette réponse. */
   memoryUsed?: string[]
   /** Erreur non bloquante associée (ex. fallback local après échec cloud). */
@@ -136,6 +160,8 @@ export interface ProviderChatResult {
   fromLocalModel?: boolean
   /** true si la génération en streaming a été interrompue (stop/abort utilisateur). */
   interrupted?: boolean
+  /** Sources structurées de la réponse (chemin extractif local — #19). */
+  sources?: AssistantSource[]
   error?: string
 }
 

@@ -16,6 +16,7 @@ import {
 import { knowledgeAnswer } from '../knowledge-bridge'
 import type {
   AIProviderAdapter,
+  AssistantSource,
   ProviderChatRequest,
   ProviderChatResult,
 } from '../types'
@@ -132,7 +133,10 @@ export const localProvider: AIProviderAdapter = {
   },
 
   async chat(request: ProviderChatRequest): Promise<ProviderChatResult> {
-    const done = (text: string): ProviderChatResult => ({ text, providerId: 'local', fromCloud: false })
+    const done = (text: string, sources?: AssistantSource[]): ProviderChatResult => ({
+      text, providerId: 'local', fromCloud: false,
+      ...(sources && sources.length > 0 ? { sources } : {}),
+    })
 
     // 1) Heuristiques locales (résumé, mots-clés, reformulation, extractif).
     const heuristic = localAnswer(request).trim()
@@ -147,7 +151,11 @@ export const localProvider: AIProviderAdapter = {
     //    avant d'abandonner. Réponse ancrée (source + confiance + lien) ou null.
     try {
       const kb = await knowledgeAnswer(lastUser)
-      if (kb) return done(kb.text)
+      if (kb) {
+        return done(kb.text, [
+          { kind: 'seed', label: kb.term, slug: kb.slug, toVerify: kb.confidence === 'à-vérifier' },
+        ])
+      }
     } catch {
       // Base indisponible : on retombe sur le pont suivant ci-dessous.
     }
@@ -157,7 +165,7 @@ export const localProvider: AIProviderAdapter = {
     try {
       const { ragAnswer } = await import('../../knowledge-pack/rag')
       const rag = await ragAnswer(lastUser)
-      if (rag.found) return done(rag.answer)
+      if (rag.found) return done(rag.answer, packSources(rag.chunks, !!rag.warning))
     } catch {
       // Pack indisponible : on retombe sur le message honnête ci-dessous.
     }
@@ -165,4 +173,37 @@ export const localProvider: AIProviderAdapter = {
     // 5) Rien trouvé nulle part : no-result honnête (jamais d'invention).
     return done(lastUser.trim() !== '' ? NO_KNOWLEDGE_MESSAGE : EMPTY_FALLBACK)
   },
+}
+
+/**
+ * Mappe les chunks pack utilisés en sources structurées (dédoublonnées par
+ * document+page). Le gate n'est jamais 'quarantine' (exclu en amont par le RAG).
+ */
+function packSources(chunks: ReadonlyArray<PackRagChunkLike>, warn: boolean): AssistantSource[] {
+  const out: AssistantSource[] = []
+  const seen = new Set<string>()
+  for (const c of chunks) {
+    const document = c.document_name ?? c.source?.document ?? ''
+    const page = c.page_start ?? c.source?.page_start
+    const key = `${document}|${page ?? ''}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push({
+      kind: 'pack',
+      label: document || 'Document Forma',
+      ...(document ? { document } : {}),
+      ...(page !== undefined ? { page } : {}),
+      gate: c.importGate === 'review' ? 'review' : 'clean',
+      toVerify: c.importGate === 'review' || warn,
+    })
+  }
+  return out
+}
+
+/** Forme minimale d'un chunk pack utilisée pour bâtir les sources (sans importer le type complet). */
+interface PackRagChunkLike {
+  document_name?: string
+  page_start?: number
+  importGate?: string
+  source?: { document?: string; page_start?: number }
 }
