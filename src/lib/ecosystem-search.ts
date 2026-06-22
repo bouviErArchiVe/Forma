@@ -227,13 +227,16 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
   // Pack documentaire PDF (Part 10) — UNIQUEMENT s'il est déjà importé en Dexie.
   // On ne déclenche jamais l'import (lourd) depuis la recherche globale.
   // quarantine exclu par défaut ; clean priorisé > review (warning) côté query.
+  // Collecté à part et fusionné avec un quota réservé (comme la base Knowledge),
+  // pour ne pas être évincé par les autres résultats sur un terme courant.
+  const docpackHits: EcosystemHit[] = []
   try {
     const { isPackImported } = await import('../services/knowledge-pack/import')
     if (await isPackImported()) {
       const { searchPackEntries, entrySourceLabel } = await import('../services/knowledge-pack/query')
       const res = await searchPackEntries({ text: query, limit: 5 })
       for (const e of res.items) {
-        hits.push({
+        docpackHits.push({
           kind: 'docpack',
           id: e.id,
           title: e.title,
@@ -246,5 +249,8 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
     console.warn('[Forma] Recherche dans le pack documentaire indisponible:', err)
   }
 
-  return mergeWithKnowledgeQuota(hits, knowledgeHits, limit)
+  // Knowledge (seeds) + pack documentaire = résultats sourcés réservés/priorisés.
+  const reserved = [...knowledgeHits, ...docpackHits]
+  const minReserved = KNOWLEDGE_MIN_SLOTS + (docpackHits.length > 0 ? KNOWLEDGE_MIN_SLOTS : 0)
+  return mergeWithKnowledgeQuota(hits, reserved, limit, minReserved)
 }

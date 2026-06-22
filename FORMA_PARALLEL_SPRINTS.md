@@ -377,3 +377,18 @@ Objectif : streaming SSE pour `localmodel`, avec fallback non-stream + fallback 
 | Q | QA runtime (stream/abort/fallback) + non-régression /dictionary/Search/FormAI + docs + Playwright | `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
 
 Résultat : streaming progressif + Stop opérationnels ; `fromLocalModel` seulement si le modèle répond ; `fromCloud:false` pour le local ; abort finalise le partiel sans effacer la conversation ; serveur absent → fallback grounded silencieux. +13 tests, vitest 1463, build OK, bundle inchangé (0 SDK). Ordre **S → U → Q**, gate à chaque palier, Playwright final unique. Agents intégrés en ligne (limite session sous-agents).
+
+---
+
+# Sprint spécial — Resource Pack PDF Integration (Part 10, Agents I + D + R + Q)
+
+Intégrer `FORMA_RESOURCE_PACK_FROM_PDFS_PART_10` (données PDF gouvernées par gates clean/review/quarantine) sans casser l'existant ni embarquer 64 MB de JSON dans le bundle.
+
+| Agent | Objectif | Propriété |
+|---|---|---|
+| I | Dexie v17 (4 tables) + import lazy/idempotent/journalisé + validateurs + gates ; données sous `public/` | `db/index.ts`, `services/knowledge-pack/{types,validate,import}.ts`, fixtures, tests |
+| D | onglet `/dictionary?source=pack` (badges/source-page/filtres/quarantine caché) + Search `docpack` | `services/knowledge-pack/query.ts`, `components/knowledge/KnowledgePackBrowser.tsx`, `pages/DictionaryPage.tsx`, `lib/ecosystem-search.ts`, `pages/SearchPage.tsx` |
+| R | RAG FormAI (clean-first, review→warning, quarantine jamais, citations doc+page) branché au provider local | `services/knowledge-pack/rag.ts`, `services/ai/providers/local.ts` |
+| Q | QA navigateur (import réel 64 MB→Dexie, gates, RAG, non-régression) + docs + Playwright | `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Ordre **I → D → R → Q**, gate (tsc/vitest/build) à chaque palier, Playwright final unique. Résultat : import réel vérifié (9738 entrées / 18751 chunks / 2500 mots-clés, réimport skip), quarantine jamais exposé, FormAI cite source+page avec avertissement normatif, `/dictionary` Base Forma + Search seeds + Dexie **intacts**, **0 octet de pack dans le bundle**. +44 tests, vitest 1494, build OK. Agents intégrés en ligne.
