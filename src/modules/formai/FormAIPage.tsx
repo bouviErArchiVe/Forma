@@ -9,7 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '../../components/ui/Icon'
 import { FORMAI_AGENTS, getAgent } from '../../services/ai/agents'
-import { sendFormAIMessage } from '../../services/ai/chat'
+import { sendFormAIMessageStream } from '../../services/ai/chat'
 import {
   archiveConversation,
   createConversation,
@@ -51,8 +51,10 @@ export function FormAIPage() {
   const [filter, setFilter] = useState<SidebarFilter>('active')
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
+  const [streamingText, setStreamingText] = useState<string | null>(null)
   const [showMemory, setShowMemory] = useState(false)
   const importInputRef = useRef<HTMLInputElement>(null)
+  const abortRef = useRef<AbortController | null>(null)
 
   const agent = getAgent(conversation?.agentId ?? activeAgentId)
 
@@ -108,6 +110,9 @@ export function FormAIPage() {
 
   const handleSend = async (text: string) => {
     setLoading(true)
+    setStreamingText('')
+    const ac = new AbortController()
+    abortRef.current = ac
     try {
       let id = conversation?.id
       if (!id) {
@@ -128,12 +133,24 @@ export function FormAIPage() {
             }
           : prev,
       )
-      const result = await sendFormAIMessage(id, text, { memoryEnabled, ragEnabled })
+      const result = await sendFormAIMessageStream(id, text, {
+        memoryEnabled,
+        ragEnabled,
+        signal: ac.signal,
+        onChunk: (accumulated) => setStreamingText(accumulated),
+      })
       if (result) setConversation(result.conversation)
       await reloadList()
     } finally {
+      abortRef.current = null
+      setStreamingText(null)
       setLoading(false)
     }
+  }
+
+  /** Stop : interrompt la génération en cours sans supprimer la conversation. */
+  const handleStop = () => {
+    abortRef.current?.abort()
   }
 
   const handleDeleteMessage = async (messageId: string) => {
@@ -337,9 +354,11 @@ export function FormAIPage() {
           messages={conversation?.messages ?? []}
           agent={agent}
           loading={loading}
+          streamingText={streamingText}
           providerLabel={provider.label}
           fromCloud={fromCloud}
           onSend={(text) => void handleSend(text)}
+          onStop={handleStop}
           onDeleteMessage={(id) => void handleDeleteMessage(id)}
           onSaveToMemory={(content) => void handleSaveToMemory(content)}
         />

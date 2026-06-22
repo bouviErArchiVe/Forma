@@ -146,28 +146,34 @@ export function ChatView({
   messages,
   agent,
   loading,
+  streamingText,
   providerLabel,
   fromCloud,
   onSend,
+  onStop,
   onDeleteMessage,
   onSaveToMemory,
 }: {
   messages: StoredChatMessage[]
   agent: AgentDefinition
   loading: boolean
+  /** Texte cumulé affiché progressivement pendant la génération (null = aucun). */
+  streamingText?: string | null
   providerLabel: string
   fromCloud: boolean
   onSend: (text: string) => void
+  onStop?: () => void
   onDeleteMessage: (id: string) => void
   onSaveToMemory: (content: string) => void
 }) {
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const hasStreamingText = typeof streamingText === 'string' && streamingText.length > 0
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, loading])
+  }, [messages, loading, streamingText])
 
   const send = () => {
     const text = input.trim()
@@ -192,7 +198,18 @@ export function ChatView({
               onSaveToMemory={onSaveToMemory}
             />
           ))}
-          {loading && (
+          {/* Réponse en cours de génération (streaming) */}
+          {loading && hasStreamingText && (
+            <div className="flex flex-col items-start">
+              <div className="text-[10px] text-forma-muted px-1 mb-0.5">{agent.name} · génération…</div>
+              <div className="max-w-[85%] rounded-2xl rounded-bl-md px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-forma-surface border border-forma-border text-forma-text">
+                {streamingText}
+                <span className="inline-block w-1.5 h-3.5 ml-0.5 align-middle bg-forma-accent/70 animate-pulse" aria-hidden="true" />
+              </div>
+            </div>
+          )}
+          {/* Indicateur d'attente avant le premier fragment */}
+          {loading && !hasStreamingText && (
             <div className="flex items-center gap-1 text-forma-muted text-xs px-1 py-2">
               <span className="animate-pulse">●</span>
               <span className="animate-pulse" style={{ animationDelay: '200ms' }}>●</span>
@@ -222,15 +239,26 @@ export function ChatView({
             disabled={loading}
             className="flex-1 text-sm border border-forma-border rounded-xl px-3 py-2 bg-forma-bg resize-none focus:outline-none focus:border-forma-accent focus:ring-1 focus:ring-forma-accent/30 disabled:opacity-50"
           />
-          <button
-            type="button"
-            onClick={send}
-            disabled={loading || input.trim() === ''}
-            title="Envoyer (Entrée)"
-            className="shrink-0 w-9 h-9 rounded-xl bg-forma-accent text-white hover:bg-forma-accent-hover disabled:opacity-40 transition-colors flex items-center justify-center"
-          >
-            <Icon name="chevron-up" className="w-4 h-4" />
-          </button>
+          {loading && onStop ? (
+            <button
+              type="button"
+              onClick={onStop}
+              title="Arrêter la génération"
+              className="shrink-0 w-9 h-9 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors flex items-center justify-center"
+            >
+              <Icon name="close" className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={send}
+              disabled={loading || input.trim() === ''}
+              title="Envoyer (Entrée)"
+              className="shrink-0 w-9 h-9 rounded-xl bg-forma-accent text-white hover:bg-forma-accent-hover disabled:opacity-40 transition-colors flex items-center justify-center"
+            >
+              <Icon name="chevron-up" className="w-4 h-4" />
+            </button>
+          )}
         </div>
         <p className="text-[10px] text-forma-muted text-center mt-1.5 inline-flex items-center gap-1 w-full justify-center">
           <Icon name={fromCloud ? 'cloud' : 'monitor'} className="w-3 h-3" />

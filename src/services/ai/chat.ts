@@ -13,7 +13,14 @@ import { appendMessage, getConversation } from './conversations'
 import { buildKnowledgeGrounding } from './knowledge-grounding'
 import { buildMemoryContext, getRelevantMemories } from './memory'
 import { getProvider, resolveProviderSettings } from './providers'
-import type { AICitation, AIChatMessage, AIConversation } from './types'
+import { streamLocalModelChat } from './providers/localmodel'
+import type {
+  AICitation,
+  AIChatMessage,
+  AIConversation,
+  ProviderChatResult,
+  ProviderSettings,
+} from './types'
 
 /** Nombre de messages d'historique injectés dans le contexte. */
 const HISTORY_WINDOW = 20
@@ -68,38 +75,37 @@ export async function buildSystemPrompt(
   return { prompt, memoryUsed, citations }
 }
 
+/** Tour préparé : messages assemblés + réglages + métadonnées à persister. */
+interface PreparedTurn {
+  messages: AIChatMessage[]
+  settings: ProviderSettings
+  memoryUsed: string[]
+  citations: AICitation[]
+  agentId: string
+}
+
 /**
- * Envoie un message utilisateur dans une conversation : persiste le message,
- * appelle le provider et persiste la réponse (avec citations / mémoire usée).
- * Ne throw jamais — les erreurs provider sont reflétées dans le message
- * assistant et dans `result.error`.
+ * Prépare un tour : persiste le message utilisateur, construit le prompt système
+ * (agent + mémoire + RAG), ajoute le grounding Knowledge pour un provider
+ * génératif, et assemble messages + réglages. Partagé par les chemins non-stream
+ * et streaming. `undefined` si la conversation n'existe pas.
  */
-export async function sendFormAIMessage(
+async function prepareTurn(
   conversationId: string,
-  userText: string,
-  options: SendMessageOptions = {},
-): Promise<SendMessageResult | undefined> {
-  const trimmed = userText.trim()
-  if (trimmed === '') return undefined
+  trimmed: string,
+  options: SendMessageOptions,
+): Promise<PreparedTurn | undefined> {
   const conversation = await getConversation(conversationId)
   if (!conversation) return undefined
-
-  const memoryEnabled = options.memoryEnabled ?? true
-  const ragEnabled = options.ragEnabled ?? false
   const agentId = conversation.agentId
 
-  await appendMessage(conversationId, {
-    role: 'user',
-    content: trimmed,
-    ts: Date.now(),
-  })
+  await appendMessage(conversationId, { role: 'user', content: trimmed, ts: Date.now() })
 
   const { prompt, memoryUsed, citations } = await buildSystemPrompt(agentId, trimmed, {
-    memoryEnabled,
-    ragEnabled,
+    memoryEnabled: options.memoryEnabled ?? true,
+    ragEnabled: options.ragEnabled ?? false,
   })
 
-  // Historique récent (le message user vient d'être persisté).
   const fresh = await getConversation(conversationId)
   const history: AIChatMessage[] = (fresh?.messages ?? [])
     .slice(-HISTORY_WINDOW)
@@ -108,7 +114,6 @@ export async function sendFormAIMessage(
   const settings = resolveProviderSettings()
   const agent = getAgent(agentId)
   if (agent.temperature !== undefined) settings.temperature = agent.temperature
-  const provider = getProvider(settings.providerId)
 
   // Grounding Knowledge : pour un provider GÉNÉRATIF (modèle local ou cloud),
   // on injecte la fiche pertinente + consigne anti-hallucination en contexte.
@@ -123,23 +128,98 @@ export async function sendFormAIMessage(
     }
   }
 
-  const result = await provider.chat({
+  return {
     messages: [{ role: 'system', content: prompt }, ...grounding, ...history],
     settings,
-    signal: options.signal,
-  })
+    memoryUsed,
+    citations,
+    agentId,
+  }
+}
 
+/** Persiste le message assistant et renvoie le résultat d'envoi. */
+async function persistAssistant(
+  conversationId: string,
+  result: ProviderChatResult,
+  prep: PreparedTurn,
+): Promise<SendMessageResult | undefined> {
   const updated = await appendMessage(conversationId, {
     role: 'assistant',
     content: result.text !== '' ? result.text : `⚠ ${result.error ?? 'Réponse vide.'}`,
     ts: Date.now(),
-    agentId,
+    agentId: prep.agentId,
     providerId: result.providerId,
-    ...(citations.length > 0 ? { citations } : {}),
-    ...(memoryUsed.length > 0 ? { memoryUsed } : {}),
+    ...(prep.citations.length > 0 ? { citations: prep.citations } : {}),
+    ...(prep.memoryUsed.length > 0 ? { memoryUsed: prep.memoryUsed } : {}),
     ...(result.error !== undefined ? { error: result.error } : {}),
   })
-
   if (!updated) return undefined
   return { conversation: updated, error: result.error }
+}
+
+/**
+ * Envoie un message utilisateur dans une conversation : persiste le message,
+ * appelle le provider et persiste la réponse (avec citations / mémoire usée).
+ * Ne throw jamais — les erreurs provider sont reflétées dans le message
+ * assistant et dans `result.error`.
+ */
+export async function sendFormAIMessage(
+  conversationId: string,
+  userText: string,
+  options: SendMessageOptions = {},
+): Promise<SendMessageResult | undefined> {
+  const trimmed = userText.trim()
+  if (trimmed === '') return undefined
+  const prep = await prepareTurn(conversationId, trimmed, options)
+  if (!prep) return undefined
+
+  const result = await getProvider(prep.settings.providerId).chat({
+    messages: prep.messages,
+    settings: prep.settings,
+    signal: options.signal,
+  })
+  return persistAssistant(conversationId, result, prep)
+}
+
+export interface StreamMessageOptions extends SendMessageOptions {
+  /** Reçoit le texte ACCUMULÉ à chaque fragment (pour l'affichage progressif). */
+  onChunk?: (accumulated: string) => void
+}
+
+/**
+ * Variante STREAMING de `sendFormAIMessage` (Sprint #17). Pour le provider
+ * `localmodel`, streame la réponse via SSE (`onChunk` reçoit le texte cumulé) ;
+ * pour les autres providers, délivre le texte complet en une fois via `onChunk`
+ * (chemin unique pour l'UI). Persiste la réponse finale (ou partielle si
+ * interrompue). Ne throw jamais.
+ */
+export async function sendFormAIMessageStream(
+  conversationId: string,
+  userText: string,
+  options: StreamMessageOptions = {},
+): Promise<SendMessageResult | undefined> {
+  const trimmed = userText.trim()
+  if (trimmed === '') return undefined
+  const prep = await prepareTurn(conversationId, trimmed, options)
+  if (!prep) return undefined
+
+  let result: ProviderChatResult
+  if (prep.settings.providerId === 'localmodel') {
+    let acc = ''
+    result = await streamLocalModelChat(
+      { messages: prep.messages, settings: prep.settings, signal: options.signal },
+      (delta) => {
+        acc += delta
+        options.onChunk?.(acc)
+      },
+    )
+  } else {
+    result = await getProvider(prep.settings.providerId).chat({
+      messages: prep.messages,
+      settings: prep.settings,
+      signal: options.signal,
+    })
+    if (result.text !== '') options.onChunk?.(result.text)
+  }
+  return persistAssistant(conversationId, result, prep)
 }
