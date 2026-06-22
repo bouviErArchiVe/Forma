@@ -5,9 +5,53 @@
  * frappe, état vide avec suggestions de l'agent actif, zone de saisie.
  */
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Icon, type IconName } from '../../../components/ui/Icon'
 import { useToastStore } from '../../../stores/toastStore'
-import type { AgentDefinition, StoredChatMessage } from '../../../services/ai/types'
+import type { AgentDefinition, AssistantSource, StoredChatMessage } from '../../../services/ai/types'
+
+// ─── Chips de sources (Sprint #19) ──────────────────────────────────────────
+
+/** Une puce de source : fiche seeds (lien /dictionary) ou extrait pack (document · page). */
+function SourceChip({ source }: { source: AssistantSource }) {
+  const badge = source.toVerify ? (
+    <span className="ml-1 px-1 py-px rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[9px] font-semibold uppercase">À vérifier</span>
+  ) : (
+    <span className="ml-1 px-1 py-px rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[9px] font-semibold uppercase">Sourcé</span>
+  )
+  const label = source.kind === 'pack'
+    ? `📄 ${source.document ?? source.label}${source.page !== undefined ? ` · p. ${source.page}` : ''}`
+    : `📖 ${source.label}`
+  const cls = 'inline-flex items-center text-[10px] rounded-md border border-forma-border bg-forma-bg px-1.5 py-0.5 text-forma-muted max-w-[16rem] truncate'
+
+  // Lien seulement vers une route fiable (/dictionary?slug=) — jamais de dead link.
+  if (source.kind === 'seed' && source.slug) {
+    return (
+      <Link to={`/dictionary?slug=${encodeURIComponent(source.slug)}`} className={`${cls} hover:border-forma-accent/50 hover:text-forma-text transition-colors`} title={source.label}>
+        <span className="truncate">{label}</span>{badge}
+      </Link>
+    )
+  }
+  return <span className={cls} title={source.document ?? source.label}><span className="truncate">{label}</span>{badge}</span>
+}
+
+/** Bloc de sources structurées sous une réponse assistant. */
+function SourceChips({ sources }: { sources: AssistantSource[] }) {
+  const toVerify = sources.some((s) => s.toVerify)
+  return (
+    <div className="max-w-[85%] mt-1 space-y-1">
+      <div className="flex flex-wrap gap-1">
+        {sources.map((s, i) => <SourceChip key={`${s.kind}-${s.slug ?? s.document ?? ''}-${s.page ?? ''}-${i}`} source={s} />)}
+      </div>
+      {toVerify && (
+        <p className="text-[10px] text-amber-600 dark:text-amber-400 inline-flex items-center gap-1">
+          <Icon name="alert" className="w-3 h-3" />
+          À vérifier dans la version officielle/applicable avant usage réglementaire ou professionnel.
+        </p>
+      )}
+    </div>
+  )
+}
 
 // ─── État vide ────────────────────────────────────────────────────────────────
 
@@ -95,6 +139,9 @@ function MessageBubble({
           ))}
         </div>
       )}
+
+      {/* Sources structurées (chips) — #19 */}
+      {!isUser && msg.sources && msg.sources.length > 0 && <SourceChips sources={msg.sources} />}
 
       {/* Erreur non bloquante */}
       {msg.error && (
