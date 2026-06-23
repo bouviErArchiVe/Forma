@@ -8,7 +8,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ensureKnowledgePackImported,
+  ensurePackDictionaryImported,
   type ImportResult,
 } from '../../services/knowledge-pack/import'
 import {
@@ -57,7 +57,7 @@ export function KnowledgePackBrowser({
   useEffect(() => {
     let cancelled = false
     void (async () => {
-      const r: ImportResult = await ensureKnowledgePackImported()
+      const r: ImportResult = await ensurePackDictionaryImported()
       if (cancelled) return
       if (r.batch.status === 'failed') { setStatus('error'); return }
       setDocs(await packDocuments())
@@ -99,8 +99,8 @@ export function KnowledgePackBrowser({
     return (
       <div className="text-center text-forma-muted mt-16">
         <div className="text-4xl mb-3 animate-pulse">📄</div>
-        <p className="text-sm">Import du pack documentaire en cours…</p>
-        <p className="text-[11px] mt-1 opacity-70">Chargé une seule fois dans votre navigateur (hors ligne ensuite).</p>
+        <p className="text-sm">Import du dictionnaire documentaire en cours…</p>
+        <p className="text-[11px] mt-1 opacity-70">Seules les fiches sont chargées (pas les extraits FormAI), une seule fois, puis hors ligne.</p>
       </div>
     )
   }

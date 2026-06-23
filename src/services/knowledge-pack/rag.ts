@@ -9,7 +9,7 @@
  *  - aucune source pertinente → on le dit honnêtement (no-result).
  */
 import { db } from '../../db'
-import { ensureKnowledgePackImported } from './import'
+import { ensurePackRagImported } from './import'
 import { isNormativeText, REVIEW_WARNING } from './validate'
 import type { PackRagChunk } from './types'
 
@@ -27,7 +27,7 @@ export function __resetRagCache(): void { cache = null }
 
 async function allChunks(): Promise<PackRagChunk[]> {
   if (cache) return cache
-  await ensureKnowledgePackImported()
+  await ensurePackRagImported()
   cache = await db.formaRagChunks.toArray()
   return cache
 }

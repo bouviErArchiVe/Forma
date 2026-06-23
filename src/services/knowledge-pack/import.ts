@@ -129,6 +129,136 @@ export async function importKnowledgePack(options: { force?: boolean; baseUrl?: 
   }
 }
 
+// ─── Import PARESSEUX PAR DATASET (Sprint #22) ──────────────────────────────
+//
+// Le pack se découpe en datasets logiques chargés SÉPARÉMENT, pour ne plus tirer
+// 64 MB d'un coup : Documents/Dictionnaire ⇒ `dictionary` (entrées) ;
+// FormAI RAG ⇒ `rag` (chunks) ; Search ⇒ `search` (mots-clés légers).
+// Chaque dataset est idempotent (ligne `${pack}::<dataset>` dans
+// `formaImportBatches`) ET respecte un import GLOBAL préexistant (rétro-compat :
+// un `importKnowledgePack` complet, ou une amorce e2e, court-circuite tout).
+
+export type PackDataset = 'dictionary' | 'rag' | 'search'
+
+export interface ImportProgress {
+  dataset: PackDataset
+  phase: 'fetching' | 'storing' | 'done'
+  count?: number
+}
+
+function datasetKey(pack: string, dataset: PackDataset): string {
+  return `${pack}::${dataset}`
+}
+
+function isDone(batch: PackImportBatch | undefined, version: string): boolean {
+  return batch?.status === 'completed' && batch.version === version
+}
+
+/** Vrai si un dataset est disponible (sa ligne OU un import global est `completed`). */
+export async function isPackDatasetImported(dataset: PackDataset): Promise<boolean> {
+  const all = await db.formaImportBatches.toArray()
+  return all.some(
+    (b) => b.status === 'completed'
+      && (b.packName.endsWith(`::${dataset}`) || !b.packName.includes('::')),
+  )
+}
+
+/**
+ * Importe UN dataset à la demande. Idempotent par dataset ; respecte un import
+ * global préexistant. En cas d'échec, marque la ligne `failed` et PRÉSERVE les
+ * autres datasets (transaction limitée à la table concernée).
+ */
+export async function importPackDataset(
+  dataset: PackDataset,
+  options: { force?: boolean; baseUrl?: string; onProgress?: (p: ImportProgress) => void } = {},
+): Promise<ImportResult> {
+  const baseUrl = options.baseUrl ?? PACK_BASE_URL
+  const manifest = await fetchOfflineManifest(baseUrl)
+  const pack = manifest.pack
+  const version = manifest.createdAt
+  const key = datasetKey(pack, dataset)
+
+  const [dsRow, globalRow] = await Promise.all([
+    db.formaImportBatches.get(key),
+    db.formaImportBatches.get(pack),
+  ])
+  if (!options.force && (isDone(dsRow, version) || isDone(globalRow, version))) {
+    return { skipped: true, batch: (isDone(dsRow, version) ? dsRow : globalRow) as PackImportBatch }
+  }
+
+  const running: PackImportBatch = { packName: key, version, createdAt: new Date().toISOString(), status: 'running' }
+  await db.formaImportBatches.put(running)
+
+  try {
+    options.onProgress?.({ dataset, phase: 'fetching' })
+    let count = 0
+    if (dataset === 'dictionary') {
+      const raw = await fetchJson<PackKnowledgeEntry[]>(`${baseUrl}/forma_dictionary_core.json`)
+      const entries = keepNonQuarantine(raw).filter(isValidPackEntry)
+      options.onProgress?.({ dataset, phase: 'storing' })
+      await db.transaction('rw', db.formaKnowledgeEntries, async () => {
+        await db.formaKnowledgeEntries.clear()
+        await db.formaKnowledgeEntries.bulkPut(entries)
+      })
+      count = entries.length
+    } else if (dataset === 'rag') {
+      const [coreRaw, reviewRaw] = await Promise.all([
+        fetchJson<PackRagChunk[]>(`${baseUrl}/formai_rag_core_chunks.json`),
+        fetchJson<PackRagChunk[]>(`${baseUrl}/formai_rag_review_chunks.json`),
+      ])
+      const chunks = keepNonQuarantine([...coreRaw, ...reviewRaw]).filter(isValidPackChunk)
+      options.onProgress?.({ dataset, phase: 'storing' })
+      await db.transaction('rw', db.formaRagChunks, async () => {
+        await db.formaRagChunks.clear()
+        await db.formaRagChunks.bulkPut(chunks)
+      })
+      count = chunks.length
+    } else {
+      const idx = await fetchJson<PackSearchIndex>(`${baseUrl}/forma_search_index_light.json`)
+      const keywords = (idx.keywords ?? []).filter((k) => typeof k.keyword === 'string' && k.keyword !== '')
+      options.onProgress?.({ dataset, phase: 'storing' })
+      await db.transaction('rw', db.formaSearchKeywords, async () => {
+        await db.formaSearchKeywords.clear()
+        await db.formaSearchKeywords.bulkPut(keywords)
+      })
+      count = keywords.length
+    }
+
+    const completed: PackImportBatch = {
+      packName: key, version, createdAt: new Date().toISOString(),
+      status: 'completed', counts: { [dataset]: count }, checksum: version,
+    }
+    await db.formaImportBatches.put(completed)
+    options.onProgress?.({ dataset, phase: 'done', count })
+    return { skipped: false, batch: completed }
+  } catch (err) {
+    const failed: PackImportBatch = { ...running, status: 'failed', error: err instanceof Error ? err.message : String(err) }
+    await db.formaImportBatches.put(failed)
+    return { skipped: false, batch: failed }
+  }
+}
+
+const datasetMemo = new Map<PackDataset, Promise<ImportResult>>()
+
+function ensureDataset(dataset: PackDataset): Promise<ImportResult> {
+  let p = datasetMemo.get(dataset)
+  if (!p) {
+    p = importPackDataset(dataset).catch((err): ImportResult => ({
+      skipped: false,
+      batch: { packName: `unknown::${dataset}`, version: '', createdAt: new Date().toISOString(), status: 'failed', error: err instanceof Error ? err.message : String(err) },
+    }))
+    datasetMemo.set(dataset, p)
+  }
+  return p
+}
+
+/** Dictionnaire/Documents : entrées seulement (≈23 MB), pas les chunks RAG. */
+export function ensurePackDictionaryImported(): Promise<ImportResult> { return ensureDataset('dictionary') }
+/** FormAI RAG : chunks seulement (≈41 MB), à la demande d'une question. */
+export function ensurePackRagImported(): Promise<ImportResult> { return ensureDataset('rag') }
+/** Search : index de mots-clés léger (≈0,25 MB). */
+export function ensurePackSearchImported(): Promise<ImportResult> { return ensureDataset('search') }
+
 let ensurePromise: Promise<ImportResult> | null = null
 
 /**
@@ -148,7 +278,8 @@ export async function ensureKnowledgePackImported(): Promise<ImportResult> {
   return ensurePromise
 }
 
-/** Réinitialise le mémo d'import (tests). */
+/** Réinitialise les mémos d'import (tests). */
 export function __resetEnsureImport(): void {
   ensurePromise = null
+  datasetMemo.clear()
 }

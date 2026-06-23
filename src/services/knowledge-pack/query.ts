@@ -7,7 +7,7 @@
  * Import paresseux garanti avant toute lecture.
  */
 import { db } from '../../db'
-import { ensureKnowledgePackImported } from './import'
+import { ensurePackDictionaryImported } from './import'
 import { entryDocument, entryPage } from './validate'
 import type { ImportGate, PackKnowledgeEntry } from './types'
 
@@ -55,7 +55,7 @@ let cache: PackKnowledgeEntry[] | null = null
 /** Charge (une fois, mémoïsé) toutes les entrées du pack depuis Dexie. */
 async function allEntries(): Promise<PackKnowledgeEntry[]> {
   if (cache) return cache
-  await ensureKnowledgePackImported()
+  await ensurePackDictionaryImported()
   cache = await db.formaKnowledgeEntries.toArray()
   return cache
 }
@@ -101,7 +101,7 @@ export async function searchPackEntries(q: PackQuery = {}): Promise<PackQueryRes
 
 /** Consultation directe d'une entrée par id. */
 export async function getPackEntry(id: string): Promise<PackKnowledgeEntry | undefined> {
-  await ensureKnowledgePackImported()
+  await ensurePackDictionaryImported()
   return db.formaKnowledgeEntries.get(id)
 }
 

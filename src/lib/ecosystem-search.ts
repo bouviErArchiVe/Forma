@@ -231,8 +231,10 @@ export async function searchEcosystem(query: string, limit = 20): Promise<Ecosys
   // pour ne pas être évincé par les autres résultats sur un terme courant.
   const docpackHits: EcosystemHit[] = []
   try {
-    const { isPackImported } = await import('../services/knowledge-pack/import')
-    if (await isPackImported()) {
+    // Search n'IMPORTE pas le pack : il n'affiche des résultats documentaires que
+    // si le dataset dictionnaire est déjà présent (chargé par /dictionary).
+    const { isPackDatasetImported } = await import('../services/knowledge-pack/import')
+    if (await isPackDatasetImported('dictionary')) {
       const { searchPackEntries, entrySourceLabel } = await import('../services/knowledge-pack/query')
       const res = await searchPackEntries({ text: query, limit: 5 })
       for (const e of res.items) {
