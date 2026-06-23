@@ -405,3 +405,16 @@ Objectif : rendre les chips sources Pack PDF cliquables (→ `/dictionary` Docum
 | E (Q) | Tests (`source-link.test.ts`) + e2e (clic chip pack → Documents filtré) + docs/playbook QA réelle | `source-link.test.ts`, `tests/e2e/formai-citations.spec.ts`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
 
 Règle anti-dead-link centralisée (`sourceChipHref`) : seed+slug → fiche ; pack+document → Documents pré-filtré ; sinon `null` (non-cliquable). Quarantine jamais ciblable (jamais dans les sources). Aucune réécriture moteur, pas de Dexie/route, pack hors bundle. Ordre **N → E**, gate + Playwright final. vitest 1522, build OK.
+
+---
+
+# Sprint #22 — Performance / Import Optimization (Lanes I + Q)
+
+Objectif : ne plus charger 64 MB d'un coup → import paresseux par dataset, idempotent, sans casser l'existant.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| I | Découpe import par dataset (dictionary/rag/search) + idempotence par dataset + ensure*/importPackDataset(onProgress) ; câbler chaque feature sur son dataset | `knowledge-pack/import.ts,query.ts,rag.ts`, `KnowledgePackBrowser.tsx`, `ecosystem-search.ts` |
+| Q | Tests dataset (partiel/idempotent/pas-de-double-fetch/échec-préserve) + décision LFS/externe + `.gitattributes` + docs | `import-datasets.test.ts`, `.gitattributes`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Datasets : dictionary (~23 MB, Documents+Search) · rag (~41 MB, FormAI) · search (~0,25 MB). Idempotence `${pack}::<dataset>` + rétro-compat import global. `ensureKnowledgePackImported`/`importKnowledgePack` conservés. Dexie v17 inchangé, packDataInBundle=0, QA matrix #20 verte. vitest 1529. Ordre **I → Q**, gate + Playwright final.

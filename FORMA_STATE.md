@@ -539,3 +539,17 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 5. Tester : streaming progressif, Stop/Abort, grounding seeds + pack (citations document·page), chips cliquables.
 6. Couper le serveur → vérifier le fallback extractif propre (seeds → pack → no-result honnête).
 7. Import à froid : 1er passage /dictionary Documents importe ~64 MB (≈ perf à mesurer) puis hors ligne.
+
+## Sprint #22 — Performance / Import Optimization (Lanes I + Q)
+
+- **Import paresseux PAR DATASET** : le pack ne se charge plus en bloc (64 MB). Trois datasets indépendants chargés à la demande : `dictionary` (entrées dictionnaire ≈23 MB), `rag` (chunks FormAI ≈41 MB), `search` (mots-clés légers ≈0,25 MB).
+- **Câblage par besoin** : ouvrir `/dictionary` Documents ⇒ `ensurePackDictionaryImported` (entrées seules, PAS les chunks RAG) ; FormAI RAG (rag.ts + pack-grounding) ⇒ `ensurePackRagImported` (chunks seuls) ; Search docpack n'IMPORTE rien — il s'affiche seulement si le dataset `dictionary` est déjà présent (`isPackDatasetImported('dictionary')`).
+- **Idempotence par dataset** : ligne `${pack}::<dataset>` dans `formaImportBatches` ; réimport même version ⇒ skip sans re-fetch ; un import GLOBAL préexistant (ancien `importKnowledgePack` ou amorce e2e) court-circuite chaque dataset (rétro-compat). Échec d'un dataset ⇒ ligne `failed`, les autres datasets PRÉSERVÉS (transaction limitée à la table). `ensureKnowledgePackImported` / `importKnowledgePack` conservés (compat tests #Part10).
+- **Progression** : `importPackDataset(onProgress)` émet `fetching → storing → done` (+ count) ; UI Documents reformulée (« Import du dictionnaire documentaire… », pas les extraits FormAI). Pas de faux %.
+- Garanties : gates clean/review/quarantine respectés (quarantine jamais importée), review warning intact, fallback seeds si dataset absent, QA matrix #20 verte, **Dexie v17 inchangé**, packDataInBundle=0. +7 tests (`import-datasets.test.ts`), vitest 1529.
+
+### Décision poids du repo (Git LFS / pack externe)
+
+- Le pack (~64 MB) reste versionné sous `public/knowledge-pack/part10/` (servi en static, hors bundle). `.gitattributes` le marque `-text -diff linguist-generated=true` (binaire, pas de diff bruyant, hors stats GitHub).
+- **Pas de migration Git LFS rétroactive** : convertir des blobs déjà commités exige une réécriture d'historique (dangereuse, casse les clones/PR) → écartée.
+- Recommandation pour un FUTUR gros pack : soit Git LFS dès le premier commit du fichier, soit hébergement externe (CDN/Release asset) avec fetch runtime — décision à prendre avant d'ajouter Part 11+.

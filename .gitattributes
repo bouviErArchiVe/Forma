@@ -1,1 +1,5 @@
-public/knowledge-pack/** -text -diff
+# Pack documentaire Forma (Part 10) : gros JSON statiques servis depuis public/.
+# Traités comme binaires (pas de normalisation EOL ni de diff bruyant) et exclus
+# des statistiques de langage GitHub. PAS de Git LFS rétroactif (réécriture
+# d'historique dangereuse) — voir FORMA_STATE.md (décision Sprint #22).
+public/knowledge-pack/** -text -diff linguist-generated=true
