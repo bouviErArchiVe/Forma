@@ -513,3 +513,11 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - Vérifié (runtime) : chip seed lié → `/dictionary?slug=poutre` résout (pas de dead link) ; chip pack `CCQ.pdf · p. 120` + badge « À vérifier » + note ; message sans source ne casse pas ; console propre.
 - Sécurité : quarantine jamais affichée ; review → badge + avertissement ; aucune citation inventée (si aucune source structurée → pas de chip).
 - Tests : +5 (citations contract/pipe) ; vitest 1505 ; tsc -b + build verts ; pas de Dexie, pas de SDK, pack hors bundle.
+
+## Sprint #20 — FormAI Stabilization / QA Matrix
+
+- **Matrice QA (Lane T)** `src/services/ai/formai-qa-matrix.test.ts` : 11 tests d'intégration bout-en-bout (fake-indexeddb + fixtures pack LÉGÈRES, AUCUN fetch des 64 MB) verrouillant : seeds-only · pack clean (citation doc/page) · pack review (badge + avertissement officiel) · normatif (phrase officielle même sur clean) · **quarantine jamais utilisée** · no-result honnête · streaming localmodel mocké (SSE assemblé + sources conservées) · Stop/Abort (réponse partielle + interrompue) · serveur absent → fallback extractif · sources persistées · message legacy sans sources · pack non importé → fallback seeds.
+- **e2e ciblé (Lane P)** `tests/e2e/formai-citations.spec.ts` (2 specs) : chips FormAI (badges Sourcé/À-vérifier, document·page, avertissement) + lien seed → `/dictionary?slug=` qui résout ; onglets `/dictionary` Base Forma + Documents (fiches pack amorcées, zéro quarantine) ; Search retourne des résultats ; console propre. Amorçage Dexie via modules app (batch « completed » à la bonne version → import paresseux court-circuité, pas de 64 MB en CI).
+- **Couvert automatiquement** : gates clean/review/quarantine, citations/chips, streaming, abort, fallback, no-result, warning normatif, /dictionary, Search.
+- **Reste MANUEL** (non testable ici, documenté) : vrai serveur LM Studio, vrai serveur Ollama, CORS réel, performance import 64 MB à froid (~70 s).
+- Garanties : aucune réécriture de logique (couverture seulement) ; pas de nouvelle dépendance/route/Dexie ; pack hors bundle (packDataInBundle=0). vitest 1516 ; tsc -b + build verts. backup.spec : flake connu, non corrigé (hors scope).
