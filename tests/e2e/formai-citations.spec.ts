@@ -54,6 +54,30 @@ test('FormAI affiche les chips sources et le lien seed résout vers /dictionary'
   expect(errors, errors.join('\n')).toHaveLength(0)
 })
 
+test('clic chip pack → /dictionary Documents pré-filtré sur le document (#21)', async ({ page }) => {
+  const errors: string[] = []
+  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()) })
+
+  const convId = await seedDexie(page)
+  await page.goto(`/formai/${convId}`)
+
+  // Le chip pack (document connu) est désormais un lien vers l'onglet Documents pré-filtré.
+  const packLink = page.locator('a[href*="source=pack"][href*="document=CCQ.pdf"]').first()
+  await expect(packLink).toBeVisible()
+  await packLink.click()
+
+  await expect(page).toHaveURL(/source=pack/)
+  await expect(page).toHaveURL(/document=CCQ\.pdf/)
+  await expect(page).toHaveURL(/page=120/)
+
+  // Onglet Documents pré-filtré : la fiche CCQ amorcée est visible, badge À vérifier, aucune quarantine.
+  await expect(page.getByText('Exigence accessibilité')).toBeVisible({ timeout: 10000 })
+  await expect(page.getByText('À vérifier').first()).toBeVisible()
+  await expect(page.getByText(/quarantine/i)).toHaveCount(0)
+
+  expect(errors, errors.join('\n')).toHaveLength(0)
+})
+
 test('/dictionary onglets Base Forma + Documents et Search retournent des résultats', async ({ page }) => {
   const errors: string[] = []
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()) })

@@ -521,3 +521,21 @@ Ne jamais inventer d’articles officiels. Toujours afficher :
 - **Couvert automatiquement** : gates clean/review/quarantine, citations/chips, streaming, abort, fallback, no-result, warning normatif, /dictionary, Search.
 - **Reste MANUEL** (non testable ici, documenté) : vrai serveur LM Studio, vrai serveur Ollama, CORS réel, performance import 64 MB à froid (~70 s).
 - Garanties : aucune réécriture de logique (couverture seulement) ; pas de nouvelle dépendance/route/Dexie ; pack hors bundle (packDataInBundle=0). vitest 1516 ; tsc -b + build verts. backup.spec : flake connu, non corrigé (hors scope).
+
+## Sprint #21 — Pack Source Navigation (Lanes N + E)
+
+- **Chips pack cliquables** : un chip source pack devient un lien vers `/dictionary?source=pack&document=<doc>(&page=<n>)` UNIQUEMENT si le document est connu (il provient d'un chunk réel → le filtre Documents le retrouve). Sinon il reste **non-cliquable** (comportement #19). Règle centralisée dans `sourceChipHref()` (pur, testé) → **zéro dead link**.
+- **`/dictionary` pré-filtré** : lit `?document=` et `?page=` ; `KnowledgePackBrowser` initialise le filtre document + met en évidence (ring) les entrées de la page ciblée. `quarantine` jamais affiché ; review garde le badge « À vérifier ».
+- Inchangé : chips seed (`/dictionary?slug=`), streaming/Stop/Abort (#17), grounding (#18), warnings, QA matrix (#20). Pas de Dexie/schema, pas de route nouvelle, pack hors bundle (packDataInBundle=0).
+- Couverture : `source-link.test.ts` (6 — seed/pack/sans-document/encodage) + e2e `formai-citations.spec.ts` (clic chip pack → Documents pré-filtré CCQ.pdf p.120, À vérifier, pas de quarantine). vitest 1522, tsc -b + build verts.
+
+### QA manuelle restante (serveur réel — à faire côté utilisateur PC Windows)
+
+Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
+1. Installer puis lancer LM Studio (ou Ollama) ; activer le **serveur local** (LM Studio : Local Server ; Ollama : service).
+2. Réglages Forma › IA : choisir « Modèle local », baseUrl `http://localhost:1234/v1` (LM Studio) ou `http://localhost:11434/v1` (Ollama), saisir le `model`.
+3. Charger un modèle léger (Phi-mini, Qwen petit, Gemma petit ; Mistral 7B Q4 si machine puissante).
+4. Autoriser l'origine (CORS) côté serveur si « injoignable/CORS » : LM Studio CORS, Ollama `OLLAMA_ORIGINS`.
+5. Tester : streaming progressif, Stop/Abort, grounding seeds + pack (citations document·page), chips cliquables.
+6. Couper le serveur → vérifier le fallback extractif propre (seeds → pack → no-result honnête).
+7. Import à froid : 1er passage /dictionary Documents importe ~64 MB (≈ perf à mesurer) puis hors ligne.

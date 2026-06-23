@@ -392,3 +392,16 @@ Intégrer `FORMA_RESOURCE_PACK_FROM_PDFS_PART_10` (données PDF gouvernées par 
 | Q | QA navigateur (import réel 64 MB→Dexie, gates, RAG, non-régression) + docs + Playwright | `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
 
 Ordre **I → D → R → Q**, gate (tsc/vitest/build) à chaque palier, Playwright final unique. Résultat : import réel vérifié (9738 entrées / 18751 chunks / 2500 mots-clés, réimport skip), quarantine jamais exposé, FormAI cite source+page avec avertissement normatif, `/dictionary` Base Forma + Search seeds + Dexie **intacts**, **0 octet de pack dans le bundle**. +44 tests, vitest 1494, build OK. Agents intégrés en ligne.
+
+---
+
+# Sprint #21 — Pack Source Navigation (Lanes N + E)
+
+Objectif : rendre les chips sources Pack PDF cliquables (→ `/dictionary` Documents pré-filtré) sans créer de dead link.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| N | Chip pack → lien `/dictionary?source=pack&document=&page=` si document connu, sinon non-cliquable ; `/dictionary` lit document/page et pré-filtre + highlight page | `source-link.ts`, `ChatView.tsx`, `KnowledgePackBrowser.tsx`, `DictionaryPage.tsx` |
+| E (Q) | Tests (`source-link.test.ts`) + e2e (clic chip pack → Documents filtré) + docs/playbook QA réelle | `source-link.test.ts`, `tests/e2e/formai-citations.spec.ts`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Règle anti-dead-link centralisée (`sourceChipHref`) : seed+slug → fiche ; pack+document → Documents pré-filtré ; sinon `null` (non-cliquable). Quarantine jamais ciblable (jamais dans les sources). Aucune réécriture moteur, pas de Dexie/route, pack hors bundle. Ordre **N → E**, gate + Playwright final. vitest 1522, build OK.
