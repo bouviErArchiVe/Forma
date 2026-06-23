@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom'
 import { Icon, type IconName } from '../../../components/ui/Icon'
 import { useToastStore } from '../../../stores/toastStore'
 import type { AgentDefinition, AssistantSource, StoredChatMessage } from '../../../services/ai/types'
+import { sourceChipHref } from '../../../services/ai/source-link'
 
 // ─── Chips de sources (Sprint #19) ──────────────────────────────────────────
 
@@ -24,10 +25,11 @@ function SourceChip({ source }: { source: AssistantSource }) {
     : `📖 ${source.label}`
   const cls = 'inline-flex items-center text-[10px] rounded-md border border-forma-border bg-forma-bg px-1.5 py-0.5 text-forma-muted max-w-[16rem] truncate'
 
-  // Lien seulement vers une route fiable (/dictionary?slug=) — jamais de dead link.
-  if (source.kind === 'seed' && source.slug) {
+  // Lien seulement vers une route fiable — jamais de dead link (#21).
+  const href = sourceChipHref(source)
+  if (href) {
     return (
-      <Link to={`/dictionary?slug=${encodeURIComponent(source.slug)}`} className={`${cls} hover:border-forma-accent/50 hover:text-forma-text transition-colors`} title={source.label}>
+      <Link to={href} className={`${cls} hover:border-forma-accent/50 hover:text-forma-text transition-colors`} title={source.document ?? source.label}>
         <span className="truncate">{label}</span>{badge}
       </Link>
     )

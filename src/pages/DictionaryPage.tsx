@@ -207,6 +207,10 @@ export function DictionaryPage() {
   const showSlugView = Boolean(slugParam)
   // Source active : base Forma (seeds) ou pack documentaire PDF (Dexie).
   const source: 'forma' | 'pack' = searchParams.get('source') === 'pack' ? 'pack' : 'forma'
+  // Pré-filtre pack depuis un chip cliqué (#21) : document + page éventuels.
+  const packDocument = searchParams.get('document') ?? ''
+  const packPageRaw = Number(searchParams.get('page'))
+  const packPage = Number.isFinite(packPageRaw) && packPageRaw > 0 ? packPageRaw : undefined
   const setSource = (s: 'forma' | 'pack') => {
     const next: Record<string, string> = {}
     if (s === 'pack') next.source = 'pack'
@@ -259,7 +263,13 @@ export function DictionaryPage() {
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-6">
         {/* ── Onglet Documents (pack PDF, Dexie) ───────────────────────────── */}
-        {source === 'pack' && <KnowledgePackBrowser initialQuery={initialQ} />}
+        {source === 'pack' && (
+          <KnowledgePackBrowser
+            initialQuery={initialQ}
+            initialDocument={packDocument}
+            {...(packPage !== undefined ? { initialPage: packPage } : {})}
+          />
+        )}
 
         {/* ── Chargement de la base ────────────────────────────────────────── */}
         {source === 'forma' && status === 'loading' && (

@@ -32,11 +32,21 @@ function GateBadge({ entry }: { entry: PackKnowledgeEntry }) {
   return <span className="text-[10px] px-1.5 py-0.5 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wide">Sourcé</span>
 }
 
-export function KnowledgePackBrowser({ initialQuery = '' }: { initialQuery?: string }) {
+export function KnowledgePackBrowser({
+  initialQuery = '',
+  initialDocument = '',
+  initialPage,
+}: {
+  initialQuery?: string
+  /** Document à pré-filtrer (clic sur un chip pack — #21). */
+  initialDocument?: string
+  /** Page à mettre en évidence (clic sur un chip pack — #21). */
+  initialPage?: number
+}) {
   const [status, setStatus] = useState<'importing' | 'ready' | 'error'>('importing')
   const [query, setQuery] = useState(initialQuery)
   const [gate, setGate] = useState<'' | ImportGate>('')
-  const [document, setDocument] = useState('')
+  const [document, setDocument] = useState(initialDocument)
   const [docs, setDocs] = useState<string[]>([])
   const [items, setItems] = useState<PackKnowledgeEntry[]>([])
   const [total, setTotal] = useState(0)
@@ -73,7 +83,7 @@ export function KnowledgePackBrowser({ initialQuery = '' }: { initialQuery?: str
 
   useEffect(() => {
     if (status !== 'ready') return
-    void run(initialQuery, '', '')
+    void run(initialQuery, '', initialDocument)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 
@@ -134,7 +144,7 @@ export function KnowledgePackBrowser({ initialQuery = '' }: { initialQuery?: str
         <>
           <ul className="space-y-2">
             {items.slice(0, shown).map((e) => (
-              <li key={e.id} className="rounded-xl border border-forma-border bg-forma-surface p-3">
+              <li key={e.id} className={`rounded-xl border bg-forma-surface p-3 ${initialPage !== undefined && e.sourcePage === initialPage ? 'border-forma-accent ring-1 ring-forma-accent/30' : 'border-forma-border'}`}>
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="text-sm font-semibold text-forma-text">{e.title}</h3>
                   <GateBadge entry={e} />
