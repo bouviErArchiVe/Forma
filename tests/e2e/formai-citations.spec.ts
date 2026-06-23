@@ -70,9 +70,10 @@ test('clic chip pack → /dictionary Documents pré-filtré sur le document (#21
   await expect(page).toHaveURL(/document=CCQ\.pdf/)
   await expect(page).toHaveURL(/page=120/)
 
-  // Onglet Documents pré-filtré : la fiche CCQ amorcée est visible, badge À vérifier, aucune quarantine.
+  // Onglet Documents pré-filtré : la fiche CCQ amorcée (review) est visible avec
+  // son avertissement officiel, et AUCUNE mention quarantine.
   await expect(page.getByText('Exigence accessibilité')).toBeVisible({ timeout: 10000 })
-  await expect(page.getByText('À vérifier').first()).toBeVisible()
+  await expect(page.getByText(/à vérifier dans la source officielle\/applicable/i).first()).toBeVisible()
   await expect(page.getByText(/quarantine/i)).toHaveCount(0)
 
   expect(errors, errors.join('\n')).toHaveLength(0)
