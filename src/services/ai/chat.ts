@@ -15,6 +15,7 @@ import { buildPackGrounding } from './pack-grounding'
 import { buildMemoryContext, getRelevantMemories } from './memory'
 import { getProvider, resolveProviderSettings } from './providers'
 import { streamLocalModelChat } from './providers/localmodel'
+import { coordinateSources } from './source-coordination'
 import type {
   AICitation,
   AIChatMessage,
@@ -162,23 +163,11 @@ async function prepareTurn(
     settings,
     memoryUsed,
     citations,
-    sources: dedupeSources(sources),
+    // Brutes ici ; la coordination (dédup + ranking + plafond) est appliquée à
+    // la persistance (`persistAssistant`), commune aux chemins génératif/extractif.
+    sources,
     agentId,
   }
-}
-
-/** Dédoublonne les sources (par kind+document+page+slug) et borne le nombre. */
-function dedupeSources(sources: AssistantSource[], max = 5): AssistantSource[] {
-  const out: AssistantSource[] = []
-  const seen = new Set<string>()
-  for (const s of sources) {
-    const key = `${s.kind}|${s.document ?? ''}|${s.page ?? ''}|${s.slug ?? ''}`
-    if (seen.has(key)) continue
-    seen.add(key)
-    out.push(s)
-    if (out.length >= max) break
-  }
-  return out
 }
 
 /** Persiste le message assistant et renvoie le résultat d'envoi. */
@@ -189,7 +178,10 @@ async function persistAssistant(
 ): Promise<SendMessageResult | undefined> {
   // Sources : celles renvoyées par le provider extractif (local) priment ;
   // sinon celles du grounding génératif (seeds + pack) calculées en amont.
-  const sources = result.sources && result.sources.length > 0 ? result.sources : prep.sources
+  // Coordination inter-sources (#23) : dédup + ranking + plafond, déterministe.
+  const sources = coordinateSources(
+    result.sources && result.sources.length > 0 ? result.sources : prep.sources,
+  )
   const updated = await appendMessage(conversationId, {
     role: 'assistant',
     content: result.text !== '' ? result.text : `⚠ ${result.error ?? 'Réponse vide.'}`,
