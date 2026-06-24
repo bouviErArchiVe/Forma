@@ -553,3 +553,11 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 - Le pack (~64 MB) reste versionné sous `public/knowledge-pack/part10/` (servi en static, hors bundle). `.gitattributes` le marque `-text -diff linguist-generated=true` (binaire, pas de diff bruyant, hors stats GitHub).
 - **Pas de migration Git LFS rétroactive** : convertir des blobs déjà commités exige une réécriture d'historique (dangereuse, casse les clones/PR) → écartée.
 - Recommandation pour un FUTUR gros pack : soit Git LFS dès le premier commit du fichier, soit hébergement externe (CDN/Release asset) avec fetch runtime — décision à prendre avant d'ajouter Part 11+.
+
+## Sprint #23 — Seeds/Pack Dedup & Ranking (Lanes R + Q)
+
+- **Coordination inter-sources** (`src/services/ai/source-coordination.ts`, pure/déterministe) : `coordinateSources()` applique à la liste `AssistantSource` (seeds + pack) un **ranking stable** (pack `clean` précis [document+page] > fiche seed > pack `review`), une **dédup exacte** (kind|slug|document|page|label normalisé|gate) et une **dédup inter-sources conservatrice** (un pack `clean` précis évince un seed SANS slug de même notion ; le seed AVEC slug est conservé pour la navigation ; une source `review` distincte n'est jamais masquée), puis **plafonne à 5 chips**.
+- **Garanties** : ne promeut jamais `review`→`clean` ; `quarantine` absente en amont (gate ∈ {clean, review}) ; ne vide jamais TOUTES les sources (garde-fou).
+- **Application** : à la persistance (`persistAssistant` dans `chat.ts`), couvrant le chemin **génératif** (grounding seeds+pack) ET **extractif** (sources du provider local). `prepareTurn` renvoie désormais les sources brutes ; la coordination est centralisée.
+- Inchangé : streaming/Stop/Abort, fallback, warnings review (phrase officielle), gates, Search, /dictionary, Dexie v17, packDataInBundle=0.
+- Tests : +13 (ranking/dedup/garde-fous) ; QA matrix #20 + citations #19 toujours vertes ; vitest 1542.

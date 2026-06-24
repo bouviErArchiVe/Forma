@@ -418,3 +418,16 @@ Objectif : ne plus charger 64 MB d'un coup → import paresseux par dataset, ide
 | Q | Tests dataset (partiel/idempotent/pas-de-double-fetch/échec-préserve) + décision LFS/externe + `.gitattributes` + docs | `import-datasets.test.ts`, `.gitattributes`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
 
 Datasets : dictionary (~23 MB, Documents+Search) · rag (~41 MB, FormAI) · search (~0,25 MB). Idempotence `${pack}::<dataset>` + rétro-compat import global. `ensureKnowledgePackImported`/`importKnowledgePack` conservés. Dexie v17 inchangé, packDataInBundle=0, QA matrix #20 verte. vitest 1529. Ordre **I → Q**, gate + Playwright final.
+
+---
+
+# Sprint #23 — Seeds/Pack Dedup & Ranking (Lanes R + Q)
+
+Objectif : coordonner seeds + pack RAG (dédup, ranking, chips propres) sans casser l'existant.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| R | `coordinateSources()` pur : ranking stable + dédup exacte + dédup inter-sources conservatrice + plafond 5 ; appliqué à la persistance (génératif + extractif) | `src/services/ai/source-coordination.ts`, `chat.ts`, tests |
+| Q | Extension QA + docs | `source-coordination.test.ts`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Règles : pack-clean-précis > seed > pack-review ; jamais review→clean ; jamais quarantine ; jamais vider toutes les sources ; seed conservé si slug ; review distincte jamais masquée ; ≤5 chips, ≤3 chunks pack en grounding. Dexie v17 inchangé, packDataInBundle=0. Ordre **R → Q**, gate + Playwright final. vitest 1542.
