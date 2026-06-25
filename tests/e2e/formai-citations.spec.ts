@@ -42,7 +42,7 @@ test('FormAI affiche les chips sources et le lien seed résout vers /dictionary'
   await expect(page.getByText('Sourcé').first()).toBeVisible()
   await expect(page.getByText('À vérifier').first()).toBeVisible()
   await expect(page.getByText(/CCQ\.pdf · p\.\s*120/)).toBeVisible()
-  await expect(page.getByText(/à vérifier dans la version officielle\/applicable/i)).toBeVisible()
+  await expect(page.getByText(/à vérifier dans la source officielle\/applicable/i)).toBeVisible()
 
   // Lien seed → /dictionary?slug=poutre qui résout (pas de dead link).
   const seedLink = page.locator('a[href*="/dictionary?slug=poutre"]').first()
