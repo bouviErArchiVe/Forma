@@ -561,3 +561,10 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 - **Application** : à la persistance (`persistAssistant` dans `chat.ts`), couvrant le chemin **génératif** (grounding seeds+pack) ET **extractif** (sources du provider local). `prepareTurn` renvoie désormais les sources brutes ; la coordination est centralisée.
 - Inchangé : streaming/Stop/Abort, fallback, warnings review (phrase officielle), gates, Search, /dictionary, Dexie v17, packDataInBundle=0.
 - Tests : +13 (ranking/dedup/garde-fous) ; QA matrix #20 + citations #19 toujours vertes ; vitest 1542.
+
+## Sprint #24 — FormAI Product Readiness Pass (Lanes U + Q)
+
+- **Wording centralisé** : `src/lib/forma-messages.ts` = source unique des textes FormAI / pack / sources. Réexporte EXACTEMENT la phrase officielle `REVIEW_WARNING` (canonique dans `validate`) — jamais altérée. Câblé dans `local.ts` (no-result/empty/limits), `localmodel.ts` (interrompu), `ChatView` (badges Sourcé/À vérifier, note courte, génération/réfléchit), `KnowledgePackBrowser` (indisponible/no-result/badges/note).
+- **États harmonisés** : note review « à vérifier » uniformisée en une seule formulation ; loading/empty/error/no-result/interrupted cohérents. Comportement métier INCHANGÉ (gates, dedup/ranking, streaming, fallback non touchés).
+- **Responsive vérifié** : aucun débordement horizontal mobile (390) ni iPad (768) ; chips tronquées et contenues ; Documents utilisable ; console propre.
+- Inchangé : Dexie v17, packDataInBundle=0, QA matrix #20 + citations #19 + nav #21 + dedup #23 verts. Tests : +6 (`forma-messages.test.ts` — phrase officielle exacte, réexport sans divergence, wiring no-result). vitest 1548.

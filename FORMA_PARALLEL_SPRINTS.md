@@ -431,3 +431,16 @@ Objectif : coordonner seeds + pack RAG (dédup, ranking, chips propres) sans cas
 | Q | Extension QA + docs | `source-coordination.test.ts`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
 
 Règles : pack-clean-précis > seed > pack-review ; jamais review→clean ; jamais quarantine ; jamais vider toutes les sources ; seed conservé si slug ; review distincte jamais masquée ; ≤5 chips, ≤3 chunks pack en grounding. Dexie v17 inchangé, packDataInBundle=0. Ordre **R → Q**, gate + Playwright final. vitest 1542.
+
+---
+
+# Sprint #24 — FormAI Product Readiness Pass (Lanes U + Q)
+
+Passe de finition produit BORNÉE : centraliser le wording, harmoniser les états, vérifier le responsive — sans toucher à la logique métier.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| U | Wording centralisé (`forma-messages.ts`) + états + responsive | `src/lib/forma-messages.ts`, `providers/local.ts`, `providers/localmodel.ts`, `ChatView.tsx`, `KnowledgePackBrowser.tsx` |
+| Q | Test de verrouillage du wording + docs | `forma-messages.test.ts`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Garanties : phrase officielle `REVIEW_WARNING` exacte et réexportée (source canonique `validate`) ; aucune logique gates/dedup/ranking/streaming/fallback modifiée ; Dexie v17 inchangé ; packDataInBundle=0 ; responsive mobile/iPad sans débordement. Ordre **U → Q**, gate complet + Playwright final. vitest 1548.
