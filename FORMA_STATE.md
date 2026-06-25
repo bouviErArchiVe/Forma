@@ -568,3 +568,11 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 - **États harmonisés** : note review « à vérifier » uniformisée en une seule formulation ; loading/empty/error/no-result/interrupted cohérents. Comportement métier INCHANGÉ (gates, dedup/ranking, streaming, fallback non touchés).
 - **Responsive vérifié** : aucun débordement horizontal mobile (390) ni iPad (768) ; chips tronquées et contenues ; Documents utilisable ; console propre.
 - Inchangé : Dexie v17, packDataInBundle=0, QA matrix #20 + citations #19 + nav #21 + dedup #23 verts. Tests : +6 (`forma-messages.test.ts` — phrase officielle exacte, réexport sans divergence, wiring no-result). vitest 1548.
+
+## Sprint #25 — Release Candidate Audit (Lanes A + Q)
+
+- **Audit holistique** après #17–#24 : voir `FORMA_RC_AUDIT.md` (résultats détaillés + registre de risques + checklist RC).
+- **Résultat : RC-READY**, aucun P0/P1 de **code** trouvé. 16 routes rendent (0 erreur console) ; FormAI complet (seeds+pack, streaming/Stop/fallback, chips, no-result) ; Dictionary Base+Documents ; Search knowledge+docpack (sans import massif involontaire) ; Dexie v17 + import lazy par dataset ; responsive 390/768 sans débordement ; bundle sain (pack hors JS, pas de SDK).
+- **Findings** : P1 = 64 MB pack versionné (→ Option C stockage externe, décision infra, pas un bug) ; P2 = SW offline production-only (non vérifiable en dev) + QA serveur réel LM Studio/Ollama manuelle ; P3 = `/trash` empty-state minimal, highlight page best-effort.
+- **Aucun correctif de code** nécessaire (audit propre). Livrables : `FORMA_RC_AUDIT.md` (registre de risques + checklist RC), MAJ docs.
+- Inchangé : Dexie v17, packDataInBundle=0, QA matrix #20 verte, phrase officielle review. vitest 1548.

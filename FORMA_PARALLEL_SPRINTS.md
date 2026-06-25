@@ -444,3 +444,16 @@ Passe de finition produit BORNÉE : centraliser le wording, harmoniser les état
 | Q | Test de verrouillage du wording + docs | `forma-messages.test.ts`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
 
 Garanties : phrase officielle `REVIEW_WARNING` exacte et réexportée (source canonique `validate`) ; aucune logique gates/dedup/ranking/streaming/fallback modifiée ; Dexie v17 inchangé ; packDataInBundle=0 ; responsive mobile/iPad sans débordement. Ordre **U → Q**, gate complet + Playwright final. vitest 1548.
+
+---
+
+# Sprint #25 — Release Candidate Audit (Lanes A + Q)
+
+Audit RC complet (routes/FormAI/Dictionary/Search/Dexie/offline/mobile/bundle) après #17–#24, sans nouvelle feature.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| A | Audit & findings (runtime + CLI) | exécution audit, sévérités P0–P3 |
+| Q | Registre de risques + correctifs sûrs + docs | `FORMA_RC_AUDIT.md`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Résultat : **RC-ready**, 0 P0/P1 de code. Seuls items ouverts = infra/manuel (pack 64 MB → Option C ; LM Studio/Ollama réel → Option A). Aucun changement Dexie/bundle/logique FormAI ; QA matrix #20 verte ; packDataInBundle=0 ; vitest 1548. Ordre **A → Q**, gate + Playwright final.
