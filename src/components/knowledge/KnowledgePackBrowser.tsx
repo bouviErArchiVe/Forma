@@ -17,6 +17,14 @@ import {
   packDocuments,
   searchPackEntries,
 } from '../../services/knowledge-pack/query'
+import {
+  BADGE_HISTORICAL,
+  BADGE_REVIEW,
+  BADGE_SOURCED,
+  PACK_NO_RESULT,
+  PACK_UNAVAILABLE,
+  REVIEW_SHORT_NOTE,
+} from '../../lib/forma-messages'
 import type { ImportGate, PackKnowledgeEntry } from '../../services/knowledge-pack/types'
 
 const PAGE = 24
@@ -24,12 +32,12 @@ const PAGE = 24
 function GateBadge({ entry }: { entry: PackKnowledgeEntry }) {
   const b = entryBadges(entry)
   if (b.historical) {
-    return <span className="text-[10px] px-1.5 py-0.5 rounded-md border border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-300 font-semibold uppercase tracking-wide">Historique</span>
+    return <span className="text-[10px] px-1.5 py-0.5 rounded-md border border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-300 font-semibold uppercase tracking-wide">{BADGE_HISTORICAL}</span>
   }
   if (b.gate === 'review') {
-    return <span className="text-[10px] px-1.5 py-0.5 rounded-md border border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold uppercase tracking-wide">À vérifier</span>
+    return <span className="text-[10px] px-1.5 py-0.5 rounded-md border border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold uppercase tracking-wide">{BADGE_REVIEW}</span>
   }
-  return <span className="text-[10px] px-1.5 py-0.5 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wide">Sourcé</span>
+  return <span className="text-[10px] px-1.5 py-0.5 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wide">{BADGE_SOURCED}</span>
 }
 
 export function KnowledgePackBrowser({
@@ -108,7 +116,7 @@ export function KnowledgePackBrowser({
     return (
       <div className="text-center text-forma-muted mt-16">
         <div className="text-4xl mb-3">⚠️</div>
-        <p className="text-sm">Pack documentaire indisponible.</p>
+        <p className="text-sm">{PACK_UNAVAILABLE}</p>
       </div>
     )
   }
@@ -139,7 +147,7 @@ export function KnowledgePackBrowser({
       </div>
 
       {total === 0 ? (
-        <p className="text-sm text-forma-muted text-center mt-10">Aucun résultat sourcé pour cette recherche.</p>
+        <p className="text-sm text-forma-muted text-center mt-10">{PACK_NO_RESULT}</p>
       ) : (
         <>
           <ul className="space-y-2">
@@ -157,7 +165,7 @@ export function KnowledgePackBrowser({
                   ))}
                 </div>
                 {entryBadges(e).warn && (
-                  <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-2">⚠ À vérifier dans la source officielle/applicable.</p>
+                  <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-2">⚠ {REVIEW_SHORT_NOTE}</p>
                 )}
               </li>
             ))}

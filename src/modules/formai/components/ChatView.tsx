@@ -8,6 +8,13 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Icon, type IconName } from '../../../components/ui/Icon'
 import { useToastStore } from '../../../stores/toastStore'
+import {
+  BADGE_REVIEW,
+  BADGE_SOURCED,
+  FORMAI_GENERATING,
+  FORMAI_THINKING,
+  REVIEW_SHORT_NOTE,
+} from '../../../lib/forma-messages'
 import type { AgentDefinition, AssistantSource, StoredChatMessage } from '../../../services/ai/types'
 import { sourceChipHref } from '../../../services/ai/source-link'
 
@@ -16,9 +23,9 @@ import { sourceChipHref } from '../../../services/ai/source-link'
 /** Une puce de source : fiche seeds (lien /dictionary) ou extrait pack (document · page). */
 function SourceChip({ source }: { source: AssistantSource }) {
   const badge = source.toVerify ? (
-    <span className="ml-1 px-1 py-px rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[9px] font-semibold uppercase">À vérifier</span>
+    <span className="ml-1 px-1 py-px rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[9px] font-semibold uppercase">{BADGE_REVIEW}</span>
   ) : (
-    <span className="ml-1 px-1 py-px rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[9px] font-semibold uppercase">Sourcé</span>
+    <span className="ml-1 px-1 py-px rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[9px] font-semibold uppercase">{BADGE_SOURCED}</span>
   )
   const label = source.kind === 'pack'
     ? `📄 ${source.document ?? source.label}${source.page !== undefined ? ` · p. ${source.page}` : ''}`
@@ -48,7 +55,7 @@ function SourceChips({ sources }: { sources: AssistantSource[] }) {
       {toVerify && (
         <p className="text-[10px] text-amber-600 dark:text-amber-400 inline-flex items-center gap-1">
           <Icon name="alert" className="w-3 h-3" />
-          À vérifier dans la version officielle/applicable avant usage réglementaire ou professionnel.
+          {REVIEW_SHORT_NOTE}
         </p>
       )}
     </div>
@@ -250,7 +257,7 @@ export function ChatView({
           {/* Réponse en cours de génération (streaming) */}
           {loading && hasStreamingText && (
             <div className="flex flex-col items-start">
-              <div className="text-[10px] text-forma-muted px-1 mb-0.5">{agent.name} · génération…</div>
+              <div className="text-[10px] text-forma-muted px-1 mb-0.5">{agent.name} · {FORMAI_GENERATING}</div>
               <div className="max-w-[85%] rounded-2xl rounded-bl-md px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-forma-surface border border-forma-border text-forma-text">
                 {streamingText}
                 <span className="inline-block w-1.5 h-3.5 ml-0.5 align-middle bg-forma-accent/70 animate-pulse" aria-hidden="true" />
@@ -263,7 +270,7 @@ export function ChatView({
               <span className="animate-pulse">●</span>
               <span className="animate-pulse" style={{ animationDelay: '200ms' }}>●</span>
               <span className="animate-pulse" style={{ animationDelay: '400ms' }}>●</span>
-              <span className="ml-1">{agent.name} réfléchit…</span>
+              <span className="ml-1">{agent.name} {FORMAI_THINKING}</span>
             </div>
           )}
           <div ref={bottomRef} />

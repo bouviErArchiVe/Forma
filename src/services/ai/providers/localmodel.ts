@@ -21,6 +21,7 @@ import type {
   ProviderSettings,
   StreamChunkHandler,
 } from '../types'
+import { FORMAI_INTERRUPTED } from '../../../lib/forma-messages'
 import { localProvider } from './local'
 
 const DEFAULT_BASE_URL = 'http://localhost:1234/v1' // LM Studio
@@ -310,7 +311,7 @@ export async function streamLocalModelChat(
         fromCloud: false,
         fromLocalModel: acc.trim() !== '',
         interrupted: true,
-        error: 'Génération interrompue.',
+        error: FORMAI_INTERRUPTED,
       }
     }
     // Timeout ou erreur réseau/CORS : repli non-stream (puis #11).

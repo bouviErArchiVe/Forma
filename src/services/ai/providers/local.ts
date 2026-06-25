@@ -14,6 +14,11 @@ import {
   summarizeText,
 } from '../../../lib/ai-local'
 import { knowledgeAnswer } from '../knowledge-bridge'
+import {
+  FORMAI_EMPTY_FALLBACK,
+  FORMAI_LOCAL_LIMITS,
+  FORMAI_NO_KNOWLEDGE,
+} from '../../../lib/forma-messages'
 import type {
   AIProviderAdapter,
   AssistantSource,
@@ -22,9 +27,7 @@ import type {
 } from '../types'
 
 /** Message par défaut quand aucune heuristique locale ne produit de texte. */
-const EMPTY_FALLBACK =
-  "Mode local : je n'ai pas pu produire de réponse à partir de ce contenu. "
-  + 'Ajoutez du texte à analyser, ou configurez un fournisseur cloud dans Paramètres › IA.'
+const EMPTY_FALLBACK = FORMAI_EMPTY_FALLBACK
 
 /**
  * Produit une réponse locale en détectant l'intention du dernier message
@@ -32,18 +35,10 @@ const EMPTY_FALLBACK =
  * phrases les plus pertinentes dans la conversation (extractif).
  */
 /** Message expliquant les limites du mode local (pas de génération). */
-const LOCAL_LIMITS_MESSAGE =
-  'Mode local : je fonctionne sans réseau, par analyse du texte que vous me donnez '
-  + '(résumé, mots-clés, reformulation) et par recherche dans vos notes, vos documents '
-  + 'et la base Knowledge locale.\n\n'
-  + 'Pour une vraie réponse de connaissance générale à cette question, configurez un '
-  + 'fournisseur IA dans Paramètres › IA, ou collez ici le texte à analyser.'
+const LOCAL_LIMITS_MESSAGE = FORMAI_LOCAL_LIMITS
 
-/** No-result honnête après échec de l'extraction ET de la base Knowledge. */
-export const NO_KNOWLEDGE_MESSAGE =
-  "Je n'ai pas trouvé cette information dans vos notes ni dans la base Knowledge locale. "
-  + 'Ajoutez une source (collez le texte à analyser) ou activez un fournisseur IA dans '
-  + 'Paramètres › IA.'
+/** No-result honnête après échec de l'extraction ET de la base Knowledge (réexport compat). */
+export const NO_KNOWLEDGE_MESSAGE = FORMAI_NO_KNOWLEDGE
 
 /** Vrai si le message demande une opération de texte (résumé, mots-clés, reformulation). */
 function isTextOperation(text: string): boolean {
