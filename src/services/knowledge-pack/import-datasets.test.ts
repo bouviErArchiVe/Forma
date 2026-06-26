@@ -96,6 +96,13 @@ describe('import paresseux par dataset (#22)', () => {
     expect(await db.formaKnowledgeEntries.count()).toBe(ok) // dictionary intact
   })
 
+  it('checksum déclaré invalide → fail-safe : batch failed, dataset non écrit (#26)', async () => {
+    stubFetch({ 'offline_manifest.json': { ...manifest, checksums: { 'forma_dictionary_core.json': 'deadbeef' } } })
+    const r = await importPackDataset('dictionary')
+    expect(r.batch.status).toBe('failed')
+    expect(await db.formaKnowledgeEntries.count()).toBe(0) // rien écrit (pas de corruption)
+  })
+
   it('isPackDatasetImported reflète chaque dataset', async () => {
     stubFetch()
     expect(await isPackDatasetImported('dictionary')).toBe(false)

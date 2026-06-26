@@ -576,3 +576,10 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 - **Findings** : P1 = 64 MB pack versionné (→ Option C stockage externe, décision infra, pas un bug) ; P2 = SW offline production-only (non vérifiable en dev) + QA serveur réel LM Studio/Ollama manuelle ; P3 = `/trash` empty-state minimal, highlight page best-effort.
 - **Aucun correctif de code** nécessaire (audit propre). Livrables : `FORMA_RC_AUDIT.md` (registre de risques + checklist RC), MAJ docs.
 - Inchangé : Dexie v17, packDataInBundle=0, QA matrix #20 verte, phrase officielle review. vitest 1548.
+
+## Sprint #26 — External Pack / Storage Strategy (Lanes S + Q)
+
+- **Abstraction de source pack** (`src/services/knowledge-pack/pack-source.ts`, NON destructive) : `resolvePackBaseUrl` (explicit > base distante configurée > **same-origin défaut**), `configurePackSource`/`VITE_FORMA_PACK_BASE_URL` (opt-in), `fetchPackJson` avec **repli same-origin** si la distante échoue (transport) et **checksum SHA-256** vérifié si le manifeste le fournit. **Aucun changement de comportement par défaut** (same-origin), offline-first préservé.
+- **Fail-safe** : mismatch checksum / échec ⇒ `batch failed`, **aucune écriture Dexie**, dataset existant conservé (testé). Import lazy par dataset (#22), idempotence, packDataInBundle=0, Dexie v17 : inchangés.
+- **Pack NON supprimé ce sprint** (P1 resté ouvert volontairement) ; `FORMA_PACK_STORAGE.md` = matrice de décision (repo / LFS / release assets / CDN / Supabase / Vercel Blob / same-origin build-time / pack externe) + recommandation : court terme same-origin, moyen terme release assets ou copy build-time + checksums, long terme pack externe versionné — **sans réécriture d'historique**.
+- Tests : pack-source 9/9 + fail-safe checksum import 1 + existants verts. vitest 1558.

@@ -457,3 +457,16 @@ Audit RC complet (routes/FormAI/Dictionary/Search/Dexie/offline/mobile/bundle) a
 | Q | Registre de risques + correctifs sûrs + docs | `FORMA_RC_AUDIT.md`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
 
 Résultat : **RC-ready**, 0 P0/P1 de code. Seuls items ouverts = infra/manuel (pack 64 MB → Option C ; LM Studio/Ollama réel → Option A). Aucun changement Dexie/bundle/logique FormAI ; QA matrix #20 verte ; packDataInBundle=0 ; vitest 1548. Ordre **A → Q**, gate + Playwright final.
+
+---
+
+# Sprint #26 — External Pack / Storage Strategy (Lanes S + Q)
+
+Préparer la sortie progressive des 64 MB du repo SANS rien supprimer ni casser (offline-first, same-origin défaut).
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| S | Abstraction de source pack (base configurable + repli same-origin + checksum fail-safe), non destructive | `src/services/knowledge-pack/pack-source.ts`, `import.ts` (fetch via abstraction), `types.ts` (+ `checksums?`) |
+| Q | Tests (source/fallback/checksum/idempotence) + matrice de décision | `pack-source.test.ts`, `import-datasets.test.ts` (+ fail-safe), `FORMA_PACK_STORAGE.md`, STATE/SPRINTS |
+
+Résultat : défaut same-origin inchangé, distante opt-in + repli, checksum optionnel fail-safe (aucune corruption Dexie). 64 MB **conservés** ce sprint (suppression = étape future une fois backend + offline validés). vitest 1558, build OK, packDataInBundle=0, Dexie v17. Ordre **S → Q**, gate + Playwright final.
