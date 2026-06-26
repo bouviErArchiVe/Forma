@@ -100,4 +100,6 @@ export interface PackOfflineManifest {
   doNotLoadByDefault: string[]
   storageRecommendation: string
   counts: Record<string, number>
+  /** Checksums SHA-256 par fichier (optionnel) — vérifiés à l'import si présents (#26). */
+  checksums?: Record<string, string>
 }

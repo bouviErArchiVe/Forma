@@ -19,22 +19,32 @@ import {
 } from './types'
 import { isValidPackChunk, isValidPackEntry } from './validate'
 
-export const PACK_BASE_URL = '/knowledge-pack/part10/data/app'
+import { fetchPackJson, SAME_ORIGIN_PACK_BASE } from './pack-source'
+
+/** Base same-origin par défaut (rétro-compat ; la source distante est opt-in via pack-source). */
+export const PACK_BASE_URL = SAME_ORIGIN_PACK_BASE
 
 /** Le pack lui-même n'est pas quarantine ; on écarte tout item quarantine par sécurité. */
 function keepNonQuarantine<T extends { importGate?: string }>(items: T[]): T[] {
   return items.filter((i) => i.importGate !== 'quarantine')
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`HTTP ${res.status} sur ${url}`)
-  return (await res.json()) as T
+/**
+ * Récupère un fichier du pack via l'abstraction de source (même-origine par
+ * défaut, distante optionnelle + repli, checksum optionnel). `baseUrl` explicite
+ * (tests) reste prioritaire. Renvoie seulement les données.
+ */
+async function fetchPackFile<T>(file: string, baseUrl?: string, expectedChecksum?: string): Promise<T> {
+  const r = await fetchPackJson<T>(file, {
+    ...(baseUrl !== undefined ? { baseUrl } : {}),
+    ...(expectedChecksum !== undefined ? { expectedChecksum } : {}),
+  })
+  return r.data
 }
 
 /** Charge le manifeste offline du pack (léger). */
-export async function fetchOfflineManifest(baseUrl = PACK_BASE_URL): Promise<PackOfflineManifest> {
-  return fetchJson<PackOfflineManifest>(`${baseUrl}/offline_manifest.json`)
+export async function fetchOfflineManifest(baseUrl?: string): Promise<PackOfflineManifest> {
+  return fetchPackFile<PackOfflineManifest>('offline_manifest.json', baseUrl)
 }
 
 /** Statut d'import courant (journal) pour un pack donné. */
@@ -61,8 +71,9 @@ export interface ImportResult {
  * est marqué `failed` et les données existantes sont préservées.
  */
 export async function importKnowledgePack(options: { force?: boolean; baseUrl?: string } = {}): Promise<ImportResult> {
-  const baseUrl = options.baseUrl ?? PACK_BASE_URL
+  const baseUrl = options.baseUrl
   const manifest = await fetchOfflineManifest(baseUrl)
+  const sums = manifest.checksums ?? {}
   const packName = manifest.pack
   const version = manifest.createdAt
 
@@ -77,12 +88,12 @@ export async function importKnowledgePack(options: { force?: boolean; baseUrl?: 
   await db.formaImportBatches.put(running)
 
   try {
-    // Chargement à la demande des fichiers app (ordre recommandé du manifeste).
+    // Chargement à la demande des fichiers app (source résolue + checksum si fourni).
     const [entriesRaw, ragCoreRaw, ragReviewRaw, searchIdx] = await Promise.all([
-      fetchJson<PackKnowledgeEntry[]>(`${baseUrl}/forma_dictionary_core.json`),
-      fetchJson<PackRagChunk[]>(`${baseUrl}/formai_rag_core_chunks.json`),
-      fetchJson<PackRagChunk[]>(`${baseUrl}/formai_rag_review_chunks.json`),
-      fetchJson<PackSearchIndex>(`${baseUrl}/forma_search_index_light.json`),
+      fetchPackFile<PackKnowledgeEntry[]>('forma_dictionary_core.json', baseUrl, sums['forma_dictionary_core.json']),
+      fetchPackFile<PackRagChunk[]>('formai_rag_core_chunks.json', baseUrl, sums['formai_rag_core_chunks.json']),
+      fetchPackFile<PackRagChunk[]>('formai_rag_review_chunks.json', baseUrl, sums['formai_rag_review_chunks.json']),
+      fetchPackFile<PackSearchIndex>('forma_search_index_light.json', baseUrl, sums['forma_search_index_light.json']),
     ])
 
     // Validation défensive + exclusion quarantine (on ne répare ni n'invente).
@@ -172,8 +183,9 @@ export async function importPackDataset(
   dataset: PackDataset,
   options: { force?: boolean; baseUrl?: string; onProgress?: (p: ImportProgress) => void } = {},
 ): Promise<ImportResult> {
-  const baseUrl = options.baseUrl ?? PACK_BASE_URL
+  const baseUrl = options.baseUrl
   const manifest = await fetchOfflineManifest(baseUrl)
+  const sums = manifest.checksums ?? {}
   const pack = manifest.pack
   const version = manifest.createdAt
   const key = datasetKey(pack, dataset)
@@ -193,7 +205,7 @@ export async function importPackDataset(
     options.onProgress?.({ dataset, phase: 'fetching' })
     let count = 0
     if (dataset === 'dictionary') {
-      const raw = await fetchJson<PackKnowledgeEntry[]>(`${baseUrl}/forma_dictionary_core.json`)
+      const raw = await fetchPackFile<PackKnowledgeEntry[]>('forma_dictionary_core.json', baseUrl, sums['forma_dictionary_core.json'])
       const entries = keepNonQuarantine(raw).filter(isValidPackEntry)
       options.onProgress?.({ dataset, phase: 'storing' })
       await db.transaction('rw', db.formaKnowledgeEntries, async () => {
@@ -203,8 +215,8 @@ export async function importPackDataset(
       count = entries.length
     } else if (dataset === 'rag') {
       const [coreRaw, reviewRaw] = await Promise.all([
-        fetchJson<PackRagChunk[]>(`${baseUrl}/formai_rag_core_chunks.json`),
-        fetchJson<PackRagChunk[]>(`${baseUrl}/formai_rag_review_chunks.json`),
+        fetchPackFile<PackRagChunk[]>('formai_rag_core_chunks.json', baseUrl, sums['formai_rag_core_chunks.json']),
+        fetchPackFile<PackRagChunk[]>('formai_rag_review_chunks.json', baseUrl, sums['formai_rag_review_chunks.json']),
       ])
       const chunks = keepNonQuarantine([...coreRaw, ...reviewRaw]).filter(isValidPackChunk)
       options.onProgress?.({ dataset, phase: 'storing' })
@@ -214,7 +226,7 @@ export async function importPackDataset(
       })
       count = chunks.length
     } else {
-      const idx = await fetchJson<PackSearchIndex>(`${baseUrl}/forma_search_index_light.json`)
+      const idx = await fetchPackFile<PackSearchIndex>('forma_search_index_light.json', baseUrl, sums['forma_search_index_light.json'])
       const keywords = (idx.keywords ?? []).filter((k) => typeof k.keyword === 'string' && k.keyword !== '')
       options.onProgress?.({ dataset, phase: 'storing' })
       await db.transaction('rw', db.formaSearchKeywords, async () => {
