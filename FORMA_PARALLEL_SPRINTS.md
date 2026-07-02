@@ -470,3 +470,16 @@ Préparer la sortie progressive des 64 MB du repo SANS rien supprimer ni casser 
 | Q | Tests (source/fallback/checksum/idempotence) + matrice de décision | `pack-source.test.ts`, `import-datasets.test.ts` (+ fail-safe), `FORMA_PACK_STORAGE.md`, STATE/SPRINTS |
 
 Résultat : défaut same-origin inchangé, distante opt-in + repli, checksum optionnel fail-safe (aucune corruption Dexie). 64 MB **conservés** ce sprint (suppression = étape future une fois backend + offline validés). vitest 1558, build OK, packDataInBundle=0, Dexie v17. Ordre **S → Q**, gate + Playwright final.
+
+---
+
+# Sprint #27 — PWA / Offline Verification (Lanes V + Q)
+
+Prouver l'offline-first avant migration réelle du pack. Aucune migration, aucune suppression 64 MB, correctifs sûrs uniquement.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| V | Vérif offline + hygiène SW (build prod, precache sans pack, offline app-shell/seeds/pack-Dexie) | vérification (aucun correctif nécessaire — SW déjà propre) |
+| Q | Tests offline + docs + registre | `offline-verification.test.ts`, `FORMA_RC_AUDIT.md`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
+
+Résultat : SW précache l'app-shell UNIQUEMENT (0 pack) ; pack lu depuis Dexie hors ligne (tests 7/7) ; pack non importé + offline = dégradé propre ; manifest valide. Aucun défaut SW → aucun correctif. Dexie v17, packDataInBundle=0, 64 MB conservés. Limite : enregistrement SW live = manuel (harness dev). Ordre V → Q ; gate + Playwright final.

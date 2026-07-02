@@ -583,3 +583,12 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 - **Fail-safe** : mismatch checksum / échec ⇒ `batch failed`, **aucune écriture Dexie**, dataset existant conservé (testé). Import lazy par dataset (#22), idempotence, packDataInBundle=0, Dexie v17 : inchangés.
 - **Pack NON supprimé ce sprint** (P1 resté ouvert volontairement) ; `FORMA_PACK_STORAGE.md` = matrice de décision (repo / LFS / release assets / CDN / Supabase / Vercel Blob / same-origin build-time / pack externe) + recommandation : court terme same-origin, moyen terme release assets ou copy build-time + checksums, long terme pack externe versionné — **sans réécriture d'historique**.
 - Tests : pack-source 9/9 + fail-safe checksum import 1 + existants verts. vitest 1558.
+
+## Sprint #27 — PWA / Offline Verification (Lanes V + Q)
+
+- **Objectif** : prouver l'offline-first AVANT toute migration réelle du pack (aucune migration ce sprint).
+- **Service worker** (`public/sw.js`, manuel, PROD-only via `src/lib/pwa.ts`) : precache = app-shell UNIQUEMENT (`/`, `index.html`, `manifest.json`, icônes) ; **0 référence au pack** ; les `.json` du pack ne matchent pas `isStaticAsset` → jamais mis en cache asset ; `dist/sw.js` buildé propre (0 pack).
+- **Offline garanti** : app-shell + assets hashés (incl. chunks seeds) en cache-first → app + seeds hors ligne après 1re visite ; **pack lu depuis Dexie** hors ligne (aucun réseau requis après import) ; pack non importé + offline → import échoue proprement (batch failed, existant conservé, message honnête, pas de crash).
+- **Tests** : `offline-verification.test.ts` (7) — SW ne précache pas le pack ; `searchPackEntries`/`ragAnswer` lisent Dexie même si `fetch` échoue ; pack non importé + offline → vide/`found:false` sans planter. vitest 1565.
+- **Runtime** : `/sw.js` servi propre (shell-only), `/manifest.json` valide, seeds interrogeables (poutre → 3). **Limite** : l'enregistrement SW live n'est pas observable dans le harness (dev, SW PROD-gated) → QA offline réelle = manuelle sur build servi.
+- Inchangé : Dexie v17, packDataInBundle=0, pack-source abstraction, checksum fail-safe, 64 MB conservés (aucune migration/suppression). RC-ready préservé.

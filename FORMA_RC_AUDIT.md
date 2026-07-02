@@ -13,7 +13,7 @@ readiness pass). Base auditée : `main` 2092ccaf.
 | Dictionary | ✅ | Base Forma (slug enrichi + source), Documents (monté, filtres, badges Sourcé/À vérifier, quarantine invisible, doc pré-filtré) |
 | Search | ✅ | knowledge (5 hits « béton ») ; docpack gardé par `isPackDatasetImported` (pas d'import massif involontaire) |
 | Dexie / import | ✅ | v17 intact ; import par dataset (dictionary ≈23 MB / rag ≈41 MB / search léger) idempotent (import-datasets 7/7) ; pack content **0** dans le bundle JS |
-| Offline / PWA | ⚠️ P2 | manifest présent ; service worker **production-only** (inactif en dev → non vérifiable ici) ; offline réel repose sur SW buildé + pack en Dexie |
+| Offline / PWA | ✅ (SW live = manuel) | **#27 vérifié** : `public/sw.js` précache l'app-shell UNIQUEMENT (0 référence pack) ; pack `.json` non traité comme asset cache-first ; pack lu depuis **Dexie** hors ligne (tests 7/7) ; pack non importé + offline → dégradé propre (found=false) ; manifest valide ; `/sw.js` buildé propre. Reste manuel : enregistrement SW en contexte prod servi (harness = dev, SW PROD-gated) |
 | Mobile / iPad | ✅ | 0 débordement horizontal à 390 et 768 sur FormAI/Dictionary/Search/Documents ; chips tronquées/contenues |
 | Bundle / perf | ✅ (P1 noté) | index principal 314 KB ; seeds en chunks lazy (hors index) ; pack **hors bundle JS** ; aucun SDK lourd ; gros chunks lazy (pdf.worker 1,1 MB / pdf 812 KB) |
 | Tests | ✅ | tsc -b 0 · vitest 1548/1548 (142 fichiers) · build OK |
