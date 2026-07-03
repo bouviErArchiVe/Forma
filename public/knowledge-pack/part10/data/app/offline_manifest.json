@@ -21,5 +21,15 @@
     "chunks_core_app": 6770,
     "keywords_light": 2500,
     "tags_light": 1800
+  },
+  "checksums": {
+    "forma_dictionary_core.json": "fe3c15bef3a1c593ead385ec44f25fec5fe9db465a488b75f7991f90418b3f75",
+    "forma_dictionary_green_clean.json": "9ecdd27e4ae129424b92f910752fcb811605af84fcd43e0c924fddc41358461f",
+    "forma_dictionary_quarantine_index.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "forma_search_index_light.json": "758664921640fa5b92925e2d2f4d06bd2179a7ae58ba41bb68c548680d846c29",
+    "formai_rag_core_chunks.json": "67ca60bbe7f5f1c828b75f69e0377389afbf008cf89f6eeb56e0fac731e3f9a8",
+    "formai_rag_quarantine_index.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "formai_rag_review_chunks.json": "f277d63ec5957f319b7ea4133e0b888b59e9009fbb450c66810e5eadb44f8434",
+    "subject_tags_compact.json": "13610194cb4a799a1b5722f6a09c1dc82e31cc303b9fbf4dd91d1c955de02319"
   }
 }

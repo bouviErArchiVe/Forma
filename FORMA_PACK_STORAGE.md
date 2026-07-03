@@ -43,3 +43,13 @@ sortie progressive du repo, **sans rien supprimer ni casser**.
 3. Publier le pack sur le backend ; définir `VITE_FORMA_PACK_BASE_URL`.
 4. `git rm --cached public/knowledge-pack/part10/data/app/*.json` + `.gitignore` (pas de réécriture d'historique).
 5. Vérifier import distant + repli + checksum en conditions réelles.
+
+## Checksums réels ACTIVÉS (Sprint #28)
+
+- `offline_manifest.json` porte désormais les **SHA-256 réels** des 8 fichiers du pack (section `checksums`), générés par `npm run knowledge:pack-checksums` sur les **octets exacts** des fichiers disque.
+- Stabilité octets garantie : `public/knowledge-pack/** -text` dans `.gitattributes` (aucune conversion EOL sur aucun clone, LF sans BOM).
+- Équivalence vérifiée par test : hash « octets disque » (script Node/Buffer) == hash « texte fetché » (import navigateur, `TextEncoder`) sur le vrai fichier.
+- `createdAt` du manifeste **inchangé** (clé d'idempotence : la changer forcerait un réimport global chez les utilisateurs existants).
+- Fail-safe prouvé sur données réelles : contenu altéré ⇒ `PackChecksumError`, batch `failed`, **aucune écriture Dexie**, dataset existant conservé, jamais de repli same-origin sur une erreur d'intégrité.
+- **Régénération obligatoire** après toute modification d'un fichier du pack : `npm run knowledge:pack-checksums` (sinon l'import échoue fail-safe).
+- Conséquence : le prérequis « intégrité » de la migration externe est rempli — un pack distant corrompu/tronqué sera rejeté avant Dexie.

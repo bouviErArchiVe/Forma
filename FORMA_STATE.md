@@ -592,3 +592,10 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 - **Tests** : `offline-verification.test.ts` (7) — SW ne précache pas le pack ; `searchPackEntries`/`ragAnswer` lisent Dexie même si `fetch` échoue ; pack non importé + offline → vide/`found:false` sans planter. vitest 1565.
 - **Runtime** : `/sw.js` servi propre (shell-only), `/manifest.json` valide, seeds interrogeables (poutre → 3). **Limite** : l'enregistrement SW live n'est pas observable dans le harness (dev, SW PROD-gated) → QA offline réelle = manuelle sur build servi.
 - Inchangé : Dexie v17, packDataInBundle=0, pack-source abstraction, checksum fail-safe, 64 MB conservés (aucune migration/suppression). RC-ready préservé.
+
+## Sprint #28 — Checksum Manifest Activation (Lanes C + Q)
+
+- **Checksums réels activés** : `scripts/pack-checksums.mjs` (+ `npm run knowledge:pack-checksums`) hashe les octets exacts des 8 fichiers du pack et écrit `manifest.checksums` — `createdAt` intact (pas de réimport forcé). EOL sûr (`-text` déjà en place, LF sans BOM).
+- Import réel vérifié avec intégrité : dataset avec checksum valide → completed ; contenu altéré → `PackChecksumError`, batch failed, rien en Dexie, dataset conservé, jamais de repli sur mismatch ; absence de checksum → comportement inchangé ; idempotence conservée. Tests `checksum-activation` 8/8 (vrai manifeste + vrai fichier 247 Ko, jamais 64 Mo en CI).
+- Prérequis migration externe rempli : le canal d'import est désormais à intégrité vérifiée. Reste : choix backend + provisioning (action utilisateur/infra).
+- Inchangé : same-origin par défaut, Dexie v17, packDataInBundle=0, FormAI/Dictionary/Search, offline #27.

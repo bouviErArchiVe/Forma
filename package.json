@@ -14,7 +14,8 @@
     "icons": "node scripts/generate-pwa-icons.mjs",
     "knowledge:quality": "vite-node scripts/knowledge-quality.ts",
     "knowledge:import": "vite-node scripts/knowledge-import.ts",
-    "knowledge:upgrade": "vite-node scripts/knowledge-upgrade.ts"
+    "knowledge:upgrade": "vite-node scripts/knowledge-upgrade.ts",
+    "knowledge:pack-checksums": "node scripts/pack-checksums.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.3",

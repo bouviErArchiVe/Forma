@@ -483,3 +483,16 @@ Prouver l'offline-first avant migration réelle du pack. Aucune migration, aucun
 | Q | Tests offline + docs + registre | `offline-verification.test.ts`, `FORMA_RC_AUDIT.md`, `FORMA_STATE.md`, `FORMA_PARALLEL_SPRINTS.md` |
 
 Résultat : SW précache l'app-shell UNIQUEMENT (0 pack) ; pack lu depuis Dexie hors ligne (tests 7/7) ; pack non importé + offline = dégradé propre ; manifest valide. Aucun défaut SW → aucun correctif. Dexie v17, packDataInBundle=0, 64 MB conservés. Limite : enregistrement SW live = manuel (harness dev). Ordre V → Q ; gate + Playwright final.
+
+---
+
+# Sprint #28 — Checksum Manifest Activation (Lanes C + Q)
+
+Objectif : activer l'intégrité réelle du pack sans migrer ni changer le défaut.
+
+| Lane | Objectif | Propriété |
+|---|---|---|
+| C | Script `knowledge:pack-checksums` (octets exacts, Buffer) + écriture `manifest.checksums` (8 fichiers), `createdAt` intact | `scripts/pack-checksums.mjs`, `package.json`, `offline_manifest.json` |
+| Q | Tests activation (vrai manifeste + vrai petit fichier : équivalence octets/texte, import OK, altéré→fail-safe sans écriture, pas de repli sur mismatch, idempotence) + docs | `checksum-activation.test.ts`, `FORMA_PACK_STORAGE.md`, STATE/SPRINTS |
+
+Résultat : intégrité active sur le canal d'import (same-origin ET futur remote). Aucune migration, aucun changement Dexie/défaut/FormAI. Gate complet + Playwright final.
