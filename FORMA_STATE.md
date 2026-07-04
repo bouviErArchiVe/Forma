@@ -599,3 +599,10 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 - Import réel vérifié avec intégrité : dataset avec checksum valide → completed ; contenu altéré → `PackChecksumError`, batch failed, rien en Dexie, dataset conservé, jamais de repli sur mismatch ; absence de checksum → comportement inchangé ; idempotence conservée. Tests `checksum-activation` 8/8 (vrai manifeste + vrai fichier 247 Ko, jamais 64 Mo en CI).
 - Prérequis migration externe rempli : le canal d'import est désormais à intégrité vérifiée. Reste : choix backend + provisioning (action utilisateur/infra).
 - Inchangé : same-origin par défaut, Dexie v17, packDataInBundle=0, FormAI/Dictionary/Search, offline #27.
+
+## Sprint #29 — Backend Decision Only (Lane D, docs-only)
+
+- `FORMA_PACK_STORAGE.md` : décision backend + runbooks opérationnels prêts à exécuter. **Recommandé : GitHub Release assets** (gratuit, versionné par tag, CORS `*`, URLs à plat compatibles avec le loader tel quel) ; alternative pro : Supabase Storage/CDN. Runbooks complets (upload, URL, CORS/headers, checksums post-upload, `VITE_FORMA_PACK_BASE_URL` build-time, checklist de validation §5, rollback = retirer la variable, plan de suppression future des 64 MB sans réécriture d'historique).
+- Étapes dépendant de comptes/URLs réels marquées **[UTILISATEUR]** — aucun backend provisionné fictivement, aucun test distant inventé.
+- Aucun changement code/Dexie/SW/checksums ; 64 MB conservés ; same-origin défaut inchangé.
+- Prochaine étape : le product owner choisit le backend et exécute les étapes [UTILISATEUR], puis sprint « Effective Pack Migration » (court : env var + validation).

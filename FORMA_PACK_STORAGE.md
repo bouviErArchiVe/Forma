@@ -53,3 +53,103 @@ sortie progressive du repo, **sans rien supprimer ni casser**.
 - Fail-safe prouvé sur données réelles : contenu altéré ⇒ `PackChecksumError`, batch `failed`, **aucune écriture Dexie**, dataset existant conservé, jamais de repli same-origin sur une erreur d'intégrité.
 - **Régénération obligatoire** après toute modification d'un fichier du pack : `npm run knowledge:pack-checksums` (sinon l'import échoue fail-safe).
 - Conséquence : le prérequis « intégrité » de la migration externe est rempli — un pack distant corrompu/tronqué sera rejeté avant Dexie.
+
+---
+
+# Sprint #29 — Décision backend & runbooks de migration
+
+Préparation technique COMPLÈTE (#26 abstraction + #27 offline + #28 intégrité).
+Ce document transforme la matrice en décision opérationnelle. **Docs-only : aucune
+migration effectuée, les 64 MB restent dans le repo jusqu'à validation réelle.**
+
+## 1. Décision recommandée
+
+| Backend | Coût | Complexité | Versioning | CORS | Verdict |
+|---|---|---|---|---|---|
+| **GitHub Release assets** | gratuit | très faible | tag par release | `*` (objects.githubusercontent.com) | ✅ **RECOMMANDÉ** |
+| Supabase Storage | gratuit → payant | moyenne | chemin par version | permissif (bucket public) | ✅ alternative « produit » |
+| CDN dédié (Cloudflare R2…) | faible | moyenne | chemin | à configurer | alternative robuste |
+| Vercel Blob | payant au volume | faible | URL par blob | OK | seulement si déjà sur Vercel Pro |
+| Same-origin actuel | inclus | nulle | git | n/a | conservé comme **fallback** |
+| Build-time copy (hors repo) | nul | faible | manuel | n/a | n'enlève pas le poids du déploiement |
+| Git LFS rétroactif | quota LFS | élevée (réécriture historique) | git | n/a | ❌ écarté (décision #22) |
+
+- **Choix recommandé / le plus simple / économique : GitHub Release assets** — gratuit, versionné par tag, aucun backend applicatif, CORS `*` natif, URLs stables.
+- **Choix professionnel / le plus robuste : Supabase Storage ou CDN** — gestion de cache fine, renouvellement de pack sans release GitHub.
+- Court terme : **garder same-origin en fallback** (les 64 MB restent servis) jusqu'à plusieurs validations réelles.
+
+## 2. Runbook — GitHub Release assets (recommandé)
+
+> Les étapes marquées **[UTILISATEUR]** exigent le compte GitHub réel — non exécutables par l'agent.
+
+1. **[UTILISATEUR]** Créer une release versionnée sur le repo :
+   `gh release create pack-part10-v1 --title "Forma Pack Part10 v1" --notes "Resource Pack 64MB"`  
+2. **[UTILISATEUR]** Uploader les 9 fichiers de `public/knowledge-pack/part10/data/app/` **à plat** (les assets GitHub n'ont pas de sous-dossiers ; notre loader fetch des noms de fichiers à plat → compatible tel quel) :
+   `gh release upload pack-part10-v1 public/knowledge-pack/part10/data/app/*.json`
+3. URL de base attendue :
+   `https://github.com/<OWNER>/<REPO>/releases/download/pack-part10-v1`
+   (chaque fichier = `<base>/offline_manifest.json`, `<base>/forma_dictionary_core.json`, …)
+4. Vérifier le service : `curl -sI <base>/offline_manifest.json` → 302 vers `objects.githubusercontent.com`, puis 200 ; header `access-control-allow-origin: *` sur la cible. Note : `content-type: application/octet-stream` est OK (le loader lit `res.text()` + `JSON.parse`, pas `res.json()`).
+5. Vérifier les checksums post-upload : télécharger un fichier, `sha256sum`, comparer à `manifest.checksums` (déjà réels depuis #28).
+6. Configurer `VITE_FORMA_PACK_BASE_URL=<base>` (voir §4), **build**, **preview**.
+7. Valider selon la checklist §5 (import dictionary/rag/search, fail-safe, offline, fallback).
+8. **Rollback** : retirer `VITE_FORMA_PACK_BASE_URL`, rebuild/redeploy → retour same-origin (§6).
+
+## 3. Runbook — Supabase Storage (alternative)
+
+1. **[UTILISATEUR]** Créer un bucket **public** `forma-pack` ; uploader les 9 fichiers sous `part10/` avec `cache-control: public, max-age=31536000, immutable` (fichiers immuables par version).
+2. URL de base : `https://<project>.supabase.co/storage/v1/object/public/forma-pack/part10`
+3. CORS : le storage public Supabase sert des en-têtes permissifs par défaut ; vérifier avec `curl -sI` que `access-control-allow-origin` couvre l'origine de Forma.
+4. Vérifier checksums post-upload (idem §2.5).
+5. `VITE_FORMA_PACK_BASE_URL=<base>` → build → preview → checklist §5.
+6. Rollback identique (§6). Nouvelle version de pack = nouveau préfixe `part10-v2/` + régénération `knowledge:pack-checksums` + nouveau manifest.
+
+## 4. Variable d'environnement
+
+- `VITE_FORMA_PACK_BASE_URL` — **build-time** (Vite inline `import.meta.env` au build : changer la valeur ⇒ rebuild/redeploy obligatoire).
+  - vide/absente ⇒ same-origin `/knowledge-pack/part10/data/app` (défaut actuel, inchangé) ;
+  - définie ⇒ source distante opt-in, avec **repli same-origin automatique** sur échec transport (jamais sur erreur d'intégrité).
+- Local : `VITE_FORMA_PACK_BASE_URL=https://… npm run build && npm run preview` (ou `.env.local`).
+- Vercel : Project → Settings → Environment Variables → `VITE_FORMA_PACK_BASE_URL` (Production), puis redeploy.
+
+## 5. Checklist de validation post-migration
+
+- [ ] `<base>/offline_manifest.json` accessible (200, CORS OK)
+- [ ] Les 8 fichiers datasets accessibles
+- [ ] Checksums post-upload == `manifest.checksums` (#28)
+- [ ] Import dictionary OK (Dexie peuplé)
+- [ ] Import rag OK
+- [ ] Import search OK (2500 keywords)
+- [ ] Fail-safe testé : altérer un octet distant ⇒ `PackChecksumError`, rien en Dexie
+- [ ] Offline après import OK (pack lu depuis Dexie, #27)
+- [ ] Search docpack OK · Dictionary Documents OK · FormAI pack grounding OK
+- [ ] Fallback same-origin OK (couper le remote ⇒ repli silencieux)
+- [ ] Console propre · packDataInBundle=0
+
+## 6. Rollback
+
+Désactiver `VITE_FORMA_PACK_BASE_URL` → rebuild/redeploy → retour same-origin.
+**Aucun risque utilisateur** : les packs déjà importés vivent dans Dexie (idempotence
+par version, pas de réimport) ; le fallback transport couvre aussi les pannes remote
+sans redéploiement tant que les 64 MB restent servis en same-origin.
+
+## 7. Plan futur de suppression des 64 MB
+
+UNIQUEMENT après plusieurs validations réelles de la checklist §5 :
+1. PR dédiée supprimant `public/knowledge-pack/part10/data/{app hors manifest?}` — décision fine : garder `offline_manifest.json` local n'a pas de sens si la base est distante ; suppression simple des fichiers, **pas de réécriture d'historique** (le repo garde le poids dans l'historique, acceptable court terme).
+2. Vérifier build + deploy + import distant sans fallback possible (`allowSameOriginFallback` reste vrai mais la cible same-origin 404 → l'échec remonte proprement : tester ce chemin).
+3. MAJ docs (ce fichier, RC audit, STATE) ; la release/le bucket devient la **source officielle**.
+4. Nettoyage de l'historique Git (filter-repo/BFG) : décision séparée, plus tard, seulement si le poids du clone devient un problème réel.
+
+## 8. Décision à trancher (product owner)
+
+| Critère | Choix |
+|---|---|
+| Recommandé (défaut argumenté) | **GitHub Release assets** |
+| Le plus économique | GitHub Release assets (gratuit) |
+| Le plus simple | GitHub Release assets (2 commandes `gh`) |
+| Le plus professionnel | Supabase Storage / CDN |
+| Le plus robuste long terme | CDN (R2/CloudFront) |
+
+**Action attendue** : choisir le backend, exécuter les étapes [UTILISATEUR] du runbook,
+puis lancer le sprint « Effective Pack Migration » (court : env var + validation §5).

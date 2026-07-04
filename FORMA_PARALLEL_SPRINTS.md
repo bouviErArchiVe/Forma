@@ -496,3 +496,9 @@ Objectif : activer l'intégrité réelle du pack sans migrer ni changer le défa
 | Q | Tests activation (vrai manifeste + vrai petit fichier : équivalence octets/texte, import OK, altéré→fail-safe sans écriture, pas de repli sur mismatch, idempotence) + docs | `checksum-activation.test.ts`, `FORMA_PACK_STORAGE.md`, STATE/SPRINTS |
 
 Résultat : intégrité active sur le canal d'import (same-origin ET futur remote). Aucune migration, aucun changement Dexie/défaut/FormAI. Gate complet + Playwright final.
+
+---
+
+# Sprint #29 — Backend Decision Only (Lane D, docs-only)
+
+Objectif : transformer la préparation #26–#28 en décision opérationnelle. Livrable : `FORMA_PACK_STORAGE.md` §Sprint #29 (décision recommandée = GitHub Release assets ; runbooks GitHub/Supabase ; env var ; checklist validation ; rollback ; plan suppression 64 MB). Aucun code, aucune migration, 64 MB conservés. Actions [UTILISATEUR] explicitement marquées.
