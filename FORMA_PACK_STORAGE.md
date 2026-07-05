@@ -153,3 +153,41 @@ UNIQUEMENT après plusieurs validations réelles de la checklist §5 :
 
 **Action attendue** : choisir le backend, exécuter les étapes [UTILISATEUR] du runbook,
 puis lancer le sprint « Effective Pack Migration » (court : env var + validation §5).
+
+---
+
+# Sprint #30 — Migration effective : EXÉCUTÉE, avec finding CORS critique
+
+## Ce qui a été fait (réel, vérifié)
+
+- **Release créée** : `pack-part10-v1` → https://github.com/bouviErArchiVe/Forma/releases/tag/pack-part10-v1
+- **9 fichiers uploadés** en assets à plat (tous HTTP 201).
+- **URLs publiques vérifiées** : 302 → 200 (cible `release-assets.githubusercontent.com` / Azure blob), `content-type: application/octet-stream` (OK pour notre loader `res.text()`).
+- **Checksum post-upload vérifié** : `forma_search_index_light.json` téléchargé == `manifest.checksums` (SHA-256 identique).
+
+## ⚠ FINDING CRITIQUE — CORS
+
+La nouvelle infrastructure GitHub (`release-assets.githubusercontent.com`, Azure blob) **n'envoie AUCUN header `access-control-allow-origin`** (vérifié avec header `Origin`, GET complet). Conséquence, **vérifiée en vrai navigateur** : `fetch()` cross-origin des assets échoue (« Failed to fetch »).
+→ **GitHub Release assets NE SONT PLUS fetchables directement depuis le navigateur.** (L'ancienne infra `objects.githubusercontent.com` servait `*` ; ce n'est plus le cas.)
+
+## Filet de sécurité : PROUVÉ en conditions réelles
+
+Avec `remoteBaseUrl` pointant sur la release réelle (CORS-bloquée) :
+`fetchPackJson` → échec transport → **repli same-origin automatique** → `importPackDataset('search')` **completed**, 2500 keywords, checksums vérifiés, console propre.
+C'est exactement le scénario pour lequel #26 a été conçu — et la raison de ne PAS supprimer les 64 MB avant validation.
+
+## Décision révisée pour le service navigateur
+
+| Option | CORS navigateur | Verdict |
+|---|---|---|
+| GitHub Release assets (direct) | ❌ absent | **stockage/versioning OK, service direct NON** |
+| **Rewrite/proxy plateforme** (ex. Vercel `rewrites` → URL release) | ✅ (same-origin vu du navigateur) | **RECOMMANDÉ si déploiement Vercel/Netlify** — garde GitHub comme stockage |
+| Supabase Storage / CDN (R2…) | ✅ configurable | **RECOMMANDÉ sinon** (alternative pro du #29) |
+| jsDelivr `gh` CDN | ✅ | ❌ limite ~20 MB/fichier (nos fichiers font 23 et 26 MB) |
+
+- La release `pack-part10-v1` reste la **source d'artefacts versionnée** (checksums vérifiés).
+- `VITE_FORMA_PACK_BASE_URL` ne doit PAS pointer directement sur `github.com/releases/download` (échec CORS garanti → l'app retomberait silencieusement en same-origin).
+- **[UTILISATEUR]** Prochaine étape selon la plateforme de déploiement :
+  - Vercel : ajouter dans `vercel.json` un rewrite `/pack-remote/:file` → `https://github.com/bouviErArchiVe/Forma/releases/download/pack-part10-v1/:file`, puis `VITE_FORMA_PACK_BASE_URL=/pack-remote` (same-origin, zéro CORS) ;
+  - ou provisionner Supabase Storage/R2 (runbook §3) et y copier les assets de la release.
+- Les 64 MB restent dans le repo tant qu'aucune de ces deux voies n'est validée par la checklist §5.

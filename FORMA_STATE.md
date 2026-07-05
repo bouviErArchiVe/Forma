@@ -606,3 +606,11 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 - Étapes dépendant de comptes/URLs réels marquées **[UTILISATEUR]** — aucun backend provisionné fictivement, aucun test distant inventé.
 - Aucun changement code/Dexie/SW/checksums ; 64 MB conservés ; same-origin défaut inchangé.
 - Prochaine étape : le product owner choisit le backend et exécute les étapes [UTILISATEUR], puis sprint « Effective Pack Migration » (court : env var + validation).
+
+## Sprint #30 — Effective Pack Migration (GitHub Release assets) : exécutée + finding CORS
+
+- Release **pack-part10-v1** créée sur bouviErArchiVe/Forma ; 9 assets uploadés (201) ; URLs 302→200 ; checksum post-upload vérifié (SHA-256 identique au manifeste).
+- **Finding critique vérifié en navigateur** : la nouvelle infra release-assets GitHub n'envoie pas de CORS → fetch direct impossible depuis l'app. Release = stockage versionné OK, service direct NON.
+- **Filet #26 prouvé en réel** : remote CORS-bloqué → repli same-origin automatique → import completed (2500 keywords), console propre. Les 64 MB restent en repo (fallback vital).
+- Service effectif : [UTILISATEUR] rewrite plateforme (Vercel → release, same-origin) OU Supabase/CDN. `VITE_FORMA_PACK_BASE_URL` ne doit pas pointer directement sur github.com/releases.
+- Aucun changement code/Dexie/checksums ; gate vert.

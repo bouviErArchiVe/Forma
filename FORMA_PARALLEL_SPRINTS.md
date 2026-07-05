@@ -502,3 +502,9 @@ Résultat : intégrité active sur le canal d'import (same-origin ET futur remot
 # Sprint #29 — Backend Decision Only (Lane D, docs-only)
 
 Objectif : transformer la préparation #26–#28 en décision opérationnelle. Livrable : `FORMA_PACK_STORAGE.md` §Sprint #29 (décision recommandée = GitHub Release assets ; runbooks GitHub/Supabase ; env var ; checklist validation ; rollback ; plan suppression 64 MB). Aucun code, aucune migration, 64 MB conservés. Actions [UTILISATEUR] explicitement marquées.
+
+---
+
+# Sprint #30 — Effective Pack Migration (Lanes M + V + Q)
+
+Release GitHub pack-part10-v1 créée + 9 assets uploadés + URLs/checksums vérifiés (Lane M) ; validation réelle navigateur : **CORS absent sur release-assets → fetch direct impossible** ; filet same-origin #26 prouvé en conditions réelles (repli silencieux, import OK) (Lane V) ; docs mises à jour avec décision révisée : rewrite plateforme (Vercel) ou Supabase/CDN pour le service, release = stockage versionné (Lane Q). 64 MB conservés. Aucun changement code.
