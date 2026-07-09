@@ -614,3 +614,10 @@ Playbook LM Studio / Ollama (non automatisable dans cet environnement) :
 - **Filet #26 prouvé en réel** : remote CORS-bloqué → repli same-origin automatique → import completed (2500 keywords), console propre. Les 64 MB restent en repo (fallback vital).
 - Service effectif : [UTILISATEUR] rewrite plateforme (Vercel → release, same-origin) OU Supabase/CDN. `VITE_FORMA_PACK_BASE_URL` ne doit pas pointer directement sur github.com/releases.
 - Aucun changement code/Dexie/checksums ; gate vert.
+
+## Sprint #31 — Pack Serving via rewrite same-origin (Lanes R + V + Q)
+
+- `vercel.json` créé (1 rewrite `/remote-pack/part10/:file` → release GitHub à plat) + miroir proxy dev/preview dans `vite.config.ts` (`followRedirects`) + 5 tests contrat (`pack-serving.test.ts`).
+- Validé en runtime contre la VRAIE release via le miroir : fetch same-origin 200, import search completed (2500 keywords), checksums vérifiés sur octets distants, fail-safe intact, repli same-origin si rewrite KO, console propre.
+- ⚠ [UTILISATEUR] Le 302-follow de Vercel doit être confirmé sur un vrai déploiement avant d'activer `VITE_FORMA_PACK_BASE_URL=/remote-pack/part10` et de supprimer les 64 Mo (procédure dans FORMA_PACK_STORAGE.md §31).
+- Inchangé : 64 Mo conservés, same-origin défaut, Dexie v17, packDataInBundle=0, FormAI/Dictionary/Search/offline intacts. Gate vert (vitest 1578).

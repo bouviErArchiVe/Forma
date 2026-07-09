@@ -191,3 +191,27 @@ C'est exactement le scénario pour lequel #26 a été conçu — et la raison de
   - Vercel : ajouter dans `vercel.json` un rewrite `/pack-remote/:file` → `https://github.com/bouviErArchiVe/Forma/releases/download/pack-part10-v1/:file`, puis `VITE_FORMA_PACK_BASE_URL=/pack-remote` (same-origin, zéro CORS) ;
   - ou provisionner Supabase Storage/R2 (runbook §3) et y copier les assets de la release.
 - Les 64 MB restent dans le repo tant qu'aucune de ces deux voies n'est validée par la checklist §5.
+
+---
+
+# Sprint #31 — Pack Serving : rewrite same-origin vers la release (EXÉCUTÉ localement)
+
+## Mis en place
+- `vercel.json` : UNE règle — `/remote-pack/part10/:file` → `https://github.com/bouviErArchiVe/Forma/releases/download/pack-part10-v1/:file` (fichiers à plat, aucun autre effet de routing).
+- `vite.config.ts` : proxy dev/preview MIROIR du rewrite (`followRedirects: true` — le serveur suit le 302 GitHub, le navigateur reste same-origin). Serveur uniquement, zéro impact bundle.
+- Test contrat `pack-serving.test.ts` (5) : source/destination du rewrite verrouillées + repli same-origin si rewrite indisponible.
+
+## Validé en runtime réel (via le miroir local)
+- `fetch('/remote-pack/part10/offline_manifest.json')` same-origin → 200, pack correct, 8 checksums (octets réels de la release).
+- Import dataset `search` avec `remoteBaseUrl=/remote-pack/part10` → **completed, 2500 keywords**, checksums vérifiés sur les octets DISTANTS.
+- Intégrité sur octets distants : checksum forgé → `PackChecksumError` (fail-safe intact).
+- Repli : rewrite en panne → same-origin local (test unitaire). Console propre.
+
+## ⚠ Reste à valider sur VRAI déploiement Vercel [UTILISATEUR]
+Le comportement de Vercel face au **302** de github.com n'est pas garanti identique au miroir local : si Vercel renvoie le 302 au navigateur (au lieu de le suivre), le hop final (release-assets, sans CORS) échouera → l'app repliera silencieusement en same-origin (sans casse, mais rewrite inopérant).
+Procédure : déployer, puis dans la console du site : `fetch('/remote-pack/part10/offline_manifest.json').then(r=>r.status)` → 200 attendu.
+- Si 200 : définir `VITE_FORMA_PACK_BASE_URL=/remote-pack/part10` (Vercel env, Production) + redeploy, dérouler la checklist §5, PUIS envisager la suppression des 64 Mo (§7).
+- Si échec (302/CORS) : garder same-origin ; alternatives = fonction proxy qui suit le redirect (attention limites de taille) ou Supabase/R2 (runbook §3).
+
+## Rollback
+Ne pas définir la variable (état actuel) ; ou supprimer la règle de `vercel.json` ; same-origin reste le défaut ; Dexie utilisateurs intact.

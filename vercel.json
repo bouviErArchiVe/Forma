@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/remote-pack/part10/:file",
+      "destination": "https://github.com/bouviErArchiVe/Forma/releases/download/pack-part10-v1/:file"
+    }
+  ]
+}
